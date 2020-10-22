@@ -1,77 +1,62 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using UnityEngine;
 
 public class Target : MonoBehaviour
 {
-    HealthSystem Health;
-    MeleeCollision MCol;
+
     public int MaxHP;
-    private bool IsTakingDamage;
     
+    //~~~~~~~~~~~~~~Initialization~~~~~~~~~~~~~
 
     private void OnEnable()
     {
-        Health = FindObjectOfType<HealthSystem>();
-        MCol = FindObjectOfType<MeleeCollision>();
-        if (Health != null)
+        HealthSystem.Instance.SetHealth(MaxHP);                     // Setting Max Health by calling method from HealthSystem
+        if (HealthSystem.Instance != null)                          // HealthSystem Event subscription
         {
-            Health.MaxHealth = MaxHP;
-            Health.CurrentHealth = Health.MaxHealth;
-            Health.OnDamaged += OnDamage;
-            Health.OnKilled += OnKilled;
+            HealthSystem.Instance.RegisterDamageEvent(OnDamage);
+            HealthSystem.Instance.RegisterKillEvent(OnKilled);
         }
-        if (MCol != null)
-        {
-            MCol.OnInflictingDamage += WC_OnInflictingDamage;
-        }
+
     }
 
     private void OnDisable()
     {
-        if (Health != null)
+        if (HealthSystem.Instance != null)                          // HealthSystem Event desubscription
         {
-            Health.OnDamaged -= OnDamage;
-            Health.OnKilled -= OnKilled;
-        }
-        if (MCol != null)
-        {
-            MCol.OnInflictingDamage -= WC_OnInflictingDamage;
+            HealthSystem.Instance.UnRegisterDamageEvent(OnDamage);
+            HealthSystem.Instance.UnRegisterKillEvent(OnKilled);
         }
     }
 
-    private void WC_OnInflictingDamage(object sender, MeleeCollision.DamageEventArgs e)
+    //~~~~~~~~~~~~~~~~~~~~~~~~Damage function~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+
+    public void DoDamage(int dmg)
     {
-        if (e != null)
-        {
-             IsTakingDamage = e.IsAttacking;
-             Health.UnderAttack = IsTakingDamage;
-             Health.Damage(e.DoDamage);
-        }
+        HealthSystem.Instance.Damage(dmg);
     }
+ 
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~Incoming Health System Callback~~~~~~~~~~~~~~~~~~~~~~~~
 
     private void OnDamage(object sender, HealthSystem.DamagedEventArgs e)
     {
-        if (IsTakingDamage == true)
-        {
             if (e != null)
             {
                 Debug.Log(e.Damage);
             }
-            
-            Debug.Log(Health.CurrentHealth);
-        }
-        IsTakingDamage = false;
+            Debug.Log(HealthSystem.Instance.CurrentHealth);
     }
 
     private void OnKilled(object sender, EventArgs e)
     {
         if (e != null)
         {
-            if (Health.IsDead == true)
+            if (HealthSystem.Instance.IsDead == true)
             {
                 Debug.Log("Dead !!");
+               
             }
         }
     }

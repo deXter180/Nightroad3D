@@ -7,7 +7,7 @@ public class MeleeCollision : MonoBehaviour
 {
     private int AppliedDmg = 100;
     private float AttackSpeed = 2f;
-    private bool iSAtttacking;
+    private bool IsAtttacking;
     CombatController com;
 
     private void Awake()
@@ -15,19 +15,6 @@ public class MeleeCollision : MonoBehaviour
         com = FindObjectOfType<CombatController>();
     }
 
-    public class DamageEventArgs : EventArgs
-    {
-        public int DoDamage;
-        public bool IsAttacking;
-
-        public DamageEventArgs(int _doDamage, bool _isAttacking)
-        {
-            DoDamage = _doDamage;
-            IsAttacking = _isAttacking;
-        }
-    }
-
-    public event EventHandler<DamageEventArgs> OnInflictingDamage;
 
     private void OnCollisionStay(Collision collision) => TakeDamage(collision);
 
@@ -38,10 +25,10 @@ public class MeleeCollision : MonoBehaviour
         {
             if (gameObject.CompareTag("WeaponCol"))
             {
-                if (col.gameObject.tag == "Enemy" && col.gameObject.activeInHierarchy && iSAtttacking == false)
+                if (col.gameObject.tag == "Enemy" && col.gameObject.activeInHierarchy && IsAtttacking == false)
                 {
-                    iSAtttacking = true;
-                    OnInflictingDamage?.Invoke(this, new DamageEventArgs(AppliedDmg, iSAtttacking));
+                    IsAtttacking = true;
+                    col.gameObject.GetComponent<Target>().DoDamage(AppliedDmg); 
                     StartCoroutine(Attacking());
                 }
             }
@@ -50,10 +37,10 @@ public class MeleeCollision : MonoBehaviour
 
     IEnumerator Attacking()
     {
-        if (iSAtttacking == true)
+        if (IsAtttacking == true)
         {
             yield return new WaitForSeconds(AttackSpeed);
         }
-        iSAtttacking = false; 
+        IsAtttacking = false; 
     }
 }
