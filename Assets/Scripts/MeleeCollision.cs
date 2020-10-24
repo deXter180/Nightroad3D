@@ -27,8 +27,9 @@ public class MeleeCollision : MonoBehaviour
             {
                 if (col.gameObject.tag == "Enemy" && col.gameObject.activeInHierarchy && IsAtttacking == false)
                 {
+                    Debug.Log($"enemy took the damage:- {col.gameObject.name}");
                     IsAtttacking = true;
-                    col.gameObject.GetComponent<Target>().DoDamage(AppliedDmg); 
+                    col.gameObject.GetComponent<Target>().DoDamage(AppliedDmg, col.gameObject.name); 
                     StartCoroutine(Attacking());
                 }
             }

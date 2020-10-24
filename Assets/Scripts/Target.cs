@@ -8,12 +8,17 @@ public class Target : MonoBehaviour
 {
 
     public int MaxHP;
+    public Guid TargetId;
     
     //~~~~~~~~~~~~~~Initialization~~~~~~~~~~~~~
 
     private void OnEnable()
     {
-        HealthSystem.Instance.SetHealth(MaxHP);                     // Setting Max Health by calling method from HealthSystem
+        TargetId = new Guid();
+        Debug.Log($"onEnabled :- {TargetId}, {this.gameObject.name}");
+
+        HealthSystem.Instance.SetHealthSystem(TargetId,MaxHP, this.gameObject.name); // Setting Max Health by calling method from HealthSystem   
+
         if (HealthSystem.Instance != null)                          // HealthSystem Event subscription
         {
             HealthSystem.Instance.RegisterDamageEvent(OnDamage);
@@ -33,9 +38,9 @@ public class Target : MonoBehaviour
 
     //~~~~~~~~~~~~~~~~~~~~~~~~Damage function~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
 
-    public void DoDamage(int dmg)
+    public void DoDamage(int dmg,string colEntity)
     {
-        HealthSystem.Instance.Damage(dmg);
+        HealthSystem.Instance.Damage(dmg, colEntity);
     }
  
     //~~~~~~~~~~~~~~~~~~~~~~~~~~Incoming Health System Callback~~~~~~~~~~~~~~~~~~~~~~~~
@@ -44,20 +49,20 @@ public class Target : MonoBehaviour
     {
             if (e != null)
             {
-                Debug.Log(e.Damage);
+               // Debug.Log(e.Damage);
             }
-            Debug.Log(HealthSystem.Instance.CurrentHealth);
+            //Debug.Log(HealthSystem.Instance.CurrentHealth);
     }
 
     private void OnKilled(object sender, EventArgs e)
     {
         if (e != null)
         {
-            if (HealthSystem.Instance.IsDead == true)
-            {
-                Debug.Log("Dead !!");
+            // if (HealthSystem.Instance.IsDead() == true)
+            // {
+            //     Debug.Log("Dead !!");
                
-            }
+            // }
         }
     }
 }

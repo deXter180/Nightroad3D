@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
+using System.Linq;
 
 public sealed class HealthSystem
 {
@@ -11,9 +12,9 @@ public sealed class HealthSystem
     #region Singleton
     private HealthSystem()
     {
-        //~~~~~~~~~~~~~~~~~~~~~~~~~ List Initialization ~~~~~~~~~~~~~~~~~~~~~~~~
+             //~~~~~~~~~~~~~~~~~~~~~~~~~ List Initialization ~~~~~~~~~~~~~~~~~~~~~~~~
 
-        this.subscribedDmgEvents = new List<EventHandler<DamagedEventArgs>>(); 
+        this.subscribedDmgEvents = new List<EventHandler<DamagedEventArgs>>();
         this.subscribedKillEvents = new List<EventHandler>();
     }
     private static readonly Lazy<HealthSystem> lazy = new Lazy<HealthSystem>(() => new HealthSystem());
@@ -28,8 +29,15 @@ public sealed class HealthSystem
     #endregion
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Variable for internal Health Calculation ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    [HideInInspector] public List<Entity> Targets;
 
-    [HideInInspector] public int CurrentHealth { get; set; }
+    public class Entity
+    {
+        public Guid Id { get; set; }
+        public int CurrentHealth { get; set; }
+        public string TargetName { get; set; }
+    }
+
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Declaring eventhandler for ondamage event ~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -46,12 +54,12 @@ public sealed class HealthSystem
 
     private List<EventHandler<DamagedEventArgs>> subscribedDmgEvents;     // List for OnDamage event subscribers
     private List<EventHandler> subscribedKillEvents;                      // List for OnKill event subscribers
-    private event EventHandler<DamagedEventArgs> _OnDamaged;                  
+    private event EventHandler<DamagedEventArgs> _OnDamaged;
     private event EventHandler _OnKilled;
 
     //~~~~~~~~~~~~~~~~~~~~~~~ Adding subscribers to List ~~~~~~~~~~~~~~~~~~~~~~~
 
-    public event EventHandler<DamagedEventArgs> OnDamaged                 
+    public event EventHandler<DamagedEventArgs> OnDamaged
     {
         add
         {
@@ -59,6 +67,7 @@ public sealed class HealthSystem
             {
                 this._OnDamaged += value;
                 this.subscribedDmgEvents.Add(value);
+ 
             }
         }
         remove
@@ -70,6 +79,7 @@ public sealed class HealthSystem
             }
         }
     }
+
     public event EventHandler OnKilled
     {
         add
@@ -92,31 +102,55 @@ public sealed class HealthSystem
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~ Checking for Death ~~~~~~~~~~~~~~~~~~~~~~~
 
-    public bool IsDead { get { return CurrentHealth < 1; } }
+    //public bool IsDead { get { return CurrentHealth < 1; } }
+
+    public bool IsDead(Guid targetId)
+    {
+        return (this.Targets.Where(a => a.Id == targetId).ToList().Count() > 0);
+    }
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~ Setting Max Health ~~~~~~~~~~~~~~~~~~~~~~~
 
-    public void SetHealth(int MaxHP)
+    public void SetHealthSystem(Guid targetId,int MaxHP,string colEntity)
     {
-        CurrentHealth = MaxHP;
+        this.Targets = new List<Entity>();
+
+        this.Targets.Add(
+                new Entity {
+                   Id = targetId,
+                   CurrentHealth = MaxHP,
+                   TargetName = colEntity
+                }
+            );
+
+        //this.CurrentHealth = MaxHP;
+        //this.TargetName = colEntity;
     }
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~ Raising Events ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    public void Damage(int pAmount)
+    public void Damage(int pAmount,string colEntity)
     {
-        
-        if (pAmount > 0)
+        // Debug.Log($"Health System script attahced too :- {this.}" +
+        //     $" entity that took damage:- {colEntity}");
+
+        foreach (var item in this.Targets)
         {
-                int totalDamageTaken = pAmount < CurrentHealth ? pAmount : CurrentHealth;
-                CurrentHealth -= totalDamageTaken;
-                this._OnDamaged?.Invoke(this, new DamagedEventArgs(pAmount));
-                if (IsDead)
-                {
-                    _OnKilled?.Invoke(this, EventArgs.Empty);
-                }
-                
+            Debug.Log($"{item.Id}: {item.TargetName}");
         }
+
+        // if (pAmount > 0 && (string.Compare(this.TargetName, colEntity) == 0))
+        // {
+        //         int totalDamageTaken = pAmount < this.CurrentHealth ? pAmount : this.CurrentHealth;
+        //         this.CurrentHealth -= totalDamageTaken;
+
+        //         this._OnDamaged?.Invoke(this, new DamagedEventArgs(pAmount));
+        //         if (IsDead)
+        //         {
+        //             _OnKilled?.Invoke(this, EventArgs.Empty);
+        //         }
+
+        // }
     }
 
     //~~~~~~~~~~~~~~~~~~~~~~ Events Subscription Methods ~~~~~~~~~~~~~~~~~~~~~~
