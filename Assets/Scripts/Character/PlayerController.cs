@@ -19,7 +19,6 @@ public class PlayerController : MonoBehaviour
     private float camControl;
     private Rigidbody RB;
     private Collider col;
-    private bool IsGrounded;
     private Input input;
 
     //~~~~~~~~~~~~~~~~~ Initialization ~~~~~~~~~~~~~~~~~~~
@@ -82,19 +81,25 @@ public class PlayerController : MonoBehaviour
 
     private void Jump()
     {
+        if (input.GetJump() == 1)
+        {
+            if (GroundCheck())
+            {
+                RB.AddForce(transform.up * JumpForce, ForceMode.Impulse);
+            }
+        }
+    }
+    private bool GroundCheck()
+    {
         RaycastHit hit;
         Physics.BoxCast(col.bounds.center, transform.localScale, Vector3.down, out hit, Quaternion.identity, col.bounds.extents.y + 0.01f, groundLayer);
         if (hit.collider != null)
         {
-            IsGrounded = true;
+            return true;
         }
         else
         {
-            IsGrounded = false;
-        }
-        if (IsGrounded && input.GetJump() == 1)
-        {
-            RB.AddForce(transform.up * JumpForce, ForceMode.Impulse);
+            return false;
         }
     }
     

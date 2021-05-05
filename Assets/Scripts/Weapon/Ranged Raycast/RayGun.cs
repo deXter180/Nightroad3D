@@ -1,12 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using UnityEditor;
+using System;
 using UnityEngine;
 
 public class RayGun : MonoBehaviour
 {
-    private float LastTimeShot = 0;
+    private int PlayerLayer = 9;
+    private int EnemyLayer = 12;
+    private int bitmask;
     private Camera cam;
     private Animator anim;
     private Input input;
@@ -19,27 +20,30 @@ public class RayGun : MonoBehaviour
         weaponBrain = GetComponent<WeaponBrain>();
         anim = GetComponent<Animator>();
         cam = GetComponentInParent<Camera>();
+        bitmask = ~(1 << PlayerLayer) & (1 << EnemyLayer);
     }
 
     private void FixedUpdate()
     {
-        if (LastTimeShot + weaponBrain.GetThisWeapon().AttackSpeed <= Time.fixedDeltaTime)
-        {
-            //anim.SetTrigger(ShootHash);
-            LastTimeShot = Time.fixedDeltaTime;
-
-            Shoot();
-        }
-    }
-    public void Shoot()
-    {
         if (input.GetAttack() == 1 && gameObject.activeInHierarchy)
         {
-            int PlayerLayer = 8;
-            int EnemyLayer = 9;
-            int bitmask = ~(1 << PlayerLayer) & (1 << EnemyLayer) ;
-            Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-            if (Physics.Raycast(ray, out RaycastHit hit, weaponBrain.GetThisWeapon().AttackRange, bitmask))
+            if (Inventory.Instance.IsAttacking == false)
+            {
+                StartCoroutine(Shoot(() => { Inventory.Instance.IsAttacking = false; }));
+            }
+        }
+        //anim.SetTrigger(ShootHash);
+    }
+    public IEnumerator Shoot(Action action)
+    {
+        Vector3 range = new Vector3(cam.transform.position.x, cam.transform.position.y, weaponBrain.GetThisWeapon().AttackRange);
+        Debug.DrawRay(cam.transform.position, range, Color.red);
+        Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+        Inventory.Instance.IsAttacking = true;
+        weaponBrain.GetThisWeapon().RaiseOnAttack(weaponBrain.GetThisWeapon(), weaponBrain.GetWeaponCategories(), weaponBrain.GetWeaponTypes());
+        if (Physics.Raycast(ray, out RaycastHit hit, weaponBrain.GetThisWeapon().AttackRange, bitmask))
+        {
+            if (hit.collider != null)
             {
                 Debug.Log(hit.transform.name);
                 if (hit.collider.GetComponent<Target>() != null)
@@ -49,6 +53,8 @@ public class RayGun : MonoBehaviour
                 }
             }
         }
+        yield return new WaitForSeconds(weaponBrain.GetThisWeapon().AttackSpeed);
+        action.Invoke();
     }
 
 

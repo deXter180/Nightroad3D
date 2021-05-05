@@ -21,11 +21,6 @@ public interface IMove
     int MoveSpeed { get; }
 }
 
-public interface IGetWeapon
-{
-    Weapons GetThisWeapon();
-}
-
 public interface Input
 {
     float GetAttack();

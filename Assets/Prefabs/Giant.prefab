@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6512917274919765746}
   - component: {fileID: -2283531767560358604}
   - component: {fileID: 5862634206629950785}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Giant
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -113,7 +113,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 116
   m_CollisionDetection: 0
 --- !u!114 &-2283531767560358604
 MonoBehaviour:

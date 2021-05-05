@@ -88,7 +88,6 @@ public class ObjectPooler : MonoBehaviour
         //        }
         //    }
         //}
-
     }
 
     public void InitializePool(ProjectileTypes projectile)

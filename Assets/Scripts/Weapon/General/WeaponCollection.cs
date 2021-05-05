@@ -13,11 +13,11 @@ public abstract class RangedWeapons : Weapons
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~ Individual Type ~~~~~~~~~~~~~~~~~~~~~~~
-
+ 
 public class Axe : MeleeWeapns
 {
     public override int DamageAmount => 100;
-    public override float AttackSpeed => 1.5f;
+    public override float AttackSpeed => 1.0f;
     public override int AttackRange => 100;
     public override float CritChance => 0.7f;
     public override float CritBonus => 2f;
@@ -27,7 +27,7 @@ public class Rifle : RangedWeapons
 {
     public override int DamageAmount => 150;
     public override float AttackSpeed => 0.2f;
-    public override int AttackRange => 500;
+    public override int AttackRange => 1500;
     public override float CritChance => 0.1f;
     public override float CritBonus => 2f;
     public override WeaponTypes weaponTypes => WeaponTypes.Rifle;

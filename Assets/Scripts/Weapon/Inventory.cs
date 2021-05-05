@@ -7,13 +7,14 @@ using System.Linq;
 public class Inventory : MonoBehaviour
 {
     public static Inventory Instance { get; private set; }
+    [HideInInspector] public bool IsAttacking = false;
     private int WeaponCount => 3;
     private int SelectedWeapon = 0;
     private WeaponBrain[] weaponBrains;
-    private Dictionary<WeaponTypes, WeaponBrain> WeaponInventory;
     private bool IsInitialized => WeaponInventory != null;
     private Input input;
-
+    private Dictionary<WeaponTypes, WeaponBrain> WeaponInventory;
+    
     private void Awake()
     {
         if (Instance != null)
@@ -32,6 +33,8 @@ public class Inventory : MonoBehaviour
         }
         InitializeInventory();
         AddWeapon(WeaponTypes.RocketLauncher);
+        AddWeapon(WeaponTypes.Rifle);
+        AddWeapon(WeaponTypes.Axe);
     }
     private void Update()
     {
@@ -144,6 +147,7 @@ public class Inventory : MonoBehaviour
         if (previousWeapon != SelectedWeapon)
         {
             SelectWeapon();
+            IsAttacking = false;
         }
     }
 

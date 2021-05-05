@@ -13,12 +13,12 @@ public class Projectile :  MonoBehaviour
     private void OnEnable()
     {
         LifeTime = 0f;
-        ProjectileGun.OnProjectileFire += ProjectileGun_OnFire;
+        Weapons.OnAttack += Weapons_OnAttack;
     }
 
     private void OnDisable()
     {
-        ProjectileGun.OnProjectileFire -= ProjectileGun_OnFire;
+        Weapons.OnAttack -= Weapons_OnAttack;
     }
 
     private void Update()
@@ -41,21 +41,23 @@ public class Projectile :  MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         ObjectPooler.Instance.ReturnToPool(this);
-        if (collision.gameObject.CompareTag("Enemy"))
+       if (collision != null)
         {
-            
-            ObjectPooler.Instance.ReturnToPool(this);
-            collision.gameObject.TryGetComponent<Target>(out Target target);
-            collision.gameObject.TryGetComponent<EnemyBrain>(out EnemyBrain enemyBrain);
-            if (target != null && enemyBrain != null && target.GetEnemy() == true && target.IsDead == false)
+            if (collision.gameObject.CompareTag("Enemy"))
             {
-                AttackWeapon.DoAttack(target, enemyBrain.GetThisEnemy().DodgeChance);
+                ObjectPooler.Instance.ReturnToPool(this);
+                collision.gameObject.TryGetComponent<Target>(out Target target);
+                collision.gameObject.TryGetComponent<EnemyBrain>(out EnemyBrain enemyBrain);
+                if (target != null && enemyBrain != null && target.GetEnemy() == true && target.IsDead == false && AttackWeapon != null)
+                {
+                    AttackWeapon.DoAttack(target, enemyBrain.GetThisEnemy().DodgeChance);
+                }
             }
         }
     }
-    private void ProjectileGun_OnFire(object sender, ProjectileGun.OnFireEventArg e)
+    private void Weapons_OnAttack(object sender, OnAttackEventArg e)
     {
-        if (e.weaponCategory == WeaponCategories.ProjectileShoot)
+        if (e != null && e.weaponCategory == WeaponCategories.ProjectileShoot)
         {
             AttackWeapon = e.weapon;
         }
