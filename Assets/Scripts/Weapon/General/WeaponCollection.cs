@@ -10,6 +10,7 @@ public abstract class MeleeWeapns : Weapons
 
 public abstract class RangedWeapons : Weapons
 {
+    public abstract float bloom { get; }
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~ Individual Type ~~~~~~~~~~~~~~~~~~~~~~~
@@ -30,6 +31,7 @@ public class Rifle : RangedWeapons
     public override int AttackRange => 1500;
     public override float CritChance => 0.1f;
     public override float CritBonus => 2f;
+    public override float bloom => 0.5f;
     public override WeaponTypes weaponTypes => WeaponTypes.Rifle;
 }
 public class RPG : RangedWeapons
@@ -37,7 +39,8 @@ public class RPG : RangedWeapons
     public override int DamageAmount => 500;
     public override float AttackSpeed => 0.8f;
     public override int AttackRange => 800;
-    public override float CritChance => 0.6f;
+    public override float CritChance => 0.2f;
     public override float CritBonus => 1.5f;
+    public override float bloom => 0f;
     public override WeaponTypes weaponTypes => WeaponTypes.RocketLauncher;
 }

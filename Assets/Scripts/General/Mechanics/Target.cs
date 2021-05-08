@@ -10,7 +10,7 @@ public class Target : MonoBehaviour
     public ResourceManagement Resource = new ResourceManagement();
     private bool Dodging;
     public bool Blocking { get; set; }
- 
+    
 
     //~~~~~~~~~~~~~~~~~~~~~~~~ Initialization ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -40,12 +40,7 @@ public class Target : MonoBehaviour
             Enemy enemy = GetEBFromTarget().GetThisEnemy();
             MaxHP = enemy.MaxHP;
         }
-        //if(GetPBFromTarget() != null)
-        //{
-        //    Player player = GetPBFromTarget().GetThisPlayer();
-        //    MaxHP = player.MaxHP;
-        //}
-        //Resource.SetHealth(MaxHP); // Setting Max Health by calling method from HealthSystem
+        Resource.SetHealth(MaxHP); // Setting Max Health by calling method from HealthSystem
     }
 
     public EnemyBrain GetEBFromTarget()

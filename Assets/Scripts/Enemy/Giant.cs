@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class Giant : Enemy
 {
     public override EnemyTypes enemyTypes => EnemyTypes.Giant;
-    public override int MaxHP => 500;
+    public override int MaxHP => 5000;
     public override int DamageAmount => 50;
     public override float AttackSpeed { get => throw new NotImplementedException(); }
     public override int AttackRange => throw new NotImplementedException();

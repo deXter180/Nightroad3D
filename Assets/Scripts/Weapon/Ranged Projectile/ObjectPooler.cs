@@ -10,12 +10,17 @@ using UnityEngine;
     public int PoolSize;
     //public bool Expandable;
 }
+[Serializable] public struct ProjectileImpact
+{
+    public ProjectileTypes ProjectileType;
+    public GameObject ImpactSprite;
+}
 
 public class ObjectPooler : MonoBehaviour
 {
     public List<ObjectPoolItems> itemsToPool = new List<ObjectPoolItems>();
     private List<Projectile> projectiles;
-    
+    public List<ProjectileImpact> ProjectileImpacts = new List<ProjectileImpact>();
 
     #region Singleton
     public static ObjectPooler Instance { get; private set; }
@@ -66,28 +71,6 @@ public class ObjectPooler : MonoBehaviour
             }
         }
         return null;
-        //foreach (ObjectPoolItems item in itemsToPool)
-        //{
-        //    if (item.ProjectilePrefab.projectile == projectileType)
-        //    {
-        //        return projectiles.Dequeue();
-        //    }
-        //}
-
-
-        //foreach (ObjectPoolItems item in itemsToPool)
-        //{
-        //    if (item.ProjectilePrefab.projectile == projectileType)
-        //    {
-        //        if (item.Expandable)
-        //        {
-        //            Projectile _projectile = Instantiate(item.ProjectilePrefab);
-        //            _projectile.gameObject.SetActive(false);
-        //            projectiles.Add(_projectile);
-        //            return _projectile;
-        //        }
-        //    }
-        //}
     }
 
     public void InitializePool(ProjectileTypes projectile)

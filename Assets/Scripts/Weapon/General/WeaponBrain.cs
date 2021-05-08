@@ -9,6 +9,8 @@ public class WeaponBrain : MonoBehaviour
     [SerializeField] private WeaponCategories weaponCategories;
     private Animator animator;
     private Weapons weapon;
+    private MeleeWeapns meleeWeapn;
+    private RangedWeapons rangedWeapon;
 
     //~~~~~~~~~~~~~~ Animation State ~~~~~~~~~~~~~~
 
@@ -32,12 +34,36 @@ public class WeaponBrain : MonoBehaviour
     }
     private Weapons SetWeapon()
     {
-        weapon = WeaponFactory.GetWeapon(weaponTypes);
+        weapon = WeaponFactory.GetWeapon(weaponTypes, out MeleeWeapns melee, out RangedWeapons ranged);
+        if (melee != null)
+        {
+            meleeWeapn = melee;
+        }
+        else if (ranged != null)
+        {
+            rangedWeapon = ranged;
+        }
         return weapon;
     }
     public Weapons GetThisWeapon()
     {
         return weapon;
+    }
+    public MeleeWeapns GetIfMelee()
+    {
+        if (meleeWeapn != null)
+        {
+            return meleeWeapn;
+        }
+        else return default;
+    }
+    public RangedWeapons GetIfRanged()
+    {
+        if (rangedWeapon != null)
+        {
+            return rangedWeapon;
+        }
+        else return default;
     }
     public WeaponTypes GetWeaponTypes()
     {
@@ -53,20 +79,5 @@ public class WeaponBrain : MonoBehaviour
     private void Weapons_OnAttack(object sender, OnAttackEventArg e)
     {
         animator.PlayInFixedTime(AttackHash, 0, Time.deltaTime);
-        //switch (e.weaponCategory)
-        //{
-        //    case (WeaponCategories.ProjectileShoot):
-        //        {
-        //            break;
-        //        }
-        //    case (WeaponCategories.RaycastShoot):
-        //        {
-        //            break;
-        //        }
-        //    case (WeaponCategories.Melee):
-        //        {
-        //            break;
-        //        }
-        //}
     }
 }

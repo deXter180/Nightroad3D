@@ -424,6 +424,13 @@ MonoBehaviour:
     PoolSize: 20
   - ProjectilePrefab: {fileID: 0}
     PoolSize: 0
+  ProjectileImpacts:
+  - ProjectileType: 0
+    ImpactSprite: {fileID: 8090606994814532889, guid: 53d9a25a590e8304c83e148029c5428d,
+      type: 3}
+  - ProjectileType: 1
+    ImpactSprite: {fileID: 6842028999787782942, guid: ee24e0616eec6b743822a70b962c21d1,
+      type: 3}
 --- !u!4 &57625298
 Transform:
   m_ObjectHideFlags: 0
