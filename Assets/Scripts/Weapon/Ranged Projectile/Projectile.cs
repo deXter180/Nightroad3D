@@ -54,21 +54,31 @@ public class Projectile :  MonoBehaviour
                         if (target.IsDead == false)
                         {
                             ContactPoint contactPoint = collision.GetContact(0);
-                            GameObject bHoleOnEnemy = Instantiate(ObjectPooler.Instance.ProjectileImpacts[1].ImpactSprite, contactPoint.point + contactPoint.normal * 0.0001f, Quaternion.identity) as GameObject;
+                            if (ObjectPooler.Instance.GetImpactObject(ProjectileTypes.FireBall) != null)
+                            {
+                            GameObject bHoleOnEnemy = Instantiate(ObjectPooler.Instance.GetImpactObject(ProjectileTypes.FireBall), contactPoint.point + contactPoint.normal * 0.001f, Quaternion.identity) as GameObject;
                             bHoleOnEnemy.transform.LookAt(contactPoint.point + contactPoint.normal);
                             Destroy(bHoleOnEnemy, 2f);
+                            }
+                            
                         }
                     }
                 }
                 else
                 {
                     ContactPoint contactPoint = collision.GetContact(0);
-                    GameObject bHole = Instantiate(ObjectPooler.Instance.ProjectileImpacts[1].ImpactSprite, contactPoint.point + contactPoint.normal * 0.01f, Quaternion.identity) as GameObject;
-                    bHole.transform.LookAt(contactPoint.point + contactPoint.normal);
-                    Destroy(bHole, 2f);
+                    if (ObjectPooler.Instance.GetImpactObject(ProjectileTypes.FireBall) != null)
+                    {
+                        GameObject bHole = Instantiate(ObjectPooler.Instance.GetImpactObject(ProjectileTypes.FireBall), contactPoint.point + contactPoint.normal * 0.001f, Quaternion.identity) as GameObject;
+                        bHole.transform.LookAt(contactPoint.point + contactPoint.normal);
+                        Destroy(bHole, 2f);
+                    }
                 }
            }
     }
+
+    //~~~~~~~~~~~~~~~~~~~ Event Callback ~~~~~~~~~~~~~~~~~~~
+
     private void Weapons_OnAttack(object sender, OnAttackEventArg e)
     {
         if (e != null && e.weaponCategory == WeaponCategories.ProjectileShoot)

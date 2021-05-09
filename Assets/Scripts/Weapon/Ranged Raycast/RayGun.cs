@@ -58,17 +58,23 @@ public class RayGun : MonoBehaviour
                         weaponBrain.GetThisWeapon().DoAttack(target, target.GetEBFromTarget().GetThisEnemy().DodgeChance);
                         if (target.IsDead == false)
                         {
-                            GameObject bHoleOnEnemy = Instantiate(ObjectPooler.Instance.ProjectileImpacts[0].ImpactSprite, hit.point + hit.normal * 0.001f, Quaternion.identity) as GameObject;
-                            bHoleOnEnemy.transform.LookAt(hit.point + hit.normal);
-                            Destroy(bHoleOnEnemy, 2f);
+                            if (ObjectPooler.Instance.GetImpactObject(ProjectileTypes.Bullet) != null)
+                            {
+                                GameObject bHoleOnEnemy = Instantiate(ObjectPooler.Instance.GetImpactObject(ProjectileTypes.Bullet), hit.point + hit.normal * 0.001f, Quaternion.identity) as GameObject;
+                                bHoleOnEnemy.transform.LookAt(hit.point + hit.normal);
+                                Destroy(bHoleOnEnemy, 2f);
+                            }
                         }
                     }
                 }
                 else
                 {
-                    GameObject bHole = Instantiate(ObjectPooler.Instance.ProjectileImpacts[0].ImpactSprite, hit.point + hit.normal * 0.001f, Quaternion.identity) as GameObject;
-                    bHole.transform.LookAt(hit.point + hit.normal);
-                    Destroy(bHole, 2f);
+                    if (ObjectPooler.Instance.GetImpactObject(ProjectileTypes.Bullet) != null)
+                    {
+                        GameObject bHole = Instantiate(ObjectPooler.Instance.GetImpactObject(ProjectileTypes.Bullet), hit.point + hit.normal * 0.001f, Quaternion.identity) as GameObject;
+                        bHole.transform.LookAt(hit.point + hit.normal);
+                        Destroy(bHole, 2f);
+                    }  
                 }
                 
             }

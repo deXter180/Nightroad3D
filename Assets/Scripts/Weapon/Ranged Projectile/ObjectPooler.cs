@@ -18,9 +18,9 @@ using UnityEngine;
 
 public class ObjectPooler : MonoBehaviour
 {
-    public List<ObjectPoolItems> itemsToPool = new List<ObjectPoolItems>();
+    [SerializeField] private List<ObjectPoolItems> itemsToPool = new List<ObjectPoolItems>();
     private List<Projectile> projectiles;
-    public List<ProjectileImpact> ProjectileImpacts = new List<ProjectileImpact>();
+    [SerializeField] private List<ProjectileImpact> ProjectileImpacts = new List<ProjectileImpact>();
 
     #region Singleton
     public static ObjectPooler Instance { get; private set; }
@@ -39,7 +39,6 @@ public class ObjectPooler : MonoBehaviour
 
     #endregion
 
-
     private void Start()
     {
         projectiles = new List<Projectile>();
@@ -52,25 +51,6 @@ public class ObjectPooler : MonoBehaviour
                 projectiles.Add(obj);
             }
         }
-    }
-    public void GetObjectCount()
-    {
-        Debug.Log(projectiles.Count);
-    }
-    public Projectile GetPooledObject(ProjectileTypes projectileType)
-    {
-        if (projectiles.Count == 0)
-        {
-            InitializePool(projectileType);
-        }
-        for (int i = 0; i < projectiles.Count; i++)
-        {
-            if (!projectiles[i].gameObject.activeInHierarchy && projectiles[i].GetProjectileType() == projectileType)
-            {
-                return projectiles[i];
-            }
-        }
-        return null;
     }
 
     public void InitializePool(ProjectileTypes projectile)
@@ -96,5 +76,38 @@ public class ObjectPooler : MonoBehaviour
         projectiles.Add(_projectile);
     }
 
-   
+    public void GetObjectCount()
+    {
+        Debug.Log(projectiles.Count);
+    }
+
+    public Projectile GetPooledObject(ProjectileTypes projectileType)
+    {
+        if (projectiles.Count == 0)
+        {
+            InitializePool(projectileType);
+        }
+        for (int i = 0; i < projectiles.Count; i++)
+        {
+            if (!projectiles[i].gameObject.activeInHierarchy && projectiles[i].GetProjectileType() == projectileType)
+            {
+                return projectiles[i];
+            }
+        }
+        return null;
+    }
+
+    public GameObject GetImpactObject(ProjectileTypes projectileType)
+    {
+        GameObject temp;
+        for (int i = 0; i < ProjectileImpacts.Count; i++)
+        {
+            if (ProjectileImpacts[i].ProjectileType == projectileType)
+            {
+                temp = ProjectileImpacts[i].ImpactSprite;
+                return temp;
+            }
+        }
+        return null;
+    }
 }
