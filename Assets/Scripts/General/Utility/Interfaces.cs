@@ -16,11 +16,6 @@ public interface IAttack
     float CritBonus { get; }
 }
 
-public interface IMove
-{
-    int MoveSpeed { get; }
-}
-
 public interface Input
 {
     float GetAttack();

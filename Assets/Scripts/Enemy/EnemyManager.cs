@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public abstract class Enemy : IEnemyHP, IAttack, IMove
+public abstract class Enemy : IEnemyHP, IAttack
 {
     protected Transform transform;
     protected Animator animator;
