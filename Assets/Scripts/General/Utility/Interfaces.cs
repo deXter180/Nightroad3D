@@ -1,11 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
-public interface IEnemyHP
-{
-    int MaxHP { get; }
-}
 
 public interface IAttack
 {
@@ -25,4 +22,8 @@ public interface Input
     float GetWeapon1();
     float GetWeapon2();
     float GetWeapon3();
+}
+public interface IHeapItem<HeapObject> : IComparable<HeapObject>
+{
+    int HeapIndex { get; set; }
 }

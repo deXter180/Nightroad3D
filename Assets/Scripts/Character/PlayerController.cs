@@ -6,6 +6,7 @@ public class PlayerController : MonoBehaviour
 {
     //~~~~~~~~~~~~~~~~ Variables ~~~~~~~~~~~~~~~~~
 
+    public static PlayerController Instance { get; private set; }
     [SerializeField] private int MaxHP;
     [SerializeField] private float MoveSpeed;
     [SerializeField] private float MouseSensitivity;
@@ -25,6 +26,11 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
+        if (Instance != null)
+        {
+            Destroy(Instance);
+        }
+        else Instance = this;
         RB = GetComponent<Rigidbody>();
         col = GetComponent<Collider>();
         input = GetComponent<InputControl>();

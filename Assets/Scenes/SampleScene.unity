@@ -9733,6 +9733,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4804197595825920223, guid: 03527d8ecd40bb147bdb8fa03e28f1e6,
+        type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6512917274919765744, guid: 03527d8ecd40bb147bdb8fa03e28f1e6,
         type: 3}
       propertyPath: m_Name
@@ -9757,6 +9762,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Constraints
       value: 116
+      objectReference: {fileID: 0}
+    - target: {fileID: 6512917274919765746, guid: 03527d8ecd40bb147bdb8fa03e28f1e6,
+        type: 3}
+      propertyPath: m_IsKinematic
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6512917274919765746, guid: 03527d8ecd40bb147bdb8fa03e28f1e6,
         type: 3}
