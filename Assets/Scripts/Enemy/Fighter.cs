@@ -17,22 +17,10 @@ public class Fighter : Enemy
 
     public override float DodgeChance => 0.3f;
 
+    public override bool IsGroundUnit => true;
+
     public Fighter(EnemyBrain enemyBrain) : base(enemyBrain)
     {
 
-    }
-
-    public override void Attack(Target enemyTarget, float enemyDodgeChance)
-    {
-        if (UnityEngine.Random.value <= CritChance) //&& CurrentEnergy >= EnergyCosts[0])
-        {
-            enemyTarget.DoCritDamage(CritBonus, DamageAmount, enemyDodgeChance);
-            //target.Resource.EnergyExpense(EnergyCosts[0]);
-        }
-        else
-        {
-            enemyTarget.DoDamage(DamageAmount, enemyDodgeChance);
-            //target.Resource.EnergyExpense(EnergyCosts[1]);
-        }
     }
 }
