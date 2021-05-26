@@ -30,7 +30,6 @@ public class Roam : State
     public override void OnEnter()
     {
         rigidbody.isKinematic = true;
-        roamingPos = GetRandomPosition();
         currentPathIndex = 0;
         roamingPos = GetRandomPosition();
         PathManager.RequestPath(enemyTransform.position, roamingPos, OnPathFound);
