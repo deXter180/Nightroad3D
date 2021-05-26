@@ -52,11 +52,11 @@ public class MeleeAttacker : MonoBehaviour
             {
                 if (collision != null)
                 {
-                    if (collision.gameObject.CompareTag("Enemy") && collision.gameObject.activeInHierarchy)
+                    if (collision.gameObject.CompareTag("Enemy") && collision.gameObject.GetComponentInParent<Target>())
                     {
-                        collision.gameObject.TryGetComponent<Target>(out Target target);
+                        Target target = collision.gameObject.GetComponentInParent<Target>();
                         if (target != null && target.IsDead == false && target.GetEnemy() == true)
-                        Inventory.Instance.IsAttacking = true;
+                            Inventory.Instance.IsAttacking = true;
                         weaponBrain.GetThisWeapon().DoAttack(target, target.GetEBFromTarget().GetThisEnemy().DodgeChance);
                         StartCoroutine(Attacking(() => { Inventory.Instance.IsAttacking = false; }));
                     }

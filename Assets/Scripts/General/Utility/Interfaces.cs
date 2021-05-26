@@ -23,7 +23,15 @@ public interface Input
     float GetWeapon2();
     float GetWeapon3();
 }
+
 public interface IHeapItem<HeapObject> : IComparable<HeapObject>
 {
     int HeapIndex { get; set; }
+}
+
+public interface IState
+{
+    void Tick();
+    void OnEnter();
+    void OnExit();
 }

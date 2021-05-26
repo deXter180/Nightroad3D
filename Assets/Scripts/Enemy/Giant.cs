@@ -10,7 +10,7 @@ public class Giant : Enemy
     public override int DamageAmount => 50;
     public override float AttackSpeed { get => throw new NotImplementedException(); }
     public override int AttackRange => throw new NotImplementedException();
-    public override int MoveSpeed { get => throw new NotImplementedException(); }
+    public override float MoveSpeed => 1.7f; 
 
     public override float CritChance => throw new NotImplementedException();
 

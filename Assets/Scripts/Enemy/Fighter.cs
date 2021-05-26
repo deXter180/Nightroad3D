@@ -9,7 +9,7 @@ public class Fighter : Enemy
     public override int DamageAmount { get => throw new System.NotImplementedException(); }
     public override float AttackSpeed { get => throw new System.NotImplementedException(); }
     public override int AttackRange => throw new System.NotImplementedException();
-    public override int MoveSpeed { get => throw new System.NotImplementedException(); }
+    public override float MoveSpeed { get => throw new System.NotImplementedException(); }
 
     public override float CritChance => throw new System.NotImplementedException();
 

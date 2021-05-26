@@ -46,13 +46,13 @@ public class RayGun : MonoBehaviour
         //Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
         Inventory.Instance.IsAttacking = true;
         weaponBrain.GetThisWeapon().RaiseOnAttack(weaponBrain.GetThisWeapon(), weaponBrain.GetWeaponCategories(), weaponBrain.GetWeaponTypes());
-        if (Physics.Raycast(cam.transform.position, t_bloom , out RaycastHit hit, weaponBrain.GetThisWeapon().AttackRange, bitmask))
+        if (Physics.Raycast(cam.transform.position, t_bloom , out RaycastHit hit, weaponBrain.GetThisWeapon().AttackRange, bitmask, QueryTriggerInteraction.Ignore))
         {
             if (hit.collider != null)
             {
-                if (hit.collider.GetComponent<Target>() != null)
+                if (hit.collider.GetComponentInParent<Target>() && hit.collider.CompareTag("Enemy"))
                 {
-                    Target target = hit.collider.GetComponent<Target>();
+                    Target target = hit.collider.GetComponentInParent<Target>();
                     if (target.IsDead == false)
                     {
                         weaponBrain.GetThisWeapon().DoAttack(target, target.GetEBFromTarget().GetThisEnemy().DodgeChance);

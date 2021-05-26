@@ -4,126 +4,117 @@ using UnityEngine;
 
 public class PathFinding
 {
-    private const int MOVE_STRAIGHT_COST = 10;
-    private const int MOVE_DIAGONAL_COST = 14;
-    private const float CELL_SIZE = 10f;
+    private const int MOVE_STRAIGHT_COST = 150;
+    private const int MOVE_DIAGONAL_COST = 212;
+    private const float CELL_SIZE = 150f;
+    private float cellRadius = CELL_SIZE / 2;
     private LayerMask layerMask;
     private Grid<PathNode> grid;
     private Heap<PathNode> OpenList;
     private List<PathNode> ClosedList;
-    private SortedDictionary<PathNode, List<PathNode>> NeighbourDict;
     //public static PathFinding Instance { get; private set; }
 
     public PathFinding(int width, int height, Vector3 originPos, LayerMask layerMask)
     {
         this.layerMask = layerMask;
         //Instance = (Instance == null) ? this : null;
-        grid = new Grid<PathNode>(width, height, CELL_SIZE, originPos, (Grid<PathNode> g, int x, int z) => 
-        {   
-            PathNode path = new PathNode(g, x, z);
-            AddObstacles(path);
-            return path;
-        });
-        NeighbourDict = new SortedDictionary<PathNode, List<PathNode>>();
-        SetNeighbourList();
+        grid = new Grid<PathNode>(width, height, CELL_SIZE, originPos, (Grid<PathNode> g, int x, int z) => new PathNode(g, x, z));
+        AddObstacles();
     }
 
-    private void AddObstacles(PathNode pathNode)
+    public void StartFindPath(Vector3 startPos, Vector3 endPos, MonoBehaviour mono)
     {
-        if (Physics.Raycast(pathNode.GetThisNodePos(), Vector3.up, 0.01f, layerMask))
+        mono.StartCoroutine(FindPath(startPos, endPos));
+    }
+
+    private IEnumerator FindPath(Vector3 startWorldPos, Vector3 endWorldPos)//int startX, int startZ, int endX, int endZ)
+    {
+        List<Vector3> pathPoints = new List<Vector3>();
+        bool isPathfound = false;
+        PathNode startNode = grid.GetGridObject(startWorldPos);
+        PathNode endNode = grid.GetGridObject(endWorldPos);
+        if (startNode != null && endNode != null)
         {
-            pathNode.SetIsWalkable(false);
-        }
-        else pathNode.SetIsWalkable(true);
-    }
-
-    public List<PathNode> FindNodes(Vector3 startWorldPos, Vector3 endWorldPos)
-    {
-        grid.GetCellXZpos(startWorldPos, out int startX, out int startZ);
-        grid.GetCellXZpos(endWorldPos, out int endX, out int endZ);
-        List<PathNode> path = FindPath(startX, startZ, endX, endZ);
-        if (path != null) return path;
-        else return null;
-    }
-
-    public List<Vector3> FindPath(Vector3 startWorldPos, Vector3 endWorldPos)
-    {
-        grid.GetCellXZpos(startWorldPos, out int startX, out int startZ);
-        grid.GetCellXZpos(endWorldPos, out int endX, out int endZ);
-        List<PathNode> path = FindPath(startX, startZ, endX, endZ);
-        if (path == null) return null;
-        else
-        {
-            List<Vector3> vectorPath = new List<Vector3>();
-            foreach (PathNode node in path)
+            if (startNode.IsWalkable && endNode.IsWalkable && startNode != null && endNode != null)
             {
-                vectorPath.Add(grid.GetWorldPosition(node.x, node.z));
-            }
-            return vectorPath;
-        }
-    }
-
-    public List<PathNode> FindPath(int startX, int startZ, int endX, int endZ)
-    {
-        PathNode startNode = grid.GetGridObject(startX, startZ);
-        PathNode endNode = grid.GetGridObject(endX, endZ);
-        if (startNode.IsWalkable && endNode.IsWalkable)
-        {
-            OpenList = new Heap<PathNode>(grid.GetTotalCells());
-            OpenList.Add(startNode);
-            ClosedList = new List<PathNode>();
-            for (int x = 0; x < grid.GetWidth(); x++)
-            {
-                for (int z = 0; z < grid.GetHeight(); z++)
+                OpenList = new Heap<PathNode>(grid.GetTotalCells());
+                OpenList.Add(startNode);
+                ClosedList = new List<PathNode>();
+                for (int x = 0; x < grid.GetWidth(); x++)
                 {
-                    PathNode pathNode = grid.GetGridObject(x, z);
-                    pathNode.gCost = int.MaxValue;
-                    pathNode.calculateFCost();
-                    pathNode.PreviousNode = null;
-                }
-            }
-            startNode.gCost = 0;
-            startNode.hCost = GetDistanceCost(startNode, endNode);
-            startNode.calculateFCost();
-            while (OpenList.Count() > 0)
-            {
-                PathNode currentNode = OpenList.RemoveFirstItem();
-                if (currentNode == endNode)
-                {
-                    //Reached final node
-                    return CalculatePath(endNode);
-                }
-                ClosedList.Add(currentNode);
-                foreach (PathNode neighbourNode in NeighbourDict[currentNode])
-                {
-                    if (!neighbourNode.IsWalkable || ClosedList.Contains(neighbourNode)) continue;
-                    int possibleFCost = currentNode.gCost + GetDistanceCost(currentNode, neighbourNode);
-                    if (possibleFCost < neighbourNode.gCost)
+                    for (int z = 0; z < grid.GetHeight(); z++)
                     {
-                        neighbourNode.PreviousNode = currentNode;
-                        neighbourNode.gCost = possibleFCost;
-                        neighbourNode.hCost = GetDistanceCost(neighbourNode, endNode);
-                        neighbourNode.calculateFCost();
-                        if (!OpenList.ContainItem(neighbourNode))
+                        PathNode pathNode = grid.GetGridObject(x, z);
+                        pathNode.gCost = int.MaxValue;
+                        pathNode.calculateFCost();
+                        pathNode.PreviousNode = null;
+                    }
+                }
+                startNode.gCost = 0;
+                startNode.hCost = GetDistanceCost(startNode, endNode);
+                startNode.calculateFCost();
+                while (OpenList.Count() > 0)
+                {
+                    PathNode currentNode = OpenList.RemoveFirstItem();
+                    if (currentNode == endNode)
+                    {
+                        //Reached final node
+                        isPathfound = true;
+                        break;
+                    }
+                    ClosedList.Add(currentNode);
+                    foreach (PathNode neighbourNode in GetNeighbourList(currentNode))
+                    {
+                        if (!neighbourNode.IsWalkable || ClosedList.Contains(neighbourNode)) continue;
+                        int possibleFCost = currentNode.gCost + GetDistanceCost(currentNode, neighbourNode);
+                        if (possibleFCost < neighbourNode.gCost)
                         {
-                            OpenList.Add(neighbourNode);
+                            neighbourNode.PreviousNode = currentNode;
+                            neighbourNode.gCost = possibleFCost;
+                            neighbourNode.hCost = GetDistanceCost(neighbourNode, endNode);
+                            neighbourNode.calculateFCost();
+                            if (!OpenList.ContainItem(neighbourNode))
+                            {
+                                OpenList.Add(neighbourNode);
+                            }
+                            else OpenList.UpdateItem(neighbourNode);
                         }
                     }
                 }
             }
+            yield return new WaitForEndOfFrame();
+            if (isPathfound)
+            {
+                pathPoints = CalculatePath(endNode, startWorldPos);
+                PathManager.Instance.FinishedProcessingPath(pathPoints, isPathfound);
+            }
         }
-        
-        // Out of nodes on OpenList
-        return null;
+        else Debug.Log("Out of Grid!"); 
     }
 
-    public PathNode GetNode (int x, int z)
+    private PathNode GetNode (int x, int z)
     {
         return grid.GetGridObject(x, z);
     }
-    public PathNode GetNode(Vector3 worldPos)
+
+    private PathNode GetNode(Vector3 worldPos)
     {
         return grid.GetGridObject(worldPos);
+    }
+
+    private void AddObstacles()
+    {
+        for (int x = 0; x < grid.GetWidth(); x++)
+        {
+            for (int z = 0; z < grid.GetHeight(); z++)
+            {
+                if (Physics.CheckSphere(grid.GetWorldPosition(x, z), cellRadius, layerMask))
+                {
+                    grid.GetGridObject(x, z).SetIsWalkable(false);
+                }
+                else grid.GetGridObject(x, z).SetIsWalkable(true);
+            }
+        }
     }
 
     private int GetDistanceCost(PathNode a, PathNode b)
@@ -134,19 +125,84 @@ public class PathFinding
         return MOVE_DIAGONAL_COST * Mathf.Min(xDistance, zDistance) + MOVE_STRAIGHT_COST * remaining;
     }
 
-    private List<PathNode> CalculatePath(PathNode endNode)
+    private List<Vector3> CalculatePath(PathNode endNode, Vector3 StartPos)
     {
-        List<PathNode> path = new List<PathNode>();
-        path.Add(endNode);
+        List<Vector3> path = new List<Vector3>();
+        Vector3 endNodePos = grid.GetWorldPosition(endNode.x, StartPos.y, endNode.z);
+        path.Add(endNodePos);
         PathNode currentNode = endNode;
         while (currentNode.PreviousNode != null)
         {
-            path.Add(currentNode.PreviousNode);
+            path.Add(grid.GetWorldPosition(currentNode.PreviousNode.x, StartPos.y, currentNode.PreviousNode.z));
             currentNode = currentNode.PreviousNode;
         }
         path.Reverse();
         return path;
     }
+
+    private List<PathNode> GetNeighbourList(PathNode node)
+    {
+        List<PathNode> neighbours = new List<PathNode>();
+
+        for (int x = -1; x <= 1; x++)
+        {
+            for (int z = -1; z <= 1; z++)
+            {
+                if (x == 0 && z == 0)
+                    continue;
+                int checkX = node.x + x;
+                int checkZ = node.z + z;
+
+                if (checkX >= 0 && checkX < grid.GetWidth() && checkZ >= 0 && checkZ < grid.GetHeight())
+                {
+                    neighbours.Add(grid.GetGridObject(checkX, checkZ));
+                }
+            }
+        }
+        return neighbours;
+    }
+
+    //private List<PathNode> GetNeighbourList(int x, int z)
+    //{
+    //    PathNode node = grid.GetGridObject(x, z);
+    //    NeighbourDict.TryGetValue(node, out List<PathNode> pathNode);
+    //    return pathNode;
+    //}
+
+    //private void SetNeighbourList()
+    //{
+    //    for (int x = 0; x < grid.GetWidth(); x++)
+    //    {
+    //        for (int z = 0; z < grid.GetHeight(); z++)
+    //        {
+    //            List<PathNode> path = new List<PathNode>();
+    //            PathNode node = GetNode(x, z);
+    //            if (node.x - 1 >= 0)
+    //            {
+    //                //Left
+    //                path.Add(GetNode(node.x - 1, node.z));
+    //                //Left Down
+    //                if (node.z - 1 >= 0) path.Add(GetNode(node.x - 1, node.z - 1));
+    //                //Left Up
+    //                if (node.z + 1 < grid.GetHeight()) path.Add(GetNode(node.x - 1, node.z + 1));
+    //            }
+    //            if (node.x + 1 < grid.GetWidth())
+    //            {
+    //                //Right
+    //                path.Add(GetNode(node.x + 1, node.z));
+    //                //Right Down
+    //                if (node.z - 1 >= 0) path.Add(GetNode(node.x + 1, node.z - 1));
+    //                //Right Up
+    //                if (node.z + 1 < grid.GetHeight()) path.Add(GetNode(node.x + 1, node.z + 1));
+    //            }
+    //            //Down
+    //            if (node.z - 1 >= 0) path.Add(GetNode(node.x, node.z - 1));
+    //            //Up
+    //            if (node.z + 1 < grid.GetHeight()) path.Add(GetNode(node.x, node.z + 1));
+    //            NeighbourDict.Add(node, path);
+    //        }
+    //    }
+    //} //Calling in PathFinding ctor
 
     //private PathNode GetLowestFCostNode(List<PathNode> pathNodeList)
     //{
@@ -192,47 +248,12 @@ public class PathFinding
     //    return neighbourList;
     //} 
 
-    public List<PathNode> GetNeighbourList(int x, int z)
-    {
-        PathNode node = grid.GetGridObject(x, z);
-        NeighbourDict.TryGetValue(node, out List<PathNode> pathNode);
-        return pathNode;
-    }
+    //private IEnumerator FindPath(Vector3 startWorldPos, Vector3 endWorldPos)
+    //{
+    //    grid.GetCellXZpos(startWorldPos, out int startX, out int startZ);
+    //    grid.GetCellXZpos(endWorldPos, out int endX, out int endZ);
+    //    //FindPath(startX, startZ, endX, endZ);
+    //    yield return new WaitForEndOfFrame();
+    //}
 
-    private void SetNeighbourList()
-    {
-        for (int x = 0; x < grid.GetWidth(); x++)
-        {
-            for (int z = 0; z < grid.GetHeight(); z++)
-            {
-                List<PathNode> path = new List<PathNode>();
-                PathNode node = GetNode(x, z);
-                if (node.x - 1 >= 0)
-                {
-                    //Left
-                    path.Add(GetNode(node.x - 1, node.z));
-                    //Left Down
-                    if (node.z - 1 >= 0) path.Add(GetNode(node.x - 1, node.z - 1));
-                    //Left Up
-                    if (node.z + 1 < grid.GetHeight()) path.Add(GetNode(node.x - 1, node.z + 1));
-                }
-                if (node.x + 1 < grid.GetWidth())
-                {
-                    //Right
-                    path.Add(GetNode(node.x + 1, node.z));
-                    //Right Down
-                    if (node.z - 1 >= 0) path.Add(GetNode(node.x + 1, node.z - 1));
-                    //Right Up
-                    if (node.z + 1 < grid.GetHeight()) path.Add(GetNode(node.x + 1, node.z + 1));
-                }
-                //Down
-                if (node.z - 1 >= 0) path.Add(GetNode(node.x, node.z - 1));
-                //Up
-                if (node.z + 1 < grid.GetHeight()) path.Add(GetNode(node.x, node.z + 1));
-                NeighbourDict.Add(node, path);
-            }
-        }
-    } //Calling in PathFinding ctor
-
-    
 }

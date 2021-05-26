@@ -16,7 +16,7 @@ public abstract class Enemy : IAttack
     public abstract int MaxHP { get ; }
     public abstract int DamageAmount { get ; }
     public abstract float AttackSpeed { get ; }
-    public abstract int MoveSpeed { get ; }
+    public abstract float MoveSpeed { get ; }
     public abstract int AttackRange { get; }
     public abstract float CritChance { get; }
     public abstract float CritBonus { get; }

@@ -43,10 +43,10 @@ public class Projectile :  MonoBehaviour
         ObjectPooler.Instance.ReturnToPool(this);
            if (collision != null)
            {
-                if (collision.gameObject.GetComponent<Target>() != null)
+                if (collision.gameObject.GetComponentInParent<Target>() && collision.gameObject.CompareTag("Enemy"))
                 {
                     //ObjectPooler.Instance.ReturnToPool(this);
-                    collision.gameObject.TryGetComponent<Target>(out Target target);
+                    Target target = collision.gameObject.GetComponentInParent<Target>();
                     collision.gameObject.TryGetComponent<EnemyBrain>(out EnemyBrain enemyBrain);
                     if (enemyBrain != null && target.GetEnemy() == true && target.IsDead == false && AttackWeapon != null)
                     {

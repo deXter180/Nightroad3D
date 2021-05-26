@@ -98,7 +98,7 @@ public class PlayerController : MonoBehaviour
     private bool GroundCheck()
     {
         RaycastHit hit;
-        Physics.BoxCast(col.bounds.center, transform.localScale, Vector3.down, out hit, Quaternion.identity, col.bounds.extents.y + 0.01f, groundLayer);
+        Physics.BoxCast(col.bounds.center, transform.localScale, Vector3.down, out hit, Quaternion.identity, col.bounds.extents.y + 0.001f, groundLayer);
         if (hit.collider != null)
         {
             return true;

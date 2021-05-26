@@ -97,6 +97,13 @@ public class Grid<GridObject>
         Vector3 temp = new Vector3(PosX, 0, PosZ) + originPosition;
         return temp;
     }
+    public Vector3 GetWorldPosition(int x, float y, int z)
+    {
+        float PosX = x * cellSize;
+        float PosZ = z * cellSize;
+        Vector3 temp = new Vector3(PosX + originPosition.x, y, PosZ + originPosition.z);
+        return temp;
+    }
 
     public void GetCellXZpos(Vector3 worldPosition, out int x, out int z)
     {
