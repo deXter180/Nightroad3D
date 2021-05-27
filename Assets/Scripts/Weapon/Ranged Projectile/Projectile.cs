@@ -58,7 +58,7 @@ public class Projectile :  MonoBehaviour
                             {
                             GameObject bHoleOnEnemy = Instantiate(ObjectPooler.Instance.GetImpactObject(ProjectileTypes.FireBall), contactPoint.point + contactPoint.normal * 0.001f, Quaternion.identity) as GameObject;
                             bHoleOnEnemy.transform.LookAt(contactPoint.point + contactPoint.normal);
-                            Destroy(bHoleOnEnemy, 2f);
+                            Destroy(bHoleOnEnemy, 0.2f);
                             }
                             
                         }

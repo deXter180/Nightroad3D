@@ -9,6 +9,7 @@ public class Roam : State
     private Vector3 roamingPos;
     private bool IsPathStart;
     private int currentPathIndex;
+    private List<Vector3> path;
 
     public Roam(EnemyBrain EB, StateMachine SM) : base(EB.gameObject, SM)
     {
@@ -17,13 +18,21 @@ public class Roam : State
 
     public override void Tick()
     {
-        if (enemyBrain.TargetFleed)
+        if (enemyBrain.IsTargetFleed)
         {
             IsPathStart = true;
         }
         else
         {
             stateMachine.SetState(States.Approach);
+        }
+        if (enemyBrain.IsEnemyEntered)
+        {
+            //enemyBrain.EnemyCols.
+        }
+        else
+        {
+
         }
     }
 
@@ -37,7 +46,7 @@ public class Roam : State
 
     public override void OnExit()
     {
-        
+        IsPathStart = false;
     }
 
     private void OnPathFound(List<Vector3> newPath, bool successful)
@@ -45,26 +54,31 @@ public class Roam : State
         if (IsPathStart && successful && newPath != null)
         {
             Debug.Log("Roam Pos : " + roamingPos);
-            enemyBrain.StopCoroutine(FollowPath(newPath));
-            enemyBrain.StartCoroutine(FollowPath(newPath));
+            path = newPath;
+            enemyBrain.StopCoroutine(FollowPath(path));
+            enemyBrain.StartCoroutine(FollowPath(path));
         }
     }
 
-    private IEnumerator FollowPath(List<Vector3> newPath)
+    private IEnumerator FollowPath(List<Vector3> path)
     {
         while (true)
         {
-            if (enemyTransform.position == newPath[currentPathIndex])
+            if (enemyTransform.position == path[currentPathIndex])
             {
                 currentPathIndex++;
-                if (currentPathIndex >= newPath.Count)
+                if (currentPathIndex >= path.Count)
                 {
                     StopMovement();
                     continue;
                 }
+                else if(IsPathStart == false) 
+                {
+                    yield break;
+                }
             }
-            enemyTransform.position = Vector3.MoveTowards(enemyTransform.position, newPath[currentPathIndex], enemyBrain.GetThisEnemy().MoveSpeed);
-            Debug.Log(newPath[currentPathIndex]);
+            enemyTransform.position = Vector3.MoveTowards(enemyTransform.position, path[currentPathIndex], enemyBrain.GetThisEnemy().MoveSpeed);
+            Debug.Log(path[currentPathIndex]);
             yield return new WaitForEndOfFrame();
         }
     }

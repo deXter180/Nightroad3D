@@ -7,25 +7,26 @@ public class EnemyBrain : MonoBehaviour
 {
     [SerializeField] private EnemyTypes enemyType;
     [HideInInspector] public Vector3 StartPos;
+    [HideInInspector] public List<Collider> EnemyCols;
     private Enemy enemy;
     private StateMachine stateMachine;
     private Collider collider;
-    public bool TargetFleed { get; private set; }
-     
+    public bool IsTargetFleed { get; private set; }
+    public bool IsEnemyEntered { get; private set; }
+    
     private void Awake()
     {
         SetEnemy();
         stateMachine = new StateMachine(this);
-        collider = GetComponent<SphereCollider>();
-        collider.isTrigger = true;
-        
+        collider = GetComponent<SphereCollider>();  
     }
 
     private void OnEnable()
     {
         stateMachine.OnStateChange += StateMachine_OnStateChange;
+        collider.isTrigger = true;
         StartPos = transform.position;
-        TargetFleed = true;
+        IsTargetFleed = true;
     }
 
     private void OnDisable()
@@ -69,7 +70,12 @@ public class EnemyBrain : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            TargetFleed = false;
+            IsTargetFleed = false;
+        }
+        else if (other.gameObject.CompareTag("Enemy"))
+        {
+            IsEnemyEntered = true;
+            EnemyCols.Add(other);
         }
     }
     private IEnumerator OnTriggerExit(Collider other)
@@ -77,8 +83,17 @@ public class EnemyBrain : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             yield return new WaitForSeconds(3f);
-            TargetFleed = true;
-        } 
+            IsTargetFleed = true;
+        }
+        else if (other.gameObject.CompareTag("Enemy"))
+        {
+            yield return new WaitForSeconds(3f);
+            IsEnemyEntered = false;
+            if (EnemyCols.Contains(other))
+            {
+                EnemyCols.Remove(other);
+            }
+        }
     }
 
 }
