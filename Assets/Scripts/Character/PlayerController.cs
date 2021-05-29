@@ -14,13 +14,15 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float GravityScale;
     [SerializeField] private float AttackSpeed;
     [SerializeField] private float AttackForce;
-    [SerializeField] private LayerMask groundLayer;
     [SerializeField] private Transform cam;
     private static float globalGravity = -9.81f;
     private float camControl;
     private Rigidbody RB;
     private Collider col;
     private Input input;
+    private int ground = 1 << 8;
+    private int water = 1 << 4;
+    private int bitmask;
 
     //~~~~~~~~~~~~~~~~~ Initialization ~~~~~~~~~~~~~~~~~~~
 
@@ -34,6 +36,7 @@ public class PlayerController : MonoBehaviour
         RB = GetComponent<Rigidbody>();
         col = GetComponent<Collider>();
         input = GetComponent<InputControl>();
+        bitmask = ground | water;
     }
 
     private void OnEnable()
@@ -98,7 +101,7 @@ public class PlayerController : MonoBehaviour
     private bool GroundCheck()
     {
         RaycastHit hit;
-        Physics.BoxCast(col.bounds.center, transform.localScale, Vector3.down, out hit, Quaternion.identity, col.bounds.extents.y + 0.001f, groundLayer);
+        Physics.BoxCast(col.bounds.center, transform.localScale, Vector3.down, out hit, Quaternion.identity, col.bounds.extents.y + 0.001f, bitmask);
         if (hit.collider != null)
         {
             return true;

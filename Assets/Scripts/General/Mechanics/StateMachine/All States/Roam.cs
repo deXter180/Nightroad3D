@@ -10,6 +10,7 @@ public class Roam : State
     private bool IsPathStart;
     private int currentPathIndex;
     private List<Vector3> path;
+    private int enemyBitMask = 1 >> 12;
 
     public Roam(EnemyBrain EB, StateMachine SM) : base(EB.gameObject, SM)
     {
@@ -21,18 +22,11 @@ public class Roam : State
         if (enemyBrain.IsTargetFleed)
         {
             IsPathStart = true;
+            CheckForCol();
         }
         else
         {
             stateMachine.SetState(States.Approach);
-        }
-        if (enemyBrain.IsEnemyEntered)
-        {
-            //enemyBrain.EnemyCols.
-        }
-        else
-        {
-
         }
     }
 
@@ -53,7 +47,7 @@ public class Roam : State
     {
         if (IsPathStart && successful && newPath != null)
         {
-            Debug.Log("Roam Pos : " + roamingPos);
+            //Debug.Log("Roam Pos : " + roamingPos);
             path = newPath;
             enemyBrain.StopCoroutine(FollowPath(path));
             enemyBrain.StartCoroutine(FollowPath(path));
@@ -78,7 +72,7 @@ public class Roam : State
                 }
             }
             enemyTransform.position = Vector3.MoveTowards(enemyTransform.position, path[currentPathIndex], enemyBrain.GetThisEnemy().MoveSpeed);
-            Debug.Log(path[currentPathIndex]);
+            //Debug.Log(path[currentPathIndex]);
             yield return new WaitForEndOfFrame();
         }
     }
@@ -95,6 +89,40 @@ public class Roam : State
         //return enemyTransform.position + randomDir * UnityEngine.Random.Range(800f, 1000f);
         return enemyBrain.StartPos + randomDir * UnityEngine.Random.Range(1000f, 1500f);
     }
-    
-    
+
+    private void CheckForCol()
+    {
+        Debug.DrawRay(enemyTransform.position, enemyTransform.forward, Color.black);
+        if (Physics.Raycast(enemyTransform.position, enemyTransform.forward, out RaycastHit hit, enemyBitMask))
+        {
+            IsPathStart = false;
+            enemyBrain.IsEnemyEntered = true;
+            if (hit.collider != null)
+            {
+                Evade(enemyTransform, hit.collider.transform);
+            }
+        }
+    }
+
+    private void Evade(Transform obj1, Transform obj2)
+    {
+        if (enemyBrain.IsEnemyEntered)
+        {
+            Vector3 direction = obj1.position - obj2.position;
+            direction.y = 0f;
+            float distance = direction.magnitude;
+            if (distance < 3f) //Add distance constant for enemy
+            {
+                //Add roational constant for enemy
+                obj1.rotation = Quaternion.Slerp(obj1.rotation, Quaternion.LookRotation(direction), Time.deltaTime);
+                obj1.position += direction.normalized * enemyBrain.GetThisEnemy().MoveSpeed * Time.deltaTime;
+            }
+        }
+        else
+        {
+            StopMovement();
+            IsPathStart = true;
+        }
+    }
+
 }

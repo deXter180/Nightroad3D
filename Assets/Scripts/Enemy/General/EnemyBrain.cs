@@ -7,18 +7,18 @@ public class EnemyBrain : MonoBehaviour
 {
     [SerializeField] private EnemyTypes enemyType;
     [HideInInspector] public Vector3 StartPos;
-    [HideInInspector] public List<Collider> EnemyCols;
     private Enemy enemy;
     private StateMachine stateMachine;
-    private Collider collider;
+    private SphereCollider collider;
+
     public bool IsTargetFleed { get; private set; }
-    public bool IsEnemyEntered { get; private set; }
+    public bool IsEnemyEntered { get;  set; }
     
     private void Awake()
     {
         SetEnemy();
         stateMachine = new StateMachine(this);
-        collider = GetComponent<SphereCollider>();  
+        collider = GetComponent<SphereCollider>();
     }
 
     private void OnEnable()
@@ -72,11 +72,6 @@ public class EnemyBrain : MonoBehaviour
         {
             IsTargetFleed = false;
         }
-        else if (other.gameObject.CompareTag("Enemy"))
-        {
-            IsEnemyEntered = true;
-            EnemyCols.Add(other);
-        }
     }
     private IEnumerator OnTriggerExit(Collider other)
     {
@@ -89,11 +84,6 @@ public class EnemyBrain : MonoBehaviour
         {
             yield return new WaitForSeconds(3f);
             IsEnemyEntered = false;
-            if (EnemyCols.Contains(other))
-            {
-                EnemyCols.Remove(other);
-            }
         }
     }
-
 }

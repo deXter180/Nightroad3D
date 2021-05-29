@@ -16,7 +16,7 @@ public class PathManager : MonoBehaviour
     private void Awake()
     {
         Instance = Instance == null ? this : null;
-        pathfind = new PathFinding(50, 50, transform.position, layerMask);
+        pathfind = new PathFinding(60, 60, transform.position, layerMask);
     }
 
     public static void RequestPath(Vector3 pathStart, Vector3 pathEnd, Action<List<Vector3>, bool> callback)
