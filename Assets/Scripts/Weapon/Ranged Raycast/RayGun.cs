@@ -27,9 +27,9 @@ public class RayGun : MonoBehaviour
     {
         if (input.GetAttack() == 1 && gameObject.activeInHierarchy)
         {
-            if (Inventory.Instance.IsAttacking == false)
+            if (WeaponInventory.Instance.IsAttacking == false)
             {
-                StartCoroutine(Shoot(() => { Inventory.Instance.IsAttacking = false; }));
+                StartCoroutine(Shoot(() => { WeaponInventory.Instance.IsAttacking = false; }));
             }
         }
         //anim.SetTrigger(ShootHash);
@@ -44,8 +44,8 @@ public class RayGun : MonoBehaviour
         t_bloom -= cam.transform.position;
         t_bloom.Normalize();
         //Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-        Inventory.Instance.IsAttacking = true;
-        weaponBrain.GetThisWeapon().RaiseOnAttack(weaponBrain.GetThisWeapon(), weaponBrain.GetWeaponCategories(), weaponBrain.GetWeaponTypes());
+        WeaponInventory.Instance.IsAttacking = true;
+        weaponBrain.GetThisWeapon().RaiseOnPlayerAttack(weaponBrain.GetThisWeapon(), weaponBrain.GetWeaponCategories(), weaponBrain.GetWeaponTypes());
         if (Physics.Raycast(cam.transform.position, t_bloom , out RaycastHit hit, weaponBrain.GetThisWeapon().AttackRange, bitmask, QueryTriggerInteraction.Ignore))
         {
             if (hit.collider != null)

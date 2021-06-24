@@ -19,7 +19,7 @@ public class Axe : MeleeWeapns
 {
     public override int DamageAmount => 100;
     public override float AttackSpeed => 1.0f;
-    public override int AttackRange => 100;
+    public override float AttackRange => 100;
     public override float CritChance => 0.7f;
     public override float CritBonus => 2f;
     public override WeaponTypes weaponTypes => WeaponTypes.Axe;
@@ -28,7 +28,7 @@ public class Rifle : RangedWeapons
 {
     public override int DamageAmount => 150;
     public override float AttackSpeed => 0.2f;
-    public override int AttackRange => 1500;
+    public override float AttackRange => 1500;
     public override float CritChance => 0.1f;
     public override float CritBonus => 2f;
     public override float bloom => 0.5f;
@@ -38,7 +38,7 @@ public class RPG : RangedWeapons
 {
     public override int DamageAmount => 500;
     public override float AttackSpeed => 0.8f;
-    public override int AttackRange => 800;
+    public override float AttackRange => 800;
     public override float CritChance => 0.2f;
     public override float CritBonus => 1.5f;
     public override float bloom => 0f;

@@ -40,6 +40,10 @@ public class Target : MonoBehaviour
             Enemy enemy = GetEBFromTarget().GetThisEnemy();
             MaxHP = enemy.MaxHP;
         }
+        else if (GetPlayerFromTarget() != null)
+        {
+            MaxHP = GetPlayerFromTarget().MaxHP;
+        }
         Resource.SetHealth(MaxHP); // Setting Max Health by calling method from HealthSystem
     }
 
@@ -52,14 +56,14 @@ public class Target : MonoBehaviour
         else return null;
     }
 
-    //public PlayerBrain GetPBFromTarget()
-    //{
-    //    if (TryGetComponent(out PlayerBrain playerBrain))
-    //    {
-    //        return playerBrain;
-    //    }
-    //    else return null;
-    //}
+    public PlayerController GetPlayerFromTarget()
+    {
+        if (TryGetComponent(out PlayerController playerController))
+        {
+            return playerController;
+        }
+        else return null;
+    }
 
     //~~~~~~~~~~~~~~~~~~~~~~~~ Get Position & Verify for Enemy ~~~~~~~~~~~~~~~~~~~~~
 

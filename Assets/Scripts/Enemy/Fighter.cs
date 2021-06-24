@@ -8,7 +8,7 @@ public class Fighter : Enemy
     public override int MaxHP { get => throw new System.NotImplementedException(); }
     public override int DamageAmount { get => throw new System.NotImplementedException(); }
     public override float AttackSpeed { get => throw new System.NotImplementedException(); }
-    public override int AttackRange => throw new System.NotImplementedException();
+    public override float AttackRange => throw new System.NotImplementedException();
     public override float MoveSpeed { get => throw new System.NotImplementedException(); }
 
     public override float CritChance => throw new System.NotImplementedException();
@@ -18,6 +18,8 @@ public class Fighter : Enemy
     public override float DodgeChance => 0.3f;
 
     public override bool IsGroundUnit => true;
+
+    public override float AvoidanceRadius => 1f;
 
     public Fighter(EnemyBrain enemyBrain) : base(enemyBrain)
     {

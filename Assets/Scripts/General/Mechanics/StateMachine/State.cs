@@ -4,7 +4,6 @@ using UnityEngine;
 
 public abstract class State
 {
-    protected PathManager pathManager;
     protected GameObject gameObject;
     protected Transform enemyTransform;
     protected Animator animator;

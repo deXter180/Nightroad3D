@@ -13,12 +13,12 @@ public class Projectile :  MonoBehaviour
     private void OnEnable()
     {
         LifeTime = 0f;
-        Weapons.OnAttack += Weapons_OnAttack;
+        Weapons.OnPlayerAttack += Weapons_OnAttack;
     }
 
     private void OnDisable()
     {
-        Weapons.OnAttack -= Weapons_OnAttack;
+        Weapons.OnPlayerAttack -= Weapons_OnAttack;
     }
 
     private void Update()
@@ -79,7 +79,7 @@ public class Projectile :  MonoBehaviour
 
     //~~~~~~~~~~~~~~~~~~~ Event Callback ~~~~~~~~~~~~~~~~~~~
 
-    private void Weapons_OnAttack(object sender, OnAttackEventArg e)
+    private void Weapons_OnAttack(object sender, OnPlayerAttackEventArg e)
     {
         if (e != null && e.weaponCategory == WeaponCategories.ProjectileShoot)
         {

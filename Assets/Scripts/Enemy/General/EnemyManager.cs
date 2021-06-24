@@ -17,13 +17,29 @@ public abstract class Enemy : IAttack
     public abstract int DamageAmount { get ; }
     public abstract float AttackSpeed { get ; }
     public abstract float MoveSpeed { get ; }
-    public abstract int AttackRange { get; }
+    public abstract float AttackRange { get; }
     public abstract float CritChance { get; }
     public abstract float CritBonus { get; }
     public abstract float DodgeChance { get; }
     public abstract bool IsGroundUnit { get; }
+    public abstract float AvoidanceRadius { get; }
 
-    public static event EventHandler<OnEnemyAttackEventArg> OnEnemyDamage;
+    public event EventHandler<OnEnemyAttackEventArg> OnEnemyAttack;
+    public event EventHandler<OnEnemyDamageEventArg> OnEnemyDamage;
+
+    public void RaiseOnEnemyAttack(EnemyTypes enemyType)
+    {
+        InvokeOnAttack(new OnEnemyAttackEventArg(enemyType));
+    }
+    
+    private void InvokeOnAttack(OnEnemyAttackEventArg eventArgs)
+    {
+        var handler = OnEnemyAttack;
+        if (handler != null)
+        {
+            handler(this, eventArgs);
+        }
+    }
 
     public Enemy(EnemyBrain EB)
     {
@@ -39,24 +55,35 @@ public abstract class Enemy : IAttack
         if (UnityEngine.Random.value <= CritChance) //&& CurrentEnergy >= EnergyCosts[0])
         {
             enemyTarget.DoCritDamage(CritBonus, DamageAmount, enemyDodgeChance);
-            OnEnemyDamage?.Invoke(this, new OnEnemyAttackEventArg(true));
+            OnEnemyDamage?.Invoke(this, new OnEnemyDamageEventArg(true));
             //target.Resource.EnergyExpense(EnergyCosts[0]);
         }
         else
         {
             enemyTarget.DoDamage(DamageAmount, enemyDodgeChance);
-            OnEnemyDamage?.Invoke(this, new OnEnemyAttackEventArg(false));
+            OnEnemyDamage?.Invoke(this, new OnEnemyDamageEventArg(false));
             //target.Resource.EnergyExpense(EnergyCosts[1]);
         }
     }
 }
 
-public class OnEnemyAttackEventArg : EventArgs
+public class OnEnemyDamageEventArg : EventArgs
 {
     public bool IsCrit;
-    public OnEnemyAttackEventArg(bool crit)
+
+    public OnEnemyDamageEventArg(bool crit)
     {
         IsCrit = crit;
+    }
+}
+
+public class OnEnemyAttackEventArg : EventArgs
+{
+    public EnemyTypes enemyType;
+
+    public OnEnemyAttackEventArg(EnemyTypes ET)
+    {
+        enemyType = ET;
     }
 }
 

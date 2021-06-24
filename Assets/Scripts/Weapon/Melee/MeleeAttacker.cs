@@ -22,9 +22,9 @@ public class MeleeAttacker : MonoBehaviour
     {
         if (input.GetAttack() == 1 && gameObject.activeInHierarchy)
         {
-            if (Inventory.Instance.IsAttacking == false)
+            if (WeaponInventory.Instance.IsAttacking == false)
             {
-                weaponBrain.GetThisWeapon().RaiseOnAttack(weaponBrain.GetThisWeapon(), weaponBrain.GetWeaponCategories(), weaponBrain.GetWeaponTypes());
+                weaponBrain.GetThisWeapon().RaiseOnPlayerAttack(weaponBrain.GetThisWeapon(), weaponBrain.GetWeaponCategories(), weaponBrain.GetWeaponTypes());
             }
         }
     }
@@ -48,17 +48,16 @@ public class MeleeAttacker : MonoBehaviour
     {
         if (input.GetAttack() == 1 && gameObject.activeInHierarchy)
         {
-            if (Inventory.Instance.IsAttacking == false)
+            if (WeaponInventory.Instance.IsAttacking == false && collision != null)
             {
-                if (collision != null)
+                if (collision.gameObject.CompareTag("Enemy") && collision.gameObject.GetComponentInParent<Target>())
                 {
-                    if (collision.gameObject.CompareTag("Enemy") && collision.gameObject.GetComponentInParent<Target>())
+                    Target target = collision.gameObject.GetComponentInParent<Target>();
+                    if (target != null && target.IsDead == false && target.GetEnemy() == true)
                     {
-                        Target target = collision.gameObject.GetComponentInParent<Target>();
-                        if (target != null && target.IsDead == false && target.GetEnemy() == true)
-                            Inventory.Instance.IsAttacking = true;
+                        WeaponInventory.Instance.IsAttacking = true;
                         weaponBrain.GetThisWeapon().DoAttack(target, target.GetEBFromTarget().GetThisEnemy().DodgeChance);
-                        StartCoroutine(Attacking(() => { Inventory.Instance.IsAttacking = false; }));
+                        StartCoroutine(Attacking(() => { WeaponInventory.Instance.IsAttacking = false; }));
                     }
                 }
             }
@@ -69,17 +68,16 @@ public class MeleeAttacker : MonoBehaviour
     {
         if (input.GetAttack() == 1 && gameObject.activeInHierarchy)
         {
-            if (Inventory.Instance.IsAttacking == false)
+            if (WeaponInventory.Instance.IsAttacking == false && collision != null)
             {
-                if (collision != null)
+                if (collision.gameObject.CompareTag("Enemy") && collision.gameObject.activeInHierarchy)
                 {
-                    if (collision.gameObject.CompareTag("Enemy") && collision.gameObject.activeInHierarchy)
+                    collision.gameObject.TryGetComponent<Target>(out Target target);
+                    if (target != null && target.IsDead == false && target.GetEnemy() == true)
                     {
-                        collision.gameObject.TryGetComponent<Target>(out Target target);
-                        if (target != null && target.IsDead == false && target.GetEnemy() == true)
-                        Inventory.Instance.IsAttacking = true;
+                        WeaponInventory.Instance.IsAttacking = true;
                         weaponBrain.GetThisWeapon().DoAttack(target, target.GetEBFromTarget().GetThisEnemy().DodgeChance);
-                        StartCoroutine(Attacking(() => { Inventory.Instance.IsAttacking = false; }));
+                        StartCoroutine(Attacking(() => { WeaponInventory.Instance.IsAttacking = false; }));
                     }
                 }
             }
@@ -87,9 +85,9 @@ public class MeleeAttacker : MonoBehaviour
     }
 
 
-    IEnumerator Attacking(Action action)
+    private IEnumerator Attacking(Action action)
     {
-        if (Inventory.Instance.IsAttacking == true)
+        if (WeaponInventory.Instance.IsAttacking == true)
         {
             yield return new WaitForSeconds(weaponBrain.GetThisWeapon().AttackSpeed);
             action.Invoke();

@@ -7,18 +7,23 @@ public class PlayerController : MonoBehaviour
     //~~~~~~~~~~~~~~~~ Variables ~~~~~~~~~~~~~~~~~
 
     public static PlayerController Instance { get; private set; }
-    [SerializeField] private int MaxHP;
+    public Target PlayerTarget { get => target; }
+    public int MaxHP { get => HitPoints; }
+    public float DodgeChace { get => dodgeChance; }
+    [SerializeField] private int HitPoints;
     [SerializeField] private float MoveSpeed;
     [SerializeField] private float MouseSensitivity;
     [SerializeField] private float JumpForce;
     [SerializeField] private float GravityScale;
     [SerializeField] private float AttackSpeed;
     [SerializeField] private float AttackForce;
+    [SerializeField] private float dodgeChance;
     [SerializeField] private Transform cam;
     private static float globalGravity = -9.81f;
     private float camControl;
     private Rigidbody RB;
     private Collider col;
+    private Target target;
     private Input input;
     private int ground = 1 << 8;
     private int water = 1 << 4;
@@ -36,6 +41,7 @@ public class PlayerController : MonoBehaviour
         RB = GetComponent<Rigidbody>();
         col = GetComponent<Collider>();
         input = GetComponent<InputControl>();
+        target = GetComponent<Target>();
         bitmask = ground | water;
     }
 
@@ -101,7 +107,7 @@ public class PlayerController : MonoBehaviour
     private bool GroundCheck()
     {
         RaycastHit hit;
-        Physics.BoxCast(col.bounds.center, transform.localScale, Vector3.down, out hit, Quaternion.identity, col.bounds.extents.y + 0.001f, bitmask);
+        Physics.BoxCast(col.bounds.center, transform.localScale, Vector3.down, out hit, Quaternion.identity, col.bounds.extents.y + 15f, bitmask);
         if (hit.collider != null)
         {
             return true;

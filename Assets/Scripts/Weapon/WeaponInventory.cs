@@ -4,16 +4,16 @@ using UnityEngine;
 using System;
 using System.Linq;
 
-public class Inventory : MonoBehaviour
+public class WeaponInventory : MonoBehaviour
 {
-    public static Inventory Instance { get; private set; }
+    public static WeaponInventory Instance { get; private set; }
     [HideInInspector] public bool IsAttacking = false;
     private int WeaponCount => 3;
     private int SelectedWeapon = 0;
     private WeaponBrain[] weaponBrains;
-    private bool IsInitialized => WeaponInventory != null;
+    private bool IsInitialized => weaponInventory != null;
     private Input input;
-    private Dictionary<WeaponTypes, WeaponBrain> WeaponInventory;
+    private Dictionary<WeaponTypes, WeaponBrain> weaponInventory;
     
     private void Awake()
     {
@@ -45,7 +45,7 @@ public class Inventory : MonoBehaviour
         if (IsInitialized)
             return;
         else
-        WeaponInventory = new Dictionary<WeaponTypes, WeaponBrain>();
+        weaponInventory = new Dictionary<WeaponTypes, WeaponBrain>();
         
     }
 
@@ -53,7 +53,7 @@ public class Inventory : MonoBehaviour
     {
         if (IsInitialized)
         {
-            if (WeaponInventory.ContainsKey(weaponType))
+            if (weaponInventory.ContainsKey(weaponType))
             {
                 return true;
             }
@@ -66,9 +66,9 @@ public class Inventory : MonoBehaviour
     {
         if (IsInitialized)
         {
-            if (WeaponInventory.ContainsKey(weaponTypes))
+            if (weaponInventory.ContainsKey(weaponTypes))
             {
-                WeaponInventory.TryGetValue(weaponTypes, out WeaponBrain WB);
+                weaponInventory.TryGetValue(weaponTypes, out WeaponBrain WB);
                 return WB;
             }
             else return null;
@@ -79,15 +79,15 @@ public class Inventory : MonoBehaviour
     public void AddWeapon(WeaponTypes weaponType)
     {
         InitializeInventory();
-        if (WeaponInventory.Count < WeaponCount && !WeaponInventory.ContainsKey(weaponType))
+        if (weaponInventory.Count < WeaponCount && !weaponInventory.ContainsKey(weaponType))
         {
             
             for (int i = 0; i < weaponBrains.Length; i++)
             {
                 if (weaponBrains[i].GetWeaponTypes() == weaponType)
                 {
-                    WeaponInventory.Add(weaponType, weaponBrains[i]);
-                    if (WeaponInventory.Count == 1)
+                    weaponInventory.Add(weaponType, weaponBrains[i]);
+                    if (weaponInventory.Count == 1)
                     {
                         weaponBrains[i].gameObject.SetActive(true);
                         SelectedWeapon = 0;
@@ -108,9 +108,9 @@ public class Inventory : MonoBehaviour
     {
         if (IsInitialized)
         {
-            if (WeaponInventory.Count != 0 && WeaponInventory.ContainsKey(weaponType))
+            if (weaponInventory.Count != 0 && weaponInventory.ContainsKey(weaponType))
             {
-                WeaponInventory.Remove(weaponType);
+                weaponInventory.Remove(weaponType);
             }
         }
     }
@@ -118,7 +118,7 @@ public class Inventory : MonoBehaviour
     private void SelectWeapon()
     {
         int i = 0;
-        foreach(WeaponBrain weapon in WeaponInventory.Values)
+        foreach(WeaponBrain weapon in weaponInventory.Values)
         {
             if (i == SelectedWeapon)
             {
@@ -132,15 +132,15 @@ public class Inventory : MonoBehaviour
     private void WeaponSelect()
     {
         int previousWeapon = SelectedWeapon;
-        if (input.GetWeapon1() == 1 && WeaponInventory.Count >= 1)
+        if (input.GetWeapon1() == 1 && weaponInventory.Count >= 1)
         {
             SelectedWeapon = 0;
         }
-        else if (input.GetWeapon2() == 1 && WeaponInventory.Count >= 2)
+        else if (input.GetWeapon2() == 1 && weaponInventory.Count >= 2)
         {
             SelectedWeapon = 1;
         }
-        else if (input.GetWeapon3() == 1 && WeaponInventory.Count >= 3)
+        else if (input.GetWeapon3() == 1 && weaponInventory.Count >= 3)
         {
             SelectedWeapon = 2;
         }

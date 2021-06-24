@@ -21,9 +21,9 @@ public class ProjectileGun : MonoBehaviour
     {
         if (input.GetAttack() == 1 && gameObject.activeInHierarchy)
         {
-            if (Inventory.Instance.IsAttacking == false)
+            if (WeaponInventory.Instance.IsAttacking == false)
             {
-                StartCoroutine(Shoot(() => { Inventory.Instance.IsAttacking = false; }));
+                StartCoroutine(Shoot(() => { WeaponInventory.Instance.IsAttacking = false; }));
             }
         }
     }
@@ -42,12 +42,12 @@ public class ProjectileGun : MonoBehaviour
     {
         if (ObjectPooler.Instance.GetPooledObject(GetProjectile(weaponBrain.GetWeaponTypes())) != null)
         {
-            Inventory.Instance.IsAttacking = true;
+            WeaponInventory.Instance.IsAttacking = true;
             var shot = ObjectPooler.Instance.GetPooledObject(GetProjectile(weaponBrain.GetWeaponTypes()));
             shot.transform.rotation = FiringPoint.rotation;
             shot.transform.position = FiringPoint.position;
             shot.gameObject.SetActive(true);
-            weaponBrain.GetThisWeapon().RaiseOnAttack(weaponBrain.GetThisWeapon(), weaponBrain.GetWeaponCategories(), weaponBrain.GetWeaponTypes());
+            weaponBrain.GetThisWeapon().RaiseOnPlayerAttack(weaponBrain.GetThisWeapon(), weaponBrain.GetWeaponCategories(), weaponBrain.GetWeaponTypes());
             yield return new WaitForSeconds(weaponBrain.GetThisWeapon().AttackSpeed);
             action.Invoke();
         }

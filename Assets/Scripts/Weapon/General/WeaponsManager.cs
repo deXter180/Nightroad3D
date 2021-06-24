@@ -9,22 +9,22 @@ public abstract class Weapons : IAttack
     public abstract WeaponTypes weaponTypes { get; }
     public abstract int DamageAmount { get; }
     public abstract float AttackSpeed { get; }
-    public abstract int AttackRange { get; }
+    public abstract float AttackRange { get; }
 
     public abstract float CritChance { get; }
 
     public abstract float CritBonus { get; }
 
-    public static event EventHandler<OnAttackEventArg> OnAttack; //Indirectly Raising this event
-    public static event EventHandler<OnDamageEventArg> OnDamage;
-    public void RaiseOnAttack(Weapons weapon, WeaponCategories weaponCategory, WeaponTypes weaponType)
+    public static event EventHandler<OnPlayerAttackEventArg> OnPlayerAttack; //Indirectly Raising this event
+    public static event EventHandler<OnPlayerDamageEventArg> OnPlayerDamage;
+    public void RaiseOnPlayerAttack(Weapons weapon, WeaponCategories weaponCategory, WeaponTypes weaponType)
     {
-        InvokeOnAttack(new OnAttackEventArg(weapon, weaponCategory, weaponType));
+        InvokeOnAttack(new OnPlayerAttackEventArg(weapon, weaponCategory, weaponType));
     }
 
-    private void InvokeOnAttack(OnAttackEventArg eventArg)
+    private void InvokeOnAttack(OnPlayerAttackEventArg eventArg)
     {
-        var handler = OnAttack;
+        var handler = OnPlayerAttack;
         if (handler != null)
         {
             handler(this, eventArg);
@@ -36,34 +36,34 @@ public abstract class Weapons : IAttack
         if (UnityEngine.Random.value <= CritChance) //&& CurrentEnergy >= EnergyCosts[0])
         {
             enemyTarget.DoCritDamage(CritBonus, DamageAmount, enemyDodgeChance);
-            OnDamage?.Invoke(this, new OnDamageEventArg(true));
+            OnPlayerDamage?.Invoke(this, new OnPlayerDamageEventArg(true));
             //target.Resource.EnergyExpense(EnergyCosts[0]);
         }
         else
         {
             enemyTarget.DoDamage(DamageAmount, enemyDodgeChance);
-            OnDamage?.Invoke(this, new OnDamageEventArg(false));
+            OnPlayerDamage?.Invoke(this, new OnPlayerDamageEventArg(false));
             //target.Resource.EnergyExpense(EnergyCosts[1]);
         }
     }
 }
 
-public class OnDamageEventArg : EventArgs
+public class OnPlayerDamageEventArg : EventArgs
 {
     public bool IsCrit;
 
-    public OnDamageEventArg(bool crit)
+    public OnPlayerDamageEventArg(bool crit)
     {
         IsCrit = crit;
     }
 }
-public class OnAttackEventArg : EventArgs
+public class OnPlayerAttackEventArg : EventArgs
 {
     public Weapons weapon;
     public WeaponCategories weaponCategory;
     public WeaponTypes weaponType;
 
-    public OnAttackEventArg(Weapons WP, WeaponCategories WC, WeaponTypes WT)
+    public OnPlayerAttackEventArg(Weapons WP, WeaponCategories WC, WeaponTypes WT)
     {
         weapon = WP;
         weaponCategory = WC;

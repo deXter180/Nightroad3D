@@ -22,7 +22,7 @@ public class StateMachine
             return;
         StateDict = new Dictionary<States, State>();
         StateDict.Add(States.Roam, new Roam(enemyBrain, this));
-        StateDict.Add(States.Approach, new Approach(enemyBrain, this));
+        StateDict.Add(States.Chase, new Chase(enemyBrain, this));
         StateDict.Add(States.Attack, new Attack(enemyBrain, this));
     }
     public void SetState(States states)
@@ -49,6 +49,11 @@ public class StateMachine
         else return null;
     }
 
+    public State GetThisState()
+    {
+        return currentState;
+    }
+
     public void Tick()
     {
         InitializeDict();
@@ -63,6 +68,6 @@ public class StateMachine
 public enum States
 {
     Roam,
-    Approach,
+    Chase,
     Attack
 }

@@ -4,15 +4,11 @@ using UnityEngine;
 
 public class Billboard : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
     void LateUpdate()
     {
-        transform.forward = new Vector3(Camera.main.transform.forward.x, transform.forward.y, Camera.main.transform.forward.z);
+        transform.rotation = Camera.main.transform.rotation;
+        transform.rotation = Quaternion.Euler(0f, transform.rotation.eulerAngles.y, 0f); 
+        // Alternative method but bends the asset when the player comes too close
+        //transform.forward = new Vector3(Camera.main.transform.forward.x, transform.forward.y, Camera.main.transform.forward.z);
     }
 }

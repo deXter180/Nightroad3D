@@ -26,11 +26,11 @@ public class WeaponBrain : MonoBehaviour
     }
     private void OnEnable()
     {
-        Weapons.OnAttack += Weapons_OnAttack;
+        Weapons.OnPlayerAttack += Weapons_OnAttack;
     }
     private void OnDisable()
     {
-        Weapons.OnAttack -= Weapons_OnAttack;
+        Weapons.OnPlayerAttack -= Weapons_OnAttack;
     }
     private Weapons SetWeapon()
     {
@@ -76,7 +76,7 @@ public class WeaponBrain : MonoBehaviour
 
     //~~~~~~~~~~~~~~~~~~~~~ Event Callback ~~~~~~~~~~~~~~~~~~~~~
 
-    private void Weapons_OnAttack(object sender, OnAttackEventArg e)
+    private void Weapons_OnAttack(object sender, OnPlayerAttackEventArg e)
     {
         animator.PlayInFixedTime(AttackHash, 0, Time.deltaTime);
     }
