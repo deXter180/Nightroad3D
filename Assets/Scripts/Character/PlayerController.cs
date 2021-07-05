@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+
 
 public class PlayerController : MonoBehaviour
 {
@@ -24,6 +27,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody RB;
     private Collider col;
     private Target target;
+    private Vector3 OldPos;
     private Input input;
     private int ground = 1 << 8;
     private int water = 1 << 4;
@@ -68,6 +72,7 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         //OnTakingDamage()
+        ControlInventory();   
     }
 
     private void SetGravity()
@@ -81,6 +86,7 @@ public class PlayerController : MonoBehaviour
         float moveX = input.GetMovement().x;
         float moveY = input.GetMovement().y;
         Vector3 move = transform.right * moveX + transform.forward * moveY;
+        OldPos = transform.position;
         RB.MovePosition(transform.position + move * MoveSpeed * Time.fixedDeltaTime);
     }
 
@@ -104,10 +110,10 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
+
     private bool GroundCheck()
     {
-        RaycastHit hit;
-        Physics.BoxCast(col.bounds.center, transform.localScale, Vector3.down, out hit, Quaternion.identity, col.bounds.extents.y + 15f, bitmask);
+        Physics.BoxCast(col.bounds.center, transform.localScale, Vector3.down, out RaycastHit hit, Quaternion.identity, col.bounds.extents.y + 15f, bitmask);
         if (hit.collider != null)
         {
             return true;
@@ -115,6 +121,28 @@ public class PlayerController : MonoBehaviour
         else
         {
             return false;
+        }
+    }
+
+    public bool IsMoving()
+    {
+        if (RB.position == OldPos)
+        {
+            return false;
+        }
+        else return true;
+    }
+
+    private void ControlInventory()
+    {
+        if (input.GetInventory == true)
+        {
+            InventorySystem.Instance.Control(() => { input.GetInventory = false; }); 
+            if (InventorySystem.Instance.IsInventoryON)
+            {
+                InventorySystem.Instance.IsInventoryON = false;
+            }
+            else InventorySystem.Instance.IsInventoryON = true;
         }
     }
     

@@ -69,9 +69,10 @@ public class Projectile :  MonoBehaviour
                     ContactPoint contactPoint = collision.GetContact(0);
                     if (ObjectPooler.Instance.GetImpactObject(ProjectileTypes.FireBall) != null)
                     {
-                        GameObject bHole = Instantiate(ObjectPooler.Instance.GetImpactObject(ProjectileTypes.FireBall), contactPoint.point + contactPoint.normal * 0.001f, Quaternion.identity) as GameObject;
-                        bHole.transform.LookAt(contactPoint.point + contactPoint.normal);
-                        Destroy(bHole, 2f);
+                        GameObject bHole = Instantiate(ObjectPooler.Instance.GetImpactObject(ProjectileTypes.FireBall), contactPoint.point, Quaternion.LookRotation(contactPoint.normal)); //contactPoint.point + contactPoint.normal * 0.001f, Quaternion.identity) as GameObject;
+                        bHole.transform.SetParent(contactPoint.otherCollider.transform);
+                        //bHole.transform.LookAt(contactPoint.point + contactPoint.normal);
+                        Destroy(bHole, 1.5f);
                     }
                 }
            }

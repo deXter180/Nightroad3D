@@ -8,4 +8,8 @@ AnimatorOverrideController:
   m_PrefabAsset: {fileID: 0}
   m_Name: RifleAktAnim
   m_Controller: {fileID: 9100000, guid: 7290b8d0e95ba574db8191c897b380c9, type: 2}
-  m_Clips: []
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 3a6bd1c03e4b3c64da16969238e3bf91, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 3a6bd1c03e4b3c64da16969238e3bf91, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: c3789ebbab33b0343a4537917f344ac4, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: c3789ebbab33b0343a4537917f344ac4, type: 2}

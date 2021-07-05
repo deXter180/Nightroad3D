@@ -12,6 +12,8 @@ public class RayGun : MonoBehaviour
     private Animator anim;
     private Input input;
     private WeaponBrain weaponBrain;
+    public static event Action OnStopShoot;
+    
     //private int ShootHash = Animator.StringToHash("Shoot");
 
     private void Awake()
@@ -25,14 +27,20 @@ public class RayGun : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (input.GetAttack() == 1 && gameObject.activeInHierarchy)
+        if (gameObject.activeInHierarchy)
         {
-            if (WeaponInventory.Instance.IsAttacking == false)
+            if (input.GetAttack() == 1)
             {
-                StartCoroutine(Shoot(() => { WeaponInventory.Instance.IsAttacking = false; }));
+                if (WeaponInventory.Instance.IsAttacking == false)
+                {
+                    StartCoroutine(Shoot(() => { WeaponInventory.Instance.IsAttacking = false; }));
+                }
+            }
+            else if (input.GetAttack() == 0)
+            {
+                OnStopShoot?.Invoke();
             }
         }
-        //anim.SetTrigger(ShootHash);
     }
     public IEnumerator Shoot(Action action)
     {
@@ -60,9 +68,10 @@ public class RayGun : MonoBehaviour
                         {
                             if (ObjectPooler.Instance.GetImpactObject(ProjectileTypes.Bullet) != null)
                             {
-                                GameObject bHoleOnEnemy = Instantiate(ObjectPooler.Instance.GetImpactObject(ProjectileTypes.Bullet), hit.point + hit.normal * 0.001f, Quaternion.identity) as GameObject;
-                                bHoleOnEnemy.transform.LookAt(hit.point + hit.normal);
-                                Destroy(bHoleOnEnemy, 2f);
+                                GameObject bHoleOnEnemy = Instantiate(ObjectPooler.Instance.GetImpactObject(ProjectileTypes.Bullet), hit.point, Quaternion.LookRotation(hit.normal));//hit.point + hit.normal * 0.001f, Quaternion.identity) as GameObject;
+                                bHoleOnEnemy.transform.SetParent(hit.transform);
+                                //bHoleOnEnemy.transform.LookAt(hit.point + hit.normal);
+                                Destroy(bHoleOnEnemy, 1.5f);
                             }
                         }
                     }
