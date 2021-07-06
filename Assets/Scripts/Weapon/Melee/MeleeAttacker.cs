@@ -19,38 +19,26 @@ public class MeleeAttacker : MonoBehaviour
         GetRange();
         SetRange();
     }
+
     private void FixedUpdate()
     {
         if (gameObject.activeInHierarchy)
         {
-<<<<<<< HEAD
-            if (input.GetAttack() == 1)
-            {
-                if (WeaponInventory.Instance.IsAttacking == false)
-                {
-                    weaponBrain.GetThisWeapon().RaiseOnPlayerAttack(weaponBrain.GetThisWeapon(), weaponBrain.GetWeaponCategories(), weaponBrain.GetWeaponTypes());
-                }
-            }
-            else if (input.GetAttack() == 0)
-            {
-=======
+
             if (input.GetAttackHold() == 1)
             {
                 if (WeaponInventory.Instance.IsAttacking == false)
                 {
                     weaponBrain.GetThisWeapon().RaiseOnPlayerAttack(weaponBrain.GetThisWeapon(), weaponBrain.GetWeaponCategories(), weaponBrain.GetWeaponTypes());
-                    //input.GetAttackTap = false;
                 }
             }
             else if (input.GetAttackHold() == 0)
             {
->>>>>>> ad60b583e1ce16f1d51569edbd695337b2502f9d
                 OnStopMeleeAttack?.Invoke();
             }
-        }
-        
-    }
 
+        }
+    }
     private void GetRange()
     {
         for (int i = 0; i == colliders.Length; i++)
@@ -66,6 +54,7 @@ public class MeleeAttacker : MonoBehaviour
             colliders[i].transform.position = new Vector3(ColRange[i].x, ColRange[i].y, weaponBrain.GetThisWeapon().AttackRange);
         }
     }
+
     private void OnCollisionEnter(Collision collision)
     {
         if (input.GetAttackHold() == 1 && gameObject.activeInHierarchy)
@@ -105,7 +94,6 @@ public class MeleeAttacker : MonoBehaviour
             }
         }
     }
-
 
     private IEnumerator Attacking(Action action)
     {
