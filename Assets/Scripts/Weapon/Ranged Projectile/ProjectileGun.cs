@@ -19,7 +19,7 @@ public class ProjectileGun : MonoBehaviour
 
     private void Update()
     {
-        if (input.GetAttack() == 1 && gameObject.activeInHierarchy)
+        if (input.GetAttackHold() == 1 && gameObject.activeInHierarchy)
         {
             if (WeaponInventory.Instance.IsAttacking == false)
             {

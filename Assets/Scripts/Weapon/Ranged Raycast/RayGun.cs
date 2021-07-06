@@ -29,14 +29,14 @@ public class RayGun : MonoBehaviour
     {
         if (gameObject.activeInHierarchy)
         {
-            if (input.GetAttack() == 1)
+            if (input.GetAttackHold() == 1)
             {
                 if (WeaponInventory.Instance.IsAttacking == false)
                 {
                     StartCoroutine(Shoot(() => { WeaponInventory.Instance.IsAttacking = false; }));
                 }
             }
-            else if (input.GetAttack() == 0)
+            else if (input.GetAttackHold() == 0)
             {
                 OnStopShoot?.Invoke();
             }

@@ -11,7 +11,7 @@ public class InputControl : MonoBehaviour, Input
     [SerializeField] private InputAction Jump;
     [SerializeField] private InputActionMap WeaponSelection;
     [SerializeField] private InputAction Inventory;
-    public bool GetInventory { get ; set ; }
+    public bool GetInventory { get; set; }
 
 
     // Start is called before the first frame update
@@ -27,11 +27,6 @@ public class InputControl : MonoBehaviour, Input
         Inventory.started += Inventory_started;
     }
 
-    private void Inventory_started(InputAction.CallbackContext obj)
-    {
-        GetInventory = true;
-    }
-
     private void OnDisable()
     {
         Movement.Disable();
@@ -43,7 +38,7 @@ public class InputControl : MonoBehaviour, Input
         Inventory.started -= Inventory_started;
     }
 
-    public float GetAttack()
+    public float GetAttackHold()
     {
         return Attack.ReadValue<float>();
     }
@@ -65,7 +60,7 @@ public class InputControl : MonoBehaviour, Input
 
     public float GetWeapon1()
     {
-        InputAction action = WeaponSelection.FindAction("Weapon 1", throwIfNotFound: true );
+        InputAction action = WeaponSelection.FindAction("Weapon 1", throwIfNotFound: true);
         return action.ReadValue<float>();
     }
 
@@ -79,6 +74,13 @@ public class InputControl : MonoBehaviour, Input
     {
         InputAction action = WeaponSelection.FindAction("Weapon 3", throwIfNotFound: true);
         return action.ReadValue<float>();
+    }
+
+    //~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~
+
+    private void Inventory_started(InputAction.CallbackContext obj)
+    {
+        GetInventory = true;
     }
 
 }

@@ -47,7 +47,11 @@ public class WeaponBrain : MonoBehaviour
     private void OnDisable()
     {
         Weapons.OnPlayerAttack -= Weapons_OnAttack; 
+<<<<<<< HEAD
         RayGun.OnStopShoot -= RayGun_OnStopShoot;
+=======
+        RayGun.OnStopShoot -= RayGun_OnStopShoot; 
+>>>>>>> ad60b583e1ce16f1d51569edbd695337b2502f9d
         MeleeAttacker.OnStopMeleeAttack -= MeleeAttacker_OnStopMeleeAttack;
     }
 

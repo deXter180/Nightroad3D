@@ -18,7 +18,7 @@ public abstract class RangedWeapons : Weapons
 public class Axe : MeleeWeapns
 {
     public override int DamageAmount => 100;
-    public override float AttackSpeed => 1.0f;
+    public override float AttackSpeed => 0.7f;
     public override float AttackRange => 100;
     public override float CritChance => 0.7f;
     public override float CritBonus => 2f;
