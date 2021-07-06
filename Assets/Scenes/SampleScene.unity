@@ -108,7 +108,7 @@ NavMeshSettings:
     agentTypeID: 0
     agentRadius: 5
     agentHeight: 15
-    agentSlope: 46.2
+    agentSlope: 15.8
     agentClimb: 5
     ledgeDropHeight: 0
     maxJumpAcrossDistance: 0
@@ -282,12 +282,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 27675693}
-  - component: {fileID: 27675692}
   - component: {fileID: 27675691}
   - component: {fileID: 27675695}
   - component: {fileID: 27675694}
   - component: {fileID: 27675696}
   - component: {fileID: 27675697}
+  - component: {fileID: 27675692}
   m_Layer: 9
   m_Name: Player
   m_TagString: Player
@@ -311,8 +311,8 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 1
---- !u!65 &27675692
-BoxCollider:
+--- !u!136 &27675692
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -321,9 +321,10 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 50, y: 188.27539, z: 50}
-  m_Center: {x: 0, y: -44.137695, z: 0}
+  m_Radius: 50
+  m_Height: 250
+  m_Direction: 1
+  m_Center: {x: -3.1696124, y: 0, z: -85.64295}
 --- !u!4 &27675693
 Transform:
   m_ObjectHideFlags: 0
@@ -352,10 +353,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HitPoints: 1000
-  MoveSpeed: 140
+  MoveSpeed: 200
   MouseSensitivity: 20
-  JumpForce: 20
-  GravityScale: 6
+  JumpForce: 30
+  GravityScale: 1.3
   AttackSpeed: 100
   AttackForce: 80
   dodgeChance: 0.2
@@ -461,7 +462,7 @@ MonoBehaviour:
     m_ExpectedControlType: Button
     m_Id: 1c0103b9-b585-4363-9682-c5e5790e548a
     m_Processors: 
-    m_Interactions: Hold,Tap
+    m_Interactions: Hold(duration=0.008,pressPoint=0.008)
     m_SingletonActionBindings:
     - m_Name: 
       m_Id: b8005a2d-5e04-48a1-a939-fff4b2278a22
@@ -1216,7 +1217,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh46046
+  m_Name: pb_Mesh25810
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -3080,8 +3081,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 822946155}
-  m_LocalRotation: {x: -0.04170714, y: -0, z: -0, w: 0.99912995}
-  m_LocalPosition: {x: 301.81, y: 118.3023, z: 318.04382}
+  m_LocalRotation: {x: -0.04170714, y: -0.000000029802319, z: -0, w: 0.9991299}
+  m_LocalPosition: {x: 301.81195, y: 118.302025, z: 318.04385}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1691071727}
@@ -3932,7 +3933,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh46326
+  m_Name: pb_Mesh26044
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -32560,8 +32561,9 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1817324268}
-  m_LocalRotation: {x: 0.00000011175868, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.27397063, y: -0.9695969, z: 15.439463}
+  m_LocalRotation: {x: 0.00000009313224, y: -0.000000029854085, z: 6.1804933e-10,
+    w: 1}
+  m_LocalPosition: {x: 4.2211623, y: -4.136445, z: 52.547913}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1691071727}
@@ -32667,7 +32669,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh46402
+  m_Name: pb_Mesh26114
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -33425,8 +33427,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2082492895}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 101.35469, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 822946156}

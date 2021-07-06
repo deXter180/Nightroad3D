@@ -51,29 +51,27 @@ public class Projectile :  MonoBehaviour
                     if (enemyBrain != null && target.GetEnemy() == true && target.IsDead == false && AttackWeapon != null)
                     {
                         AttackWeapon.DoAttack(target, enemyBrain.GetThisEnemy().DodgeChance);
-                        if (target.IsDead == false)
-                        {
-                            ContactPoint contactPoint = collision.GetContact(0);
-                            if (ObjectPooler.Instance.GetImpactObject(ProjectileTypes.FireBall) != null)
-                            {
-                            GameObject bHoleOnEnemy = Instantiate(ObjectPooler.Instance.GetImpactObject(ProjectileTypes.FireBall), contactPoint.point + contactPoint.normal * 0.001f, Quaternion.identity) as GameObject;
-                            bHoleOnEnemy.transform.LookAt(contactPoint.point + contactPoint.normal);
-                            Destroy(bHoleOnEnemy, 0.2f);
-                            }
+                        //if (target.IsDead == false)
+                        //{
+                        //    ContactPoint contactPoint = collision.GetContact(0);
+                        //    if (ObjectPooler.Instance.GetImpactObject(ProjectileTypes.FireBall) != null)
+                        //    {
+                        //    GameObject bHoleOnEnemy = Instantiate(ObjectPooler.Instance.GetImpactObject(ProjectileTypes.FireBall), contactPoint.point + contactPoint.normal * 0.1f, Quaternion.identity) as GameObject;
+                        //    bHoleOnEnemy.transform.LookAt(contactPoint.point + contactPoint.normal);
+                        //    Destroy(bHoleOnEnemy, 0.2f);
+                        //    }
                             
-                        }
+                        //}
                     }
                 }
-                else
+                ContactPoint contactPoint = collision.GetContact(0);
+                if (ObjectPooler.Instance.GetImpactObject(ProjectileTypes.FireBall) != null)
                 {
-                    ContactPoint contactPoint = collision.GetContact(0);
-                    if (ObjectPooler.Instance.GetImpactObject(ProjectileTypes.FireBall) != null)
-                    {
-                        GameObject bHole = Instantiate(ObjectPooler.Instance.GetImpactObject(ProjectileTypes.FireBall), contactPoint.point, Quaternion.LookRotation(contactPoint.normal)); //contactPoint.point + contactPoint.normal * 0.001f, Quaternion.identity) as GameObject;
-                        bHole.transform.SetParent(contactPoint.otherCollider.transform);
-                        //bHole.transform.LookAt(contactPoint.point + contactPoint.normal);
-                        Destroy(bHole, 1.5f);
-                    }
+                    GameObject bHole = Instantiate(ObjectPooler.Instance.GetImpactObject(ProjectileTypes.FireBall), contactPoint.point + contactPoint.normal * 0.05f, Quaternion.identity) as GameObject;
+                    bHole.transform.SetParent(contactPoint.otherCollider.transform);
+                    bHole.transform.LookAt(contactPoint.point + contactPoint.normal);
+                    Destroy(bHole, 1.5f);
+                    
                 }
            }
     }
