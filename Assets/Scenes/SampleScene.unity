@@ -354,8 +354,8 @@ MonoBehaviour:
   HitPoints: 1000
   MoveSpeed: 140
   MouseSensitivity: 20
-  JumpForce: 20
-  GravityScale: 6
+  JumpForce: 40
+  GravityScale: 1
   AttackSpeed: 100
   AttackForce: 80
   dodgeChance: 0.2
@@ -32667,7 +32667,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh46402
+  m_Name: pb_Mesh23498
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
