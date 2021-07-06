@@ -39,6 +39,7 @@ public class WeaponBrain : MonoBehaviour
     {
         Weapons.OnPlayerAttack += Weapons_OnAttack;
         RayGun.OnStopShoot += RayGun_OnStopShoot;
+        MeleeAttacker.OnStopMeleeAttack += MeleeAttacker_OnStopMeleeAttack;
         animType = AnimType.Walk;
         playingAnim = false;
     }
@@ -46,7 +47,8 @@ public class WeaponBrain : MonoBehaviour
     private void OnDisable()
     {
         Weapons.OnPlayerAttack -= Weapons_OnAttack; 
-        RayGun.OnStopShoot -= RayGun_OnStopShoot;
+        RayGun.OnStopShoot -= RayGun_OnStopShoot; 
+        MeleeAttacker.OnStopMeleeAttack -= MeleeAttacker_OnStopMeleeAttack;
     }
 
     private void Update()
@@ -112,8 +114,6 @@ public class WeaponBrain : MonoBehaviour
                 ChangeAnimState(AttackHash);
                 StartCoroutine(ApplyDelay(AnimType.Walk));
             }
-
-            //Debug.Log(animType);
         }        
     }
 
@@ -136,7 +136,7 @@ public class WeaponBrain : MonoBehaviour
     {
         yield return new WaitForSeconds(animDelay);
         playingAnim = false;
-        if (weaponTypes != WeaponTypes.Rifle)
+        if (weaponTypes != WeaponTypes.Rifle && weaponTypes != WeaponTypes.Axe)
         {
             animType = anim;
         }       
@@ -160,6 +160,11 @@ public class WeaponBrain : MonoBehaviour
     {
         animType = AnimType.Walk;
         AudioManager.IsPlaySound = false;
+    }
+
+    private void MeleeAttacker_OnStopMeleeAttack()
+    {
+        animType = AnimType.Walk;
     }
 
 }

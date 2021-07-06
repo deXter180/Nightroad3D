@@ -9,6 +9,7 @@ public class MeleeAttacker : MonoBehaviour
     private Vector3[] ColRange;
     private WeaponBrain weaponBrain;
     private Input input;
+    public static event Action OnStopMeleeAttack;
 
     private void Awake()
     {
@@ -20,13 +21,22 @@ public class MeleeAttacker : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        if (input.GetAttack() == 1 && gameObject.activeInHierarchy)
+        if (gameObject.activeInHierarchy)
         {
-            if (WeaponInventory.Instance.IsAttacking == false)
+            if (input.GetAttackHold() == 1)
             {
-                weaponBrain.GetThisWeapon().RaiseOnPlayerAttack(weaponBrain.GetThisWeapon(), weaponBrain.GetWeaponCategories(), weaponBrain.GetWeaponTypes());
+                if (WeaponInventory.Instance.IsAttacking == false)
+                {
+                    weaponBrain.GetThisWeapon().RaiseOnPlayerAttack(weaponBrain.GetThisWeapon(), weaponBrain.GetWeaponCategories(), weaponBrain.GetWeaponTypes());
+                    //input.GetAttackTap = false;
+                }
+            }
+            else if (input.GetAttackHold() == 0)
+            {
+                OnStopMeleeAttack?.Invoke();
             }
         }
+        
     }
 
     private void GetRange()
@@ -46,7 +56,7 @@ public class MeleeAttacker : MonoBehaviour
     }
     private void OnCollisionEnter(Collision collision)
     {
-        if (input.GetAttack() == 1 && gameObject.activeInHierarchy)
+        if (input.GetAttackHold() == 1 && gameObject.activeInHierarchy)
         {
             if (WeaponInventory.Instance.IsAttacking == false && collision != null)
             {
@@ -66,7 +76,7 @@ public class MeleeAttacker : MonoBehaviour
 
     private void OnCollisionStay(Collision collision)
     {
-        if (input.GetAttack() == 1 && gameObject.activeInHierarchy)
+        if (input.GetAttackHold() == 1 && gameObject.activeInHierarchy)
         {
             if (WeaponInventory.Instance.IsAttacking == false && collision != null)
             {

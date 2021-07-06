@@ -15,7 +15,7 @@ public interface IAttack
 
 public interface Input
 {
-    float GetAttack();
+    float GetAttackHold();
     Vector2 GetMousePos();
     Vector2 GetMovement();
     float GetJump();

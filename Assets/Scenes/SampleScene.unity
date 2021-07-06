@@ -802,7 +802,7 @@ MonoBehaviour:
     m_ExpectedControlType: Button
     m_Id: 1c0103b9-b585-4363-9682-c5e5790e548a
     m_Processors: 
-    m_Interactions: Hold,Tap
+    m_Interactions: Hold(duration=0.008,pressPoint=0.008)
     m_SingletonActionBindings:
     - m_Name: 
       m_Id: b8005a2d-5e04-48a1-a939-fff4b2278a22
@@ -43509,7 +43509,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1828532843
 Transform:
   m_ObjectHideFlags: 0
@@ -43517,9 +43517,9 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1828532842}
-  m_LocalRotation: {x: 0.000000007450579, y: -0.0000000296987, z: -0.0000000031039935,
+  m_LocalRotation: {x: 0.000000007450579, y: -0.000000029621015, z: -0.0000000049650173,
     w: 1}
-  m_LocalPosition: {x: -4.0288086, y: 2.7730372, z: -33.15799}
+  m_LocalPosition: {x: -3.8103333, y: 2.9205563, z: -34.921883}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 683671061}
@@ -43868,7 +43868,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1915902370
 Transform:
   m_ObjectHideFlags: 0
