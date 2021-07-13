@@ -19,14 +19,18 @@ public class ProjectileGun : MonoBehaviour
 
     private void Update()
     {
-        if (input.GetAttackHold() == 1 && gameObject.activeInHierarchy)
+        if (gameObject.activeInHierarchy)
         {
-            if (WeaponInventory.Instance.IsAttacking == false)
+            if (input.GetAttackHold() == 1 && !InventoryUIHandler.Instance.IsInventoryON)
             {
-                StartCoroutine(Shoot(() => { WeaponInventory.Instance.IsAttacking = false; }));
+                if (WeaponInventory.Instance.IsAttacking == false)
+                {
+                    StartCoroutine(Shoot(() => { WeaponInventory.Instance.IsAttacking = false; }));
+                }
             }
-        }
+        }  
     }
+
     private ProjectileTypes GetProjectile(WeaponTypes weaponType)
     {
         switch (weaponType)

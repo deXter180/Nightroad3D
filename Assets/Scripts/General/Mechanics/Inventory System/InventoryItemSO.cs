@@ -1,20 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 [CreateAssetMenu(fileName = "New Item", menuName = "Inventory/Item")]
 public class InventoryItemSO : ScriptableObject
 {
     public string ItemID;
-    public Texture2D ItemIcon;
+    public Transform InventoryPrefab;
+    public Transform WorldPrefab;
+    public Transform visual;
     public string ItemName;
     public string ItemDescription;
     public bool Usable;
     public int Width;
     public int Height;
+    public ItemTypes itemType;
     public ItemRarity Rarity;
-    [SerializeField] protected int AttributeAmount;
-    [SerializeField] protected Texture2D AttributeIcon;
+    [SerializeField] public int AttributeAmount;
+    [SerializeField] public Texture2D AttributeIcon;
 
     public enum Dir
     {
@@ -105,6 +109,27 @@ public class InventoryItemSO : ScriptableObject
         }
         return gridPositionList;
     }
+
+    public static void CreateVisualGrid(Transform visualParentTransform, InventoryItemSO inventoryItemSO, float cellSize)
+    {
+        Transform visualTranform = Instantiate(InventoryAssets.Instance.gridVisual, visualParentTransform);
+        Transform template = visualTranform.Find("Template");
+        template.gameObject.SetActive(false);
+
+        for (int x = 0; x < inventoryItemSO.Width; x++)
+        {
+            for (int y = 0; y < inventoryItemSO.Height; y++)
+            {
+                Transform backgroundTransform = Instantiate(template, visualTranform);
+                backgroundTransform.gameObject.SetActive(true);
+            }
+        }
+
+        visualTranform.GetComponent<GridLayoutGroup>().cellSize = Vector2.one * cellSize;
+        visualTranform.GetComponent<RectTransform>().sizeDelta = new Vector2(inventoryItemSO.Width, inventoryItemSO.Height) * cellSize;
+        visualTranform.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+        visualTranform.SetAsFirstSibling();
+    }
 }
 
 public enum ItemRarity
@@ -113,4 +138,12 @@ public enum ItemRarity
     Uncommon,
     Rare,
     Epic
+}
+
+public enum ItemTypes
+{
+    Ammo,
+    HealthPotion,
+    Grenade,
+    Armor,
 }

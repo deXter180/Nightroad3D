@@ -11,7 +11,9 @@ public class InputControl : MonoBehaviour, Input
     [SerializeField] private InputAction Jump;
     [SerializeField] private InputActionMap WeaponSelection;
     [SerializeField] private InputAction Inventory;
+    [SerializeField] private InputAction RotateInInventory;
     public bool GetInventory { get; set; }
+    public bool RotateItems { get; set; }
 
 
     // Start is called before the first frame update
@@ -25,6 +27,7 @@ public class InputControl : MonoBehaviour, Input
         WeaponSelection.Enable();
         Inventory.Enable();
         Inventory.started += Inventory_started;
+        RotateInInventory.started += RotateInInventory_started;
     }
 
     private void OnDisable()
@@ -36,6 +39,7 @@ public class InputControl : MonoBehaviour, Input
         WeaponSelection.Disable();
         Inventory.Disable();
         Inventory.started -= Inventory_started;
+        RotateInInventory.started -= RotateInInventory_started;
     }
 
     public float GetAttackHold()
@@ -81,6 +85,11 @@ public class InputControl : MonoBehaviour, Input
     private void Inventory_started(InputAction.CallbackContext obj)
     {
         GetInventory = true;
+    }
+
+    private void RotateInInventory_started(InputAction.CallbackContext obj)
+    {
+        RotateItems = true;
     }
 
 }

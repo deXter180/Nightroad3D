@@ -12,7 +12,7 @@ public class RayGun : MonoBehaviour
     private Animator anim;
     private Input input;
     private WeaponBrain weaponBrain;
-    public static event Action OnStopShoot;
+    public static event Action OnStopRayShoot;
     
     //private int ShootHash = Animator.StringToHash("Shoot");
 
@@ -29,16 +29,16 @@ public class RayGun : MonoBehaviour
     {
         if (gameObject.activeInHierarchy)
         {
-            if (input.GetAttackHold() == 1)
+            if (input.GetAttackHold() == 1 && !InventoryUIHandler.Instance.IsInventoryON)
             {
                 if (WeaponInventory.Instance.IsAttacking == false)
                 {
                     StartCoroutine(Shoot(() => { WeaponInventory.Instance.IsAttacking = false; }));
                 }
             }
-            else if (input.GetAttackHold() == 0)
+            else
             {
-                OnStopShoot?.Invoke();
+                OnStopRayShoot?.Invoke();
             }
         }
     }

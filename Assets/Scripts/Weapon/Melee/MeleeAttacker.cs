@@ -24,21 +24,20 @@ public class MeleeAttacker : MonoBehaviour
     {
         if (gameObject.activeInHierarchy)
         {
-
-            if (input.GetAttackHold() == 1)
+            if (input.GetAttackHold() == 1 && !InventoryUIHandler.Instance.IsInventoryON)
             {
                 if (WeaponInventory.Instance.IsAttacking == false)
                 {
                     weaponBrain.GetThisWeapon().RaiseOnPlayerAttack(weaponBrain.GetThisWeapon(), weaponBrain.GetWeaponCategories(), weaponBrain.GetWeaponTypes());
                 }
             }
-            else if (input.GetAttackHold() == 0)
+            else
             {
                 OnStopMeleeAttack?.Invoke();
             }
-
         }
     }
+
     private void GetRange()
     {
         for (int i = 0; i == colliders.Length; i++)
@@ -57,7 +56,7 @@ public class MeleeAttacker : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (input.GetAttackHold() == 1 && gameObject.activeInHierarchy)
+        if (input.GetAttackHold() == 1 && gameObject.activeInHierarchy && !InventoryUIHandler.Instance.IsInventoryON)
         {
             if (WeaponInventory.Instance.IsAttacking == false && collision != null)
             {
@@ -77,7 +76,7 @@ public class MeleeAttacker : MonoBehaviour
 
     private void OnCollisionStay(Collision collision)
     {
-        if (input.GetAttackHold() == 1 && gameObject.activeInHierarchy)
+        if (input.GetAttackHold() == 1 && gameObject.activeInHierarchy && !InventoryUIHandler.Instance.IsInventoryON)
         {
             if (WeaponInventory.Instance.IsAttacking == false && collision != null)
             {

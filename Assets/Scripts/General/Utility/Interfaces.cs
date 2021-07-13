@@ -23,6 +23,7 @@ public interface Input
     float GetWeapon2();
     float GetWeapon3();
     bool GetInventory { get; set; }
+    bool RotateItems { get; set; }
 }
 
 public interface IHeapItem<HeapObject> : IComparable<HeapObject>

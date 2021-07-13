@@ -38,7 +38,7 @@ public class WeaponBrain : MonoBehaviour
     private void OnEnable()
     {
         Weapons.OnPlayerAttack += Weapons_OnAttack;
-        RayGun.OnStopShoot += RayGun_OnStopShoot;
+        RayGun.OnStopRayShoot += RayGun_OnStopShoot;
         MeleeAttacker.OnStopMeleeAttack += MeleeAttacker_OnStopMeleeAttack;
         animType = AnimType.Walk;
         playingAnim = false;
@@ -47,11 +47,7 @@ public class WeaponBrain : MonoBehaviour
     private void OnDisable()
     {
         Weapons.OnPlayerAttack -= Weapons_OnAttack; 
-
-        RayGun.OnStopShoot -= RayGun_OnStopShoot;
-
-        RayGun.OnStopShoot -= RayGun_OnStopShoot; 
-
+        RayGun.OnStopRayShoot -= RayGun_OnStopShoot;
         MeleeAttacker.OnStopMeleeAttack -= MeleeAttacker_OnStopMeleeAttack;
     }
 
@@ -139,11 +135,11 @@ public class WeaponBrain : MonoBehaviour
     private IEnumerator DelayAnim(AnimType anim, float animDelay)
     {
         yield return new WaitForSeconds(animDelay);
-        playingAnim = false;
-        if (weaponTypes != WeaponTypes.Rifle && weaponTypes != WeaponTypes.Axe)
+        playingAnim = false; 
+        if (weaponTypes == WeaponTypes.RocketLauncher)
         {
-            animType = anim;
-        }       
+            animType = AnimType.Walk;
+        }
     }
 
     //~~~~~~~~~~~~~~~~~~~~~ Event Callback ~~~~~~~~~~~~~~~~~~~~~

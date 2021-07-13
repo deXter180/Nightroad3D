@@ -63,10 +63,13 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        SetGravity();
-        Rotate();
-        Move();
-        Jump();
+        SetGravity(); 
+        if (!InventoryUIHandler.Instance.IsInventoryON)
+        {
+            Rotate();
+            Move();
+            Jump();
+        }        
     }
 
     private void Update()
@@ -137,12 +140,12 @@ public class PlayerController : MonoBehaviour
     {
         if (input.GetInventory == true)
         {
-            InventorySystem.Instance.Control(() => { input.GetInventory = false; }); 
-            if (InventorySystem.Instance.IsInventoryON)
+            InventoryUIHandler.Instance.Control(() => { input.GetInventory = false; }); 
+            if (InventoryUIHandler.Instance.IsInventoryON)
             {
-                InventorySystem.Instance.IsInventoryON = false;
+                InventoryUIHandler.Instance.IsInventoryON = false;
             }
-            else InventorySystem.Instance.IsInventoryON = true;
+            else InventoryUIHandler.Instance.IsInventoryON = true;
         }
     }
     
