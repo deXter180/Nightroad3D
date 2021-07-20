@@ -21,8 +21,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float AttackSpeed;
     [SerializeField] private float AttackForce;
     [SerializeField] private float dodgeChance;
+    [SerializeField] private float SelectionThreshold;
     [SerializeField] private Transform cam;
+    //private List<Collider> PickedObjectCols;
+    private PickedObject selectedPickedObject = null;
     private static float globalGravity = -9.81f;
+    private float groundHeight;
     private float camControl;
     private Rigidbody RB;
     private Collider col;
@@ -31,7 +35,9 @@ public class PlayerController : MonoBehaviour
     private Input input;
     private int ground = 1 << 8;
     private int water = 1 << 4;
-    private int bitmask;
+    private int pickableLayer = 1 << 6;
+    private int bitmask;    
+    public static event Action<InventoryItemSO> OnItemPicked;
 
     //~~~~~~~~~~~~~~~~~ Initialization ~~~~~~~~~~~~~~~~~~~
 
@@ -52,6 +58,7 @@ public class PlayerController : MonoBehaviour
     private void OnEnable()
     {
         RB.useGravity = false;
+        //PickedObjectCols = new List<Collider>();
     }
 
     private void OnDisable()
@@ -75,7 +82,8 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         //OnTakingDamage()
-        ControlInventory();   
+        ControlInventory();
+        SearchItemsInWorld();
     }
 
     private void SetGravity()
@@ -95,8 +103,8 @@ public class PlayerController : MonoBehaviour
 
     private void Rotate()
     {
-        float horizontalLook = input.GetMousePos().x * MouseSensitivity * Time.fixedDeltaTime;
-        float verticalLook = input.GetMousePos().y * MouseSensitivity * Time.fixedDeltaTime;
+        float horizontalLook = input.GetMouseDelta().x * MouseSensitivity * Time.fixedDeltaTime;
+        float verticalLook = input.GetMouseDelta().y * MouseSensitivity * Time.fixedDeltaTime;
         camControl -= verticalLook;
         camControl = Mathf.Clamp(camControl, -90f, 90f);
         cam.localEulerAngles = new Vector3(camControl, 0f, 0f);
@@ -110,6 +118,7 @@ public class PlayerController : MonoBehaviour
             if (GroundCheck())
             {
                 RB.AddForce(transform.up * JumpForce, ForceMode.Impulse);
+                Debug.Log(GetGroundHeight());
             }
         }
     }
@@ -119,12 +128,19 @@ public class PlayerController : MonoBehaviour
         Physics.BoxCast(col.bounds.center, transform.localScale, Vector3.down, out RaycastHit hit, Quaternion.identity, col.bounds.extents.y + 15f, bitmask);
         if (hit.collider != null)
         {
+            groundHeight = hit.transform.position.y;
             return true;
         }
         else
         {
             return false;
         }
+    }
+
+    public float GetGroundHeight()
+    {
+        GroundCheck();
+        return groundHeight;
     }
 
     public bool IsMoving()
@@ -136,11 +152,16 @@ public class PlayerController : MonoBehaviour
         else return true;
     }
 
+    public Vector3 GetRandomDirection()
+    {
+        return new Vector3(UnityEngine.Random.Range(-1f, 1f), 0, UnityEngine.Random.Range(-1f, 1f)).normalized;
+    }
+
     private void ControlInventory()
     {
-        if (input.GetInventory == true)
+        if (input.GetInventory())
         {
-            InventoryUIHandler.Instance.Control(() => { input.GetInventory = false; }); 
+            InventoryUIHandler.Instance.Control(); 
             if (InventoryUIHandler.Instance.IsInventoryON)
             {
                 InventoryUIHandler.Instance.IsInventoryON = false;
@@ -148,5 +169,39 @@ public class PlayerController : MonoBehaviour
             else InventoryUIHandler.Instance.IsInventoryON = true;
         }
     }
-    
+
+    private void SearchItemsInWorld()
+    {
+        var ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward); //Camera.main.ScreenPointToRay(input.GetMousePosition());
+        Debug.DrawRay(ray.origin, ray.direction * Camera.main.farClipPlane / 2);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, Camera.main.farClipPlane / 2, pickableLayer))
+        {
+            selectedPickedObject = hit.transform.GetComponent<PickedObject>();
+            if (selectedPickedObject != null)
+            {
+                selectedPickedObject.HighlightObject();
+                if (input.GetPickItems())
+                {
+                    if (InventorySystem.Instance.TryAddingItem(selectedPickedObject.GetItemSO()))
+                    {
+                        selectedPickedObject.DestroySelf();
+                        OnItemPicked?.Invoke(selectedPickedObject.GetItemSO());
+                    }
+                    else
+                    {
+                        selectedPickedObject.AddForceToItemSpawn(GetRandomDirection());
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (selectedPickedObject != null)
+            {
+                selectedPickedObject.UnhighlightObject();
+                selectedPickedObject = null;
+            }
+        }
+    }
 }

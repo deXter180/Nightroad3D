@@ -65,13 +65,8 @@ public class PlacedObject : MonoBehaviour
     public static PlacedObject Create(Transform parent, Vector2 anchoredPos, Vector2Int origin, InventoryItemSO.Dir dir, InventoryItemSO inventoryItemSO)
     {
         Transform placedObjectTransform = Instantiate(inventoryItemSO.InventoryPrefab, parent);
-        //placedObjectTransform.position = parent.position;
         placedObjectTransform.rotation = Quaternion.Euler(0, inventoryItemSO.GetRotationAngle(dir), 0);
         placedObjectTransform.GetComponent<RectTransform>().anchoredPosition = anchoredPos;
-        //foreach(RectTransform rectTransform in placedObjectTransform.GetComponentInChildren<RectTransform>())
-        //{
-        //    rectTransform.anchoredPosition = anchoredPos;
-        //}
         PlacedObject placedObject = placedObjectTransform.GetComponent<PlacedObject>();
         placedObject.inventoryItemSO = inventoryItemSO;
         placedObject.dir = dir;

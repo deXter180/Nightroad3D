@@ -33,7 +33,7 @@ public class TooltipCanvas : MonoBehaviour {
     private void Update() {
         SetText(getTooltipStringFunc());
 
-        Vector2 anchoredPosition = input.GetMousePos() / canvasRectTransform.localScale.x;
+        Vector2 anchoredPosition = input.GetMouseDelta() / canvasRectTransform.localScale.x;
         if (anchoredPosition.x + backgroundRectTransform.rect.width > canvasRectTransform.rect.width) {
             anchoredPosition.x = canvasRectTransform.rect.width - backgroundRectTransform.rect.width;
         }

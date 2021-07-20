@@ -7,7 +7,7 @@ public class InventorySystem : MonoBehaviour
 {
     public static InventorySystem Instance { get; private set; }
     private Grid<GridObject> grid;
-    private List<InventoryItemSO> InventoryList;
+    private List<PlacedObject> InventoryList;
     private RectTransform itemContainer;
     [SerializeField] private Transform InventoryGridStart;
     public static event EventHandler<PlacedObject> OnObjectPlaced;          
@@ -18,22 +18,28 @@ public class InventorySystem : MonoBehaviour
 
         int gridWidth = 7;
         int gridHeight = 7;
-        float cellSize = 127f;
+        float cellSize = 128f;
         grid = new Grid<GridObject>(gridWidth, gridHeight, cellSize, InventoryGridStart.position, (Grid<GridObject> g, int x, int y) => new GridObject(g, x, y));
         itemContainer = transform.Find("ItemContainer").GetComponent<RectTransform>();
-        InventoryList = new List<InventoryItemSO>();
+        InventoryList = new List<PlacedObject>();
     }
 
     private void Start()
     {
         StartCoroutine(Test());
-        StartCoroutine(Test());
+        //StartCoroutine(Test());
     }
 
     private IEnumerator Test()
     {
         yield return new WaitForSeconds(1f);
+        TryAddingItem(InventoryAssets.Instance.GetInventoryItemSO(ItemTypes.HealthPotion));
         TryAddingItem(InventoryAssets.Instance.GetInventoryItemSO(ItemTypes.Armor));
+        TryAddingItem(InventoryAssets.Instance.GetInventoryItemSO(ItemTypes.Gloves));
+        TryAddingItem(InventoryAssets.Instance.GetInventoryItemSO(ItemTypes.Boots));
+        TryAddingItem(InventoryAssets.Instance.GetInventoryItemSO(ItemTypes.Shield));
+        TryAddingItem(InventoryAssets.Instance.GetInventoryItemSO(ItemTypes.Helmet));
+        TryAddingItem(InventoryAssets.Instance.GetInventoryItemSO(ItemTypes.ManaPotion));
     }
 
     //~~~~~~~~~~~~~~~~~~ Utilities ~~~~~~~~~~~~~~~~~~
@@ -65,6 +71,16 @@ public class InventorySystem : MonoBehaviour
         return itemContainer;
     }
 
+    public void AddToInventoryList(PlacedObject placedObject)
+    {
+        InventoryList.Add(placedObject);
+    }
+
+    public void RemoveFromInventoryList(PlacedObject placedObject)
+    {
+        InventoryList.Remove(placedObject);
+    }
+
     //~~~~~~~~~~~~~~~~~~ Main Functions ~~~~~~~~~~~~~~~~~~~
 
     public bool IsInventoryFull()
@@ -94,8 +110,7 @@ public class InventorySystem : MonoBehaviour
                     Vector2Int temp = new Vector2Int(x, y);
                     if (TryPlaceItem(inventoryItemSO, temp, InventoryItemSO.Dir.Down))
                     {
-                        Debug.Log("" + temp.x + "" + temp.y);
-                        InventoryList.Add(inventoryItemSO);
+                        InventoryList.Add(inventoryItemSO.InventoryPrefab.GetComponent<PlacedObject>());
                         return true;
                     }
                 }
@@ -126,7 +141,23 @@ public class InventorySystem : MonoBehaviour
         if (canPlace)
         {
             Vector2Int rotationOffset = inventoryItemSO.GetRotationOffset(dir);
-            Vector3 placedObjectWorldPos = grid.GetWorldPosAtOrigin(placedObjectOrigin.x, placedObjectOrigin.y) + new Vector3(rotationOffset.x, rotationOffset.y) * grid.GetCellSize();
+            Vector3 placedObjectWorldPos = new Vector3();
+            switch (dir)
+            {
+                case InventoryItemSO.Dir.Down:
+                    placedObjectWorldPos = grid.GetWorldPosAtOrigin(placedObjectOrigin.x, placedObjectOrigin.y) + new Vector3(rotationOffset.x, rotationOffset.y - 0.1f) * grid.GetCellSize();
+                    break;
+                case InventoryItemSO.Dir.Right:
+                    placedObjectWorldPos = grid.GetWorldPosAtOrigin(placedObjectOrigin.x, placedObjectOrigin.y) + new Vector3(rotationOffset.x - 0.2f, rotationOffset.y) * grid.GetCellSize();
+                    break;
+                case InventoryItemSO.Dir.Left:
+                    placedObjectWorldPos = grid.GetWorldPosAtOrigin(placedObjectOrigin.x, placedObjectOrigin.y) + new Vector3(rotationOffset.x, rotationOffset.y - 0.2f) * grid.GetCellSize();
+                    break;
+                case InventoryItemSO.Dir.Up:
+                    placedObjectWorldPos = grid.GetWorldPosAtOrigin(placedObjectOrigin.x, placedObjectOrigin.y) + new Vector3(rotationOffset.x - 0.2f, rotationOffset.y - 0.2f) * grid.GetCellSize();
+                    break;
+            }
+            //placedObjectWorldPos = grid.GetWorldPosAtOrigin(placedObjectOrigin.x, placedObjectOrigin.y) + new Vector3(rotationOffset.x, rotationOffset.y) * grid.GetCellSize();
             PlacedObject placedObject = PlacedObject.Create(itemContainer, placedObjectWorldPos, placedObjectOrigin, dir, inventoryItemSO);
             placedObject.transform.rotation = Quaternion.Euler(0, 0, -inventoryItemSO.GetRotationAngle(dir));
 
@@ -141,18 +172,22 @@ public class InventorySystem : MonoBehaviour
         else { return false; }
     }
 
-    public void RemoveItemAt(Vector2Int removeGridPos)
+    public bool TryRemoveItemAt(Vector2Int removeGridPos)
     {
-        PlacedObject placedObject = grid.GetGridObject(removeGridPos.x, removeGridPos.y).GetPlacedObject();
-
-        if(placedObject != null)
+        if (grid.GetGridObject(removeGridPos.x, removeGridPos.y).GetPlacedObject() != null)
         {
+            PlacedObject placedObject = grid.GetGridObject(removeGridPos.x, removeGridPos.y).GetPlacedObject();
             placedObject.DestroySelf();
             List<Vector2Int> gridPosList = placedObject.GetGridPosList();
             foreach (Vector2Int gridPos in gridPosList)
             {
                 grid.GetGridObject(gridPos.x, gridPos.y).ClearPlacedObject();
             }
+            return true;
+        }
+        else
+        { 
+            return false;
         }
     }
 

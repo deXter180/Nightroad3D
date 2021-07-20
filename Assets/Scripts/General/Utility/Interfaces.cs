@@ -16,14 +16,17 @@ public interface IAttack
 public interface Input
 {
     float GetAttackHold();
-    Vector2 GetMousePos();
+    Vector2 GetMouseDelta();
+    Vector2 GetMousePosition();
     Vector2 GetMovement();
     float GetJump();
     float GetWeapon1();
     float GetWeapon2();
     float GetWeapon3();
-    bool GetInventory { get; set; }
-    bool RotateItems { get; set; }
+    bool GetInventory();
+    bool GetRotationItems();
+    bool GetMouseRightClick();
+    bool GetPickItems();
 }
 
 public interface IHeapItem<HeapObject> : IComparable<HeapObject>

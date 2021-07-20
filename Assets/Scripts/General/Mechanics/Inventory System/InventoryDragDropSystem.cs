@@ -13,6 +13,7 @@ public class InventoryDragDropSystem : MonoBehaviour
     private Vector2 mouseDragAnchoredPosOffset;
     private RectTransform ownTransform;
     [SerializeField] private Camera UICam;
+    public int PlacedObjectCount { get; private set; }
 
     private void Awake()
     {
@@ -28,33 +29,32 @@ public class InventoryDragDropSystem : MonoBehaviour
 
     private void Update()
     {
-        if (input.RotateItems)
+        if (input.GetRotationItems())
         {
             dir = InventoryItemSO.GetNextDir(dir);
-            input.RotateItems = false;
         }
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(InventorySystem.Instance.GetItemContainer(), input.GetMousePos(), UICam, out Vector2 anchoredPosition);
-        //Debug.Log(RectTransformUtility.RectangleContainsScreenPoint(InventorySystem.Instance.GetItemContainer(), input.GetMousePos(), UICam));
-        //Debug.Log(anchoredPosition);
-        //Vector2Int mouseGridPos = InventorySystem.Instance.GetGridLocalPos(anchoredPosition);
-        //Debug.Log(mouseGridPos);
         PositionDragObject();
+        RemoveFromInventory();
     }
 
     private void PositionDragObject()
     {
-        if (draggingPlacedObject != null)
+        if (InventoryUIHandler.Instance.IsInventoryON)
         {
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(InventorySystem.Instance.GetItemContainer(), input.GetMousePos(), UICam, out Vector2 targetPosition);
-            targetPosition += new Vector2(-mouseDragAnchoredPosOffset.x, -mouseDragAnchoredPosOffset.y);
-            Vector2Int rotationOffset = draggingPlacedObject.GetInventoryItemSO().GetRotationOffset(dir);
-            targetPosition += new Vector2(rotationOffset.x, rotationOffset.y) * InventorySystem.Instance.GetGrid().GetCellSize();
-            targetPosition /= 10f;
-            targetPosition = new Vector2(Mathf.Floor(targetPosition.x), Mathf.Floor(targetPosition.y));
-            targetPosition *= 10f;
-            draggingPlacedObject.GetComponent<RectTransform>().anchoredPosition = Vector2.Lerp(draggingPlacedObject.GetComponent<RectTransform>().anchoredPosition, targetPosition, Time.deltaTime * 20f);
-            draggingPlacedObject.transform.rotation = Quaternion.Lerp(draggingPlacedObject.transform.rotation, Quaternion.Euler(0, 0, -draggingPlacedObject.GetInventoryItemSO().GetRotationAngle(dir)), Time.deltaTime * 15f);
-        }
+            if (draggingPlacedObject != null)
+            {
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(InventorySystem.Instance.GetItemContainer(), input.GetMousePosition(), UICam, out Vector2 targetPosition);
+                Vector2Int currentGridPos = InventorySystem.Instance.GetGridPos(targetPosition);
+                targetPosition += new Vector2(-mouseDragAnchoredPosOffset.x, -mouseDragAnchoredPosOffset.y);
+                Vector2Int rotationOffset = draggingPlacedObject.GetInventoryItemSO().GetRotationOffset(dir);
+                targetPosition += new Vector2(rotationOffset.x, rotationOffset.y) * InventorySystem.Instance.GetGrid().GetCellSize();
+                targetPosition /= 10f;
+                targetPosition = new Vector2(Mathf.Floor(targetPosition.x), Mathf.Floor(targetPosition.y));
+                targetPosition *= 10f;
+                draggingPlacedObject.GetComponent<RectTransform>().anchoredPosition = Vector2.Lerp(draggingPlacedObject.GetComponent<RectTransform>().anchoredPosition, targetPosition, Time.deltaTime * 20f);
+                draggingPlacedObject.transform.rotation = Quaternion.Lerp(draggingPlacedObject.transform.rotation, Quaternion.Euler(0, 0, -draggingPlacedObject.GetInventoryItemSO().GetRotationAngle(dir)), Time.deltaTime * 15f);
+            }
+        }              
     }
 
     public void StartedDragging(PlacedObject placedObject)
@@ -63,7 +63,7 @@ public class InventoryDragDropSystem : MonoBehaviour
         {
             draggingPlacedObject = placedObject;
             Cursor.visible = false;
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(InventorySystem.Instance.GetItemContainer(), input.GetMousePos(), UICam, out Vector2 anchoredPosition);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(InventorySystem.Instance.GetItemContainer(), input.GetMousePosition(), UICam, out Vector2 anchoredPosition);
             Vector2Int mouseGridPos = InventorySystem.Instance.GetGridPos(anchoredPosition);
             mouseDragGridPosOffset = mouseGridPos - placedObject.GetGridPos();
             mouseDragAnchoredPosOffset = anchoredPosition - placedObject.GetComponent<RectTransform>().anchoredPosition;
@@ -79,8 +79,8 @@ public class InventoryDragDropSystem : MonoBehaviour
         {
             draggingPlacedObject = placedObject;
             Cursor.visible = true;
-            InventorySystem.Instance.RemoveItemAt(placedObject.GetGridPos());
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(InventorySystem.Instance.GetItemContainer(), input.GetMousePos(), UICam, out Vector2 anchoredPosition);
+            InventorySystem.Instance.TryRemoveItemAt(placedObject.GetGridPos());
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(InventorySystem.Instance.GetItemContainer(), input.GetMousePosition(), UICam, out Vector2 anchoredPosition);
             Vector2Int placedObjectOrigin = InventorySystem.Instance.GetGridPos(anchoredPosition);
             placedObjectOrigin = placedObjectOrigin - mouseDragGridPosOffset;
             bool tryPlaceItem = InventorySystem.Instance.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO, placedObjectOrigin, dir);
@@ -96,10 +96,36 @@ public class InventoryDragDropSystem : MonoBehaviour
         }        
     }
 
+    private void RemoveFromInventory()
+    {   
+        if (InventoryUIHandler.Instance.IsInventoryON)
+        {
+            if (input.GetMouseRightClick())
+            {
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(InventorySystem.Instance.GetItemContainer(), input.GetMousePosition(), UICam, out Vector2 anchoredPosition);
+                Vector2Int placedObjectOrigin = InventorySystem.Instance.GetGridLocalPos(anchoredPosition);
+                if (InventorySystem.Instance.GetGrid().GetGridObject(placedObjectOrigin.x, placedObjectOrigin.y).GetPlacedObject() != null)
+                {
+                    PlacedObject placedObject = InventorySystem.Instance.GetGrid().GetGridObject(placedObjectOrigin.x, placedObjectOrigin.y).GetPlacedObject();
+                    placedObject.DestroySelf();
+                    InventorySystem.Instance.RemoveFromInventoryList(placedObject);
+                    List<Vector2Int> gridPosList = placedObject.GetGridPosList();
+                    foreach (Vector2Int gridPos in gridPosList)
+                    {
+                        InventorySystem.Instance.GetGrid().GetGridObject(gridPos.x, gridPos.y).ClearPlacedObject();
+                    }
+                    PickedObject pickedObject = PickedObject.SpawnItemWorld(placedObject.GetItemType(), PlayerController.Instance.transform.position + new Vector3 (20, 0, 20));
+                }
+                
+            }
+        }               
+    }
+
     //~~~~~~~~~~~~~~~~~~~~ Event Callback ~~~~~~~~~~~~~~~~~~~~
 
     private void InventorySystem_OnObjectPlaced(object sender, PlacedObject e)
     {
         Debug.Log(e.GetInventoryItemSO().itemType);
+        PlacedObjectCount = transform.Find("ItemContainer").childCount;
     }
 }

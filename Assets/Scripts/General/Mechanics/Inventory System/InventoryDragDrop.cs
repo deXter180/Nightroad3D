@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 
 [RequireComponent(typeof(CanvasGroup))]
-public class InventoryDragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler
+public class InventoryDragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler, IPointerEnterHandler, IPointerExitHandler
 {
     private CanvasGroup canvasGroup;
     private PlacedObject placedObject;
@@ -19,10 +19,11 @@ public class InventoryDragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragH
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (placedObject != null)
-        {
+        {            
+            transform.SetSiblingIndex(InventoryDragDropSystem.Instance.PlacedObjectCount - 1);
             canvasGroup.alpha = 0.7f;
             canvasGroup.blocksRaycasts = false;
-            InventoryItemSO.CreateVisualGrid(transform.GetChild(0), placedObject.GetInventoryItemSO() as InventoryItemSO, InventorySystem.Instance.GetGrid().GetCellSize());
+            InventoryItemSO.CreateGridVisual(transform.GetChild(0), placedObject.GetInventoryItemSO(), InventorySystem.Instance.GetGrid().GetCellSize());
             InventoryDragDropSystem.Instance.StartedDragging(placedObject);
         }       
     }
@@ -36,13 +37,23 @@ public class InventoryDragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragH
     {
         if (placedObject != null)
         {
+            InventoryDragDropSystem.Instance.StoppedDragging(placedObject);
             canvasGroup.alpha = 1f;
             canvasGroup.blocksRaycasts = true;
-            InventoryDragDropSystem.Instance.StoppedDragging(placedObject);
         }      
     }
 
     public void OnPointerDown(PointerEventData eventData)
+    {
+        
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
     {
         
     }

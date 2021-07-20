@@ -10,6 +10,7 @@ public class InventoryUIHandler : MonoBehaviour
     public bool IsInventoryON { get; set; }
     private Canvas canvas;
     private GridLayoutGroup gridLayout;
+    private RectTransform UIRect;
     [SerializeField] Transform BackgroundImage;
 
     private void Awake()
@@ -21,6 +22,7 @@ public class InventoryUIHandler : MonoBehaviour
         else Instance = this;
         canvas = GetComponentInChildren<Canvas>();
         gridLayout = GetComponentInChildren<GridLayoutGroup>();
+        UIRect = GetComponent<RectTransform>();
     }
 
     private void Start()
@@ -29,6 +31,11 @@ public class InventoryUIHandler : MonoBehaviour
         IsInventoryON = false;
         CreateGridBackGround();
         
+    }
+
+    public RectTransform GetUIRect()
+    {
+        return UIRect;
     }
 
     private void CreateGridBackGround()
@@ -43,7 +50,7 @@ public class InventoryUIHandler : MonoBehaviour
         }
     }
 
-    public void Control(Action action)
+    public void Control()
     {
         if (!IsInventoryON)
         {
@@ -53,7 +60,6 @@ public class InventoryUIHandler : MonoBehaviour
         {
             canvas.enabled = false;
         }
-        action.Invoke();
     }
 }
 

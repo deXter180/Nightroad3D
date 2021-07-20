@@ -9,7 +9,6 @@ public class InventoryItemSO : ScriptableObject
     public string ItemID;
     public Transform InventoryPrefab;
     public Transform WorldPrefab;
-    public Transform visual;
     public string ItemName;
     public string ItemDescription;
     public bool Usable;
@@ -110,26 +109,33 @@ public class InventoryItemSO : ScriptableObject
         return gridPositionList;
     }
 
-    public static void CreateVisualGrid(Transform visualParentTransform, InventoryItemSO inventoryItemSO, float cellSize)
+    public static void CreateGridVisual(Transform visualParentTransform, InventoryItemSO inventoryItemSO, float cellSize)
     {
-        Transform visualTranform = Instantiate(InventoryAssets.Instance.gridVisual, visualParentTransform);
-        Transform template = visualTranform.Find("Template");
-        template.gameObject.SetActive(false);
-
-        for (int x = 0; x < inventoryItemSO.Width; x++)
+        Transform visualTransform = Instantiate(InventoryAssets.Instance.gridVisual, visualParentTransform);
+        visualTransform.gameObject.SetActive(false);
+        RectTransform rectTransform = visualTransform.GetComponent<RectTransform>();
+        if (inventoryItemSO.Width == 1 && inventoryItemSO.Height == 1)
         {
-            for (int y = 0; y < inventoryItemSO.Height; y++)
-            {
-                Transform backgroundTransform = Instantiate(template, visualTranform);
-                backgroundTransform.gameObject.SetActive(true);
-            }
+            rectTransform.sizeDelta = new Vector2(inventoryItemSO.Width, inventoryItemSO.Height) * cellSize * 1.6f;
         }
-
-        visualTranform.GetComponent<GridLayoutGroup>().cellSize = Vector2.one * cellSize;
-        visualTranform.GetComponent<RectTransform>().sizeDelta = new Vector2(inventoryItemSO.Width, inventoryItemSO.Height) * cellSize;
-        visualTranform.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
-        visualTranform.SetAsFirstSibling();
+        else if (inventoryItemSO.Width == 1)
+        {
+            rectTransform.sizeDelta = new Vector2(inventoryItemSO.Width * 1.6f, inventoryItemSO.Height) * cellSize;
+        }
+        else if(inventoryItemSO.Height == 1)
+        {
+            rectTransform.sizeDelta = new Vector2(inventoryItemSO.Width, inventoryItemSO.Height * 1.6f) * cellSize;
+        }
+        else
+        {
+            rectTransform.sizeDelta = new Vector2(inventoryItemSO.Width, inventoryItemSO.Height) * cellSize;
+        }
+        //rectTransform.sizeDelta = new Vector2(inventoryItemSO.Width, inventoryItemSO.Height) * cellSize;
+        rectTransform.anchoredPosition = Vector2.zero;
+        rectTransform.SetAsLastSibling();
+        visualTransform.gameObject.SetActive(true);
     }
+
 }
 
 public enum ItemRarity
@@ -146,4 +152,9 @@ public enum ItemTypes
     HealthPotion,
     Grenade,
     Armor,
+    Gloves,
+    Shield,
+    Boots,
+    Helmet,
+    ManaPotion
 }

@@ -6,40 +6,44 @@ using UnityEngine.InputSystem;
 public class InputControl : MonoBehaviour, Input
 {
     [SerializeField] private InputAction Movement;
-    [SerializeField] private InputAction Mouse;
+    [SerializeField] private InputAction MouseDelta;
+    [SerializeField] private InputAction MousePosition;
     [SerializeField] private InputAction Attack;
     [SerializeField] private InputAction Jump;
     [SerializeField] private InputActionMap WeaponSelection;
     [SerializeField] private InputAction Inventory;
     [SerializeField] private InputAction RotateInInventory;
-    public bool GetInventory { get; set; }
-    public bool RotateItems { get; set; }
-
+    [SerializeField] private InputAction MouseRightClick;
+    [SerializeField] private InputAction PickItems;
 
     // Start is called before the first frame update
 
     private void OnEnable()
     {
         Movement.Enable();
-        Mouse.Enable();
+        MouseDelta.Enable();
         Attack.Enable();
         Jump.Enable();
         WeaponSelection.Enable();
         Inventory.Enable();
-        Inventory.started += Inventory_started;
-        RotateInInventory.started += RotateInInventory_started;
+        MousePosition.Enable();
+        RotateInInventory.Enable();
+        MouseRightClick.Enable();
+        PickItems.Enable();
     }
 
     private void OnDisable()
     {
         Movement.Disable();
-        Mouse.Disable();
+        MouseDelta.Disable();
         Attack.Disable();
         Jump.Disable();
         WeaponSelection.Disable();
         Inventory.Disable();
-        Inventory.started -= Inventory_started;
-        RotateInInventory.started -= RotateInInventory_started;
+        MousePosition.Disable();
+        RotateInInventory.Disable();
+        MouseRightClick.Disable();
+        PickItems.Disable();
     }
 
     public float GetAttackHold()
@@ -47,9 +51,14 @@ public class InputControl : MonoBehaviour, Input
         return Attack.ReadValue<float>();
     }
 
-    public Vector2 GetMousePos()
+    public Vector2 GetMouseDelta()
     {
-        return Mouse.ReadValue<Vector2>();
+        return MouseDelta.ReadValue<Vector2>();
+    }
+
+    public Vector2 GetMousePosition()
+    {
+        return MousePosition.ReadValue<Vector2>();
     }
 
     public Vector2 GetMovement()
@@ -80,16 +89,23 @@ public class InputControl : MonoBehaviour, Input
         return action.ReadValue<float>();
     }
 
-    //~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~
-
-    private void Inventory_started(InputAction.CallbackContext obj)
+    public bool GetInventory()
     {
-        GetInventory = true;
+        return Inventory.triggered;
     }
 
-    private void RotateInInventory_started(InputAction.CallbackContext obj)
+    public bool GetRotationItems()
     {
-        RotateItems = true;
+        return RotateInInventory.triggered;
     }
 
+    public bool GetMouseRightClick()
+    {
+        return MouseRightClick.triggered;
+    }
+
+    public bool GetPickItems()
+    {
+        return PickItems.triggered;
+    }
 }
