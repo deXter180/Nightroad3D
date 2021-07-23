@@ -87,8 +87,4 @@ public class OnEnemyAttackEventArg : EventArgs
     }
 }
 
-public enum EnemyTypes
-{
-    Giant = 0,
-    Fighter = 1
-}
+
