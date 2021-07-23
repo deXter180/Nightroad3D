@@ -57,7 +57,7 @@ public class ProjectileGun : MonoBehaviour
             shot.transform.position = FiringPoint.position;
             shot.gameObject.SetActive(true);
             weaponBrain.GetThisWeapon().RaiseOnPlayerAttack(weaponBrain.GetThisWeapon(), weaponBrain.GetWeaponCategories(), weaponBrain.GetWeaponTypes());
-            yield return new WaitForSeconds(weaponBrain.GetThisWeapon().AttackSpeed);
+            yield return new WaitForSeconds(weaponBrain.GetThisWeapon().ThisWeaponSO.AttackSpeed);
             action.Invoke();
         }
     }

@@ -6,6 +6,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Enemy", menuName = "Enemies/New")]
 public class EnemySO : ScriptableObject, IAttack
 {
+    [SerializeField] private int maxHP;
     [SerializeField] private int damageAmount;
     [SerializeField] private float attackSpeed;
     [SerializeField] private float attackRange;
@@ -15,8 +16,10 @@ public class EnemySO : ScriptableObject, IAttack
     [SerializeField] private float dodgeChance;
     [SerializeField] private bool isGroundUnit;
     [SerializeField] private float avoidanceRadius;
+    [SerializeField] private float moveSpeed;
     public Transform WorldPrefab;
 
+    public int MaxHP => maxHP;
     public int DamageAmount => damageAmount;
     public float AttackSpeed => attackSpeed;
     public float AttackRange => attackRange;
@@ -26,6 +29,7 @@ public class EnemySO : ScriptableObject, IAttack
     public float DodgeChance => dodgeChance;
     public bool IsGroundUnit => isGroundUnit;
     public float AvoidanceRadius => avoidanceRadius;
+    public float MoveSpeed => moveSpeed;
 
 }
 

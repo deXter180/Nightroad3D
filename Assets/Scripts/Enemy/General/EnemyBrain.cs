@@ -23,23 +23,12 @@ public class EnemyBrain : MonoBehaviour
 
     private void Awake()
     {
-        SetEnemy();
-        stateMachine = new StateMachine(this);
+        StartCoroutine(SetEnemy());
+        stateMachine = new StateMachine(this);               
         sphereCollider = GetComponent<SphereCollider>();
         hitBox = GetComponentInChildren<BoxCollider>();
         navAgent = GetComponent<NavMeshAgent>();
         meshPath = new NavMeshPath();
-    }
-
-    private void OnEnable()
-    {
-        stateMachine.OnStateChange += StateMachine_OnStateChange;
-        enemy.OnEnemyAttack += Enemy_OnEnemyAttack;
-        sphereCollider.isTrigger = true;
-        startPos = transform.position;
-        IsTargetFleed = true;
-        IsTargetInRange = false;
-        navAgent.speed = enemy.MoveSpeed;
     }
 
     private void OnDisable()
@@ -63,18 +52,17 @@ public class EnemyBrain : MonoBehaviour
         return enemyType;
     }
 
-    private Enemy SetEnemy()
+    private IEnumerator SetEnemy()
     {
-        switch (enemyType)
-        {
-            case EnemyTypes.Giant:
-                enemy = new Giant(this);
-                break;
-            case EnemyTypes.Fighter:
-                enemy = new Fighter(this);
-                break;
-        }
-        return enemy;
+        yield return new WaitForEndOfFrame();
+        enemy = new Enemy(this, enemyType);
+        enemy.OnEnemyAttack += Enemy_OnEnemyAttack;
+        navAgent.speed = enemy.ThisEnemySO.MoveSpeed;
+        stateMachine.OnStateChange += StateMachine_OnStateChange;
+        sphereCollider.isTrigger = true;
+        startPos = transform.position;
+        IsTargetFleed = true;
+        IsTargetInRange = false;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -89,7 +77,7 @@ public class EnemyBrain : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            if (Vector3.Distance(transform.position, other.transform.position) <= enemy.AttackRange)
+            if (Vector3.Distance(transform.position, other.transform.position) <= enemy.ThisEnemySO.AttackRange)
             {
                 IsTargetInRange = true;
             }

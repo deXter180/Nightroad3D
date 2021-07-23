@@ -50,7 +50,7 @@ public class Projectile :  MonoBehaviour
                     collision.gameObject.TryGetComponent<EnemyBrain>(out EnemyBrain enemyBrain);
                     if (enemyBrain != null && target.GetEnemy() == true && target.IsDead == false && AttackWeapon != null)
                     {
-                        AttackWeapon.DoAttack(target, enemyBrain.GetThisEnemy().DodgeChance);
+                        AttackWeapon.DoAttack(target, enemyBrain.GetThisEnemy().ThisEnemySO.DodgeChance);
                         //if (target.IsDead == false)
                         //{
                         //    ContactPoint contactPoint = collision.GetContact(0);

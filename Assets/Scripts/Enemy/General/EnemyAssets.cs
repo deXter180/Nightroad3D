@@ -4,19 +4,12 @@ using UnityEngine;
 
 public class EnemyAssets : MonoBehaviour
 {
-    public static EnemyAssets Instance { get; private set; }
     public List<EnemySO> EnemySOList;
+    public static EnemyAssets Instance { get; private set; }
 
     private void Awake()
     {
-        if (Instance != null)
-        {
-            Destroy(Instance);
-        }
-        else
-        {
-            Instance = this;
-        }
+        Instance = this;
     }
 
     public EnemySO GetEnemySOFromList(EnemyTypes enemyType)
@@ -30,6 +23,4 @@ public class EnemyAssets : MonoBehaviour
         }
         return null;
     }
-
-
 }

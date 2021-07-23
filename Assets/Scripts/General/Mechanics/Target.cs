@@ -15,7 +15,7 @@ public class Target : MonoBehaviour
     //~~~~~~~~~~~~~~~~~~~~~~~~ Initialization ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     private void OnEnable()
-    {                    
+    {
         if (Resource != null)                              // HealthSystem Event subscription
         {
             Resource.OnDamaged += OnDamage;
@@ -35,16 +35,29 @@ public class Target : MonoBehaviour
     }
     private void Start()
     {
-        if (GetEBFromTarget() != null)
+        if (GetPlayerFromTarget() != null)
         {
-            Enemy enemy = GetEBFromTarget().GetThisEnemy();
-            MaxHP = enemy.MaxHP;
+            SetupMaxHPPlayer();
         }
-        else if (GetPlayerFromTarget() != null)
+        else if (GetEBFromTarget() != null)
         {
-            MaxHP = GetPlayerFromTarget().MaxHP;
-        }
-        Resource.SetHealth(MaxHP); // Setting Max Health by calling method from HealthSystem
+            StartCoroutine(SetupMaxHPEnemy());
+        }       
+        // Setting Max Health by calling method from HealthSystem
+    }
+
+    private void SetupMaxHPPlayer()
+    {
+        MaxHP = GetPlayerFromTarget().MaxHP;
+        Resource.SetHealth(MaxHP);
+    }
+
+    private IEnumerator SetupMaxHPEnemy()
+    {
+        yield return new WaitForEndOfFrame();
+        Enemy enemy = GetEBFromTarget().GetThisEnemy();
+        MaxHP = enemy.ThisEnemySO.MaxHP;
+        Resource.SetHealth(MaxHP);
     }
 
     public EnemyBrain GetEBFromTarget()

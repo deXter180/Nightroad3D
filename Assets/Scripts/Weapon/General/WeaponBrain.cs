@@ -9,8 +9,6 @@ public class WeaponBrain : MonoBehaviour
     [SerializeField] private WeaponCategories weaponCategories;
     private Animator animator;
     private Weapons weapon;
-    private MeleeWeapns meleeWeapn;
-    private RangedWeapons rangedWeapon;
     private AnimType animType;
     private int currentAminHash;
     private bool playingAnim;
@@ -29,17 +27,14 @@ public class WeaponBrain : MonoBehaviour
 
     private void Awake()
     {
-        if (SetWeapon() != null)
-        {
-            SetWeapon();
-        }
+        SetWeapon();
         animator = GetComponentInChildren<Animator>();
     }
 
     private void OnEnable()
     {
-        IsAttacking = false;
         Weapons.OnPlayerAttack += Weapons_OnAttack;
+        IsAttacking = false;       
         RayGun.OnStopRayShoot += RayGun_OnStopShoot;
         MeleeAttacker.OnStopMeleeAttack += MeleeAttacker_OnStopMeleeAttack;
         ProjectileGun.OnStopProjectileShoot += ProjectileGun_OnStopProjectileShoot;
@@ -61,38 +56,14 @@ public class WeaponBrain : MonoBehaviour
         PlayWeaponSound();
     }
 
-    private Weapons SetWeapon()
+    private void SetWeapon()
     {
-        weapon = WeaponFactory.GetWeapon(weaponTypes, out MeleeWeapns melee, out RangedWeapons ranged);
-        if (melee != null)
-        {
-            meleeWeapn = melee;
-        }
-        else if (ranged != null)
-        {
-            rangedWeapon = ranged;
-        }
-        return weapon;
+        weapon = new Weapons(this, weaponTypes);
+        
     }
     public Weapons GetThisWeapon()
     {
         return weapon;
-    }
-    public MeleeWeapns GetIfMelee()
-    {
-        if (meleeWeapn != null)
-        {
-            return meleeWeapn;
-        }
-        else return default;
-    }
-    public RangedWeapons GetIfRanged()
-    {
-        if (rangedWeapon != null)
-        {
-            return rangedWeapon;
-        }
-        else return default;
     }
     public WeaponTypes GetWeaponTypes()
     {

@@ -50,7 +50,7 @@ public class MeleeAttacker : MonoBehaviour
     {
         for (int i = 0; i == colliders.Length; i++)
         {
-            colliders[i].transform.position = new Vector3(ColRange[i].x, ColRange[i].y, weaponBrain.GetThisWeapon().AttackRange);
+            colliders[i].transform.position = new Vector3(ColRange[i].x, ColRange[i].y, weaponBrain.GetThisWeapon().ThisWeaponSO.AttackRange);
         }
     }
 
@@ -66,7 +66,7 @@ public class MeleeAttacker : MonoBehaviour
                     if (target != null && target.IsDead == false && target.GetEnemy() == true)
                     {
                         WeaponInventory.Instance.IsAttacking = true;
-                        weaponBrain.GetThisWeapon().DoAttack(target, target.GetEBFromTarget().GetThisEnemy().DodgeChance);
+                        weaponBrain.GetThisWeapon().DoAttack(target, target.GetEBFromTarget().GetThisEnemy().ThisEnemySO.DodgeChance);
                         StartCoroutine(Attacking(() => { WeaponInventory.Instance.IsAttacking = false; }));
                     }
                 }
@@ -86,7 +86,7 @@ public class MeleeAttacker : MonoBehaviour
                     if (target != null && target.IsDead == false && target.GetEnemy() == true)
                     {
                         WeaponInventory.Instance.IsAttacking = true;
-                        weaponBrain.GetThisWeapon().DoAttack(target, target.GetEBFromTarget().GetThisEnemy().DodgeChance);
+                        weaponBrain.GetThisWeapon().DoAttack(target, target.GetEBFromTarget().GetThisEnemy().ThisEnemySO.DodgeChance);
                         StartCoroutine(Attacking(() => { WeaponInventory.Instance.IsAttacking = false; }));
                     }
                 }
@@ -98,7 +98,7 @@ public class MeleeAttacker : MonoBehaviour
     {
         if (WeaponInventory.Instance.IsAttacking == true)
         {
-            yield return new WaitForSeconds(weaponBrain.GetThisWeapon().AttackSpeed);
+            yield return new WaitForSeconds(weaponBrain.GetThisWeapon().ThisWeaponSO.AttackSpeed);
             action.Invoke();
         }
     }

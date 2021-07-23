@@ -4,25 +4,15 @@ using UnityEngine;
 using System;
 
 
-public abstract class Enemy : IAttack
+public class Enemy
 {
-    protected Transform transform;
-    protected Animator animator;
-    protected Target target;
-    protected EnemyBrain enemyBrain;
-    protected Rigidbody rigidbody;
-
-    public abstract EnemyTypes enemyTypes { get; }
-    public abstract int MaxHP { get ; }
-    public abstract int DamageAmount { get ; }
-    public abstract float AttackSpeed { get ; }
-    public abstract float MoveSpeed { get ; }
-    public abstract float AttackRange { get; }
-    public abstract float CritChance { get; }
-    public abstract float CritBonus { get; }
-    public abstract float DodgeChance { get; }
-    public abstract bool IsGroundUnit { get; }
-    public abstract float AvoidanceRadius { get; }
+    private Transform transform;
+    private Animator animator;
+    private Target target;
+    private EnemyBrain enemyBrain;
+    private Rigidbody rigidbody;
+    private EnemySO enemySO;
+    public EnemySO ThisEnemySO { get => enemySO; }
 
     public event EventHandler<OnEnemyAttackEventArg> OnEnemyAttack;
     public event EventHandler<OnEnemyDamageEventArg> OnEnemyDamage;
@@ -41,26 +31,27 @@ public abstract class Enemy : IAttack
         }
     }
 
-    public Enemy(EnemyBrain EB)
+    public Enemy(EnemyBrain EB, EnemyTypes enemyType)
     {
+        enemySO = EnemyAssets.Instance.GetEnemySOFromList(enemyType);
         this.enemyBrain = EB;
         this.transform = EB.transform;
         this.rigidbody = EB.GetComponent<Rigidbody>();
         this.animator = EB.GetComponentInChildren<Animator>();
-        this.target = EB.GetComponent<Target>();
+        this.target = EB.GetComponent<Target>();        
     }
 
     public virtual void DoAttack(Target enemyTarget, float enemyDodgeChance)
     {
-        if (UnityEngine.Random.value <= CritChance) //&& CurrentEnergy >= EnergyCosts[0])
+        if (UnityEngine.Random.value <= enemySO.CritChance) //&& CurrentEnergy >= EnergyCosts[0])
         {
-            enemyTarget.DoCritDamage(CritBonus, DamageAmount, enemyDodgeChance);
+            enemyTarget.DoCritDamage(enemySO.CritBonus, enemySO.DamageAmount, enemyDodgeChance);
             OnEnemyDamage?.Invoke(this, new OnEnemyDamageEventArg(true));
             //target.Resource.EnergyExpense(EnergyCosts[0]);
         }
         else
         {
-            enemyTarget.DoDamage(DamageAmount, enemyDodgeChance);
+            enemyTarget.DoDamage(enemySO.DamageAmount, enemyDodgeChance);
             OnEnemyDamage?.Invoke(this, new OnEnemyDamageEventArg(false));
             //target.Resource.EnergyExpense(EnergyCosts[1]);
         }

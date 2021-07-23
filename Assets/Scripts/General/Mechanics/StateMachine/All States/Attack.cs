@@ -54,7 +54,7 @@ public class Attack : State
     {
         if (IsAttacking)
         {
-            yield return new WaitForSeconds(enemyBrain.GetThisEnemy().AttackSpeed);
+            yield return new WaitForSeconds(enemyBrain.GetThisEnemy().ThisEnemySO.AttackSpeed);
             action.Invoke();
         }
     }

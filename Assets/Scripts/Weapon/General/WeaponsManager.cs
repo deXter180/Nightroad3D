@@ -4,17 +4,11 @@ using System;
 using UnityEngine;
 
 
-public abstract class Weapons : IAttack
+public class Weapons
 {
-    public abstract WeaponTypes weaponTypes { get; }
-    public abstract int DamageAmount { get; }
-    public abstract float AttackSpeed { get; }
-    public abstract float AttackRange { get; }
-
-    public abstract float CritChance { get; }
-
-    public abstract float CritBonus { get; }
-
+    private WeaponBrain weaponBrain;
+    private WeaponSO weaponSO;
+    public WeaponSO ThisWeaponSO => weaponSO;
     public static event EventHandler<OnPlayerAttackEventArg> OnPlayerAttack; //Indirectly Raising this event
     public static event EventHandler<OnPlayerDamageEventArg> OnPlayerDamage;
     public void RaiseOnPlayerAttack(Weapons weapon, WeaponCategories weaponCategory, WeaponTypes weaponType)
@@ -31,17 +25,23 @@ public abstract class Weapons : IAttack
         }
     }
 
+    public Weapons (WeaponBrain wb, WeaponTypes weaponTypes)
+    {
+        this.weaponBrain = wb;
+        weaponSO = WeaponAssets.Instance.GetWeaponSOFromList(weaponTypes);
+    }
+
     public virtual void DoAttack(Target enemyTarget, float enemyDodgeChance)
     {
-        if (UnityEngine.Random.value <= CritChance) //&& CurrentEnergy >= EnergyCosts[0])
+        if (UnityEngine.Random.value <= weaponSO.CritChance) //&& CurrentEnergy >= EnergyCosts[0])
         {
-            enemyTarget.DoCritDamage(CritBonus, DamageAmount, enemyDodgeChance);
+            enemyTarget.DoCritDamage(weaponSO.CritBonus, weaponSO.DamageAmount, enemyDodgeChance);
             OnPlayerDamage?.Invoke(this, new OnPlayerDamageEventArg(true));
             //target.Resource.EnergyExpense(EnergyCosts[0]);
         }
         else
         {
-            enemyTarget.DoDamage(DamageAmount, enemyDodgeChance);
+            enemyTarget.DoDamage(weaponSO.DamageAmount, enemyDodgeChance);
             OnPlayerDamage?.Invoke(this, new OnPlayerDamageEventArg(false));
             //target.Resource.EnergyExpense(EnergyCosts[1]);
         }
@@ -69,18 +69,4 @@ public class OnPlayerAttackEventArg : EventArgs
         weaponCategory = WC;
         weaponType = WT;
     }
-}
-
-public enum WeaponTypes
-{
-    Axe,
-    Rifle,
-    RocketLauncher
-}
-
-public enum WeaponCategories
-{
-    Melee,
-    RaycastShoot,
-    ProjectileShoot
 }

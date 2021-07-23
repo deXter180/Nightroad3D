@@ -44,50 +44,54 @@ public class RayGun : MonoBehaviour
     }
     public IEnumerator Shoot(Action action)
     {
-        //Vector3 range = new Vector3(cam.transform.position.x, cam.transform.position.y, weaponBrain.GetThisWeapon().AttackRange);
-        //Debug.DrawRay(cam.transform.position, range, Color.red);
-        Vector3 t_bloom = cam.transform.position + cam.transform.forward * 1000f;
-        t_bloom += UnityEngine.Random.Range(-weaponBrain.GetIfRanged().bloom, weaponBrain.GetIfRanged().bloom) * cam.transform.up;
-        t_bloom += UnityEngine.Random.Range(-weaponBrain.GetIfRanged().bloom, weaponBrain.GetIfRanged().bloom) * cam.transform.right;
-        t_bloom -= cam.transform.position;
-        t_bloom.Normalize();
-        //Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-        WeaponInventory.Instance.IsAttacking = true;
-        weaponBrain.GetThisWeapon().RaiseOnPlayerAttack(weaponBrain.GetThisWeapon(), weaponBrain.GetWeaponCategories(), weaponBrain.GetWeaponTypes());
-        if (Physics.Raycast(cam.transform.position, t_bloom , out RaycastHit hit, weaponBrain.GetThisWeapon().AttackRange, bitmask, QueryTriggerInteraction.Ignore))
+        if (weaponBrain.GetThisWeapon().ThisWeaponSO.IsRanged)
         {
-            if (hit.collider != null)
+            float bloom = weaponBrain.GetThisWeapon().ThisWeaponSO.Bloom;
+            //Vector3 range = new Vector3(cam.transform.position.x, cam.transform.position.y, weaponBrain.GetThisWeapon().AttackRange);
+            //Debug.DrawRay(cam.transform.position, range, Color.red);
+            Vector3 t_bloom = cam.transform.position + cam.transform.forward * 1000f;
+            t_bloom += UnityEngine.Random.Range(-bloom, bloom) * cam.transform.up;
+            t_bloom += UnityEngine.Random.Range(-bloom, bloom) * cam.transform.right;
+            t_bloom -= cam.transform.position;
+            t_bloom.Normalize();
+            //Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+            WeaponInventory.Instance.IsAttacking = true;
+            weaponBrain.GetThisWeapon().RaiseOnPlayerAttack(weaponBrain.GetThisWeapon(), weaponBrain.GetWeaponCategories(), weaponBrain.GetWeaponTypes());
+            if (Physics.Raycast(cam.transform.position, t_bloom, out RaycastHit hit, weaponBrain.GetThisWeapon().ThisWeaponSO.AttackRange, bitmask, QueryTriggerInteraction.Ignore))
             {
-                GameObject bHoleOnEnemy;
-                if (hit.collider.GetComponentInParent<Target>() && hit.collider.CompareTag("Enemy"))
+                if (hit.collider != null)
                 {
-                    Target target = hit.collider.GetComponentInParent<Target>();
-                    if (target.IsDead == false)
+                    GameObject bHoleOnEnemy;
+                    if (hit.collider.GetComponentInParent<Target>() && hit.collider.CompareTag("Enemy"))
                     {
-                        weaponBrain.GetThisWeapon().DoAttack(target, target.GetEBFromTarget().GetThisEnemy().DodgeChance);
+                        Target target = hit.collider.GetComponentInParent<Target>();
+                        if (target.IsDead == false)
+                        {
+                            weaponBrain.GetThisWeapon().DoAttack(target, target.GetEBFromTarget().GetThisEnemy().ThisEnemySO.DodgeChance);
+                        }
+                        if (ObjectPooler.Instance.GetImpactObject(ProjectileTypes.Bullet) != null)
+                        {
+                            bHoleOnEnemy = Instantiate(ObjectPooler.Instance.GetImpactObject(ProjectileTypes.Bullet), hit.point + hit.normal * 0.05f, Quaternion.identity) as GameObject;
+                            bHoleOnEnemy.transform.SetParent(hit.transform);
+                            bHoleOnEnemy.transform.LookAt(hit.point + hit.normal);
+                            Destroy(bHoleOnEnemy, 1.5f);
+                        }
                     }
-                    if (ObjectPooler.Instance.GetImpactObject(ProjectileTypes.Bullet) != null)
+                    else
                     {
-                        bHoleOnEnemy = Instantiate(ObjectPooler.Instance.GetImpactObject(ProjectileTypes.Bullet), hit.point + hit.normal * 0.05f, Quaternion.identity) as GameObject;
-                        bHoleOnEnemy.transform.SetParent(hit.transform);
-                        bHoleOnEnemy.transform.LookAt(hit.point + hit.normal);
-                        Destroy(bHoleOnEnemy, 1.5f);
-                    }
-                }
-                else
-                {
-                    if (ObjectPooler.Instance.GetImpactObject(ProjectileTypes.Bullet) != null)
-                    {
-                        bHoleOnEnemy = Instantiate(ObjectPooler.Instance.GetImpactObject(ProjectileTypes.Bullet), hit.point + hit.normal * 0.05f, Quaternion.identity) as GameObject;
-                        bHoleOnEnemy.transform.SetParent(hit.transform);
-                        bHoleOnEnemy.transform.LookAt(hit.point + hit.normal);
-                        Destroy(bHoleOnEnemy, 1.5f);
+                        if (ObjectPooler.Instance.GetImpactObject(ProjectileTypes.Bullet) != null)
+                        {
+                            bHoleOnEnemy = Instantiate(ObjectPooler.Instance.GetImpactObject(ProjectileTypes.Bullet), hit.point + hit.normal * 0.05f, Quaternion.identity) as GameObject;
+                            bHoleOnEnemy.transform.SetParent(hit.transform);
+                            bHoleOnEnemy.transform.LookAt(hit.point + hit.normal);
+                            Destroy(bHoleOnEnemy, 1.5f);
+                        }
                     }
                 }
             }
-        }
-        yield return new WaitForSeconds(weaponBrain.GetThisWeapon().AttackSpeed);
-        action.Invoke();
+            yield return new WaitForSeconds(weaponBrain.GetThisWeapon().ThisWeaponSO.AttackSpeed);
+            action.Invoke();
+        }       
     }
 
 
