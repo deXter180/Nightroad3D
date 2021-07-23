@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Billboard : MonoBehaviour
 {
-    private bool IsVisibleToCamera(Transform transform)
+    private bool IsVisibleToCamera()
     {
         float distanceFromCam = Vector3.Distance(Camera.main.transform.position, transform.position);
         if (distanceFromCam <= Camera.main.farClipPlane)
@@ -18,7 +18,7 @@ public class Billboard : MonoBehaviour
 
     void LateUpdate()
     {
-        if (IsVisibleToCamera(transform))
+        if (IsVisibleToCamera())
         {
             transform.rotation = Camera.main.transform.rotation;
             transform.rotation = Quaternion.Euler(0f, transform.rotation.eulerAngles.y, 0f);

@@ -14,6 +14,7 @@ public class WeaponBrain : MonoBehaviour
     private AnimType animType;
     private int currentAminHash;
     private bool playingAnim;
+    private bool IsAttacking;
     private enum AnimType
     {
         Idle,
@@ -37,9 +38,11 @@ public class WeaponBrain : MonoBehaviour
 
     private void OnEnable()
     {
+        IsAttacking = false;
         Weapons.OnPlayerAttack += Weapons_OnAttack;
         RayGun.OnStopRayShoot += RayGun_OnStopShoot;
         MeleeAttacker.OnStopMeleeAttack += MeleeAttacker_OnStopMeleeAttack;
+        ProjectileGun.OnStopProjectileShoot += ProjectileGun_OnStopProjectileShoot;
         animType = AnimType.Walk;
         playingAnim = false;
     }
@@ -49,11 +52,13 @@ public class WeaponBrain : MonoBehaviour
         Weapons.OnPlayerAttack -= Weapons_OnAttack; 
         RayGun.OnStopRayShoot -= RayGun_OnStopShoot;
         MeleeAttacker.OnStopMeleeAttack -= MeleeAttacker_OnStopMeleeAttack;
+        ProjectileGun.OnStopProjectileShoot -= ProjectileGun_OnStopProjectileShoot;
     }
 
     private void Update()
     {
         PlayAnim();
+        PlayWeaponSound();
     }
 
     private Weapons SetWeapon()
@@ -117,6 +122,11 @@ public class WeaponBrain : MonoBehaviour
         }        
     }
 
+    private void PlayWeaponSound()
+    {
+        AudioManager.Instance.PlayRifleSound(IsAttacking, weaponTypes);
+    }
+
     private void ChangeAnimState(int animHash)
     {
         if (currentAminHash == animHash) return;
@@ -146,25 +156,29 @@ public class WeaponBrain : MonoBehaviour
 
     private void Weapons_OnAttack(object sender, OnPlayerAttackEventArg e)
     {
+        IsAttacking = true;
         if (animType != AnimType.Attack)
         {
             animType = AnimType.Attack;
-        }
-        if (e.weaponType == WeaponTypes.Rifle)
-        {
-            //AudioManager.PlaySound();
         }
     }
 
     private void RayGun_OnStopShoot()
     {
         animType = AnimType.Walk;
-        AudioManager.IsPlaySound = false;
+        IsAttacking = false;
     }
 
     private void MeleeAttacker_OnStopMeleeAttack()
     {
         animType = AnimType.Walk;
+        IsAttacking = false;
+    }
+
+    private void ProjectileGun_OnStopProjectileShoot()
+    {
+        animType = AnimType.Walk;
+        IsAttacking = false;
     }
 
 }

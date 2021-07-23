@@ -58,6 +58,7 @@ public class RayGun : MonoBehaviour
         {
             if (hit.collider != null)
             {
+                GameObject bHoleOnEnemy;
                 if (hit.collider.GetComponentInParent<Target>() && hit.collider.CompareTag("Enemy"))
                 {
                     Target target = hit.collider.GetComponentInParent<Target>();
@@ -65,15 +66,24 @@ public class RayGun : MonoBehaviour
                     {
                         weaponBrain.GetThisWeapon().DoAttack(target, target.GetEBFromTarget().GetThisEnemy().DodgeChance);
                     }
+                    if (ObjectPooler.Instance.GetImpactObject(ProjectileTypes.Bullet) != null)
+                    {
+                        bHoleOnEnemy = Instantiate(ObjectPooler.Instance.GetImpactObject(ProjectileTypes.Bullet), hit.point + hit.normal * 0.05f, Quaternion.identity) as GameObject;
+                        bHoleOnEnemy.transform.SetParent(hit.transform);
+                        bHoleOnEnemy.transform.LookAt(hit.point + hit.normal);
+                        Destroy(bHoleOnEnemy, 1.5f);
+                    }
                 }
-                if (ObjectPooler.Instance.GetImpactObject(ProjectileTypes.Bullet) != null)
+                else
                 {
-                    GameObject bHoleOnEnemy = Instantiate(ObjectPooler.Instance.GetImpactObject(ProjectileTypes.Bullet), hit.point + hit.normal * 0.05f, Quaternion.identity) as GameObject;
-                    bHoleOnEnemy.transform.SetParent(hit.transform);
-                    bHoleOnEnemy.transform.LookAt(hit.point + hit.normal);
-                    Destroy(bHoleOnEnemy, 1.5f);
+                    if (ObjectPooler.Instance.GetImpactObject(ProjectileTypes.Bullet) != null)
+                    {
+                        bHoleOnEnemy = Instantiate(ObjectPooler.Instance.GetImpactObject(ProjectileTypes.Bullet), hit.point + hit.normal * 0.05f, Quaternion.identity) as GameObject;
+                        bHoleOnEnemy.transform.SetParent(hit.transform);
+                        bHoleOnEnemy.transform.LookAt(hit.point + hit.normal);
+                        Destroy(bHoleOnEnemy, 1.5f);
+                    }
                 }
-
             }
         }
         yield return new WaitForSeconds(weaponBrain.GetThisWeapon().AttackSpeed);

@@ -2,23 +2,38 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class AudioManager
+
+[RequireComponent(typeof(AudioSource))]
+public class AudioManager : MonoBehaviour
 {
-    public static bool IsPlaySound;
+    public static AudioManager Instance { get; private set; }
+    private AudioSource audioSource;
 
-
-    public static void PlaySound()
+    private void Awake()
     {
-        if (IsPlaySound)
+        if (Instance == null)
         {
-            GameObject soundObject = new GameObject("Sound");
-            AudioSource audioSource = soundObject.AddComponent<AudioSource>();
-            audioSource.PlayOneShot(GameController.Instance.LaserGunShoot, 0.2f);
+            Instance = this;
         }
-        else
+        else 
         {
-            //audioSource.Stop();
-        }
-        
+            Destroy(Instance);
+        }           
+        audioSource = GetComponent<AudioSource>();
+    }
+
+    public void PlayRifleSound(bool controlSound, WeaponTypes weaponType)
+    {
+        if(weaponType == WeaponTypes.Rifle)
+        {
+            if (controlSound)
+            {
+                audioSource.PlayOneShot(GameController.Instance.LaserGunShoot, 0.5f);
+            }
+            else
+            {
+                audioSource.Stop();
+            }
+        }    
     }
 }

@@ -9,6 +9,7 @@ public class ProjectileGun : MonoBehaviour
     [SerializeField] private Transform FiringPoint;
     private WeaponBrain weaponBrain;
     private Input input;
+    public static event Action OnStopProjectileShoot;
     
 
     private void Awake()
@@ -27,6 +28,10 @@ public class ProjectileGun : MonoBehaviour
                 {
                     StartCoroutine(Shoot(() => { WeaponInventory.Instance.IsAttacking = false; }));
                 }
+            }
+            else
+            {
+                OnStopProjectileShoot?.Invoke();
             }
         }  
     }
