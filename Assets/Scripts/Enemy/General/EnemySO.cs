@@ -17,6 +17,7 @@ public class EnemySO : ScriptableObject, IAttack
     [SerializeField] private bool isGroundUnit;
     [SerializeField] private float avoidanceRadius;
     [SerializeField] private float moveSpeed;
+    [SerializeField] private float speedMultiplier;
     public Transform WorldPrefab;
 
     public int MaxHP => maxHP;
@@ -30,11 +31,6 @@ public class EnemySO : ScriptableObject, IAttack
     public bool IsGroundUnit => isGroundUnit;
     public float AvoidanceRadius => avoidanceRadius;
     public float MoveSpeed => moveSpeed;
-
+    public float SpeedMultiplier => speedMultiplier;
 }
 
-public enum EnemyTypes
-{
-    Giant,
-    Fighter
-}

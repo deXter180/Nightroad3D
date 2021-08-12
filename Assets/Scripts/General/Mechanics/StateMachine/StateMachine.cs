@@ -27,17 +27,20 @@ public class StateMachine
     }
     public void SetState(States states)
     {
-        InitializeDict();
-        if (StateDict.TryGetValue(states, out State state))
+        if (enemyBrain.navMeshAgent.isActiveAndEnabled && enemyBrain.navMeshAgent.isOnNavMesh)
         {
-            if (state == currentState)
-                return;
+            InitializeDict();
+            if (StateDict.TryGetValue(states, out State state))
+            {
+                if (state == currentState)
+                    return;
 
-            currentState?.OnExit();
-            currentState = state;
-            OnStateChange?.Invoke(currentState);
-            currentState.OnEnter();
-        }
+                currentState?.OnExit();
+                currentState = state;
+                OnStateChange?.Invoke(currentState);
+                currentState.OnEnter();
+            }
+        }        
     } 
     public State GetState(States states)
     {
@@ -56,12 +59,17 @@ public class StateMachine
 
     public void Tick()
     {
-        InitializeDict();
-        if (currentState == null)
+        
+        if (enemyBrain.navMeshAgent.isActiveAndEnabled && enemyBrain.navMeshAgent.isOnNavMesh)
         {
-            SetState(States.Roam);
+            InitializeDict();
+            if (currentState == null)
+            {
+                SetState(States.Roam);
+            }
+            currentState.Tick();
         }
-        currentState.Tick();
+        
     }
 }
 

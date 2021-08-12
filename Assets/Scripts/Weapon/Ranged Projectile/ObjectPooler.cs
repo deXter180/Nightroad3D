@@ -4,24 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-[Serializable] public struct ObjectPoolItems
-{
-    public Projectile ProjectilePrefab;
-    public int PoolSize;
-    //public bool Expandable;
-}
-[Serializable] public struct ProjectileImpact
-{
-    public ProjectileTypes ProjectileType;
-    public GameObject ImpactSprite;
-}
-
 public class ObjectPooler : MonoBehaviour
 {
-    [SerializeField] private List<ObjectPoolItems> itemsToPool = new List<ObjectPoolItems>();
-    private List<Projectile> projectiles;
-    [SerializeField] private List<ProjectileImpact> ProjectileImpacts = new List<ProjectileImpact>();
-
+    private List<Projectile> projectiles = new List<Projectile>();  
+    [SerializeField] private int PoolSize;
     #region Singleton
     public static ObjectPooler Instance { get; private set; }
 
@@ -41,33 +27,19 @@ public class ObjectPooler : MonoBehaviour
 
     private void Start()
     {
-        projectiles = new List<Projectile>();
-        foreach (ObjectPoolItems item in itemsToPool)
-        {
-            for (int i = 0; i < item.PoolSize; i++)
-            {
-                Projectile obj = Instantiate(item.ProjectilePrefab);
-                obj.gameObject.SetActive(false);
-                projectiles.Add(obj);
-            }
-        }
+        StartCoroutine(InitializePool(ProjectileTypes.FireBall));      
     }
 
-    public void InitializePool(ProjectileTypes projectile)
+    public IEnumerator InitializePool(ProjectileTypes projectileType)
     {
-        foreach (ObjectPoolItems item in itemsToPool)
+        yield return new WaitForSeconds(1f);
+        for (int i = 0; i < PoolSize; i++)
         {
-            if (item.ProjectilePrefab.GetProjectileType() == projectile)
-            {
-                for (int i = 0; i < item.PoolSize; i++)
-                {
-                    Projectile _projectile = Instantiate(item.ProjectilePrefab);
-                    _projectile.gameObject.SetActive(false);
-                    projectiles.Add(_projectile);
-                }
-            }
+            GameObject _projectile = Instantiate(AssetCollections.GetProjectileObj(projectileType));
+            _projectile.gameObject.SetActive(false);
+            if (_projectile.GetComponent<Projectile>() != null)
+                projectiles.Add(_projectile.GetComponent<Projectile>());
         }
-
     }
 
     public void ReturnToPool(Projectile _projectile)
@@ -97,17 +69,4 @@ public class ObjectPooler : MonoBehaviour
         return null;
     }
 
-    public GameObject GetImpactObject(ProjectileTypes projectileType)
-    {
-        GameObject temp;
-        for (int i = 0; i < ProjectileImpacts.Count; i++)
-        {
-            if (ProjectileImpacts[i].ProjectileType == projectileType)
-            {
-                temp = ProjectileImpacts[i].ImpactSprite;
-                return temp;
-            }
-        }
-        return null;
-    }
 }

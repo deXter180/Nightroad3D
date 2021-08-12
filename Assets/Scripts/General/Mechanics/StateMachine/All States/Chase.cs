@@ -7,41 +7,52 @@ using UnityEngine;
 public class Chase : State
 {
     private EnemyBrain enemyBrain;
+    private EnemyTrigger enemyTrigger;
+    private float speedMult;   
 
     public Chase(EnemyBrain EB, StateMachine SM) : base(EB.gameObject, SM)
     {
         enemyBrain = EB;
+        enemyTrigger = EB.GetComponentInChildren<EnemyTrigger>();
     }
 
     public override void Tick()
     {
-        if (enemyBrain.IsTargetInRange == false && enemyBrain.IsTargetFleed == false)
+        if (enemyTrigger.IsTargetFleed && !enemyTrigger.IsTargetInRange)
         {
-            ChaseTarget();
+            stateMachine.SetState(States.Roam);
         }
-        else if (enemyBrain.IsTargetInRange)
+        else if (enemyTrigger.IsTargetInRange && !enemyTrigger.IsTargetFleed)
         {
             stateMachine.SetState(States.Attack);
         }
-        else if (enemyBrain.IsTargetFleed)
+        else if (!enemyTrigger.IsTargetInRange && !enemyTrigger.IsTargetFleed)
         {
-            stateMachine.SetState(States.Roam);
+            ChaseTarget();
         }
     }
 
     public override void OnEnter()
     {
-        enemyBrain.navMeshAgent.destination = PlayerController.Instance.transform.position;
-        enemyBrain.navMeshAgent.isStopped = false;
+        enemyBrain.navMeshAgent.isStopped = false;       
     }
 
     public override void OnExit()
     {
+        enemyBrain.navMeshAgent.speed = enemyBrain.GetThisEnemy().ThisEnemySO.MoveSpeed;
         enemyBrain.navMeshAgent.isStopped = true;
     }
 
     private void ChaseTarget()
     {
+        if (enemyTrigger.IsSlowed)
+        {
+            enemyBrain.navMeshAgent.speed = enemyBrain.GetThisEnemy().ThisEnemySO.MoveSpeed;
+        }
+        else
+        {
+            enemyBrain.navMeshAgent.speed = enemyBrain.navMeshAgent.speed * enemyBrain.GetThisEnemy().ThisEnemySO.SpeedMultiplier;           
+        }
         enemyBrain.navMeshAgent.SetDestination(PlayerController.Instance.transform.position);
     }
 

@@ -111,7 +111,7 @@ public class InventoryItemSO : ScriptableObject
 
     public static void CreateGridVisual(Transform visualParentTransform, InventoryItemSO inventoryItemSO, float cellSize)
     {
-        Transform visualTransform = Instantiate(InventoryAssets.Instance.gridVisual, visualParentTransform);
+        Transform visualTransform = Instantiate(InventorySystem.Instance.gridVisual, visualParentTransform);
         visualTransform.gameObject.SetActive(false);
         RectTransform rectTransform = visualTransform.GetComponent<RectTransform>();
         if (inventoryItemSO.Width == 1 && inventoryItemSO.Height == 1)
@@ -138,23 +138,4 @@ public class InventoryItemSO : ScriptableObject
 
 }
 
-public enum ItemRarity
-{
-    Common,
-    Uncommon,
-    Rare,
-    Epic
-}
 
-public enum ItemTypes
-{
-    Ammo,
-    HealthPotion,
-    Grenade,
-    Armor,
-    Gloves,
-    Shield,
-    Boots,
-    Helmet,
-    ManaPotion
-}

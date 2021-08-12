@@ -17,13 +17,12 @@ MonoBehaviour:
     type: 3}
   WorldPrefab: {fileID: 3779381617661960356, guid: 362bbcc92a819b7459a90ae2fee30782,
     type: 3}
-  visual: {fileID: 7021910407294756034, guid: 3bf4359fd71dc9d409b8e6137bcc073c, type: 3}
   ItemName: Silver Gloves
   ItemDescription: 
   Usable: 0
   Width: 2
   Height: 1
-  itemType: 4
+  itemType: 5
   Rarity: 0
   AttributeAmount: 0
   AttributeIcon: {fileID: 0}

@@ -17,7 +17,7 @@ MonoBehaviour:
     serializedVersion: 2
     Hash: 00000000000000000000000000000000
   m_OptimizeCatalogSize: 0
-  m_BuildRemoteCatalog: 0
+  m_BuildRemoteCatalog: 1
   m_BundleLocalCatalog: 0
   m_DisableCatalogUpdateOnStart: 0
   m_IgnoreUnsupportedFilesInBuild: 0
@@ -25,13 +25,14 @@ MonoBehaviour:
   m_maxConcurrentWebRequests: 500
   m_ContiguousBundles: 1
   m_RemoteCatalogBuildPath:
-    m_Id: 
+    m_Id: 761c57a7a3665db4f953b46b2f8a79f8
   m_RemoteCatalogLoadPath:
-    m_Id: 
+    m_Id: 9cdc2af7d6cf5c74fa95dbdd3554914e
   m_overridePlayerVersion: 
   m_GroupAssets:
   - {fileID: 11400000, guid: 129470f50c9be6449b937e41a885778e, type: 2}
   - {fileID: 11400000, guid: 49b509e985255334ca2c9f747a6eb9e8, type: 2}
+  - {fileID: 11400000, guid: 0270bbc9c736a684a819b0b180d550bd, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1
@@ -73,6 +74,13 @@ MonoBehaviour:
   m_LabelTable:
     m_LabelNames:
     - default
+    - Enemy
+    - Weapon
+    - Inventory
+    - ScriptableObject
+    - 1stLoadPrefab
+    - ImpactEffect
+    - Projectile
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 4d0b28ea555e63f448bffdaa57cbfe58, type: 2}

@@ -22,7 +22,7 @@ MonoBehaviour:
   Usable: 0
   Width: 2
   Height: 2
-  itemType: 5
+  itemType: 6
   Rarity: 0
   AttributeAmount: 0
   AttributeIcon: {fileID: 0}

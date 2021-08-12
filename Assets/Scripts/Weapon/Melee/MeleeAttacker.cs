@@ -63,11 +63,14 @@ public class MeleeAttacker : MonoBehaviour
                 if (collision.gameObject.CompareTag("Enemy") && collision.gameObject.GetComponentInParent<Target>())
                 {
                     Target target = collision.gameObject.GetComponentInParent<Target>();
-                    if (target != null && target.IsDead == false && target.GetEnemy() == true)
+                    if (target != null && target.GetEBFromTarget() != null)
                     {
-                        WeaponInventory.Instance.IsAttacking = true;
-                        weaponBrain.GetThisWeapon().DoAttack(target, target.GetEBFromTarget().GetThisEnemy().ThisEnemySO.DodgeChance);
-                        StartCoroutine(Attacking(() => { WeaponInventory.Instance.IsAttacking = false; }));
+                        if (target.IsDead == false && target.GetEnemy() == true)
+                        {
+                            WeaponInventory.Instance.IsAttacking = true;
+                            weaponBrain.GetThisWeapon().DoAttack(target, target.GetEBFromTarget().GetThisEnemy().ThisEnemySO.DodgeChance);
+                            StartCoroutine(Attacking(() => { WeaponInventory.Instance.IsAttacking = false; }));
+                        }                        
                     }
                 }
             }
@@ -83,11 +86,14 @@ public class MeleeAttacker : MonoBehaviour
                 if (collision.gameObject.CompareTag("Enemy") && collision.gameObject.activeInHierarchy)
                 {
                     collision.gameObject.TryGetComponent<Target>(out Target target);
-                    if (target != null && target.IsDead == false && target.GetEnemy() == true)
+                    if (target != null && target.GetEBFromTarget() != null)
                     {
-                        WeaponInventory.Instance.IsAttacking = true;
-                        weaponBrain.GetThisWeapon().DoAttack(target, target.GetEBFromTarget().GetThisEnemy().ThisEnemySO.DodgeChance);
-                        StartCoroutine(Attacking(() => { WeaponInventory.Instance.IsAttacking = false; }));
+                        if (target.IsDead == false && target.GetEnemy() == true)
+                        {
+                            WeaponInventory.Instance.IsAttacking = true;
+                            weaponBrain.GetThisWeapon().DoAttack(target, target.GetEBFromTarget().GetThisEnemy().ThisEnemySO.DodgeChance);
+                            StartCoroutine(Attacking(() => { WeaponInventory.Instance.IsAttacking = false; }));
+                        }                        
                     }
                 }
             }

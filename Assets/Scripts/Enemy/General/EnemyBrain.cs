@@ -10,36 +10,38 @@ public class EnemyBrain : MonoBehaviour
     private Vector3 startPos;
     private Enemy enemy;
     private StateMachine stateMachine;
-    private SphereCollider sphereCollider;
-    private BoxCollider hitBox;
+    private EnemyTrigger enemyTrigger;
     private NavMeshAgent navAgent;
     public Vector3 StartPos { get => startPos; }
     public NavMeshAgent navMeshAgent { get => navAgent; }
-    public bool IsTargetFleed { get; private set; }
-    public bool IsTargetInRange { get; private set; }
-    private NavMeshPath meshPath;
+    
+    [HideInInspector] public bool IsSetupDone = false;
     private int layer = 1 << 0;
 
 
-    private void Awake()
+    private void OnEnable()
     {
-        StartCoroutine(SetEnemy());
-        stateMachine = new StateMachine(this);               
-        sphereCollider = GetComponent<SphereCollider>();
-        hitBox = GetComponentInChildren<BoxCollider>();
-        navAgent = GetComponent<NavMeshAgent>();
-        meshPath = new NavMeshPath();
+        StartCoroutine(SetEnemy());       
     }
 
     private void OnDisable()
     {
-        stateMachine.OnStateChange -= StateMachine_OnStateChange;
-        enemy.OnEnemyAttack -= Enemy_OnEnemyAttack;
+        if (stateMachine != null)
+        {
+            stateMachine.OnStateChange -= StateMachine_OnStateChange;
+        }
+        if (enemy != null)
+        {
+            enemy.OnEnemyAttack -= Enemy_OnEnemyAttack;
+        }              
     }
 
     private void Update()
     {
-        stateMachine.Tick();
+        if (IsSetupDone)
+        {
+            stateMachine.Tick();
+        }      
     }
 
     public Enemy GetThisEnemy()
@@ -54,49 +56,29 @@ public class EnemyBrain : MonoBehaviour
 
     private IEnumerator SetEnemy()
     {
-        yield return new WaitForEndOfFrame();
-        enemy = new Enemy(this, enemyType);
+        yield return new WaitForSeconds(1f);
+        switch (enemyType)      
+        {
+            case EnemyTypes.Giant:
+                enemy = new Giant(this, enemyType);
+                break;
+            case EnemyTypes.Fighter:
+                enemy = new Fighter(this, enemyType);
+                break;
+        }
         enemy.OnEnemyAttack += Enemy_OnEnemyAttack;
+        enemyTrigger = GetComponentInChildren<EnemyTrigger>();
+        enemyTrigger.TriggerSetup(enemy);
+        navAgent = GetComponent<NavMeshAgent>();
+        stateMachine = new StateMachine(this);
         navAgent.speed = enemy.ThisEnemySO.MoveSpeed;
         stateMachine.OnStateChange += StateMachine_OnStateChange;
-        sphereCollider.isTrigger = true;
-        startPos = transform.position;
-        IsTargetFleed = true;
-        IsTargetInRange = false;
+        startPos = transform.position;              
+        GetComponent<Target>().SetupMaxHP(enemy.ThisEnemySO.MaxHP);
+        IsSetupDone = true;
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.CompareTag("Player"))
-        {
-            IsTargetFleed = false;
-        }
-    }
-
-    private void OnTriggerStay(Collider other)
-    {
-        if (other.gameObject.CompareTag("Player"))
-        {
-            if (Vector3.Distance(transform.position, other.transform.position) <= enemy.ThisEnemySO.AttackRange)
-            {
-                IsTargetInRange = true;
-            }
-            else
-            {
-                IsTargetInRange = false;
-            }
-        }
-    }
-
-    private IEnumerator OnTriggerExit(Collider other)
-    {
-        if (other.gameObject.CompareTag("Player"))
-        {
-            yield return new WaitForSeconds(3f);
-            IsTargetInRange = false;
-            IsTargetFleed = true;
-        }
-    }
+   
 
     private void StateMachine_OnStateChange(State obj)
     {

@@ -12,13 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55fa94d8dec12b8418da0f877b65eebb, type: 3}
   m_Name: Fighter
   m_EditorClassIdentifier: 
+  maxHP: 0
   damageAmount: 0
   attackSpeed: 0
   attackRange: 0
   critChance: 0
   critBonus: 0
-  enemyType: 1
+  enemyType: 2
   dodgeChance: 0
   isGroundUnit: 0
   avoidanceRadius: 0
+  moveSpeed: 0
+  speedMultiplier: 0
   WorldPrefab: {fileID: 0}

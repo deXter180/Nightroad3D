@@ -24,17 +24,3 @@ public class WeaponSO : ScriptableObject, IAttack
     public bool IsRanged => isRanged;
     public WeaponTypes WeaponType => weaponType;
 }
-
-public enum WeaponTypes
-{
-    Axe,
-    Rifle,
-    RocketLauncher
-}
-
-public enum WeaponCategories
-{
-    Melee,
-    RaycastShoot,
-    ProjectileShoot
-}

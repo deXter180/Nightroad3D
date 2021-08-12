@@ -18,7 +18,7 @@ MonoBehaviour:
   critChance: 0.7
   critBonus: 2
   bloom: 0
-  weaponType: 0
+  weaponType: 1
   isRanged: 0
   WorldPrefab: {fileID: 1754257668128613889, guid: ef43d95da1077e24b9001586fd0d6f8b,
     type: 3}

@@ -17,13 +17,12 @@ MonoBehaviour:
     type: 3}
   WorldPrefab: {fileID: 3305865399682479684, guid: 12f422fbc7a57e6428a36680c7c8892f,
     type: 3}
-  visual: {fileID: 2416755988769312998, guid: 7199f3499afbead4391c679c96bd7adb, type: 3}
   ItemName: Knight Boots
   ItemDescription: 
   Usable: 0
   Width: 1
   Height: 2
-  itemType: 6
+  itemType: 7
   Rarity: 0
   AttributeAmount: 0
   AttributeIcon: {fileID: 0}

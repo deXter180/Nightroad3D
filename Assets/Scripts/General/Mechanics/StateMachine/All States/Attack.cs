@@ -6,33 +6,45 @@ using System;
 public class Attack : State
 {
     private EnemyBrain enemyBrain;
+    private EnemyTrigger enemyTrigger;
     private bool IsAttacking;
 
     public Attack(EnemyBrain EB, StateMachine SM) : base(EB.gameObject, SM)
     {
         enemyBrain = EB;
+        enemyTrigger = EB.GetComponentInChildren<EnemyTrigger>();
     }
 
     public override void Tick()
     {
-        if (enemyBrain.IsTargetInRange)
+        if (enemyTrigger.IsTargetInRange && !enemyTrigger.IsTargetFleed)
         {
             InitiateAttack();
         }
         else
         {
-            stateMachine.SetState(States.Chase);
+            if (enemyTrigger.IsTargetFleed)
+            {
+                stateMachine.SetState(States.Roam);
+            }
+            else
+            {
+                stateMachine.SetState(States.Chase);
+            }
         }
+        
     }
 
     public override void OnEnter()
     {
         IsAttacking = false;
+        enemyBrain.navMeshAgent.isStopped = true;
     }
 
     public override void OnExit()
     {
         IsAttacking = false;
+        enemyBrain.navMeshAgent.isStopped = false;
     }
 
     private void InitiateAttack()
@@ -46,7 +58,7 @@ public class Attack : State
                 enemyBrain.GetThisEnemy().RaiseOnEnemyAttack(enemyBrain.GetEnemyType());
                 enemyBrain.StartCoroutine(Attacking(() => { IsAttacking = false; }));
             }
-            
+
         }
     }
 

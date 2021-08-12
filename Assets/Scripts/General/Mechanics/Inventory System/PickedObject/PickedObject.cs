@@ -25,7 +25,7 @@ public class PickedObject : MonoBehaviour
         float posX = position.x;
         float posZ = position.z;
         Vector3 groundPos = new Vector3(posX, PlayerController.Instance.GetGroundHeight() + 10f, posZ);        
-        Transform spawnedTransform = Instantiate(InventoryAssets.Instance.GetInventoryItemSO(itemType).WorldPrefab, PlayerController.Instance.GetRandomDirection() * 100f + groundPos, Quaternion.identity);
+        Transform spawnedTransform = Instantiate(AssetCollections.GetInventoryItemSOFromList(itemType).WorldPrefab, PlayerController.Instance.GetRandomDirection() * 100f + groundPos, Quaternion.identity);
         PickedObject pickedObject = spawnedTransform.GetComponent<PickedObject>();
         pickedObject.SetupInGameWorld(itemType);
         return pickedObject;
@@ -39,7 +39,7 @@ public class PickedObject : MonoBehaviour
             Vector3 randomDir = PlayerController.Instance.GetRandomDirection();
             float posX = position.x;
             float posZ = position.z;
-            Transform spawnedTransform = Instantiate(InventoryAssets.Instance.GetInventoryItemSO(itemType).WorldPrefab, new Vector3(posX, PlayerController.Instance.GetGroundHeight(), posZ) + randomDir * 100f, Quaternion.identity);           
+            Transform spawnedTransform = Instantiate(AssetCollections.GetInventoryItemSOFromList(itemType).WorldPrefab, new Vector3(posX, PlayerController.Instance.GetGroundHeight(), posZ) + randomDir * 100f, Quaternion.identity);           
             pickedObjects[i] = spawnedTransform.GetComponent<PickedObject>();
             pickedObjects[i].AddForceToItemSpawn(randomDir);
             pickedObjects[i].SetupInGameWorld(itemType);
@@ -71,7 +71,7 @@ public class PickedObject : MonoBehaviour
 
     public InventoryItemSO GetItemSO()
     {
-        return InventoryAssets.Instance.GetInventoryItemSO(item);
+        return AssetCollections.GetInventoryItemSOFromList(item);
     }
 
     private void SetupInGameWorld(ItemTypes item)

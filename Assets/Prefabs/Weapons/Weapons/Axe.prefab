@@ -80,7 +80,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d4551440602a084486c2160bd9e2e47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weaponTypes: 0
+  weaponTypes: 1
   weaponCategories: 0
 --- !u!114 &1754257668128613895
 MonoBehaviour:

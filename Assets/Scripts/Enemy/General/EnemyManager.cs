@@ -33,7 +33,7 @@ public class Enemy
 
     public Enemy(EnemyBrain EB, EnemyTypes enemyType)
     {
-        enemySO = EnemyAssets.Instance.GetEnemySOFromList(enemyType);
+        enemySO = AssetCollections.GetEnemySOFromList(enemyType);
         this.enemyBrain = EB;
         this.transform = EB.transform;
         this.rigidbody = EB.GetComponent<Rigidbody>();

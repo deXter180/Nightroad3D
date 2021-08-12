@@ -26,13 +26,13 @@ public class WeaponBrain : MonoBehaviour
     private int WalkHash = Animator.StringToHash("Walk");
 
     private void Awake()
-    {
-        SetWeapon();
+    {       
         animator = GetComponentInChildren<Animator>();
+        StartCoroutine(SetWeapon());
     }
 
     private void OnEnable()
-    {
+    {        
         Weapons.OnPlayerAttack += Weapons_OnAttack;
         IsAttacking = false;       
         RayGun.OnStopRayShoot += RayGun_OnStopShoot;
@@ -56,8 +56,9 @@ public class WeaponBrain : MonoBehaviour
         PlayWeaponSound();
     }
 
-    private void SetWeapon()
+    private IEnumerator SetWeapon()
     {
+        yield return new WaitForSeconds(1f);
         weapon = new Weapons(this, weaponTypes);
         
     }

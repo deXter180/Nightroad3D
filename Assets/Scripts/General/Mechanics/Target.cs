@@ -33,31 +33,10 @@ public class Target : MonoBehaviour
             Resource.OnKilled -= OnKilled;
         }
     }
-    private void Start()
-    {
-        if (GetPlayerFromTarget() != null)
-        {
-            SetupMaxHPPlayer();
-        }
-        else if (GetEBFromTarget() != null)
-        {
-            StartCoroutine(SetupMaxHPEnemy());
-        }       
-        // Setting Max Health by calling method from HealthSystem
-    }
 
-    private void SetupMaxHPPlayer()
+    public void SetupMaxHP(int maxHP)
     {
-        MaxHP = GetPlayerFromTarget().MaxHP;
-        Resource.SetHealth(MaxHP);
-    }
-
-    private IEnumerator SetupMaxHPEnemy()
-    {
-        yield return new WaitForEndOfFrame();
-        Enemy enemy = GetEBFromTarget().GetThisEnemy();
-        MaxHP = enemy.ThisEnemySO.MaxHP;
-        Resource.SetHealth(MaxHP);
+        Resource.SetHealth(maxHP);
     }
 
     public EnemyBrain GetEBFromTarget()
@@ -65,15 +44,6 @@ public class Target : MonoBehaviour
         if (TryGetComponent(out EnemyBrain enemyBrain))
         {
             return enemyBrain;
-        }
-        else return null;
-    }
-
-    public PlayerController GetPlayerFromTarget()
-    {
-        if (TryGetComponent(out PlayerController playerController))
-        {
-            return playerController;
         }
         else return null;
     }
@@ -166,6 +136,10 @@ public class Target : MonoBehaviour
                 IsDead = Resource.IsDead;
                 Debug.Log("Dead !!");
                 gameObject.SetActive(false);
+                if (IsEnemy)
+                {
+                    AssetCollections.ReleaseAssetInstance(gameObject, "Enemy");
+                }
             }
         }
     }

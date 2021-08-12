@@ -58,6 +58,7 @@ public class PlayerController : MonoBehaviour
     private void OnEnable()
     {
         RB.useGravity = false;
+        GetComponent<Target>().SetupMaxHP(MaxHP);
         //PickedObjectCols = new List<Collider>();
     }
 
@@ -118,7 +119,6 @@ public class PlayerController : MonoBehaviour
             if (GroundCheck())
             {
                 RB.AddForce(transform.up * JumpForce, ForceMode.Impulse);
-                Debug.Log(GetGroundHeight());
             }
         }
     }

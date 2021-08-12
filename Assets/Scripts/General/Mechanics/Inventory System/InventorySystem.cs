@@ -10,7 +10,8 @@ public class InventorySystem : MonoBehaviour
     private List<PlacedObject> InventoryList;
     private RectTransform itemContainer;
     [SerializeField] private Transform InventoryGridStart;
-    public static event EventHandler<PlacedObject> OnObjectPlaced;          
+    public static event EventHandler<PlacedObject> OnObjectPlaced;
+    public Transform gridVisual;
 
     private void Awake()
     {
@@ -24,25 +25,19 @@ public class InventorySystem : MonoBehaviour
         InventoryList = new List<PlacedObject>();
     }
 
-    private void Start()
-    {
-        StartCoroutine(Test());
-        //StartCoroutine(Test());
-    }
-
-    private IEnumerator Test()
-    {
-        yield return new WaitForSeconds(1f);
-        TryAddingItem(InventoryAssets.Instance.GetInventoryItemSO(ItemTypes.HealthPotion));
-        TryAddingItem(InventoryAssets.Instance.GetInventoryItemSO(ItemTypes.Armor));
-        TryAddingItem(InventoryAssets.Instance.GetInventoryItemSO(ItemTypes.Gloves));
-        TryAddingItem(InventoryAssets.Instance.GetInventoryItemSO(ItemTypes.Boots));
-        TryAddingItem(InventoryAssets.Instance.GetInventoryItemSO(ItemTypes.Shield));
-        TryAddingItem(InventoryAssets.Instance.GetInventoryItemSO(ItemTypes.Helmet));
-        TryAddingItem(InventoryAssets.Instance.GetInventoryItemSO(ItemTypes.ManaPotion));
-    }
-
     //~~~~~~~~~~~~~~~~~~ Utilities ~~~~~~~~~~~~~~~~~~
+
+    public IEnumerator Test()
+    {
+        yield return new WaitForSeconds(2f);
+        TryAddingItem(AssetCollections.GetInventoryItemSOFromList(ItemTypes.HealthPotion));
+        TryAddingItem(AssetCollections.GetInventoryItemSOFromList(ItemTypes.Armor));
+        TryAddingItem(AssetCollections.GetInventoryItemSOFromList(ItemTypes.Gloves));
+        TryAddingItem(AssetCollections.GetInventoryItemSOFromList(ItemTypes.Boots));
+        TryAddingItem(AssetCollections.GetInventoryItemSOFromList(ItemTypes.Shield));
+        TryAddingItem(AssetCollections.GetInventoryItemSOFromList(ItemTypes.Helmet));
+        TryAddingItem(AssetCollections.GetInventoryItemSOFromList(ItemTypes.ManaPotion));
+    }
 
     public Grid<GridObject> GetGrid()
     {
@@ -242,7 +237,7 @@ public class InventorySystem : MonoBehaviour
 
         foreach(AddedItem addedItem in listAddedItem.addedItemList)
         {
-            TryPlaceItem(InventoryAssets.Instance.GetInventoryItemSO(addedItem.itemType), addedItem.gridPos, addedItem.dir);
+            TryPlaceItem(AssetCollections.GetInventoryItemSOFromList(addedItem.itemType), addedItem.gridPos, addedItem.dir);
         }
     }
 

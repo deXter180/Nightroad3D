@@ -61,27 +61,31 @@ public class RayGun : MonoBehaviour
             {
                 if (hit.collider != null)
                 {
-                    GameObject bHoleOnEnemy;
+                    GameObject tempGO = new GameObject();
+                    GameObject bHoleOnEnemy = new GameObject();
                     if (hit.collider.GetComponentInParent<Target>() && hit.collider.CompareTag("Enemy"))
                     {
                         Target target = hit.collider.GetComponentInParent<Target>();
-                        if (target.IsDead == false)
+                        if (target != null && target.GetEBFromTarget() != null)
                         {
-                            weaponBrain.GetThisWeapon().DoAttack(target, target.GetEBFromTarget().GetThisEnemy().ThisEnemySO.DodgeChance);
+                            if (target.IsDead == false)
+                            {
+                                weaponBrain.GetThisWeapon().DoAttack(target, target.GetEBFromTarget().GetThisEnemy().ThisEnemySO.DodgeChance);
+                            }
                         }
-                        if (ObjectPooler.Instance.GetImpactObject(ProjectileTypes.Bullet) != null)
+                        if (AssetCollections.GetImpactObj(ImpactTypes.BulletHole) != null)
                         {
-                            bHoleOnEnemy = Instantiate(ObjectPooler.Instance.GetImpactObject(ProjectileTypes.Bullet), hit.point + hit.normal * 0.05f, Quaternion.identity) as GameObject;
+                            bHoleOnEnemy = Instantiate(AssetCollections.GetImpactObj(ImpactTypes.BulletHole), hit.point + hit.normal * 0.05f, Quaternion.identity) as GameObject;
                             bHoleOnEnemy.transform.SetParent(hit.transform);
                             bHoleOnEnemy.transform.LookAt(hit.point + hit.normal);
                             Destroy(bHoleOnEnemy, 1.5f);
-                        }
+                        }                                               
                     }
                     else
                     {
-                        if (ObjectPooler.Instance.GetImpactObject(ProjectileTypes.Bullet) != null)
+                        if (AssetCollections.GetImpactObj(ImpactTypes.BulletHole) != null)
                         {
-                            bHoleOnEnemy = Instantiate(ObjectPooler.Instance.GetImpactObject(ProjectileTypes.Bullet), hit.point + hit.normal * 0.05f, Quaternion.identity) as GameObject;
+                            bHoleOnEnemy = Instantiate(AssetCollections.GetImpactObj(ImpactTypes.BulletHole), hit.point + hit.normal * 0.05f, Quaternion.identity) as GameObject;
                             bHoleOnEnemy.transform.SetParent(hit.transform);
                             bHoleOnEnemy.transform.LookAt(hit.point + hit.normal);
                             Destroy(bHoleOnEnemy, 1.5f);

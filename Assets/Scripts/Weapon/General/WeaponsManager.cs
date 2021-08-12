@@ -28,7 +28,7 @@ public class Weapons
     public Weapons (WeaponBrain wb, WeaponTypes weaponTypes)
     {
         this.weaponBrain = wb;
-        weaponSO = WeaponAssets.Instance.GetWeaponSOFromList(weaponTypes);
+        weaponSO = AssetCollections.GetWeaponSOFromList(weaponTypes);
     }
 
     public virtual void DoAttack(Target enemyTarget, float enemyDodgeChance)
