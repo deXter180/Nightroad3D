@@ -29,7 +29,7 @@ public class PlayerController : MonoBehaviour
     private float groundHeight;
     private float camControl;
     private Rigidbody RB;
-    private Collider col;
+    private CapsuleCollider col;
     private Target target;
     private Vector3 OldPos;
     private Input input;
@@ -49,7 +49,7 @@ public class PlayerController : MonoBehaviour
         }
         else Instance = this;
         RB = GetComponent<Rigidbody>();
-        col = GetComponent<Collider>();
+        col = GetComponent<CapsuleCollider>();
         input = GetComponent<InputControl>();
         target = GetComponent<Target>();
         bitmask = ground | water;
@@ -125,10 +125,10 @@ public class PlayerController : MonoBehaviour
 
     private bool GroundCheck()
     {
-        Physics.BoxCast(col.bounds.center, transform.localScale, Vector3.down, out RaycastHit hit, Quaternion.identity, col.bounds.extents.y + 15f, bitmask);
+        Physics.BoxCast(col.bounds.center, transform.localScale / 2, Vector3.down, out RaycastHit hit, Quaternion.identity, col.bounds.extents.y, bitmask);
         if (hit.collider != null)
         {
-            groundHeight = hit.transform.position.y;
+            groundHeight = hit.transform.position.y;          
             return true;
         }
         else
