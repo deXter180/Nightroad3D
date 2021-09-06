@@ -235,28 +235,22 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - ImpactEffect
-    m_MainAsset: {fileID: 8090606994814532889, guid: 53d9a25a590e8304c83e148029c5428d,
-      type: 3}
-    m_TargetAsset: {fileID: 8090606994814532889, guid: 53d9a25a590e8304c83e148029c5428d,
-      type: 3}
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
   - m_GUID: ee24e0616eec6b743822a70b962c21d1
     m_Address: FireBallImpact
     m_ReadOnly: 0
     m_SerializedLabels:
     - ImpactEffect
-    m_MainAsset: {fileID: 6842028999787782942, guid: ee24e0616eec6b743822a70b962c21d1,
-      type: 3}
-    m_TargetAsset: {fileID: 6842028999787782942, guid: ee24e0616eec6b743822a70b962c21d1,
-      type: 3}
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
   - m_GUID: 7538eac9c4df12b4ba5501abd3995ee9
     m_Address: FireShot
     m_ReadOnly: 0
     m_SerializedLabels:
     - Weapon
-    m_MainAsset: {fileID: 4029972624871116505, guid: 7538eac9c4df12b4ba5501abd3995ee9,
-      type: 3}
-    m_TargetAsset: {fileID: 4029972624871116505, guid: 7538eac9c4df12b4ba5501abd3995ee9,
-      type: 3}
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
   - m_GUID: ef43d95da1077e24b9001586fd0d6f8b
     m_Address: Axe
     m_ReadOnly: 0
@@ -269,10 +263,8 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - Weapon
-    m_MainAsset: {fileID: 1400932463675075050, guid: e4173e8a6a8fd2b4d96b5511c3355708,
-      type: 3}
-    m_TargetAsset: {fileID: 1400932463675075050, guid: e4173e8a6a8fd2b4d96b5511c3355708,
-      type: 3}
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
   - m_GUID: d67467a2249120548b9889098ebb2b39
     m_Address: RocketLauncher
     m_ReadOnly: 0
