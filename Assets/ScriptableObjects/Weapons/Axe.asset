@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damageAmount: 100
   attackSpeed: 0.7
-  attackRange: 100
+  attackRange: 60
   critChance: 0.7
   critBonus: 2
   bloom: 0

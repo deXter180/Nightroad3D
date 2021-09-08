@@ -5,24 +5,46 @@ using UnityEngine;
 
 public class MeleeAttacker : MonoBehaviour
 {
-    private Collider[] colliders;
-    private Vector3[] ColRange;
+    private Collider col;
+    private Vector3 ColRange;
     private WeaponBrain weaponBrain;
     private Input input;
     public static event Action OnStopMeleeAttack;
+    private bool SetupCompleted = false;
 
     private void Awake()
     {
-        colliders = GetComponentsInChildren<Collider>();
-        weaponBrain = GetComponentInParent<WeaponBrain>();
-        input = GetComponentInParent<InputControl>();
+        col = GetComponentInChildren<Collider>();
+        weaponBrain = GetComponent<WeaponBrain>();
+        input = GetComponentInParent<InputControl>();       
+    }
+
+    private void OnEnable()
+    {
         GetRange();
-        SetRange();
+        StartCoroutine(SetRange());
     }
 
     private void FixedUpdate()
     {
-        if (gameObject.activeInHierarchy)
+        StartAttack();       
+    }
+
+    private void GetRange()
+    {
+        ColRange = col.transform.localPosition;
+    }
+
+    private IEnumerator SetRange()
+    {
+        yield return new WaitUntil(() => weaponBrain.IsWeaponReady());
+        col.transform.localPosition = new Vector3(ColRange.x, ColRange.y, ColRange.z + weaponBrain.GetThisWeapon().ThisWeaponSO.AttackRange);
+        SetupCompleted = true;
+    }
+
+    private void StartAttack()
+    {
+        if (gameObject.activeInHierarchy && weaponBrain.IsWeaponReady())
         {
             if (input.GetAttackHold() == 1 && !InventoryUIHandler.Instance.IsInventoryON)
             {
@@ -35,22 +57,6 @@ public class MeleeAttacker : MonoBehaviour
             {
                 OnStopMeleeAttack?.Invoke();
             }
-        }
-    }
-
-    private void GetRange()
-    {
-        for (int i = 0; i == colliders.Length; i++)
-        {
-            ColRange[i] = colliders[i].transform.position;
-        }
-    }
-
-    private void SetRange()
-    {
-        for (int i = 0; i == colliders.Length; i++)
-        {
-            colliders[i].transform.position = new Vector3(ColRange[i].x, ColRange[i].y, weaponBrain.GetThisWeapon().ThisWeaponSO.AttackRange);
         }
     }
 

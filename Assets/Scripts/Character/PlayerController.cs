@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
     public Target PlayerTarget { get => target; }
     public int MaxHP { get => HitPoints; }
     public float DodgeChace { get => dodgeChance; }
+    public float GroundHeight;
     [SerializeField] private int HitPoints;
     [SerializeField] private float MoveSpeed;
     [SerializeField] private float MouseSensitivity;
@@ -23,20 +24,19 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float dodgeChance;
     [SerializeField] private float SelectionThreshold;
     [SerializeField] private Transform cam;
-    //private List<Collider> PickedObjectCols;
     private PickedObject selectedPickedObject = null;
     private static float globalGravity = -9.81f;
-    private float groundHeight;
     private float camControl;
     private Rigidbody RB;
     private CapsuleCollider col;
     private Target target;
     private Vector3 OldPos;
+    private Vector3 gravity;
     private Input input;
     private int ground = 1 << 8;
     private int water = 1 << 4;
     private int pickableLayer = 1 << 6;
-    private int bitmask;    
+    private int bitmask;
     public static event Action<InventoryItemSO> OnItemPicked;
 
     //~~~~~~~~~~~~~~~~~ Initialization ~~~~~~~~~~~~~~~~~~~
@@ -53,6 +53,7 @@ public class PlayerController : MonoBehaviour
         input = GetComponent<InputControl>();
         target = GetComponent<Target>();
         bitmask = ground | water;
+        gravity = globalGravity * GravityScale * Vector3.up;
     }
 
     private void OnEnable()
@@ -89,7 +90,6 @@ public class PlayerController : MonoBehaviour
 
     private void SetGravity()
     {
-        Vector3 gravity = globalGravity * GravityScale * Vector3.up;
         RB.AddForce(gravity, ForceMode.Impulse);
     }
 
@@ -97,9 +97,9 @@ public class PlayerController : MonoBehaviour
     {
         float moveX = input.GetMovement().x;
         float moveY = input.GetMovement().y;
-        Vector3 move = transform.right * moveX + transform.forward * moveY;
+        Vector3 movePos = transform.position + (transform.right * moveX + transform.forward * moveY) * MoveSpeed * Time.fixedDeltaTime;
         OldPos = transform.position;
-        RB.MovePosition(transform.position + move * MoveSpeed * Time.fixedDeltaTime);
+        RB.MovePosition(movePos);
     }
 
     private void Rotate()
@@ -118,7 +118,10 @@ public class PlayerController : MonoBehaviour
         {
             if (GroundCheck())
             {
-                RB.AddForce(transform.up * JumpForce, ForceMode.Impulse);
+                if (RB.velocity.y > 2f)
+                    RB.AddForce(transform.up * (JumpForce / 2), ForceMode.Impulse);
+                else
+                    RB.AddForce(transform.up * JumpForce, ForceMode.Impulse);
             }
         }
     }
@@ -126,26 +129,12 @@ public class PlayerController : MonoBehaviour
     private bool GroundCheck()
     {
         Physics.BoxCast(col.bounds.center, transform.localScale / 2, Vector3.down, out RaycastHit hit, Quaternion.identity, col.bounds.extents.y, bitmask);
-        if (hit.collider != null)
-        {
-            groundHeight = hit.transform.position.y;          
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return hit.collider != null;
     }
 
-    public float GetGroundHeight()
+    public bool IsMoving(Vector3 newPos)
     {
-        GroundCheck();
-        return groundHeight;
-    }
-
-    public bool IsMoving()
-    {
-        if (RB.position == OldPos)
+        if (newPos == OldPos)
         {
             return false;
         }
@@ -173,7 +162,6 @@ public class PlayerController : MonoBehaviour
     private void SearchItemsInWorld()
     {
         var ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward); //Camera.main.ScreenPointToRay(input.GetMousePosition());
-        Debug.DrawRay(ray.origin, ray.direction * Camera.main.farClipPlane / 2);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, Camera.main.farClipPlane / 2, pickableLayer))
         {

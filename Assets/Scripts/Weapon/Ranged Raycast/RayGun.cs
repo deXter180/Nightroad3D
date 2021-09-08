@@ -27,7 +27,7 @@ public class RayGun : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (gameObject.activeInHierarchy)
+        if (gameObject.activeInHierarchy && weaponBrain.IsWeaponReady())
         {
             if (input.GetAttackHold() == 1 && !InventoryUIHandler.Instance.IsInventoryON)
             {

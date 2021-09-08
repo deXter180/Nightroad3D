@@ -20,7 +20,7 @@ public class ProjectileGun : MonoBehaviour
 
     private void Update()
     {
-        if (gameObject.activeInHierarchy)
+        if (gameObject.activeInHierarchy && weaponBrain.IsWeaponReady())
         {
             if (input.GetAttackHold() == 1 && !InventoryUIHandler.Instance.IsInventoryON)
             {

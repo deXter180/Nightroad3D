@@ -96,7 +96,7 @@ public class AssetCollections : MonoBehaviour
     {
         if (label == "ScriptableObject")
         {
-            await AssetRefLoader.LoadedAssets<UnityEngine.Object>(label, LOLoadCallback);
+            await AssetRefLoader.LoadedAssets<UnityEngine.Object>(label, SOLoadCallback);
         }      
     }
 
@@ -158,7 +158,7 @@ public class AssetCollections : MonoBehaviour
         }
     }
 
-    private static void LOLoadCallback(UnityEngine.Object obj)
+    private static void SOLoadCallback(UnityEngine.Object obj)
     {
         if (obj.GetType() == typeof(InventoryItemSO))
         {

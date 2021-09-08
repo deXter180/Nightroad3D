@@ -13,6 +13,7 @@ public class WeaponBrain : MonoBehaviour
     private int currentAminHash;
     private bool playingAnim;
     private bool IsAttacking;
+    private bool IsReady = false;
     private enum AnimType
     {
         Idle,
@@ -26,13 +27,13 @@ public class WeaponBrain : MonoBehaviour
     private int WalkHash = Animator.StringToHash("Walk");
 
     private void Awake()
-    {       
-        animator = GetComponentInChildren<Animator>();
-        StartCoroutine(SetWeapon());
+    {
+        animator = GetComponentInChildren<Animator>();       
     }
 
     private void OnEnable()
-    {        
+    {
+        StartCoroutine(SetWeapon());
         Weapons.OnPlayerAttack += Weapons_OnAttack;
         IsAttacking = false;       
         RayGun.OnStopRayShoot += RayGun_OnStopShoot;
@@ -53,14 +54,17 @@ public class WeaponBrain : MonoBehaviour
     private void Update()
     {
         PlayAnim();
-        PlayWeaponSound();
+        //PlayWeaponSound();
     }
 
     private IEnumerator SetWeapon()
     {
         yield return new WaitForSeconds(1f);
-        weapon = new Weapons(this, weaponTypes);
-        
+        if (weapon == null)
+        {
+            weapon = new Weapons(this, weaponTypes);
+            IsReady = true;
+        }              
     }
     public Weapons GetThisWeapon()
     {
@@ -73,6 +77,10 @@ public class WeaponBrain : MonoBehaviour
     public WeaponCategories GetWeaponCategories()
     {
         return weaponCategories;
+    }
+    public bool IsWeaponReady()
+    {
+        return IsReady;
     }
 
     //~~~~~~~~~~~~~~~~~~ Weaapon Animation ~~~~~~~~~~~~~~~~~~
