@@ -15,7 +15,7 @@ public class ProjectileGun : MonoBehaviour
     private void Awake()
     {
         weaponBrain = GetComponent<WeaponBrain>();
-        input = GetComponentInParent<InputControl>();
+        input = FindObjectOfType<InputControl>();
     }
 
     private void Update()

@@ -81,6 +81,7 @@ MonoBehaviour:
     - 1stLoadPrefab
     - ImpactEffect
     - Projectile
+    - Materials
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 4d0b28ea555e63f448bffdaa57cbfe58, type: 2}

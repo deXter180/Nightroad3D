@@ -108,8 +108,9 @@ public class PlayerController : MonoBehaviour
         float verticalLook = input.GetMouseDelta().y * MouseSensitivity * Time.fixedDeltaTime;
         camControl -= verticalLook;
         camControl = Mathf.Clamp(camControl, -90f, 90f);
-        cam.localEulerAngles = new Vector3(camControl, 0f, 0f);
-        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x , transform.rotation.eulerAngles.y + horizontalLook, 0);
+        cam.localEulerAngles = new Vector3(camControl, transform.rotation.eulerAngles.y + horizontalLook, 0f);
+        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y + horizontalLook, 0);
+        
     }
 
     private void Jump()
@@ -141,10 +142,26 @@ public class PlayerController : MonoBehaviour
         else return true;
     }
 
-    public Vector3 GetRandomDirection()
+    public Vector3 GetRandomDirWithoutY(float minRange, float maxRange)
     {
-        return new Vector3(UnityEngine.Random.Range(-1f, 1f), 0, UnityEngine.Random.Range(-1f, 1f)).normalized;
+        return new Vector3(UnityEngine.Random.Range(minRange, maxRange), 0, UnityEngine.Random.Range(minRange, maxRange)).normalized;
     }
+
+    public Vector3 GetRandomPosWithoutY(float minRange, float maxRange)
+    {
+        return new Vector3(UnityEngine.Random.Range(minRange, maxRange), 0, UnityEngine.Random.Range(minRange, maxRange));
+    }
+
+    public Vector3 GetRandomPosWithConstY(float minRange, float maxRange, float Y)
+    {
+        return new Vector3(UnityEngine.Random.Range(minRange, maxRange), Y, UnityEngine.Random.Range(minRange, maxRange));
+    }
+
+    public Vector3 GetRandomPosWithVariableY(float minRange, float maxRange)
+    {
+        return new Vector3(UnityEngine.Random.Range(minRange, maxRange), UnityEngine.Random.Range(minRange, maxRange), UnityEngine.Random.Range(minRange, maxRange));
+    }
+
 
     private void ControlInventory()
     {
@@ -178,7 +195,7 @@ public class PlayerController : MonoBehaviour
                     }
                     else
                     {
-                        selectedPickedObject.AddForceToItemSpawn(GetRandomDirection());
+                        selectedPickedObject.AddForceToItemSpawn(GetRandomDirWithoutY(1f, -1f));
                     }
                 }
             }

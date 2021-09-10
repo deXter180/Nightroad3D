@@ -114,7 +114,7 @@ public class InventoryDragDropSystem : MonoBehaviour
                     {
                         InventorySystem.Instance.GetGrid().GetGridObject(gridPos.x, gridPos.y).ClearPlacedObject();
                     }
-                    PickedObject pickedObject = PickedObject.SpawnItemWorld(placedObject.GetItemType(), PlayerController.Instance.transform.position + new Vector3 (10, 0, 10));
+                    PickedObject pickedObject = PickedObject.SpawnItemWorld(placedObject.GetItemType(), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(15f, -15f));
                 }
                 
             }

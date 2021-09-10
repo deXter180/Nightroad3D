@@ -18,7 +18,7 @@ public class RayGun : MonoBehaviour
 
     private void Awake()
     {
-        input = GetComponentInParent<InputControl>();
+        input = FindObjectOfType<InputControl>();
         weaponBrain = GetComponent<WeaponBrain>();
         anim = GetComponent<Animator>();
         cam = GetComponentInParent<Camera>();

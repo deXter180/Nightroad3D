@@ -16,7 +16,7 @@ public class MeleeAttacker : MonoBehaviour
     {
         col = GetComponentInChildren<Collider>();
         weaponBrain = GetComponent<WeaponBrain>();
-        input = GetComponentInParent<InputControl>();       
+        input = FindObjectOfType<InputControl>();       
     }
 
     private void OnEnable()

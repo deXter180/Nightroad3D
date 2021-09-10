@@ -15,14 +15,14 @@ MonoBehaviour:
   maxHP: 5000
   damageAmount: 50
   attackSpeed: 2
-  attackRange: 50
+  attackRange: 20
   critChance: 0.1
   critBonus: 0.2
   enemyType: 1
   dodgeChance: 0.3
   isGroundUnit: 1
   avoidanceRadius: 2
-  moveSpeed: 20
+  moveSpeed: 10
   speedMultiplier: 2
   WorldPrefab: {fileID: 6512917274919765748, guid: 03527d8ecd40bb147bdb8fa03e28f1e6,
     type: 3}

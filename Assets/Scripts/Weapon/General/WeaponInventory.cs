@@ -23,7 +23,7 @@ public class WeaponInventory : MonoBehaviour
         }
         else Instance = this;
         weaponBrains = GetComponentsInChildren<WeaponBrain>(true);
-        input = GetComponentInParent<InputControl>();
+        input = FindObjectOfType<InputControl>();
     }
     private void Start()
     {
