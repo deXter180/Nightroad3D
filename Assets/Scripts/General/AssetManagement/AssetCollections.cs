@@ -9,7 +9,10 @@ using UnityEngine.ResourceManagement.ResourceLocations;
 
 public class AssetCollections : MonoBehaviour
 {
+    public static AssetCollections Instance { get; private set; }
+    [SerializeField] private List<AssetPackages> AssetRefList = new List<AssetPackages>();
     private static Dictionary<string, List<GameObject>> InstantiatedGODictByName = new Dictionary<string, List<GameObject>>();
+    private static Dictionary<AssetReference, List<GameObject>> InstantiatedGODictByAssetRef = new Dictionary<AssetReference, List<GameObject>>();
     private static Dictionary<ImpactTypes, GameObject> GODictImpact = new Dictionary<ImpactTypes, GameObject>();
     private static Dictionary<ProjectileTypes, GameObject> GODictProjectile = new Dictionary<ProjectileTypes, GameObject>();
     private static List<InventoryItemSO> InventorySOList = new List<InventoryItemSO>();
@@ -20,16 +23,68 @@ public class AssetCollections : MonoBehaviour
     
 
     private void Awake()
-    {       
+    {
+        if (Instance == null)
+            Instance = this;
+        else
+        {
+            Destroy(Instance);
+            Instance = this;
+        }
         LoadSOAssets("ScriptableObject");
         LoadGOAssets("ImpactEffect");
         LoadGOAssets("Weapon");
         StartCoroutine(FindObjectOfType<InventorySystem>().Test());
     }
 
+    public AssetReference GetProjectileAssetRef(ProjectileTypes projectileType)
+    {
+        if (AssetRefList.Count > 0)
+        {
+            foreach (var asset in AssetRefList)
+            {
+                if (asset.impactTypes == ImpactTypes.None && asset.projectileTypes != ProjectileTypes.None)
+                {
+                    if (asset.projectileTypes == projectileType)
+                    {
+                        return asset.Reference;
+                    }
+                }
+            }
+            return null;
+        }
+        else return null;
+    }
+
+    public AssetReference GetImpactAssetRef(ImpactTypes impactType)
+    {
+        if (AssetRefList.Count > 0)
+        {
+            foreach (var asset in AssetRefList)
+            {
+                if (asset.projectileTypes == ProjectileTypes.None && asset.impactTypes != ImpactTypes.None)
+                {
+                    if (asset.impactTypes == impactType)
+                    {
+                        return asset.Reference;
+                    }
+                }
+            }
+            return null;
+        }
+        else return null;
+    }
+
     public static List<GameObject> GetGOListFromDictByName(string name)
     {
         if (InstantiatedGODictByName.TryGetValue(name, out List<GameObject> value))
+            return value;
+        else return null;
+    }
+
+    public static List<GameObject> GetGOListFromDictByName(AssetReference assetReference)
+    {
+        if (InstantiatedGODictByAssetRef.TryGetValue(assetReference, out List<GameObject> value))
             return value;
         else return null;
     }
@@ -92,6 +147,60 @@ public class AssetCollections : MonoBehaviour
             InstantiatedGODictByName.Add(name, GOList);
     }
 
+    public static async void InstantiateAssetsByName(string name, Transform Parent)
+    {
+        List<GameObject> GOList = new List<GameObject>();
+        await AssetRefLoader.CreatedAssetsAddToList(name, GOList, Parent);
+        if (!InstantiatedGODictByName.ContainsKey(name))
+            InstantiatedGODictByName.Add(name, GOList);
+    }
+
+    public static async void InstantiateAssetsByAssetRef(AssetReference assetReference, Transform parent)
+    {
+        List<GameObject> GOList = new List<GameObject>();
+        await AssetRefLoader.CreatedAssetsAddToList(assetReference, GOList, parent);
+        if (!InstantiatedGODictByAssetRef.ContainsKey(assetReference))
+            InstantiatedGODictByAssetRef.Add(assetReference, GOList);
+        foreach (var GO in GOList)
+        {
+            var notify = GO.AddComponent<NotifyOnDestroy>();
+            notify.Destroyed += Notify_Destroyed;
+            notify.AssetReference = assetReference;
+        }
+    }
+
+    public static async void InstantiateAssetsByAssetRef(AssetReference assetReference)
+    {
+        List<GameObject> GOList = new List<GameObject>();
+        await AssetRefLoader.CreatedAssetsAddToList(assetReference, GOList);
+        if (!InstantiatedGODictByAssetRef.ContainsKey(assetReference))
+            InstantiatedGODictByAssetRef.Add(assetReference, GOList);
+        foreach (var GO in GOList)
+        {
+            var notify = GO.AddComponent<NotifyOnDestroy>();
+            notify.Destroyed += Notify_Destroyed;
+            notify.AssetReference = assetReference;
+        }
+    }
+
+    public static List<GameObject> InstantiateAndGetAssetsByAssetRef(AssetReference assetReference)
+    {
+        List<GameObject> GOList = new List<GameObject>();
+        if (AssetRefLoader.CreatedAssetsAddToList(assetReference, GOList).IsCompleted)
+        {
+            if (!InstantiatedGODictByAssetRef.ContainsKey(assetReference))
+                InstantiatedGODictByAssetRef.Add(assetReference, GOList);
+            foreach (var GO in GOList)
+            {
+                var notify = GO.AddComponent<NotifyOnDestroy>();
+                notify.Destroyed += Notify_Destroyed;
+                notify.AssetReference = assetReference;
+            }
+            return GOList;
+        }
+        else return null;
+    }
+
     public static async void LoadSOAssets(string label)
     {
         if (label == "ScriptableObject")
@@ -108,21 +217,32 @@ public class AssetCollections : MonoBehaviour
         }
     }
 
-    public static void ReleaseAssetInstance(GameObject obj, string label)
+    public static void ReleaseAssetInstance(GameObject obj, string label, bool IsReleaseCompletely)
     {
         Addressables.ReleaseInstance(obj);
         if (InstantiatedGODictByName.ContainsKey(label))
             InstantiatedGODictByName.Remove(label);
+        if (IsReleaseCompletely)
+            Addressables.Release(obj);
     }
 
-    public static void ReleaseAssetInstance(GameObject obj, ImpactTypes impactType)
+    public static void ReleaseAssetInstance(GameObject obj, AssetReference assetReference, bool IsReleaseCompletely)
+    {
+        Addressables.ReleaseInstance(obj);
+        if (InstantiatedGODictByAssetRef.ContainsKey(assetReference))
+            InstantiatedGODictByAssetRef.Remove(assetReference);
+        if (IsReleaseCompletely)
+            Addressables.Release(obj);
+    }
+
+    public static void ReleaseAsset(GameObject obj, ImpactTypes impactType)
     {
         Addressables.Release(obj);
         if (GODictImpact.ContainsKey(impactType))
             GODictImpact.Remove(impactType);
     }
 
-    public static void ReleaseAssetInstance(GameObject obj, ProjectileTypes projectileType)
+    public static void ReleaseAsset(GameObject obj, ProjectileTypes projectileType)
     {
         Addressables.Release(obj);
         if (GODictProjectile.ContainsKey(projectileType))
@@ -173,14 +293,21 @@ public class AssetCollections : MonoBehaviour
             EnemySOList.Add((EnemySO)obj);
         }
     }
+
+    private static void Notify_Destroyed(AssetReference assetReference, NotifyOnDestroy obj)
+    {
+        ReleaseAssetInstance(obj.gameObject, assetReference, false);
+        InstantiatedGODictByAssetRef.Remove(assetReference);
+    }
 }
 
 
 [Serializable]
 public class AssetPackages
 {
-    public AssetLabelReference Label;
-    public List<Vector3> PositionsList;
+    public AssetReference Reference;
+    public ProjectileTypes projectileTypes;
+    public ImpactTypes impactTypes;
 }
 
 public enum WeaponTypes
@@ -210,6 +337,7 @@ public enum ProjectileTypes
 }
 public enum ImpactTypes
 {
+    None,
     BulletHole,
     FireMark
 }

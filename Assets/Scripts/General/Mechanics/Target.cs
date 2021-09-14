@@ -138,7 +138,7 @@ public class Target : MonoBehaviour
                 gameObject.SetActive(false);
                 if (IsEnemy)
                 {
-                    AssetCollections.ReleaseAssetInstance(gameObject, "Enemy");
+                    AssetCollections.ReleaseAssetInstance(gameObject, "Enemy", false);
                 }
             }
         }

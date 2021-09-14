@@ -35,10 +35,17 @@ public class ObjectPooler : MonoBehaviour
         yield return new WaitForSeconds(1f);
         for (int i = 0; i < PoolSize; i++)
         {
-            GameObject _projectile = Instantiate(AssetCollections.GetProjectileObj(projectileType));
-            _projectile.gameObject.SetActive(false);
-            if (_projectile.GetComponent<Projectile>() != null)
-                projectiles.Add(_projectile.GetComponent<Projectile>());
+            if (AssetCollections.Instance.GetProjectileAssetRef(projectileType) != null)
+            {
+                List<GameObject> _projectiles = AssetCollections.InstantiateAndGetAssetsByAssetRef(AssetCollections.Instance.GetProjectileAssetRef(projectileType));     //Instantiate(AssetCollections.GetProjectileObj(projectileType));
+                if (_projectiles != null && _projectiles.Count > 0)
+                {
+                    GameObject _projectile = _projectiles[0];
+                    _projectile.gameObject.SetActive(false);
+                    if (_projectile.GetComponent<Projectile>() != null)
+                        projectiles.Add(_projectile.GetComponent<Projectile>());
+                }                
+            }            
         }
     }
 

@@ -82,6 +82,7 @@ MonoBehaviour:
     - ImpactEffect
     - Projectile
     - Materials
+    - Rain_VFX
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 4d0b28ea555e63f448bffdaa57cbfe58, type: 2}

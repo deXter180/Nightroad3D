@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5762588291320022864}
   - component: {fileID: -3951508442866303147}
   - component: {fileID: 3937144233805201388}
+  - component: {fileID: -3397737116122276530}
   m_Layer: 11
   m_Name: FireBallImpact
   m_TagString: Untagged
@@ -96,4 +97,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcca2cc870b6ae84988853218d4d05f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  impactType: 1
+  impactType: 2
+--- !u!114 &-3397737116122276530
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6842028999787782942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1f2b777dcd5ae444bf0d988381ded53, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

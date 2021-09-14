@@ -50,6 +50,16 @@ public static class AssetRefLoader
         }
     }
 
+    public static async Task CreatedAssetsAddToList<T>(string assetLabelOrName, List<T> createdObjs, Transform Parent) where T : UnityEngine.Object
+    {
+        var locations = await Addressables.LoadResourceLocationsAsync(assetLabelOrName).Task;
+        foreach (var location in locations)
+        {
+            T GO = await Addressables.InstantiateAsync(location, Parent).Task as T;
+            createdObjs.Add(GO);
+        }
+    }
+
     public static async Task CreatedAssetsAddToList<T>(List<string> assetLabelsOrNames, Dictionary<string, List<T>> createdObjs) where T : UnityEngine.Object
     {
         foreach (var asset in assetLabelsOrNames)
@@ -84,6 +94,20 @@ public static class AssetRefLoader
         
     }
 
+    public static async Task CreatedAssetsAddToList<T>(AssetLabelReference label, List<T> createdObjs, Transform Parent) where T : UnityEngine.Object
+    {
+        if (label.RuntimeKeyIsValid())
+        {
+            var locations = await Addressables.LoadResourceLocationsAsync(label.labelString).Task;
+            foreach (var location in locations)
+            {
+                T GO = await Addressables.InstantiateAsync(location, Parent).Task as T;
+                createdObjs.Add(GO);
+            }
+        }
+
+    }
+
     public static async Task CreatedAssetsAddToList<T>(List<AssetLabelReference> labels, Dictionary<AssetLabelReference, List<T>> createdObjs) where T : UnityEngine.Object
     {
         foreach (var label in labels)
@@ -106,20 +130,33 @@ public static class AssetRefLoader
         }
     }
 
-    public static async Task ReleaseAssetInstance(GameObject gameObject, float delayTime)
+    public static async Task ReleaseAssetInstance(GameObject gameObject, float delayTime, bool IsReleaseCompletely)
     {
         int delayInMilli = Mathf.FloorToInt(delayTime * 1000);
         await Task.Delay(delayInMilli);
         Addressables.ReleaseInstance(gameObject);
+        if (IsReleaseCompletely)
+            Addressables.Release(gameObject);
     }
 
-    //~~~~~~~~~ Not Using ~~~~~~~~~~~
+    //~~~~~~~~~~ Using AssetReference ~~~~~~~~~~~
 
-    public static async Task CreatedAssetsAddToList<T>(AssetReference reference, List<T> completedObjs, Action<T> action) where T : UnityEngine.Object
+    public static async Task CreatedAssetsAddToList<T>(AssetReference reference, List<T> completedObjs, Vector3 position) where T : UnityEngine.Object
+    {
+        T GO = await reference.InstantiateAsync(position, Quaternion.identity).Task as T;
+        completedObjs.Add(GO);
+    }
+
+    public static async Task CreatedAssetsAddToList<T>(AssetReference reference, List<T> completedObjs, Transform Parent) where T : UnityEngine.Object
+    {
+        T GO = await reference.InstantiateAsync(Parent).Task as T;
+        completedObjs.Add(GO);
+    }
+
+    public static async Task CreatedAssetsAddToList<T>(AssetReference reference, List<T> completedObjs) where T : UnityEngine.Object
     {
         T GO = await reference.InstantiateAsync().Task as T;
         completedObjs.Add(GO);
-        action.Invoke(GO);
     }
 
     public static async Task CreatedAssetsAddToList<T>(List<AssetReference> references, List<T> completedObjs) where T : UnityEngine.Object

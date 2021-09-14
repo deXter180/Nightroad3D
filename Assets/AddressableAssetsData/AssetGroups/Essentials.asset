@@ -235,10 +235,8 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - ImpactEffect
-    m_MainAsset: {fileID: 8090606994814532889, guid: 53d9a25a590e8304c83e148029c5428d,
-      type: 3}
-    m_TargetAsset: {fileID: 8090606994814532889, guid: 53d9a25a590e8304c83e148029c5428d,
-      type: 3}
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
   - m_GUID: ee24e0616eec6b743822a70b962c21d1
     m_Address: FireBallImpact
     m_ReadOnly: 0
@@ -256,19 +254,24 @@ MonoBehaviour:
   - m_GUID: ef43d95da1077e24b9001586fd0d6f8b
     m_Address: Axe
     m_ReadOnly: 0
-    m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
+    m_SerializedLabels:
+    - Weapon
+    m_MainAsset: {fileID: 8336159514540550004, guid: ef43d95da1077e24b9001586fd0d6f8b,
+      type: 3}
+    m_TargetAsset: {fileID: 8336159514540550004, guid: ef43d95da1077e24b9001586fd0d6f8b,
+      type: 3}
   - m_GUID: e4173e8a6a8fd2b4d96b5511c3355708
     m_Address: Rifle
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Weapon
     m_MainAsset: {fileID: 0}
     m_TargetAsset: {fileID: 0}
   - m_GUID: d67467a2249120548b9889098ebb2b39
     m_Address: RocketLauncher
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Weapon
     m_MainAsset: {fileID: 0}
     m_TargetAsset: {fileID: 0}
   - m_GUID: e3b803cb60efa584abfc43ef358515da
@@ -276,8 +279,38 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - Materials
-    m_MainAsset: {fileID: 2100000, guid: e3b803cb60efa584abfc43ef358515da, type: 2}
-    m_TargetAsset: {fileID: 2100000, guid: e3b803cb60efa584abfc43ef358515da, type: 2}
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: e34d2cb377c5b484cba5aa312dd097ad
+    m_Address: Droplets
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Materials
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: cc665d67846b20b4b822b9d01c1057e6
+    m_Address: Clouds
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Materials
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: 5ec8cb79af6e777418347de0420c0859
+    m_Address: Clouds_vfx
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rain Vfx
+    - Rain_VFX
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: dc60172ab22b6454a8cadef7e511aeb2
+    m_Address: Rain_vfx
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rain Vfx
+    - Rain_VFX
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: a4a4e4a7d2a8f1747af5efb44894e9c5, type: 2}
   m_SchemaSet:

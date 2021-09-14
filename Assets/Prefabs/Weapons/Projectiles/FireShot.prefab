@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1766519383738416976}
   - component: {fileID: 2882999960644427924}
   - component: {fileID: 1883352911374459773}
+  - component: {fileID: 334810795497103872}
   m_Layer: 11
   m_Name: FireShot
   m_TagString: Untagged
@@ -130,3 +131,15 @@ MonoBehaviour:
   ProjectileSpeed: 700
   MaxLifeTime: 3
   projectileType: 2
+--- !u!114 &334810795497103872
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4029972624871116505}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1f2b777dcd5ae444bf0d988381ded53, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

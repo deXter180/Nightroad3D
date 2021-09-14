@@ -45,40 +45,35 @@ public class Projectile :  MonoBehaviour
            {
                 if (collision.gameObject.GetComponentInParent<Target>() && collision.gameObject.CompareTag("Enemy"))
                 {
-                    //ObjectPooler.Instance.ReturnToPool(this);
                     Target target = collision.gameObject.GetComponentInParent<Target>();
                     collision.gameObject.TryGetComponent<EnemyBrain>(out EnemyBrain enemyBrain);
                     if (enemyBrain != null && target.GetEnemy() == true && target.IsDead == false && AttackWeapon != null)
                     {
                         AttackWeapon.DoAttack(target, enemyBrain.GetThisEnemy().ThisEnemySO.DodgeChance);
-                        //if (target.IsDead == false)
-                        //{
-                        //    ContactPoint contactPoint = collision.GetContact(0);
-                        //    if (ObjectPooler.Instance.GetImpactObject(ProjectileTypes.FireBall) != null)
-                        //    {
-                        //    GameObject bHoleOnEnemy = Instantiate(ObjectPooler.Instance.GetImpactObject(ProjectileTypes.FireBall), contactPoint.point + contactPoint.normal * 0.1f, Quaternion.identity) as GameObject;
-                        //    bHoleOnEnemy.transform.LookAt(contactPoint.point + contactPoint.normal);
-                        //    Destroy(bHoleOnEnemy, 0.2f);
-                        //    }
-                            
-                        //}
                     }
                 }
                 ContactPoint contactPoint = collision.GetContact(0);
-                if (AssetCollections.GetImpactObj(ImpactTypes.FireMark) != null)
+                if (AssetCollections.Instance.GetImpactAssetRef(ImpactTypes.FireMark) != null)
                 {
-                    GameObject bHole = new GameObject();
-                    if (contactPoint.otherCollider.CompareTag("Enemy"))
+                    List<GameObject> objs = AssetCollections.InstantiateAndGetAssetsByAssetRef(AssetCollections.Instance.GetImpactAssetRef(ImpactTypes.FireMark));
+                    if (objs != null && objs.Count > 0)
                     {
-                        bHole = Instantiate(AssetCollections.GetImpactObj(ImpactTypes.FireMark), contactPoint.point + contactPoint.normal * 0.05f, Quaternion.identity) as GameObject;
+                        GameObject bHole = objs[0];
+                        if (contactPoint.otherCollider.CompareTag("Enemy"))
+                        {
+                       
+                        }
+                        else
+                        {
+                            
+                        }
+                        bHole.transform.SetParent(contactPoint.otherCollider.transform);
+                        bHole.transform.rotation = Quaternion.identity;
+                        bHole.transform.position = contactPoint.point + contactPoint.normal * 0.05f;
+                        bHole.transform.LookAt(contactPoint.point + contactPoint.normal);                        
+                        Destroy(bHole, 1.5f);
                     }
-                    else
-                    {
-                        bHole = Instantiate(AssetCollections.GetImpactObj(ImpactTypes.FireMark), contactPoint.point + contactPoint.normal * 0.05f, Quaternion.identity) as GameObject;
-                    }                    
-                    bHole.transform.SetParent(contactPoint.otherCollider.transform);
-                    bHole.transform.LookAt(contactPoint.point + contactPoint.normal);
-                    Destroy(bHole, 1.5f);                   
+                                       
                 }
            }
     } 

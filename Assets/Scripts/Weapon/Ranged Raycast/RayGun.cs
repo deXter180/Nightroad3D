@@ -62,7 +62,6 @@ public class RayGun : MonoBehaviour
                 if (hit.collider != null)
                 {
                     GameObject tempGO = new GameObject();
-                    GameObject bHoleOnEnemy = new GameObject();
                     if (hit.collider.GetComponentInParent<Target>() && hit.collider.CompareTag("Enemy"))
                     {
                         Target target = hit.collider.GetComponentInParent<Target>();
@@ -72,24 +71,24 @@ public class RayGun : MonoBehaviour
                             {
                                 weaponBrain.GetThisWeapon().DoAttack(target, target.GetEBFromTarget().GetThisEnemy().ThisEnemySO.DodgeChance);
                             }
-                        }
-                        if (AssetCollections.GetImpactObj(ImpactTypes.BulletHole) != null)
-                        {
-                            bHoleOnEnemy = Instantiate(AssetCollections.GetImpactObj(ImpactTypes.BulletHole), hit.point + hit.normal * 0.05f, Quaternion.identity) as GameObject;
-                            bHoleOnEnemy.transform.SetParent(hit.transform);
-                            bHoleOnEnemy.transform.LookAt(hit.point + hit.normal);
-                            Destroy(bHoleOnEnemy, 1.5f);
-                        }                                               
+                        }                                                                      
                     }
                     else
                     {
-                        if (AssetCollections.GetImpactObj(ImpactTypes.BulletHole) != null)
+                        
+                    }
+                    if (AssetCollections.Instance.GetImpactAssetRef(ImpactTypes.BulletHole) != null)
+                    {
+                        List<GameObject> objs = AssetCollections.InstantiateAndGetAssetsByAssetRef(AssetCollections.Instance.GetImpactAssetRef(ImpactTypes.BulletHole));
+                        if (objs != null && objs.Count > 0)
                         {
-                            bHoleOnEnemy = Instantiate(AssetCollections.GetImpactObj(ImpactTypes.BulletHole), hit.point + hit.normal * 0.05f, Quaternion.identity) as GameObject;
-                            bHoleOnEnemy.transform.SetParent(hit.transform);
-                            bHoleOnEnemy.transform.LookAt(hit.point + hit.normal);
-                            Destroy(bHoleOnEnemy, 1.5f);
-                        }
+                            GameObject bHole = objs[0];
+                            bHole.transform.SetParent(hit.transform);
+                            bHole.transform.rotation = Quaternion.identity;
+                            bHole.transform.position = hit.point + hit.normal * 0.05f;
+                            bHole.transform.LookAt(hit.point + hit.normal);
+                            Destroy(bHole, 1.5f);
+                        }                       
                     }
                 }
             }
