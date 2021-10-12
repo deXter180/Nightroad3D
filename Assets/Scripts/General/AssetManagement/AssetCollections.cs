@@ -13,7 +13,6 @@ public class AssetCollections : MonoBehaviour
     [SerializeField] private List<AssetPackages> AssetRefList = new List<AssetPackages>();
     private static Dictionary<string, List<GameObject>> InstantiatedGODictByName = new Dictionary<string, List<GameObject>>();
     private static Dictionary<AssetReference, List<GameObject>> InstantiatedGODictByAssetRef = new Dictionary<AssetReference, List<GameObject>>();
-    private static Dictionary<ImpactTypes, GameObject> GODictImpact = new Dictionary<ImpactTypes, GameObject>();
     private static Dictionary<ProjectileTypes, GameObject> GODictProjectile = new Dictionary<ProjectileTypes, GameObject>();
     private static List<InventoryItemSO> InventorySOList = new List<InventoryItemSO>();
     private static List<WeaponSO> WeaponSOList = new List<WeaponSO>();
@@ -32,8 +31,7 @@ public class AssetCollections : MonoBehaviour
             Instance = this;
         }
         LoadSOAssets("ScriptableObject");
-        LoadGOAssets("ImpactEffect");
-        LoadGOAssets("Weapon");
+        LoadGOAssets("PooledObjects");
         StartCoroutine(FindObjectOfType<InventorySystem>().Test());
     }
 
@@ -125,13 +123,6 @@ public class AssetCollections : MonoBehaviour
         return null;
     }
 
-    public static GameObject GetImpactObj(ImpactTypes impactType)
-    {
-        if (GODictImpact.TryGetValue(impactType, out GameObject GO))
-            return GO;
-        else return null;
-    }
-
     public static GameObject GetProjectileObj(ProjectileTypes projectileType)
     {
         if (GODictProjectile.TryGetValue(projectileType, out GameObject GO))
@@ -163,7 +154,7 @@ public class AssetCollections : MonoBehaviour
             InstantiatedGODictByAssetRef.Add(assetReference, GOList);
         foreach (var GO in GOList)
         {
-            var notify = GO.AddComponent<NotifyOnDestroy>();
+            var notify = GO.AddComponent<NotifyOnDestroyByAssetRef>();
             notify.Destroyed += Notify_Destroyed;
             notify.AssetReference = assetReference;
         }
@@ -177,7 +168,7 @@ public class AssetCollections : MonoBehaviour
             InstantiatedGODictByAssetRef.Add(assetReference, GOList);
         foreach (var GO in GOList)
         {
-            var notify = GO.AddComponent<NotifyOnDestroy>();
+            var notify = GO.AddComponent<NotifyOnDestroyByAssetRef>();
             notify.Destroyed += Notify_Destroyed;
             notify.AssetReference = assetReference;
         }
@@ -192,7 +183,7 @@ public class AssetCollections : MonoBehaviour
                 InstantiatedGODictByAssetRef.Add(assetReference, GOList);
             foreach (var GO in GOList)
             {
-                var notify = GO.AddComponent<NotifyOnDestroy>();
+                var notify = GO.AddComponent<NotifyOnDestroyByAssetRef>();
                 notify.Destroyed += Notify_Destroyed;
                 notify.AssetReference = assetReference;
             }
@@ -217,6 +208,13 @@ public class AssetCollections : MonoBehaviour
         }
     }
 
+    public static void ReleaseAssetInstance(GameObject obj)
+    {
+        if (!Addressables.ReleaseInstance(obj))
+            Destroy(obj);
+    }
+
+
     public static void ReleaseAssetInstance(GameObject obj, string label, bool IsReleaseCompletely)
     {
         Addressables.ReleaseInstance(obj);
@@ -233,13 +231,6 @@ public class AssetCollections : MonoBehaviour
             InstantiatedGODictByAssetRef.Remove(assetReference);
         if (IsReleaseCompletely)
             Addressables.Release(obj);
-    }
-
-    public static void ReleaseAsset(GameObject obj, ImpactTypes impactType)
-    {
-        Addressables.Release(obj);
-        if (GODictImpact.ContainsKey(impactType))
-            GODictImpact.Remove(impactType);
     }
 
     public static void ReleaseAsset(GameObject obj, ProjectileTypes projectileType)
@@ -265,13 +256,8 @@ public class AssetCollections : MonoBehaviour
     //~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~
 
     private static void GOLoadCallback(GameObject obj)
-    {
-        if (obj.GetComponent<ImpactEffect>() != null)
-        {
-            var IE = obj.GetComponent<ImpactEffect>();
-            GODictImpact.Add(IE.ImpactType, obj);
-        }
-        else if(obj.GetComponent<Projectile>() != null)
+    {   
+        if(obj.GetComponent<Projectile>() != null)
         {
             var pro = obj.GetComponent<Projectile>();
             GODictProjectile.Add(pro.GetProjectileType(), obj);
@@ -294,7 +280,7 @@ public class AssetCollections : MonoBehaviour
         }
     }
 
-    private static void Notify_Destroyed(AssetReference assetReference, NotifyOnDestroy obj)
+    private static void Notify_Destroyed(AssetReference assetReference, NotifyOnDestroyByAssetRef obj)
     {
         ReleaseAssetInstance(obj.gameObject, assetReference, false);
         InstantiatedGODictByAssetRef.Remove(assetReference);

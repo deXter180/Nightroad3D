@@ -230,50 +230,16 @@ MonoBehaviour:
     - Inventory
     m_MainAsset: {fileID: 0}
     m_TargetAsset: {fileID: 0}
-  - m_GUID: 53d9a25a590e8304c83e148029c5428d
-    m_Address: BulletImpact
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - ImpactEffect
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
-  - m_GUID: ee24e0616eec6b743822a70b962c21d1
-    m_Address: FireBallImpact
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - ImpactEffect
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: 7538eac9c4df12b4ba5501abd3995ee9
     m_Address: FireShot
     m_ReadOnly: 0
     m_SerializedLabels:
     - Weapon
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
-  - m_GUID: ef43d95da1077e24b9001586fd0d6f8b
-    m_Address: Axe
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Weapon
-    m_MainAsset: {fileID: 8336159514540550004, guid: ef43d95da1077e24b9001586fd0d6f8b,
+    - PooledObjects
+    m_MainAsset: {fileID: 4029972624871116505, guid: 7538eac9c4df12b4ba5501abd3995ee9,
       type: 3}
-    m_TargetAsset: {fileID: 8336159514540550004, guid: ef43d95da1077e24b9001586fd0d6f8b,
+    m_TargetAsset: {fileID: 4029972624871116505, guid: 7538eac9c4df12b4ba5501abd3995ee9,
       type: 3}
-  - m_GUID: e4173e8a6a8fd2b4d96b5511c3355708
-    m_Address: Rifle
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Weapon
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
-  - m_GUID: d67467a2249120548b9889098ebb2b39
-    m_Address: RocketLauncher
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Weapon
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: e3b803cb60efa584abfc43ef358515da
     m_Address: RainDrops
     m_ReadOnly: 0
@@ -309,6 +275,30 @@ MonoBehaviour:
     m_SerializedLabels:
     - Rain Vfx
     - Rain_VFX
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: feb7cbb7567e665409e8dda6f780f3aa
+    m_Address: TempShield
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: d4f6397cbd7ed1149b0ac3d9d390bbf0
+    m_Address: BulletMark_vfx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: 4d5bfee38185e36459a577777f723c5c
+    m_Address: FireMark_vfx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: b5df3336ce4dd8342a0f3fbb13520577
+    m_Address: BulletTracer_vfx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
     m_MainAsset: {fileID: 0}
     m_TargetAsset: {fileID: 0}
   m_ReadOnly: 0

@@ -50,7 +50,7 @@ public class MeleeAttacker : MonoBehaviour
             {
                 if (WeaponInventory.Instance.IsAttacking == false)
                 {
-                    weaponBrain.GetThisWeapon().RaiseOnPlayerAttack(weaponBrain.GetThisWeapon(), weaponBrain.GetWeaponCategories(), weaponBrain.GetWeaponTypes());
+                    weaponBrain.GetThisWeapon().RaiseOnPlayerAttack(weaponBrain.GetThisWeapon(), weaponBrain, weaponBrain.GetWeaponCategories(), weaponBrain.GetWeaponTypes());
                 }
             }
             else
@@ -69,12 +69,12 @@ public class MeleeAttacker : MonoBehaviour
                 if (collision.gameObject.CompareTag("Enemy") && collision.gameObject.GetComponentInParent<Target>())
                 {
                     Target target = collision.gameObject.GetComponentInParent<Target>();
-                    if (target != null && target.GetEBFromTarget() != null)
+                    if (target != null && target.enemyBrain != null)
                     {
                         if (target.IsDead == false && target.GetEnemy() == true)
                         {
                             WeaponInventory.Instance.IsAttacking = true;
-                            weaponBrain.GetThisWeapon().DoAttack(target, target.GetEBFromTarget().GetThisEnemy().ThisEnemySO.DodgeChance);
+                            weaponBrain.GetThisWeapon().DoAttack(target, target.enemyBrain.GetThisEnemy().ThisEnemySO.DodgeChance);
                             StartCoroutine(Attacking(() => { WeaponInventory.Instance.IsAttacking = false; }));
                         }                        
                     }
@@ -92,12 +92,12 @@ public class MeleeAttacker : MonoBehaviour
                 if (collision.gameObject.CompareTag("Enemy") && collision.gameObject.activeInHierarchy)
                 {
                     collision.gameObject.TryGetComponent<Target>(out Target target);
-                    if (target != null && target.GetEBFromTarget() != null)
+                    if (target != null && target.enemyBrain != null)
                     {
                         if (target.IsDead == false && target.GetEnemy() == true)
                         {
                             WeaponInventory.Instance.IsAttacking = true;
-                            weaponBrain.GetThisWeapon().DoAttack(target, target.GetEBFromTarget().GetThisEnemy().ThisEnemySO.DodgeChance);
+                            weaponBrain.GetThisWeapon().DoAttack(target, target.enemyBrain.GetThisEnemy().ThisEnemySO.DodgeChance);
                             StartCoroutine(Attacking(() => { WeaponInventory.Instance.IsAttacking = false; }));
                         }                        
                     }

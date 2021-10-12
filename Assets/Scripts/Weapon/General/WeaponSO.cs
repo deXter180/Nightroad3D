@@ -12,6 +12,7 @@ public class WeaponSO : ScriptableObject, IAttack
     [SerializeField] private float critBonus;
     [SerializeField] private float bloom;
     [SerializeField] private WeaponTypes weaponType;
+    [SerializeField] private ImpactTypes impactType;
     [SerializeField] private bool isRanged;
     public Transform WorldPrefab;
 
@@ -23,4 +24,5 @@ public class WeaponSO : ScriptableObject, IAttack
     public float Bloom => bloom;
     public bool IsRanged => isRanged;
     public WeaponTypes WeaponType => weaponType;
+    public ImpactTypes ImpactType => impactType;
 }

@@ -6,8 +6,10 @@ using System;
 
 public class ProjectileGun : MonoBehaviour
 {
+    [SerializeField] private float MuzzleFlashTime;
     [SerializeField] private Transform FiringPoint;
     private WeaponBrain weaponBrain;
+    private Light lighting;
     private Input input;
     public static event Action OnStopProjectileShoot;
     
@@ -16,6 +18,9 @@ public class ProjectileGun : MonoBehaviour
     {
         weaponBrain = GetComponent<WeaponBrain>();
         input = FindObjectOfType<InputControl>();
+        lighting = GetComponentInChildren<Light>();
+        if (lighting.gameObject.activeInHierarchy)
+            lighting.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -47,8 +52,20 @@ public class ProjectileGun : MonoBehaviour
             default: return ProjectileTypes.Bullet;
         }
     }
+
+    private IEnumerator PlayMuzzleLight()
+    {
+        if (!lighting.gameObject.activeInHierarchy)
+        {
+            lighting.gameObject.SetActive(true);
+            yield return new WaitForSeconds(MuzzleFlashTime);
+            lighting.gameObject.SetActive(false);
+        }
+    }
+
     public IEnumerator Shoot(Action action) //Used in PlayerControl
     {
+        StartCoroutine(PlayMuzzleLight());
         if (ObjectPooler.Instance.GetPooledObject(GetProjectile(weaponBrain.GetWeaponTypes())) != null)
         {
             WeaponInventory.Instance.IsAttacking = true;
@@ -56,7 +73,7 @@ public class ProjectileGun : MonoBehaviour
             shot.transform.rotation = FiringPoint.rotation;
             shot.transform.position = FiringPoint.position;
             shot.gameObject.SetActive(true);
-            weaponBrain.GetThisWeapon().RaiseOnPlayerAttack(weaponBrain.GetThisWeapon(), weaponBrain.GetWeaponCategories(), weaponBrain.GetWeaponTypes());
+            weaponBrain.GetThisWeapon().RaiseOnPlayerAttack(weaponBrain.GetThisWeapon(), weaponBrain, weaponBrain.GetWeaponCategories(), weaponBrain.GetWeaponTypes());
             yield return new WaitForSeconds(weaponBrain.GetThisWeapon().ThisWeaponSO.AttackSpeed);
             action.Invoke();
         }

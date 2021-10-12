@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.VFX;
 using System;
 
 public class EnemyBrain : MonoBehaviour
@@ -12,16 +13,18 @@ public class EnemyBrain : MonoBehaviour
     private StateMachine stateMachine;
     private EnemyTrigger enemyTrigger;
     private NavMeshAgent navAgent;
+    private VisualEffect vfxGraph;
+    private Target enemyTarget;
+    private TempShieldTrigger tempShield;
     public Vector3 StartPos { get => startPos; }
-    public NavMeshAgent navMeshAgent { get => navAgent; }
-    
+    public NavMeshAgent navMeshAgent { get => navAgent; }  
     [HideInInspector] public bool IsSetupDone = false;
     private int layer = 1 << 0;
 
 
     private void OnEnable()
     {
-        StartCoroutine(SetEnemy());       
+        StartCoroutine(SetEnemy());
     }
 
     private void OnDisable()
@@ -33,7 +36,12 @@ public class EnemyBrain : MonoBehaviour
         if (enemy != null)
         {
             enemy.OnEnemyAttack -= Enemy_OnEnemyAttack;
-        }              
+        }
+        if (enemyTarget != null)
+        {
+            enemyTarget.OnDodge -= EnemyTarget_OnDodge;
+        }
+        Weapons.OnPlayerDamage -= Weapons_OnPlayerDamage;
     }
 
     private void Update()
@@ -67,18 +75,38 @@ public class EnemyBrain : MonoBehaviour
                 break;
         }
         enemy.OnEnemyAttack += Enemy_OnEnemyAttack;
+        Weapons.OnPlayerDamage += Weapons_OnPlayerDamage;
         enemyTrigger = GetComponentInChildren<EnemyTrigger>();
         enemyTrigger.TriggerSetup(enemy);
+        tempShield = GetComponentInChildren<TempShieldTrigger>();
+        tempShield.SetShield(enemy.ThisEnemySO.ShieldSize, enemy.ThisEnemySO.ShieldDuration);
         navAgent = GetComponent<NavMeshAgent>();
+        vfxGraph = GetComponentInChildren<VisualEffect>();
         stateMachine = new StateMachine(this);
         navAgent.speed = enemy.ThisEnemySO.MoveSpeed;
         stateMachine.OnStateChange += StateMachine_OnStateChange;
-        startPos = transform.position;              
-        GetComponent<Target>().SetupMaxHP(enemy.ThisEnemySO.MaxHP);
+        startPos = transform.position;
+        enemyTarget = GetComponent<Target>();
+        enemyTarget.SetupMaxHP(enemy.ThisEnemySO.MaxHP);
+        enemyTarget.SetEB(this);
+        enemyTarget.OnDodge += EnemyTarget_OnDodge;
         IsSetupDone = true;
     }
 
-   
+    //~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~
+
+    private void EnemyTarget_OnDodge()
+    {
+        StartCoroutine(tempShield.TriggerShield(enemy.ThisEnemySO.ShieldDuration));
+    }
+
+    private void Weapons_OnPlayerDamage(object sender, OnPlayerDamageEventArg e)
+    {
+        if (e.enemyBrain == this)
+        {
+            vfxGraph.Play();
+        }
+    }
 
     private void StateMachine_OnStateChange(State obj)
     {

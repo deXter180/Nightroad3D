@@ -5,10 +5,11 @@ using System;
 using UnityEngine.AddressableAssets;
 using System.Threading.Tasks;
 using UnityEngine.ResourceManagement.ResourceLocations;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 public static class AssetRefLoader
 {
-
+    public static Dictionary<string, AsyncOperationHandle<GameObject>> OperationHandleDict = new Dictionary<string, AsyncOperationHandle<GameObject>>();
     public static async Task GetAll(string assetLabelOrName, IList<IResourceLocation> loadedLocations)
     {
         var unloadedLocations = await Addressables.LoadResourceLocationsAsync(assetLabelOrName).Task;
@@ -17,6 +18,8 @@ public static class AssetRefLoader
             loadedLocations.Add(location);
         }
     }
+
+    //~~~~~~~~~~~~~~~~~~~~~~~~ Load Assets ~~~~~~~~~~~~~~~~~~
 
     public static async Task LoadedAssets<T>(string assetLabelOrName, Action<T> callback) where T : UnityEngine.Object
     {
@@ -31,7 +34,9 @@ public static class AssetRefLoader
         }       
     }
 
-    public static async Task CreatedAssetAddToList<T>(string assetLabelOrName, T createdObjs) where T : UnityEngine.Object
+    //~~~~~~~~~~~~~~~~~~~~~~~ Create Asset ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    public static async Task CreatedAsset<T>(string assetLabelOrName, T createdObjs) where T : UnityEngine.Object
     {
         var locations = await Addressables.LoadResourceLocationsAsync(assetLabelOrName).Task;
         foreach (var location in locations)
@@ -39,6 +44,72 @@ public static class AssetRefLoader
             createdObjs = await Addressables.InstantiateAsync(location).Task as T;           
         }
     }
+
+    public static async Task CreatedAsset<T>(string assetLabelOrName, T createdObjs, Transform Parent) where T : UnityEngine.Object
+    {
+        var locations = await Addressables.LoadResourceLocationsAsync(assetLabelOrName).Task;
+        foreach (var location in locations)
+        {
+            createdObjs = await Addressables.InstantiateAsync(location, Parent).Task as T;
+        }
+    }
+
+    public static async Task CreatedAsset<T>(string assetLabelOrName, T createdObjs, Vector3 Position) where T : UnityEngine.Object
+    {
+        var locations = await Addressables.LoadResourceLocationsAsync(assetLabelOrName).Task;
+        foreach (var location in locations)
+        {
+            createdObjs = await Addressables.InstantiateAsync(location, Position, Quaternion.identity).Task as T;
+        }
+    }
+
+    public static async Task CreatedAsset<T>(string assetLabelOrName, T createdObjs, Transform Parent, Vector3 Position) where T : UnityEngine.Object
+    {
+        var locations = await Addressables.LoadResourceLocationsAsync(assetLabelOrName).Task;
+        foreach (var location in locations)
+        {
+            createdObjs = await Addressables.InstantiateAsync(location, Position, Quaternion.identity, Parent).Task as T;
+        }
+    }
+
+    public static async Task CreateAsset(string assetName, Vector3 Position)
+    {
+        AsyncOperationHandle<GameObject> handle = Addressables.InstantiateAsync(assetName, Position, Quaternion.identity);
+        await handle.Task;
+        if (handle.IsDone)
+        {
+            OperationHandleDict.Add(assetName, handle);
+        }
+    }
+
+    //~~~~~~~~~~~~~~~~~~~ Create Gameobject And Release After Delay ~~~~~~~~~~~~~~~~~
+
+    public static async void CreateAndReleaseAsset(string assetLabelOrName, Vector3 Position, float delayTime)
+    {
+        AsyncOperationHandle<GameObject> handle = Addressables.InstantiateAsync(assetLabelOrName, Position, Quaternion.identity);
+        await handle.Task;
+        if (handle.IsDone)
+        {
+            int delayInMilli = Mathf.FloorToInt(delayTime * 1000);
+            await Task.Delay(delayInMilli);
+            Addressables.ReleaseInstance(handle);
+        }
+    }
+
+    public static async Task CreateAndReleaseAsset(string assetLabelOrName, GameObject createdObj, Vector3 Position, float delayTime)
+    {
+        var locations = await Addressables.LoadResourceLocationsAsync(assetLabelOrName).Task;
+        foreach (var location in locations)
+        {
+            createdObj = await Addressables.InstantiateAsync(location, Position, Quaternion.identity).Task as GameObject;
+            int delayInMilli = Mathf.FloorToInt(delayTime * 1000);
+            await Task.Delay(delayInMilli);
+            Addressables.Release(createdObj);
+            //Addressables.ReleaseInstance(createdObj);
+        }
+    }
+
+    //~~~~~~~~~~~~~~~~~~~~ Create Assets And Add To List ~~~~~~~~~~~~~~~~~~~~~
 
     public static async Task CreatedAssetsAddToList<T>(string assetLabelOrName, List<T> createdObjs) where T : UnityEngine.Object
     {
@@ -128,6 +199,26 @@ public static class AssetRefLoader
                 }
             }            
         }
+    }
+
+    //~~~~~~~~~~~~~~~ Release Asset ~~~~~~~~~~~~~~
+
+    public static async Task ReleaseAssetInstance(GameObject gameObject, float delayTime)
+    {
+        int delayInMilli = Mathf.FloorToInt(delayTime * 1000);
+        await Task.Delay(delayInMilli);
+        Addressables.ReleaseInstance(gameObject);
+    }
+
+    public static async void ReleaseAssetInstance(string assetName, float delayTime)
+    {
+        int delayInMilli = Mathf.FloorToInt(delayTime * 1000);
+        await Task.Delay(delayInMilli);
+        if (OperationHandleDict.TryGetValue(assetName, out AsyncOperationHandle<GameObject> handle))
+        {
+            Addressables.ReleaseInstance(handle);
+            OperationHandleDict.Remove(assetName);
+        }        
     }
 
     public static async Task ReleaseAssetInstance(GameObject gameObject, float delayTime, bool IsReleaseCompletely)

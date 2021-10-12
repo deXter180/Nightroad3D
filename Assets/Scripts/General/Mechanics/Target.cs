@@ -4,12 +4,16 @@ using UnityEngine;
 
 public class Target : MonoBehaviour
 {
+    private bool dodging;
+    private EnemyBrain EB;
     [SerializeField] private bool IsEnemy;
     [HideInInspector] public int MaxHP { get; set; }
     [HideInInspector] public bool IsDead { get; set; }
     public ResourceManagement Resource = new ResourceManagement();
-    private bool Dodging;
+    public EnemyBrain enemyBrain { get => EB; }
+    public bool Dodging { get => dodging; }
     public bool Blocking { get; set; }
+    public event Action OnDodge;
     
 
     //~~~~~~~~~~~~~~~~~~~~~~~~ Initialization ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -21,7 +25,7 @@ public class Target : MonoBehaviour
             Resource.OnDamaged += OnDamage;
             Resource.OnKilled += OnKilled;
         }
-        Dodging = false;
+        dodging = false;
         Blocking = false;
     }
 
@@ -39,13 +43,9 @@ public class Target : MonoBehaviour
         Resource.SetHealth(maxHP);
     }
 
-    public EnemyBrain GetEBFromTarget()
+    public void SetEB(EnemyBrain enemyBrain)
     {
-        if (TryGetComponent(out EnemyBrain enemyBrain))
-        {
-            return enemyBrain;
-        }
-        else return null;
+        EB = enemyBrain;
     }
 
     //~~~~~~~~~~~~~~~~~~~~~~~~ Get Position & Verify for Enemy ~~~~~~~~~~~~~~~~~~~~~
@@ -66,12 +66,13 @@ public class Target : MonoBehaviour
         if (Blocking == false)
         {
             IsDodging(dodgeChance);
-            if (Dodging == false)
+            if (dodging == false)
             {
                 Resource.Damage(dmg);
             }
             else
             {
+                OnDodge?.Invoke();
                 Debug.Log("Dodged");
             }
         }
@@ -82,13 +83,14 @@ public class Target : MonoBehaviour
         if (Blocking == false)
         {
             IsDodging(dodgeChance);
-            if (Dodging == false)
+            if (dodging == false)
             {
                 dmg += (int)(dmg * critBonus);
                 Resource.Damage(dmg);
             }
             else
             {
+                OnDodge?.Invoke();
                 Debug.Log("Dodged");
             }
         }
@@ -101,21 +103,14 @@ public class Target : MonoBehaviour
     //}
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~ Dodge function ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    public bool GetDodging()
-    {
-        return Dodging;
-    }
-    public void SetDodging(bool dodging)
-    {
-        Dodging = dodging;
-    }
+
     private void IsDodging(float dodgeChance)
     {
         if (UnityEngine.Random.value <= dodgeChance)
         {
-            Dodging = true;
+            dodging = true;
         }
-        else Dodging = false;
+        else dodging = false;
     }
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~ Events Callback ~~~~~~~~~~~~~~~~~~~~~~~~

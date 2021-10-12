@@ -2,16 +2,19 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
-using System.Linq;
+using UnityEngine.VFX;
 
 public class RayGun : MonoBehaviour
 {
+    [SerializeField] private float MuzzleFlashTime;
+    [SerializeField] private Transform firePoint;
     private int PlayerLayer = 9;
     private int bitmask;
     private Camera cam;
-    private Animator anim;
     private Input input;
     private WeaponBrain weaponBrain;
+    private VisualEffect visualEffect;
+    private Light lighting;
     public static event Action OnStopRayShoot;
     
     //private int ShootHash = Animator.StringToHash("Shoot");
@@ -20,9 +23,12 @@ public class RayGun : MonoBehaviour
     {
         input = FindObjectOfType<InputControl>();
         weaponBrain = GetComponent<WeaponBrain>();
-        anim = GetComponent<Animator>();
+        visualEffect = GetComponentInChildren<VisualEffect>();
         cam = GetComponentInParent<Camera>();
         bitmask = ~(1 << PlayerLayer);
+        lighting = GetComponentInChildren<Light>();
+        if (lighting.gameObject.activeInHierarchy)
+            lighting.gameObject.SetActive(false);        
     }
 
     private void FixedUpdate()
@@ -42,54 +48,65 @@ public class RayGun : MonoBehaviour
             }
         }
     }
+
+    private void PlayBulletTrailVfx()
+    {
+        if (visualEffect != null)
+        {
+            Vector3 dir = firePoint.forward;
+            visualEffect.SetVector3("Direction", dir);
+            visualEffect.Play();
+        }
+    }
+
+    private IEnumerator PlayMuzzleLight()
+    {
+        if (!lighting.gameObject.activeInHierarchy)
+        {
+            lighting.gameObject.SetActive(true);
+            yield return new WaitForSeconds(MuzzleFlashTime);
+            lighting.gameObject.SetActive(false);
+        }
+    }
+
     public IEnumerator Shoot(Action action)
     {
+        StartCoroutine(PlayMuzzleLight());
         if (weaponBrain.GetThisWeapon().ThisWeaponSO.IsRanged)
         {
             float bloom = weaponBrain.GetThisWeapon().ThisWeaponSO.Bloom;
-            //Vector3 range = new Vector3(cam.transform.position.x, cam.transform.position.y, weaponBrain.GetThisWeapon().AttackRange);
-            //Debug.DrawRay(cam.transform.position, range, Color.red);
             Vector3 t_bloom = cam.transform.position + cam.transform.forward * 1000f;
             t_bloom += UnityEngine.Random.Range(-bloom, bloom) * cam.transform.up;
             t_bloom += UnityEngine.Random.Range(-bloom, bloom) * cam.transform.right;
             t_bloom -= cam.transform.position;
             t_bloom.Normalize();
-            //Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
             WeaponInventory.Instance.IsAttacking = true;
-            weaponBrain.GetThisWeapon().RaiseOnPlayerAttack(weaponBrain.GetThisWeapon(), weaponBrain.GetWeaponCategories(), weaponBrain.GetWeaponTypes());
+            weaponBrain.GetThisWeapon().RaiseOnPlayerAttack(weaponBrain.GetThisWeapon(), weaponBrain, weaponBrain.GetWeaponCategories(), weaponBrain.GetWeaponTypes());
+            PlayBulletTrailVfx();            
             if (Physics.Raycast(cam.transform.position, t_bloom, out RaycastHit hit, weaponBrain.GetThisWeapon().ThisWeaponSO.AttackRange, bitmask, QueryTriggerInteraction.Ignore))
             {
                 if (hit.collider != null)
                 {
-                    GameObject tempGO = new GameObject();
                     if (hit.collider.GetComponentInParent<Target>() && hit.collider.CompareTag("Enemy"))
                     {
                         Target target = hit.collider.GetComponentInParent<Target>();
-                        if (target != null && target.GetEBFromTarget() != null)
+                        if (target != null && target.enemyBrain != null)
                         {
                             if (target.IsDead == false)
                             {
-                                weaponBrain.GetThisWeapon().DoAttack(target, target.GetEBFromTarget().GetThisEnemy().ThisEnemySO.DodgeChance);
+                                weaponBrain.GetThisWeapon().DoAttack(target, target.enemyBrain.GetThisEnemy().ThisEnemySO.DodgeChance);
+                            }
+                            if (!target.Dodging)
+                            {
+
                             }
                         }                                                                      
                     }
                     else
                     {
-                        
+
                     }
-                    if (AssetCollections.Instance.GetImpactAssetRef(ImpactTypes.BulletHole) != null)
-                    {
-                        List<GameObject> objs = AssetCollections.InstantiateAndGetAssetsByAssetRef(AssetCollections.Instance.GetImpactAssetRef(ImpactTypes.BulletHole));
-                        if (objs != null && objs.Count > 0)
-                        {
-                            GameObject bHole = objs[0];
-                            bHole.transform.SetParent(hit.transform);
-                            bHole.transform.rotation = Quaternion.identity;
-                            bHole.transform.position = hit.point + hit.normal * 0.05f;
-                            bHole.transform.LookAt(hit.point + hit.normal);
-                            Destroy(bHole, 1.5f);
-                        }                       
-                    }
+                    weaponBrain.SpawnHitVfx(hit.point);                    
                 }
             }
             yield return new WaitForSeconds(weaponBrain.GetThisWeapon().ThisWeaponSO.AttackSpeed);

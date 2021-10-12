@@ -75,7 +75,6 @@ MonoBehaviour:
     m_LabelNames:
     - default
     - Enemy
-    - Weapon
     - Inventory
     - ScriptableObject
     - 1stLoadPrefab
@@ -83,6 +82,7 @@ MonoBehaviour:
     - Projectile
     - Materials
     - Rain_VFX
+    - PooledObjects
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 4d0b28ea555e63f448bffdaa57cbfe58, type: 2}

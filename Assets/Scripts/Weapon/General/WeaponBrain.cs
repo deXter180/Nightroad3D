@@ -54,7 +54,7 @@ public class WeaponBrain : MonoBehaviour
     private void Update()
     {
         PlayAnim();
-        //PlayWeaponSound();
+        PlayWeaponSound();
     }
 
     private IEnumerator SetWeapon()
@@ -81,6 +81,25 @@ public class WeaponBrain : MonoBehaviour
     public bool IsWeaponReady()
     {
         return IsReady;
+    }
+
+    private string GetWeaponName()
+    {
+        switch (weapon.ThisWeaponSO.ImpactType)
+        {
+            case ImpactTypes.BulletHole:
+                return "BulletMark_vfx";
+            case ImpactTypes.FireMark:
+                return "FireMark_vfx";
+            case ImpactTypes.None:
+                return null;
+            default: return null;
+        }
+    }
+
+    public void SpawnHitVfx(Vector3 HitPointPos)
+    {
+        AssetRefLoader.CreateAndReleaseAsset(GetWeaponName(), HitPointPos, 0.3f);
     }
 
     //~~~~~~~~~~~~~~~~~~ Weaapon Animation ~~~~~~~~~~~~~~~~~~

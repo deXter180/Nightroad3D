@@ -18,6 +18,8 @@ public class EnemySO : ScriptableObject, IAttack
     [SerializeField] private float avoidanceRadius;
     [SerializeField] private float moveSpeed;
     [SerializeField] private float speedMultiplier;
+    [SerializeField] private float shieldSize;
+    [SerializeField] private float shieldDuration;
     public Transform WorldPrefab;
 
     public int MaxHP => maxHP;
@@ -32,5 +34,7 @@ public class EnemySO : ScriptableObject, IAttack
     public float AvoidanceRadius => avoidanceRadius;
     public float MoveSpeed => moveSpeed;
     public float SpeedMultiplier => speedMultiplier;
+    public float ShieldSize => shieldSize;
+    public float ShieldDuration => shieldDuration;
 }
 

@@ -44,7 +44,7 @@ public class RainParticleSystem : MonoBehaviour
         {
             foreach (var temp in VfxList)
             {
-                AssetCollections.ReleaseAssetInstance(temp, "Rain_VFX", true);
+                AssetCollections.ReleaseAssetInstance(temp, "Rain_VFX", false);
             }
         }       
     }
