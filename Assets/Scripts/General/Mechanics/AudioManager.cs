@@ -28,7 +28,7 @@ public class AudioManager : MonoBehaviour
         {
             if (controlSound)
             {
-                audioSource.PlayOneShot(GameController.Instance.LaserGunShoot, 0.5f);
+                if(!audioSource.isPlaying) audioSource.PlayOneShot(GameController.Instance.LaserGunShoot, 0.5f);
             }
             else
             {
