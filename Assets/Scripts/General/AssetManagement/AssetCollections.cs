@@ -14,6 +14,7 @@ public class AssetCollections : MonoBehaviour
     private static Dictionary<string, List<GameObject>> InstantiatedGODictByName = new Dictionary<string, List<GameObject>>();
     private static Dictionary<AssetReference, List<GameObject>> InstantiatedGODictByAssetRef = new Dictionary<AssetReference, List<GameObject>>();
     private static Dictionary<ProjectileTypes, GameObject> GODictProjectile = new Dictionary<ProjectileTypes, GameObject>();
+    private static Dictionary<WeaponTypes, AudioClip> ACDictWeapon = new Dictionary<WeaponTypes, AudioClip>();
     private static List<InventoryItemSO> InventorySOList = new List<InventoryItemSO>();
     private static List<WeaponSO> WeaponSOList = new List<WeaponSO>();
     private static List<EnemySO> EnemySOList = new List<EnemySO>();
@@ -32,8 +33,11 @@ public class AssetCollections : MonoBehaviour
         }
         LoadSOAssets("ScriptableObject");
         LoadGOAssets("PooledObjects");
+        LoadAudioAssets("AudioFiles");
         StartCoroutine(FindObjectOfType<InventorySystem>().Test());
     }
+
+    //~~~~~~~~~~~~~~~~~~~~~~~~ Utility Methods ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     public AssetReference GetProjectileAssetRef(ProjectileTypes projectileType)
     {
@@ -130,6 +134,15 @@ public class AssetCollections : MonoBehaviour
         else return null;
     }
 
+    public static AudioClip GetAudioClipByWeaponType(WeaponTypes weaponType)
+    {
+        if (ACDictWeapon.TryGetValue(weaponType, out AudioClip AC))
+            return AC;
+        else return null;
+    }
+
+    //~~~~~~~~~~~~~~~~~~~~~ Instantiate Methods ~~~~~~~~~~~~~~~~~~~~~
+
     public static async void InstantiateAssetsByName(string name)
     {
         List<GameObject> GOList = new List<GameObject>();
@@ -192,7 +205,9 @@ public class AssetCollections : MonoBehaviour
         else return null;
     }
 
-    public static async void LoadSOAssets(string label)
+    //~~~~~~~~~~~~~~~~~~~~~~ Load Methods ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    private static async void LoadSOAssets(string label)
     {
         if (label == "ScriptableObject")
         {
@@ -200,13 +215,23 @@ public class AssetCollections : MonoBehaviour
         }      
     }
 
-    public static async void LoadGOAssets(string label)
+    private static async void LoadAudioAssets(string label)
     {
-        if (label != "ScriptableObject")
+        if (label == "AudioFiles")
+        {
+            await AssetRefLoader.LoadedAssets<AudioClip>(label, ACLoadCallback);
+        }
+    }
+
+    private static async void LoadGOAssets(string label)
+    {
+        if (label != "ScriptableObject" && label != "AudioFiles")
         {
             await AssetRefLoader.LoadedAssets<GameObject>(label, GOLoadCallback);
         }
     }
+
+    //~~~~~~~~~~~~~~~~~~~~~~~ Release Methods ~~~~~~~~~~~~~~~~~~~~~~~~
 
     public static void ReleaseAssetInstance(GameObject obj)
     {
@@ -264,6 +289,14 @@ public class AssetCollections : MonoBehaviour
         }
     }
 
+    private static void ACLoadCallback(AudioClip obj)
+    {
+        if (obj.name == "RifleAttackAudio")
+        {
+            ACDictWeapon.Add(WeaponTypes.Rifle, obj);
+        }
+    }
+
     private static void SOLoadCallback(UnityEngine.Object obj)
     {
         if (obj.GetType() == typeof(InventoryItemSO))
@@ -287,6 +320,7 @@ public class AssetCollections : MonoBehaviour
     }
 }
 
+//~~~~~~~~~~~~~~~~~~~ Essential Enums ~~~~~~~~~~~~~~~~~~~~~~
 
 [Serializable]
 public class AssetPackages

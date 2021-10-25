@@ -5,7 +5,6 @@ using System;
 
 public class GameController : MonoBehaviour
 {
-    public AudioClip LaserGunShoot; // Temporary storage
     public static GameController Instance { get; private set; }
 
     private void Awake()

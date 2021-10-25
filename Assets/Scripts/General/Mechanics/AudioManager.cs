@@ -22,18 +22,22 @@ public class AudioManager : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
     }
 
-    public void PlayRifleSound(bool controlSound, WeaponTypes weaponType)
+    public void PlayWeaponSound(bool controlSound, WeaponTypes weaponType)
     {
-        if(weaponType == WeaponTypes.Rifle)
+        if (AssetCollections.GetAudioClipByWeaponType(weaponType) != null)
         {
-            if (controlSound)
+            if (weaponType == WeaponTypes.Rifle)
             {
-                if(!audioSource.isPlaying) audioSource.PlayOneShot(GameController.Instance.LaserGunShoot, 0.5f);
+                if (controlSound)
+                {
+                    if (!audioSource.isPlaying)
+                        audioSource.PlayOneShot(AssetCollections.GetAudioClipByWeaponType(weaponType), 0.5f);
+                }
+                else
+                {
+                    audioSource.Stop();
+                }
             }
-            else
-            {
-                audioSource.Stop();
-            }
-        }    
+        }       
     }
 }

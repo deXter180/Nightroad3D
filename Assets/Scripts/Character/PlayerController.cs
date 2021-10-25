@@ -23,10 +23,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float AttackForce;
     [SerializeField] private float dodgeChance;
     [SerializeField] private float SelectionThreshold;
-    [SerializeField] private Transform cam;
+    [SerializeField] private Transform camTransform;
     private PickedObject selectedPickedObject = null;
     private static float globalGravity = -9.81f;
-    private float camControl;
     private Rigidbody RB;
     private CapsuleCollider col;
     private Target target;
@@ -37,6 +36,7 @@ public class PlayerController : MonoBehaviour
     private int water = 1 << 4;
     private int pickableLayer = 1 << 6;
     private int bitmask;
+    private float camControlX = 0f;
     public static event Action<InventoryItemSO> OnItemPicked;
 
     //~~~~~~~~~~~~~~~~~ Initialization ~~~~~~~~~~~~~~~~~~~
@@ -54,6 +54,7 @@ public class PlayerController : MonoBehaviour
         target = GetComponent<Target>();
         bitmask = ground | water;
         gravity = globalGravity * GravityScale * Vector3.up;
+        
     }
 
     private void OnEnable()
@@ -106,12 +107,23 @@ public class PlayerController : MonoBehaviour
     {
         float horizontalLook = input.GetMouseDelta().x * MouseSensitivity * Time.fixedDeltaTime;
         float verticalLook = input.GetMouseDelta().y * MouseSensitivity * Time.fixedDeltaTime;
-        camControl -= verticalLook;
-        camControl = Mathf.Clamp(camControl, -90f, 90f);
-        cam.localEulerAngles = new Vector3(camControl, transform.rotation.eulerAngles.y + horizontalLook, 0f);
+        camControlX -= verticalLook;
+        camControlX = Mathf.Clamp(camControlX, -90f, 90f);
+        camTransform.localEulerAngles = new Vector3(camControlX, transform.rotation.eulerAngles.y + horizontalLook, 0f);
         transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y + horizontalLook, 0);
-        
     }
+
+    //private void RotateChild() ** Don't use as a weird bug occuring with weapon visual rotating **
+    //{
+    //    float horizontalLook = input.GetMouseDelta().x * MouseSensitivity * Time.fixedDeltaTime;
+    //    float verticalLook = input.GetMouseDelta().y * MouseSensitivity * Time.fixedDeltaTime;
+    //    float camControlY = 0f;
+    //    camControlX -= verticalLook;
+    //    camControlY += horizontalLook;
+    //    camControlX = Mathf.Clamp(camControlX, -90f, 90f);
+    //    camTransform.localEulerAngles = new Vector3(camControlX, camControlY, 0f);        
+    //    transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y + horizontalLook, 0);
+    //}
 
     private void Jump()
     {

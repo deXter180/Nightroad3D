@@ -8,7 +8,8 @@ public class FPSCamControl : MonoBehaviour
 
     void Start()
     {
-        ConstantDistFromPlayer = transform.position - PlayerController.Instance.transform.position;
+        transform.parent = null;
+        ConstantDistFromPlayer = transform.position - PlayerController.Instance.transform.position;       
     }
 
     void Update()

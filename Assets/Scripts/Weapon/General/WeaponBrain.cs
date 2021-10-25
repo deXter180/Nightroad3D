@@ -54,7 +54,7 @@ public class WeaponBrain : MonoBehaviour
     private void Update()
     {
         PlayAnim();
-        PlayWeaponSound();
+        AudioManager.Instance.PlayWeaponSound(IsAttacking, weaponTypes);
     }
 
     private IEnumerator SetWeapon()
@@ -66,18 +66,22 @@ public class WeaponBrain : MonoBehaviour
             IsReady = true;
         }              
     }
+
     public Weapons GetThisWeapon()
     {
         return weapon;
     }
+
     public WeaponTypes GetWeaponTypes()
     {
         return weaponTypes;
     }
+
     public WeaponCategories GetWeaponCategories()
     {
         return weaponCategories;
     }
+
     public bool IsWeaponReady()
     {
         return IsReady;
@@ -121,11 +125,6 @@ public class WeaponBrain : MonoBehaviour
         }        
     }
 
-    private void PlayWeaponSound()
-    {
-        AudioManager.Instance.PlayRifleSound(IsAttacking, weaponTypes);
-    }
-
     private void ChangeAnimState(int animHash)
     {
         if (currentAminHash == animHash) return;
@@ -164,20 +163,23 @@ public class WeaponBrain : MonoBehaviour
 
     private void RayGun_OnStopShoot()
     {
-        animType = AnimType.Walk;
         IsAttacking = false;
+        if (animType != AnimType.Walk)
+        animType = AnimType.Walk;        
     }
 
     private void MeleeAttacker_OnStopMeleeAttack()
     {
-        animType = AnimType.Walk;
         IsAttacking = false;
+        if (animType != AnimType.Walk)
+            animType = AnimType.Walk;       
     }
 
     private void ProjectileGun_OnStopProjectileShoot()
     {
-        animType = AnimType.Walk;
         IsAttacking = false;
+        if (animType != AnimType.Walk)
+            animType = AnimType.Walk;        
     }
 
 }

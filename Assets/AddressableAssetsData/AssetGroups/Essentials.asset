@@ -221,8 +221,10 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - Inventory
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
+    m_MainAsset: {fileID: 6706985283199156882, guid: 7633f1399ecb93d42aa224470bb6339e,
+      type: 3}
+    m_TargetAsset: {fileID: 6706985283199156882, guid: 7633f1399ecb93d42aa224470bb6339e,
+      type: 3}
   - m_GUID: dfa803ed16e24204d83e8b37e7178001
     m_Address: Shield1PIO
     m_ReadOnly: 0
@@ -236,10 +238,8 @@ MonoBehaviour:
     m_SerializedLabels:
     - Weapon
     - PooledObjects
-    m_MainAsset: {fileID: 4029972624871116505, guid: 7538eac9c4df12b4ba5501abd3995ee9,
-      type: 3}
-    m_TargetAsset: {fileID: 4029972624871116505, guid: 7538eac9c4df12b4ba5501abd3995ee9,
-      type: 3}
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
   - m_GUID: e3b803cb60efa584abfc43ef358515da
     m_Address: RainDrops
     m_ReadOnly: 0
@@ -299,6 +299,13 @@ MonoBehaviour:
     m_Address: BulletTracer_vfx
     m_ReadOnly: 0
     m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: a2ed3c45a5c4e2241be194718b24f8a0
+    m_Address: RifleAttackAudio
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - AudioFiles
     m_MainAsset: {fileID: 0}
     m_TargetAsset: {fileID: 0}
   m_ReadOnly: 0
