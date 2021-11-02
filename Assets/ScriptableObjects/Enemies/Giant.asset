@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55fa94d8dec12b8418da0f877b65eebb, type: 3}
   m_Name: Giant
   m_EditorClassIdentifier: 
-  maxHP: 5000
+  maxHP: 500
   damageAmount: 50
   attackSpeed: 2
   attackRange: 20

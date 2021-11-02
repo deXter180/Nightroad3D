@@ -129,12 +129,7 @@ public class Target : MonoBehaviour
             if (Resource.IsDead == true)
             {
                 IsDead = Resource.IsDead;
-                Debug.Log("Dead !!");
-                gameObject.SetActive(false);
-                if (IsEnemy)
-                {
-                    AssetCollections.ReleaseAssetInstance(gameObject, "Enemy", false);
-                }
+                Debug.Log("Dead !!");               
             }
         }
     }

@@ -72,7 +72,7 @@ public class Roam : State
     {
         Vector3 randomDir = new Vector3(UnityEngine.Random.Range(-1f, 1f), 0, UnityEngine.Random.Range(-1f, 1f)).normalized;
         //return enemyTransform.position + randomDir * UnityEngine.Random.Range(800f, 1000f);
-        return enemyBrain.StartPos + randomDir * UnityEngine.Random.Range(1000f, 1500f);
+        return enemyBrain.StartPos + randomDir * UnityEngine.Random.Range(50f, 100f);
     }
 
 }
