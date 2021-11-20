@@ -1,5 +1,5 @@
 {
-    "m_SGVersion": 2,
+    "m_SGVersion": 3,
     "m_Type": "UnityEditor.ShaderGraph.GraphData",
     "m_ObjectId": "18657e287cf840eb8727e9eb9e0b7d25",
     "m_Properties": [
@@ -26,6 +26,12 @@
         }
     ],
     "m_Keywords": [],
+    "m_Dropdowns": [],
+    "m_CategoryData": [
+        {
+            "m_Id": "ea3c763cca664e32b5f50f468e9e9045"
+        }
+    ],
     "m_Nodes": [
         {
             "m_Id": "3f95aa81c44c42b89e9b458bc3a97754"
@@ -428,10 +434,11 @@
         "serializedMesh": {
             "m_SerializedMesh": "{\"mesh\":{\"instanceID\":0}}",
             "m_Guid": ""
-        }
+        },
+        "preventRotation": false
     },
     "m_Path": "Shader Graphs",
-    "m_ConcretePrecision": 0,
+    "m_GraphPrecision": 0,
     "m_PreviewMode": 2,
     "m_OutputNode": {
         "m_Id": ""
@@ -1080,6 +1087,8 @@
     "m_DefaultReferenceName": "FrenselScale",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -1129,6 +1138,8 @@
     "m_DefaultReferenceName": "FrenselColor",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -1139,6 +1150,7 @@
         "b": 0.9905660152435303,
         "a": 1.0
     },
+    "isMainColor": false,
     "m_ColorMode": 1
 }
 
@@ -1227,6 +1239,8 @@
     "m_DefaultReferenceName": "FrenselTexture",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -1235,6 +1249,8 @@
         "m_SerializedTexture": "{\"texture\":{\"instanceID\":0}}",
         "m_Guid": ""
     },
+    "isMainTexture": false,
+    "useTilingAndOffset": false,
     "m_Modifiable": true,
     "m_DefaultType": 0
 }
@@ -1335,6 +1351,8 @@
     "m_DefaultReferenceName": "Cosmic",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -2158,6 +2176,8 @@
     "m_DefaultReferenceName": "FrenselSpeed",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -2171,17 +2191,23 @@
 }
 
 {
-    "m_SGVersion": 0,
+    "m_SGVersion": 1,
     "m_Type": "UnityEditor.Rendering.Universal.ShaderGraph.UniversalTarget",
     "m_ObjectId": "b42de1d47acd4d1d96d0942cdfaf4569",
     "m_ActiveSubTarget": {
         "m_Id": "1789e8d64dad4ffcbd4457966dd4df42"
     },
+    "m_AllowMaterialOverride": false,
     "m_SurfaceType": 1,
+    "m_ZTestMode": 4,
+    "m_ZWriteControl": 0,
     "m_AlphaMode": 0,
-    "m_TwoSided": false,
+    "m_RenderFace": 2,
     "m_AlphaClip": true,
-    "m_CustomEditorGUI": ""
+    "m_CastShadows": true,
+    "m_ReceiveShadows": true,
+    "m_CustomEditorGUI": "",
+    "m_SupportVFX": false
 }
 
 {
@@ -2385,6 +2411,8 @@
     "m_DefaultReferenceName": "FrenselPower",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -2945,6 +2973,36 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.CategoryData",
+    "m_ObjectId": "ea3c763cca664e32b5f50f468e9e9045",
+    "m_Name": "",
+    "m_ChildObjectList": [
+        {
+            "m_Id": "f5bd66dedd3f4d90a93beefd0cc31cae"
+        },
+        {
+            "m_Id": "6b28edff51f34fa59f9777748e10c507"
+        },
+        {
+            "m_Id": "4dee4caf8e9f4f5198435ee19d74308f"
+        },
+        {
+            "m_Id": "ba88a873c7904ed4b0e87599c95ec0ff"
+        },
+        {
+            "m_Id": "b0e0309570274d24bb5d76220835704a"
+        },
+        {
+            "m_Id": "53f1e85ee88b402fb64c9aa208d17d26"
+        },
+        {
+            "m_Id": "4c9a57da6af94061827f4b0add130a6e"
+        }
+    ]
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.PropertyNode",
     "m_ObjectId": "eae6112a23d641308ac1123eb240e096",
     "m_Group": {
@@ -3039,6 +3097,8 @@
     "m_DefaultReferenceName": "CosmicColor",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -3049,6 +3109,7 @@
         "b": 0.35849058628082278,
         "a": 1.0
     },
+    "isMainColor": false,
     "m_ColorMode": 1
 }
 

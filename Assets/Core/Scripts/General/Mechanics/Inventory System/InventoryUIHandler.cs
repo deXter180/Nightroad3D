@@ -8,10 +8,11 @@ public class InventoryUIHandler : MonoBehaviour
 {
     public static InventoryUIHandler Instance { get; private set; }
     public bool IsInventoryON { get; set; }
-    private Canvas canvas;
-    private GridLayoutGroup gridLayout;
+    private Canvas canvas;  
     private RectTransform UIRect;
-    [SerializeField] Transform BackgroundImage;
+    public Transform gridVisual;
+    private RectTransform canvasRect;
+    [SerializeField] private float CellSize;
 
     private void Awake()
     {
@@ -21,16 +22,24 @@ public class InventoryUIHandler : MonoBehaviour
         }
         else Instance = this;
         canvas = GetComponentInChildren<Canvas>();
-        gridLayout = GetComponentInChildren<GridLayoutGroup>();
+        canvasRect = canvas.GetComponent<RectTransform>();
         UIRect = GetComponent<RectTransform>();
     }
 
     private void Start()
     {
         canvas.enabled = false;
-        IsInventoryON = false;
-        CreateGridBackGround();
-        
+        IsInventoryON = false;      
+    }
+
+    public RectTransform GetCanvasTransfrom()
+    {
+        return canvasRect;
+    }
+
+    public Canvas GetCanvas()
+    {
+        return canvas;
     }
 
     public RectTransform GetUIRect()
@@ -38,16 +47,9 @@ public class InventoryUIHandler : MonoBehaviour
         return UIRect;
     }
 
-    private void CreateGridBackGround()
+    public float GetCellSize()
     {
-        for (int x = 0; x < InventorySystem.Instance.GetGrid().GetWidth(); x++)
-        {
-            for (int y = 0; y < InventorySystem.Instance.GetGrid().GetHeight(); y++)
-            {
-                Transform backgrnd = Instantiate(BackgroundImage, gridLayout.gameObject.transform);
-                backgrnd.gameObject.SetActive(true);
-            }
-        }
+        return CellSize;
     }
 
     public void Control()
@@ -63,3 +65,56 @@ public class InventoryUIHandler : MonoBehaviour
     }
 }
 
+//~~~~~~~~~~~~~~~ Grid Object Class ~~~~~~~~~~~~~~~~
+
+#region
+
+public class GridObject
+{
+    private Grid<GridObject> grid;
+    private int x;
+    private int y;
+    public PlacedObject placedObject;
+
+    public GridObject(Grid<GridObject> grid, int x, int y)
+    {
+        this.grid = grid;
+        this.x = x;
+        this.y = y;
+        placedObject = null;
+    }
+
+    public override string ToString()
+    {
+        return x + ", " + y + "\n" + placedObject;
+    }
+
+    public void SetPlacedObject(PlacedObject placedObject)
+    {
+        this.placedObject = placedObject;
+        grid.TriggerGridObjectChanged(x, y);
+    }
+
+    public void ClearPlacedObject()
+    {
+        placedObject = null;
+        grid.TriggerGridObjectChanged(x, y);
+    }
+
+    public PlacedObject GetPlacedObject()
+    {
+        return placedObject;
+    }
+
+    public bool CanBuild()
+    {
+        return placedObject == null;
+    }
+
+    public bool HasPlacedObject()
+    {
+        return placedObject != null;
+    }
+}
+
+#endregion

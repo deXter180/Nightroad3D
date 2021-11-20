@@ -16,6 +16,7 @@ public class AssetCollections : MonoBehaviour
     private static Dictionary<ProjectileTypes, GameObject> GODictProjectile = new Dictionary<ProjectileTypes, GameObject>();
     private static Dictionary<WeaponTypes, AudioClip> ACDictWeapon = new Dictionary<WeaponTypes, AudioClip>();
     private static List<InventoryItemSO> InventorySOList = new List<InventoryItemSO>();
+    private static List<InventoryItemSO> WeaponInventorySOList= new List<InventoryItemSO>();
     private static List<WeaponSO> WeaponSOList = new List<WeaponSO>();
     private static List<EnemySO> EnemySOList = new List<EnemySO>();
 
@@ -34,7 +35,6 @@ public class AssetCollections : MonoBehaviour
         LoadSOAssets("ScriptableObject");
         LoadGOAssets("PooledObjects");
         LoadAudioAssets("AudioFiles");
-        StartCoroutine(FindObjectOfType<InventorySystem>().Test());
     }
 
     //~~~~~~~~~~~~~~~~~~~~~~~~ Utility Methods ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -125,6 +125,31 @@ public class AssetCollections : MonoBehaviour
             }
         }
         return null;
+    }
+
+    public static InventoryItemSO GetWeaponInventorySO(WeaponTypes WT)
+    {
+        foreach (var temp in WeaponInventorySOList)
+        {
+            if (temp.weaponType == WT)
+            {
+                return temp;
+            }
+        }
+        return null;
+    }
+
+    public static List<InventoryItemSO> GetInventoryItemsSOFromList(ItemTypes itemType)
+    {
+        List<InventoryItemSO> itemList = new List<InventoryItemSO>();
+        foreach (var invSO in InventorySOList)
+        {
+            if (invSO.itemType == itemType)
+            {
+                itemList.Add(invSO);
+            }
+        }
+        return itemList;
     }
 
     public static GameObject GetProjectileObj(ProjectileTypes projectileType)
@@ -301,7 +326,16 @@ public class AssetCollections : MonoBehaviour
     {
         if (obj.GetType() == typeof(InventoryItemSO))
         {
-            InventorySOList.Add((InventoryItemSO)obj);
+            InventoryItemSO itemSO = (InventoryItemSO)obj;
+            if (itemSO.weaponType == WeaponTypes.None)
+            {
+                InventorySOList.Add(itemSO);
+            }
+            else
+            {
+                WeaponInventorySOList.Add(itemSO);
+            }
+            
         }
         else if (obj.GetType() == typeof(WeaponSO))
         {
@@ -321,6 +355,8 @@ public class AssetCollections : MonoBehaviour
 }
 
 //~~~~~~~~~~~~~~~~~~~ Essential Enums ~~~~~~~~~~~~~~~~~~~~~~
+
+#region
 
 [Serializable]
 public class AssetPackages
@@ -387,5 +423,8 @@ public enum ItemTypes
     Shield,
     Boots,
     Helmet,
-    ManaPotion
+    ManaPotion,
+    Weapon
 }
+
+#endregion

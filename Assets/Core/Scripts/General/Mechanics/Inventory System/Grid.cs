@@ -56,16 +56,18 @@ public class Grid<GridObject>
             {
                 for (int y = 0; y < gridArray.GetLength(1); y++)
                 {
-                    Debug.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x, y + 1), Color.green, 200f);
-                    Debug.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x + 1, y), Color.green, 200f);
+                    Debug.DrawLine(GetWorldPosition3D(x, y), GetWorldPosition3D(x, y + 1), Color.green, 200f);
+                    Debug.DrawLine(GetWorldPosition3D(x, y), GetWorldPosition3D(x + 1, y), Color.green, 200f);
                 }
             }
-            Debug.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height), Color.green, 200f);
-            Debug.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height), Color.green, 200f);
+            Debug.DrawLine(GetWorldPosition3D(0, height), GetWorldPosition3D(width, height), Color.green, 200f);
+            Debug.DrawLine(GetWorldPosition3D(width, 0), GetWorldPosition3D(width, height), Color.green, 200f);
         }
     }
 
     //~~~~~~~~~~~~~~~~~~~~~ Public Utility Methods ~~~~~~~~~~~~~~~~~~~~
+
+    #region
 
     public int GetWidth()
     {
@@ -86,11 +88,19 @@ public class Grid<GridObject>
         return TotalCells = width * height;
     }
     
-    public Vector3 GetWorldPosition(int x, int y)
+    public Vector3 GetWorldPosition3D(int x, int y)
     {
         float PosX = x * cellSize;
         float PosY = y * cellSize;
         Vector3 temp = new Vector3(PosX, PosY, 0) + originPosition;
+        return temp;
+    }
+
+    public Vector2 GetWorldPosition2D(int x, int y)
+    {
+        float PosX = x * cellSize;
+        float PosY = y * cellSize;
+        Vector2 temp = new Vector2(PosX, PosY) + new Vector2(originPosition.x, originPosition.y);
         return temp;
     }
 
@@ -187,4 +197,6 @@ public class Grid<GridObject>
         }
         else return false;
     }
+
+    #endregion
 }

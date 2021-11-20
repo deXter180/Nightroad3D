@@ -13,6 +13,7 @@ public class InventoryItemSO : ScriptableObject
     public int Width;
     public int Height;
     public ItemTypes itemType;
+    public WeaponTypes weaponType;
     public ItemRarity Rarity;
     [SerializeField] public int AttributeAmount;
     [SerializeField] public Texture2D AttributeIcon;
@@ -20,6 +21,8 @@ public class InventoryItemSO : ScriptableObject
     [SerializeField] private Transform worldPrefab;
     public Transform InventoryPrefab { get => inventoryPrefab; }
     public Transform WorldPrefab { get => worldPrefab; }
+
+    #region
     public enum Dir
     {
         Down,
@@ -109,28 +112,36 @@ public class InventoryItemSO : ScriptableObject
         }
         return gridPositionList;
     }
+    #endregion
 
-    public static void CreateGridVisual(Transform visualParentTransform, InventoryItemSO inventoryItemSO, float cellSize)
+    public static void CreateGridVisual(Transform visualParentTransform, InventoryItemSO inventoryItemSO, float cellSize, bool isOnMenu)
     {
-        Transform visualTransform = Instantiate(InventorySystem.Instance.gridVisual, visualParentTransform);
+        Transform visualTransform = Instantiate(InventoryUIHandler.Instance.gridVisual, visualParentTransform);
         visualTransform.gameObject.SetActive(false);
         RectTransform rectTransform = visualTransform.GetComponent<RectTransform>();
-        if (inventoryItemSO.Width == 1 && inventoryItemSO.Height == 1)
+        if (!isOnMenu)
         {
-            rectTransform.sizeDelta = new Vector2(inventoryItemSO.Width, inventoryItemSO.Height) * cellSize * 1.6f;
-        }
-        else if (inventoryItemSO.Width == 1)
-        {
-            rectTransform.sizeDelta = new Vector2(inventoryItemSO.Width * 1.6f, inventoryItemSO.Height) * cellSize;
-        }
-        else if(inventoryItemSO.Height == 1)
-        {
-            rectTransform.sizeDelta = new Vector2(inventoryItemSO.Width, inventoryItemSO.Height * 1.6f) * cellSize;
+            if (inventoryItemSO.Width == 1 && inventoryItemSO.Height == 1)
+            {
+                rectTransform.sizeDelta = new Vector2(inventoryItemSO.Width, inventoryItemSO.Height) * cellSize * 1.6f;
+            }
+            else if (inventoryItemSO.Width == 1)
+            {
+                rectTransform.sizeDelta = new Vector2(inventoryItemSO.Width * 1.6f, inventoryItemSO.Height) * cellSize;
+            }
+            else if (inventoryItemSO.Height == 1)
+            {
+                rectTransform.sizeDelta = new Vector2(inventoryItemSO.Width, inventoryItemSO.Height * 1.6f) * cellSize;
+            }
+            else
+            {
+                rectTransform.sizeDelta = new Vector2(inventoryItemSO.Width, inventoryItemSO.Height) * cellSize;
+            }
         }
         else
         {
-            rectTransform.sizeDelta = new Vector2(inventoryItemSO.Width, inventoryItemSO.Height) * cellSize;
-        }
+            rectTransform.sizeDelta = new Vector2(cellSize, cellSize);
+        }        
         //rectTransform.sizeDelta = new Vector2(inventoryItemSO.Width, inventoryItemSO.Height) * cellSize;
         rectTransform.anchoredPosition = Vector2.zero;
         rectTransform.SetAsLastSibling();

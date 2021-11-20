@@ -11,6 +11,7 @@ public class WeaponInventory : MonoBehaviour
     [SerializeField] private int WeaponCount = 4;
     private int SelectedWeapon = 0;
     private WeaponBrain[] weaponBrains;
+    private bool isRemoved;
     private bool IsInitialized => weaponInventory != null;
     private Input input;
     private Dictionary<WeaponTypes, WeaponBrain> weaponInventory;
@@ -31,12 +32,24 @@ public class WeaponInventory : MonoBehaviour
         {
             WB.gameObject.SetActive(false);
         }
+        foreach (var menuTile in EquipMenuControl.EquipTileList)
+        {
+            menuTile.OnPlacedOnMenu += MenuTile_OnPlacedOnMenu;
+            menuTile.OnRemovedFromMenu += MenuTile_OnRemovedFromMenu;
+        }
         InitializeInventory();
-        AddWeapon(WeaponTypes.RocketLauncher);
-        AddWeapon(WeaponTypes.Rifle);
-        AddWeapon(WeaponTypes.Axe);
-        AddWeapon(WeaponTypes.Shotgun);
+        isRemoved = false;
     }
+
+    private void OnDestroy()
+    {
+        foreach (var menuTile in EquipMenuControl.EquipTileList)
+        {
+            menuTile.OnPlacedOnMenu -= MenuTile_OnPlacedOnMenu;
+            menuTile.OnRemovedFromMenu -= MenuTile_OnRemovedFromMenu;
+        }
+    }
+
     private void Update()
     {
         WeaponSelect();
@@ -47,7 +60,7 @@ public class WeaponInventory : MonoBehaviour
             return;
         else
         weaponInventory = new Dictionary<WeaponTypes, WeaponBrain>();
-        
+      
     }
 
     public bool InInventory(WeaponTypes weaponType)
@@ -77,12 +90,11 @@ public class WeaponInventory : MonoBehaviour
         else return null;
     }
 
-    public void AddWeapon(WeaponTypes weaponType)
+    private void AddWeapon(WeaponTypes weaponType)
     {
         InitializeInventory();
         if (weaponInventory.Count < WeaponCount && !weaponInventory.ContainsKey(weaponType))
-        {
-            
+        {            
             for (int i = 0; i < weaponBrains.Length; i++)
             {
                 if (weaponBrains[i].GetWeaponTypes() == weaponType)
@@ -94,13 +106,6 @@ public class WeaponInventory : MonoBehaviour
                         SelectedWeapon = 0;
                     }
                 }
-                //if (WeaponInventory.Count == 1)
-                //{
-                //    WeaponInventory.TryGetValue(weaponType, out WeaponBrain weaponBrain);
-                //    weaponBrain.gameObject.SetActive(true);
-                //    SelectedWeapon = 0;
-
-                //}
             }
         }
     }
@@ -111,6 +116,8 @@ public class WeaponInventory : MonoBehaviour
         {
             if (weaponInventory.Count != 0 && weaponInventory.ContainsKey(weaponType))
             {
+                weaponInventory.TryGetValue(weaponType, out WeaponBrain weaponBrain);
+                weaponBrain.gameObject.SetActive(false);
                 weaponInventory.Remove(weaponType);
             }
         }
@@ -130,6 +137,7 @@ public class WeaponInventory : MonoBehaviour
             i++;
         }
     }
+
     private void WeaponSelect()
     {
         int previousWeapon = SelectedWeapon;
@@ -153,6 +161,33 @@ public class WeaponInventory : MonoBehaviour
         {
             SelectWeapon();
             IsAttacking = false;
+        }
+        if (isRemoved)
+        {
+            SelectedWeapon = 0;
+            SelectWeapon();
+            isRemoved = false;
+        }
+    }
+
+    //~~~~~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~~~
+
+    private void MenuTile_OnPlacedOnMenu(object sender, PlacedObject e)
+    {
+        InventoryItemSO itemSO = e.GetInventoryItemSO();
+        if (itemSO.itemType == ItemTypes.Weapon && itemSO.weaponType != WeaponTypes.None)
+        {
+            AddWeapon(itemSO.weaponType);
+        }       
+    }
+
+    private void MenuTile_OnRemovedFromMenu(object sender, PlacedObject e)
+    {
+        InventoryItemSO itemSO = e.GetInventoryItemSO();
+        if (itemSO.itemType == ItemTypes.Weapon && itemSO.weaponType != WeaponTypes.None)
+        {
+            RemoveWeapon(itemSO.weaponType);
+            isRemoved = true;
         }
     }
 

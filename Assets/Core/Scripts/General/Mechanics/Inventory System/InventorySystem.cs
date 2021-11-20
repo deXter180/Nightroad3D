@@ -5,22 +5,24 @@ using System;
 
 public class InventorySystem : MonoBehaviour
 {
-    public static InventorySystem Instance { get; private set; }
+    [SerializeField] private int gridWidth;
+    [SerializeField] private int gridHeight;
+    private float throwDistance = 20f;
+    private float cellSize;
     private Grid<GridObject> grid;
     private List<PlacedObject> InventoryList;
     private RectTransform itemContainer;
-    [SerializeField] private Transform InventoryGridStart;
-    public static event EventHandler<PlacedObject> OnObjectPlaced;
-    public Transform gridVisual;
+    private InventoryUIHandler inventoryUI;
+    public event EventHandler<PlacedObject> OnPlacedOnInventory;
+    public static InventorySystem Instance { get; private set; }
+    public int PlacedObjectCount { get; private set; }
 
     private void Awake()
     {
-        Instance = this;
-
-        int gridWidth = 7;
-        int gridHeight = 7;
-        float cellSize = 128f;
-        grid = new Grid<GridObject>(gridWidth, gridHeight, cellSize, InventoryGridStart.position, (Grid<GridObject> g, int x, int y) => new GridObject(g, x, y));
+        Instance = Instance == null ? this : null;
+        inventoryUI = GetComponentInParent<InventoryUIHandler>();
+        cellSize = inventoryUI.GetCellSize();
+        grid = new Grid<GridObject>(gridWidth, gridHeight, cellSize, transform.position, (Grid<GridObject> g, int x, int y) => new GridObject(g, x, y));
         itemContainer = transform.Find("ItemContainer").GetComponent<RectTransform>();
         InventoryList = new List<PlacedObject>();
     }
@@ -37,11 +39,30 @@ public class InventorySystem : MonoBehaviour
         TryAddingItem(AssetCollections.GetInventoryItemSOFromList(ItemTypes.Shield));
         TryAddingItem(AssetCollections.GetInventoryItemSOFromList(ItemTypes.Helmet));
         TryAddingItem(AssetCollections.GetInventoryItemSOFromList(ItemTypes.ManaPotion));
+        PickedObject.SpawnWeaponWorld(WeaponTypes.Axe, AssetCollections.GetWeaponInventorySO(WeaponTypes.Axe), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
+        PickedObject.SpawnWeaponWorld(WeaponTypes.Rifle, AssetCollections.GetWeaponInventorySO(WeaponTypes.Rifle), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
+        PickedObject.SpawnWeaponWorld(WeaponTypes.RocketLauncher, AssetCollections.GetWeaponInventorySO(WeaponTypes.RocketLauncher), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
+        PickedObject.SpawnWeaponWorld(WeaponTypes.Shotgun, AssetCollections.GetWeaponInventorySO(WeaponTypes.Shotgun), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
+        //TryAddingItem(AssetCollections.GetWeaponInventorySO(WeaponTypes.Axe));
+        //TryAddingItem(AssetCollections.GetWeaponInventorySO(WeaponTypes.Rifle));
+        //TryAddingItem(AssetCollections.GetWeaponInventorySO(WeaponTypes.RocketLauncher));
+        //TryAddingItem(AssetCollections.GetWeaponInventorySO(WeaponTypes.Shotgun));
     }
 
+    #region
     public Grid<GridObject> GetGrid()
     {
         return grid;
+    }
+
+    public int GetWidth()
+    {
+        return gridWidth;
+    }
+
+    public int GetHeight()
+    {
+        return gridHeight;
     }
 
     public Vector2Int GetGridPos(Vector3 worldPos)
@@ -75,6 +96,7 @@ public class InventorySystem : MonoBehaviour
     {
         InventoryList.Remove(placedObject);
     }
+    #endregion
 
     //~~~~~~~~~~~~~~~~~~ Main Functions ~~~~~~~~~~~~~~~~~~~
 
@@ -152,7 +174,6 @@ public class InventorySystem : MonoBehaviour
                     placedObjectWorldPos = grid.GetWorldPosAtOrigin(placedObjectOrigin.x, placedObjectOrigin.y) + new Vector3(rotationOffset.x - 0.2f, rotationOffset.y - 0.2f) * grid.GetCellSize();
                     break;
             }
-            //placedObjectWorldPos = grid.GetWorldPosAtOrigin(placedObjectOrigin.x, placedObjectOrigin.y) + new Vector3(rotationOffset.x, rotationOffset.y) * grid.GetCellSize();
             PlacedObject placedObject = PlacedObject.Create(itemContainer, placedObjectWorldPos, placedObjectOrigin, dir, inventoryItemSO);
             placedObject.transform.rotation = Quaternion.Euler(0, 0, -inventoryItemSO.GetRotationAngle(dir));
 
@@ -160,8 +181,8 @@ public class InventorySystem : MonoBehaviour
             {
                 grid.GetGridObject(gridPos.x, gridPos.y).SetPlacedObject(placedObject);
             }
-
-            OnObjectPlaced?.Invoke(this, placedObject);
+            PlacedObjectCount = itemContainer.childCount;
+            OnPlacedOnInventory?.Invoke(this, placedObject);
             return true;
         }
         else { return false; }
@@ -187,7 +208,7 @@ public class InventorySystem : MonoBehaviour
     }
 
     //~~~~~~~~~~~~~~~~~ Save & Load ~~~~~~~~~~~~~~~~~~~~
-
+    #region
     [Serializable]
     public struct AddedItem
     {
@@ -240,56 +261,5 @@ public class InventorySystem : MonoBehaviour
             TryPlaceItem(AssetCollections.GetInventoryItemSOFromList(addedItem.itemType), addedItem.gridPos, addedItem.dir);
         }
     }
-
-    //~~~~~~~~~~~~~~~ Grid Object Class ~~~~~~~~~~~~~~~~
-
-    public class GridObject 
-    {
-        private Grid<GridObject> grid;
-        private int x;
-        private int y;
-        public PlacedObject placedObject;
-
-        public GridObject(Grid<GridObject> grid, int x, int y)
-        {
-            this.grid = grid;
-            this.x = x;
-            this.y = y;
-            placedObject = null;
-        }
-
-        public override string ToString()
-        {
-            return x + ", " + y + "\n" + placedObject;
-        }
-
-        public void SetPlacedObject(PlacedObject placedObject)
-        {
-            this.placedObject = placedObject;
-            grid.TriggerGridObjectChanged(x, y);
-        }
-
-        public void ClearPlacedObject()
-        {
-            placedObject = null;
-            grid.TriggerGridObjectChanged(x, y);
-        }
-
-        public PlacedObject GetPlacedObject()
-        {
-            return placedObject;
-        }
-
-        public bool CanBuild()
-        {
-            return placedObject == null;
-        }
-
-        public bool HasPlacedObject()
-        {
-            return placedObject != null;
-        }
-    }
-
-
+    #endregion
 }

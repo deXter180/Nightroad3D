@@ -7,6 +7,10 @@ public class PickedObject : MonoBehaviour
     private BoxCollider col;
     private Rigidbody RB;         
     private ItemTypes item;
+    private WeaponTypes weapon;
+    private InventoryItemSO itemSO;
+    private static float throwDistance = 5f;
+    public WeaponTypes weaponTypes { get => weapon; }
     public ItemTypes itemType { get => item; }
 
     private void Awake()
@@ -20,29 +24,47 @@ public class PickedObject : MonoBehaviour
         RB.isKinematic = true;
     }
 
-    public static PickedObject SpawnItemWorld(ItemTypes itemType, Vector3 position)
+    public InventoryItemSO GetItemSO()
+    {
+        return itemSO;
+    }
+
+    public static PickedObject SpawnItemsWorld(ItemTypes itemType, InventoryItemSO SO,Vector3 position)
     {
         float posX = position.x;
         float posZ = position.z;
-        Vector3 groundPos = new Vector3(posX, PlayerController.Instance.GroundHeight, posZ);        
-        Transform spawnedTransform = Instantiate(AssetCollections.GetInventoryItemSOFromList(itemType).WorldPrefab, PlayerController.Instance.GetRandomDirWithoutY(1f, -1f) + groundPos, Quaternion.identity);
+        Vector3 groundPos = new Vector3(posX, PlayerController.Instance.GroundHeight, posZ);
+        Transform spawnedTransform = Instantiate(AssetCollections.GetInventoryItemSOFromList(itemType).WorldPrefab, PlayerController.Instance.GetRandomDirWithoutY(throwDistance, -throwDistance) + groundPos, Quaternion.identity);
         PickedObject pickedObject = spawnedTransform.GetComponent<PickedObject>();
-        pickedObject.SetupInGameWorld(itemType);
+        pickedObject.itemSO = SO;
+        pickedObject.SetupInGameWorld(itemType, WeaponTypes.None);
+        return pickedObject;
+    }
+
+    public static PickedObject SpawnWeaponWorld(WeaponTypes weaponType, InventoryItemSO SO,Vector3 position)
+    {
+        float posX = position.x;
+        float posZ = position.z;
+        Vector3 groundPos = new Vector3(posX, PlayerController.Instance.GroundHeight, posZ);
+        Transform spawnedTransform = Instantiate(AssetCollections.GetWeaponInventorySO(weaponType).WorldPrefab, PlayerController.Instance.GetRandomDirWithoutY(throwDistance, -throwDistance) + groundPos, Quaternion.identity);
+        PickedObject pickedObject = spawnedTransform.GetComponent<PickedObject>();
+        pickedObject.itemSO = SO;
+        pickedObject.SetupInGameWorld(ItemTypes.Weapon, weaponType);
         return pickedObject;
     }
 
     public static PickedObject[] SpawnItemsWorldDrop(ItemTypes itemType, int Amount, Vector3 position)
     {
-        PickedObject[] pickedObjects = new PickedObject[Amount];       
+        PickedObject[] pickedObjects = new PickedObject[Amount];
         for (int i = 0; i < Amount; i++)
         {
             Vector3 randomDir = PlayerController.Instance.GetRandomDirWithoutY(1f, -1f);
             float posX = position.x;
             float posZ = position.z;
-            Transform spawnedTransform = Instantiate(AssetCollections.GetInventoryItemSOFromList(itemType).WorldPrefab, new Vector3(posX, PlayerController.Instance.GroundHeight, posZ) + randomDir * 100f, Quaternion.identity);           
+            Transform spawnedTransform = Instantiate(AssetCollections.GetInventoryItemSOFromList(itemType).WorldPrefab, new Vector3(posX, PlayerController.Instance.GroundHeight, posZ) + randomDir * 100f, Quaternion.identity);
             pickedObjects[i] = spawnedTransform.GetComponent<PickedObject>();
             pickedObjects[i].AddForceToItemSpawn(randomDir);
-            pickedObjects[i].SetupInGameWorld(itemType);
+            pickedObjects[i].SetupInGameWorld(itemType, WeaponTypes.None);
         }
         return pickedObjects;
     }
@@ -69,14 +91,10 @@ public class PickedObject : MonoBehaviour
         else return false;
     }
 
-    public InventoryItemSO GetItemSO()
-    {
-        return AssetCollections.GetInventoryItemSOFromList(item);
-    }
-
-    private void SetupInGameWorld(ItemTypes item)
+    private void SetupInGameWorld(ItemTypes item, WeaponTypes weapon)
     {
         this.item = item;
+        this.weapon = weapon;
     }
 
     public Rigidbody GetThisRB()

@@ -96,6 +96,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -724,6 +725,31 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      MiniShotgun7: -995550703086149688
+      Shotgun_5: -5463996664690831012
+      Shotgun_1: -9120936505241938292
+      Shotgun_6: 3039674954776129638
+      Shotgun_7: 4762055774655711341
+      Shotgun_2: -4069719694654505835
+      Shotgun_12: 8623465898611176312
+      Shotgun_3: -5753476250743359336
+      Shotgun_9: -8243292593380903057
+      MiniShotgun5: 5734470793920839867
+      Shotgun_8: -6493389499087970934
+      MiniShotgun4: 8236890579117266775
+      Shotgun_11: 2062338434378762102
+      MiniShotgun6: 5475641540640495613
+      BigShotgun3: 906833190553553866
+      MiniShotgun2: 3176010037824985680
+      Shotgun_0: -2408530018317867212
+      MiniShotgun1: 7727778546511759111
+      BigShotgun4: -170545235020501965
+      BigShotgun2: 6742877992845834950
+      Shotgun_4: 1377073047783017018
+      MiniShotgun3: -7499298773970499849
+      BigShotgun1: -3921417069645864762
+      Shotgun_10: 9211047761913558104
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

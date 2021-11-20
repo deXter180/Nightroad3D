@@ -24,6 +24,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float dodgeChance;
     [SerializeField] private float SelectionThreshold;
     [SerializeField] private Transform camTransform;
+    [SerializeField] private InventorySystem mainInventory;
     private PickedObject selectedPickedObject = null;
     private static float globalGravity = -9.81f;
     private Rigidbody RB;
@@ -54,7 +55,7 @@ public class PlayerController : MonoBehaviour
         target = GetComponent<Target>();
         bitmask = ground | water;
         gravity = globalGravity * GravityScale * Vector3.up;
-        
+        StartCoroutine(mainInventory.Test());
     }
 
     private void OnEnable()
@@ -154,6 +155,53 @@ public class PlayerController : MonoBehaviour
         else return true;
     }
 
+    private void ControlInventory()
+    {
+        if (input.GetInventory())
+        {
+            InventoryUIHandler.Instance.Control();
+            if (InventoryUIHandler.Instance.IsInventoryON)
+            {
+                InventoryUIHandler.Instance.IsInventoryON = false;
+            }
+            else InventoryUIHandler.Instance.IsInventoryON = true;
+        }
+    }
+
+    private void SearchItemsInWorld()
+    {
+        var ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward); //Camera.main.ScreenPointToRay(input.GetMousePosition());
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, Camera.main.farClipPlane / 2, pickableLayer))
+        {
+            selectedPickedObject = hit.transform.GetComponent<PickedObject>();
+            if (selectedPickedObject != null)
+            {
+                selectedPickedObject.HighlightObject();
+                if (input.GetPickItems())
+                {
+                    if (mainInventory.TryAddingItem(selectedPickedObject.GetItemSO()))
+                    {
+                        selectedPickedObject.DestroySelf();
+                        OnItemPicked?.Invoke(selectedPickedObject.GetItemSO());
+                    }
+                    else
+                    {
+                        selectedPickedObject.AddForceToItemSpawn(GetRandomDirWithoutY(1f, -1f));
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (selectedPickedObject != null)
+            {
+                selectedPickedObject.UnhighlightObject();
+                selectedPickedObject = null;
+            }
+        }
+    }
+
     public Vector3 GetRandomDirWithoutY(float minRange, float maxRange)
     {
         return new Vector3(UnityEngine.Random.Range(minRange, maxRange), 0, UnityEngine.Random.Range(minRange, maxRange)).normalized;
@@ -175,50 +223,5 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    private void ControlInventory()
-    {
-        if (input.GetInventory())
-        {
-            InventoryUIHandler.Instance.Control(); 
-            if (InventoryUIHandler.Instance.IsInventoryON)
-            {
-                InventoryUIHandler.Instance.IsInventoryON = false;
-            }
-            else InventoryUIHandler.Instance.IsInventoryON = true;
-        }
-    }
-
-    private void SearchItemsInWorld()
-    {
-        var ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward); //Camera.main.ScreenPointToRay(input.GetMousePosition());
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, Camera.main.farClipPlane / 2, pickableLayer))
-        {
-            selectedPickedObject = hit.transform.GetComponent<PickedObject>();
-            if (selectedPickedObject != null)
-            {
-                selectedPickedObject.HighlightObject();
-                if (input.GetPickItems())
-                {
-                    if (InventorySystem.Instance.TryAddingItem(selectedPickedObject.GetItemSO()))
-                    {
-                        selectedPickedObject.DestroySelf();
-                        OnItemPicked?.Invoke(selectedPickedObject.GetItemSO());
-                    }
-                    else
-                    {
-                        selectedPickedObject.AddForceToItemSpawn(GetRandomDirWithoutY(1f, -1f));
-                    }
-                }
-            }
-        }
-        else
-        {
-            if (selectedPickedObject != null)
-            {
-                selectedPickedObject.UnhighlightObject();
-                selectedPickedObject = null;
-            }
-        }
-    }
+    
 }

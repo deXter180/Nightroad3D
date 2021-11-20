@@ -27,6 +27,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -1180,6 +1181,56 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      doomguy_death3: -1661848115422295898
+      doomguy_walk_bl3: 599158091131028886
+      doomguy_death10: 7274407389527691507
+      doomguy_walk_f4: 1556010885403163692
+      doomguy_walk_fl4: 2989387341914750
+      doomguy_death9: -1695177802946570152
+      doomguy_walk_bl2: -4938618577362942884
+      doomguy_death6: -8391883249123363979
+      doomguy_walk_l4: 6351719324111020684
+      doomguy_attack_b1: 2691859870253787396
+      doomguy_attack_f1: -8656226000924982856
+      doomguy_attack_f2: -1709998187131175300
+      doomguy_death14: -8434817367276008879
+      doomguy_death11: -7386656239340905203
+      doomguy_walk_b2: 3152328295526354278
+      doomguy_walk_bl1: -1956605055458705129
+      doomguy_attack_bl1: -3194059110090566981
+      doomguy_walk_fl1: 1714737072784749374
+      doomguy_walk_l1: 373391985122918425
+      doomguy_walk_b1: -7269069956113317090
+      doomguy_death13: -357714288343133450
+      doomguy_attack_fl2: -5186401242967973828
+      doomguy_attack_bl2: -2250159035341603307
+      doomguy_walk_f3: -4752134061377616793
+      doomguy_attack_l2: -5030889802121829785
+      doomguy_death_l: 8503071700718497830
+      doomguy_death8: -2004332664778820554
+      doomguy_death2: -2062508835101380858
+      doomguy_death12: -7307787597127103072
+      doomguy_death_b: 4196261608122475801
+      doomguy_walk_f1: 2793518746235166908
+      doomguy_walk_l3: 7008751568837139003
+      doomguy_death1: 2551643696566731327
+      doomguy_death_f: 7690290219437573801
+      doomguy_attack_fl1: -1466169497350449545
+      doomguy_death5: 5276882490374899141
+      doomguy_death_fl: -3884735818648747490
+      doomguy_walk_f2: -3504061934067027053
+      doomguy_attack_l1: -3171621956378164259
+      doomguy_walk_fl2: -6282437105797840736
+      doomguy_walk_b3: 8769064628594229192
+      doomguy_death_bl: -2450461982665092873
+      doomguy_walk_fl3: -7268817132741482666
+      doomguy_attack_b2: 2167443560886462912
+      doomguy_walk_b4: -4747547938794870828
+      doomguy_walk_l2: -3318482376250892271
+      doomguy_death7: 1959447500190997480
+      doomguy_death4: -3098607137911530808
+      doomguy_walk_bl4: -1849061855062372374
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

@@ -22,309 +22,243 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - Enemy
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: 559e5afa5302fed4d97754f0a6765e16
     m_Address: Armor1
     m_ReadOnly: 0
     m_SerializedLabels:
     - SO
     - ScriptableObject
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: 9b9af04fc520d434ca091a57bcb9b87a
     m_Address: Boots1
     m_ReadOnly: 0
     m_SerializedLabels:
     - SO
     - ScriptableObject
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: 53a3a4e7df2b44a4ebfd4a2d7875ae2a
     m_Address: Gloves1
     m_ReadOnly: 0
     m_SerializedLabels:
     - SO
     - ScriptableObject
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: 8e6c172353e990948a6dfc7011a3895c
     m_Address: HealthPotion
     m_ReadOnly: 0
     m_SerializedLabels:
     - SO
     - ScriptableObject
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: 4950243995f258a438325d4f74b91f9c
     m_Address: Helmet1
     m_ReadOnly: 0
     m_SerializedLabels:
     - SO
     - ScriptableObject
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: ceee0b2d86c86a14fbd87ed4a5df35c2
     m_Address: ManaPotion
     m_ReadOnly: 0
     m_SerializedLabels:
     - SO
     - ScriptableObject
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: a9dd095047a44574fb04f77b30a6ace6
     m_Address: Shield1
     m_ReadOnly: 0
     m_SerializedLabels:
     - SO
     - ScriptableObject
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: 5a282cb790fa98347bfb7ac098f8f954
     m_Address: Fighter
     m_ReadOnly: 0
     m_SerializedLabels:
     - ScriptableObject
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: 2ad7bb403e56f65428a2292f8c9c8747
     m_Address: Giant
     m_ReadOnly: 0
     m_SerializedLabels:
     - ScriptableObject
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: 13dbbc31b29057747bf70cad9b0daff8
-    m_Address: Axe
+    m_Address: Axe1Main
     m_ReadOnly: 0
     m_SerializedLabels:
     - SO
     - ScriptableObject
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: 9523b31ee7df03541af99ab6ddb1e279
-    m_Address: Rifle
+    m_Address: Rifle1Main
     m_ReadOnly: 0
     m_SerializedLabels:
     - SO
     - ScriptableObject
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: 81c77530c5dae984bb7326501c0eee97
-    m_Address: RPG
+    m_Address: RPG1Main
     m_ReadOnly: 0
     m_SerializedLabels:
     - SO
     - ScriptableObject
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: 92985d41d9537424dabca8e810b36ab8
     m_Address: gridVisual
     m_ReadOnly: 0
     m_SerializedLabels:
     - Inventory
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: 7f40128f9f360e5478a1f0a176d57f8e
     m_Address: BackgroundTile
     m_ReadOnly: 0
     m_SerializedLabels:
     - Inventory
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: a3c3fcd8fafa9924a9981f97712bc972
     m_Address: Armor1PLO
     m_ReadOnly: 0
     m_SerializedLabels:
     - Inventory
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: 28061d0bf6003584489d2aaa6e4cc7ee
     m_Address: Boots1PLO
     m_ReadOnly: 0
     m_SerializedLabels:
     - Inventory
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: 785fac7c1005e2b4783bc901df232260
     m_Address: Gloves1PLO
     m_ReadOnly: 0
     m_SerializedLabels:
     - Inventory
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: 0dd8fd1431fcb7e4daa120e3791ea339
     m_Address: HealthPotionPLO
     m_ReadOnly: 0
     m_SerializedLabels:
     - Inventory
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: 6a96e204e994da045bc974607fe50de9
     m_Address: Helmet1PLO
     m_ReadOnly: 0
     m_SerializedLabels:
     - Inventory
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: f22e522c55b2df74b88f06e1687702d8
     m_Address: ManaPotionPLO
     m_ReadOnly: 0
     m_SerializedLabels:
     - Inventory
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: 7c7754a6a2ff3e244805281c46080503
     m_Address: Shield1PLO
     m_ReadOnly: 0
     m_SerializedLabels:
     - Inventory
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: 20e8304da4df0d142900f3c8c53f8376
     m_Address: Armor1PIO
     m_ReadOnly: 0
     m_SerializedLabels:
     - Inventory
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: 12f422fbc7a57e6428a36680c7c8892f
     m_Address: Boots1PIO
     m_ReadOnly: 0
     m_SerializedLabels:
     - Inventory
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: 362bbcc92a819b7459a90ae2fee30782
     m_Address: Gloves1PIO
     m_ReadOnly: 0
     m_SerializedLabels:
     - Inventory
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: dd5c1c85bbecea74488463888a9c6a74
     m_Address: HealthPotionPIO
     m_ReadOnly: 0
     m_SerializedLabels:
     - Inventory
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: 6d1efd6e0f7212c42b30ac77d1f77d13
     m_Address: Helmet1PIO
     m_ReadOnly: 0
     m_SerializedLabels:
     - Inventory
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: 7633f1399ecb93d42aa224470bb6339e
     m_Address: ManaPotionPIO
     m_ReadOnly: 0
     m_SerializedLabels:
     - Inventory
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: dfa803ed16e24204d83e8b37e7178001
     m_Address: Shield1PIO
     m_ReadOnly: 0
     m_SerializedLabels:
     - Inventory
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: 7538eac9c4df12b4ba5501abd3995ee9
     m_Address: FireShot
     m_ReadOnly: 0
     m_SerializedLabels:
     - Weapon
     - PooledObjects
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: e3b803cb60efa584abfc43ef358515da
     m_Address: RainDrops
     m_ReadOnly: 0
     m_SerializedLabels:
     - Materials
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: e34d2cb377c5b484cba5aa312dd097ad
     m_Address: Droplets
     m_ReadOnly: 0
     m_SerializedLabels:
     - Materials
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: cc665d67846b20b4b822b9d01c1057e6
     m_Address: Clouds
     m_ReadOnly: 0
     m_SerializedLabels:
     - Materials
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: 5ec8cb79af6e777418347de0420c0859
     m_Address: Clouds_vfx
     m_ReadOnly: 0
     m_SerializedLabels:
     - Rain Vfx
     - Rain_VFX
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: dc60172ab22b6454a8cadef7e511aeb2
     m_Address: Rain_vfx
     m_ReadOnly: 0
     m_SerializedLabels:
     - Rain Vfx
     - Rain_VFX
-    m_MainAsset: {fileID: 6428081029353185946, guid: dc60172ab22b6454a8cadef7e511aeb2,
-      type: 3}
-    m_TargetAsset: {fileID: 6428081029353185946, guid: dc60172ab22b6454a8cadef7e511aeb2,
-      type: 3}
   - m_GUID: feb7cbb7567e665409e8dda6f780f3aa
     m_Address: TempShield
     m_ReadOnly: 0
     m_SerializedLabels: []
-    m_MainAsset: {fileID: 134418286282742724, guid: feb7cbb7567e665409e8dda6f780f3aa,
-      type: 3}
-    m_TargetAsset: {fileID: 134418286282742724, guid: feb7cbb7567e665409e8dda6f780f3aa,
-      type: 3}
   - m_GUID: d4f6397cbd7ed1149b0ac3d9d390bbf0
     m_Address: BulletMark_vfx
     m_ReadOnly: 0
     m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: 4d5bfee38185e36459a577777f723c5c
     m_Address: FireMark_vfx
     m_ReadOnly: 0
     m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: b5df3336ce4dd8342a0f3fbb13520577
     m_Address: BulletTracer_vfx
     m_ReadOnly: 0
     m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: a2ed3c45a5c4e2241be194718b24f8a0
     m_Address: RifleAttackAudio
     m_ReadOnly: 0
     m_SerializedLabels:
     - AudioFiles
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: eb9e6d6136d38984ab5b8ac16a86598a
     m_Address: ShotgunMark_vfx
     m_ReadOnly: 0
     m_SerializedLabels: []
-    m_MainAsset: {fileID: 257714080668244596, guid: eb9e6d6136d38984ab5b8ac16a86598a,
-      type: 3}
-    m_TargetAsset: {fileID: 257714080668244596, guid: eb9e6d6136d38984ab5b8ac16a86598a,
-      type: 3}
   - m_GUID: a389e6170ac70ce4889add2fab30a469
-    m_Address: Shotgun
+    m_Address: Shotgun1Main
     m_ReadOnly: 0
     m_SerializedLabels:
     - ScriptableObject
-    m_MainAsset: {fileID: 11400000, guid: a389e6170ac70ce4889add2fab30a469, type: 2}
-    m_TargetAsset: {fileID: 11400000, guid: a389e6170ac70ce4889add2fab30a469, type: 2}
+  - m_GUID: 671104c0438efd54282c66cb1b231f6a
+    m_Address: Axe1Inv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ScriptableObject
+  - m_GUID: 00d85dc5dda409643b43fbb4789dbf8b
+    m_Address: Rifle1Inv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ScriptableObject
+  - m_GUID: d63ca22397c7c3a49ab42662a83009f9
+    m_Address: RPG1Inv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ScriptableObject
+  - m_GUID: f8753f099dfbb80448154b00d76c7b2f
+    m_Address: Shotgun1Inv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ScriptableObject
+  - m_GUID: ae8d37900bd29cd4388baee5b82b350d
+    m_Address: InputSystem.inputsettings
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: a4a4e4a7d2a8f1747af5efb44894e9c5, type: 2}
   m_SchemaSet:
