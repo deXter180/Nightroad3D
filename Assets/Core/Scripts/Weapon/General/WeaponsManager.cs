@@ -31,7 +31,7 @@ public class Weapons
         weaponSO = AssetCollections.GetWeaponSOFromList(weaponTypes);
     }
 
-    public virtual void DoAttack(Target enemyTarget, float enemyDodgeChance)
+    public virtual void DoAttack(Target enemyTarget, float enemyDodgeChance, bool isHeadshot)
     {
         if (enemyTarget.enemyBrain != null)
         {
@@ -39,14 +39,14 @@ public class Weapons
             {
                 enemyTarget.DoCritDamage(weaponSO.CritBonus, weaponSO.DamageAmount, enemyDodgeChance);
                 if (!enemyTarget.Dodging)
-                    OnPlayerDamage?.Invoke(this, new OnPlayerDamageEventArg(true, enemyTarget.enemyBrain));
+                    OnPlayerDamage?.Invoke(this, new OnPlayerDamageEventArg(true, isHeadshot, enemyTarget.enemyBrain));
                 //target.Resource.EnergyExpense(EnergyCosts[0]);
             }
             else
             {
                 enemyTarget.DoDamage(weaponSO.DamageAmount, enemyDodgeChance);
                 if (!enemyTarget.Dodging)
-                    OnPlayerDamage?.Invoke(this, new OnPlayerDamageEventArg(false, enemyTarget.enemyBrain));
+                    OnPlayerDamage?.Invoke(this, new OnPlayerDamageEventArg(false, isHeadshot, enemyTarget.enemyBrain));
                 //target.Resource.EnergyExpense(EnergyCosts[1]);
             }
         }        
@@ -56,11 +56,13 @@ public class Weapons
 public class OnPlayerDamageEventArg : EventArgs
 {
     public bool IsCrit;
+    public bool IsHeadshot;
     public EnemyBrain enemyBrain;
 
-    public OnPlayerDamageEventArg(bool crit, EnemyBrain EB)
+    public OnPlayerDamageEventArg(bool crit, bool headshot, EnemyBrain EB)
     {
         IsCrit = crit;
+        IsHeadshot = headshot;
         enemyBrain = EB;
     }
 }

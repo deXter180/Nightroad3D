@@ -96,11 +96,6 @@ public class Target : MonoBehaviour
         }
         
     }
-    //public void DoPerTurnDamage(float tickTime, int dmg)
-    //{
-    //    int startTick = 0;
-        
-    //}
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~ Dodge function ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

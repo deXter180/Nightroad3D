@@ -37,7 +37,7 @@ public class RayGun : MonoBehaviour
         StartCoroutine(SetupWeapon());
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         if (gameObject.activeInHierarchy && weaponBrain.IsWeaponReady())
         {
@@ -109,21 +109,29 @@ public class RayGun : MonoBehaviour
             {
                 if (hit.collider != null)
                 {
-                    if (hit.collider.GetComponentInParent<Target>() && hit.collider.CompareTag("Enemy"))
+                    if (hit.collider.GetComponentInParent<Target>() != null)
                     {
                         Target target = hit.collider.GetComponentInParent<Target>();
-                        if (target != null && target.enemyBrain != null)
+                        if (target.enemyBrain != null && target.GetEnemy() == true && target.IsDead == false)
                         {
-                            if (target.IsDead == false)
+                            if (hit.collider.CompareTag("Enemy"))
                             {
-                                thisWeapon.DoAttack(target, target.enemyBrain.GetThisEnemy().ThisEnemySO.DodgeChance);
-                            }
-                            if (!target.Dodging)
-                            {
+                                thisWeapon.DoAttack(target, target.enemyBrain.GetThisEnemy().ThisEnemySO.DodgeChance, false);
+                                if (!target.Dodging)
+                                {
 
+                                }
                             }
-                        }                                                                      
-                    }
+                            else if (hit.collider.CompareTag("Head"))
+                            {
+                                thisWeapon.DoAttack(target, target.enemyBrain.GetThisEnemy().ThisEnemySO.DodgeChance, true);
+                                if (!target.Dodging)
+                                {
+
+                                }
+                            }
+                        }                      
+                    }                    
                     else
                     {
 
@@ -135,7 +143,5 @@ public class RayGun : MonoBehaviour
             action.Invoke();
         }       
     }
-
-
 
 }

@@ -107,6 +107,7 @@ public class WeaponBrain : MonoBehaviour
 
     public void SpawnHitVfx(Vector3 HitPointPos)
     {
+
         AssetRefLoader.CreateAndReleaseAsset(GetWeaponName(), HitPointPos, 0.3f);
     }
 
@@ -148,7 +149,7 @@ public class WeaponBrain : MonoBehaviour
     {
         yield return new WaitForSeconds(animDelay);
         playingAnim = false; 
-        if (weaponTypes == WeaponTypes.RocketLauncher || weaponTypes == WeaponTypes.Shotgun)
+        if (weaponTypes != WeaponTypes.Rifle)
         {
             animType = AnimType.Walk;
         }

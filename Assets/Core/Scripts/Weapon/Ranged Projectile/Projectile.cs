@@ -25,12 +25,16 @@ public class Projectile :  MonoBehaviour
 
     private void Update()
     {
-        transform.Translate(Vector3.forward * ProjectileSpeed * Time.deltaTime);
-        LifeTime += Time.deltaTime;
-        if (LifeTime > MaxLifeTime || transform.position.z >= firePosition.z + AttackWeapon.ThisWeaponSO.AttackRange)
+        if (AttackWeapon != null)
         {
-            ObjectPooler.Instance.ReturnToPool(this);
-        }
+            transform.Translate(Vector3.forward * ProjectileSpeed * Time.deltaTime);
+            LifeTime += Time.deltaTime;
+            if (LifeTime > MaxLifeTime || transform.position.z >= firePosition.z + AttackWeapon.ThisWeaponSO.AttackRange)
+            {
+                if (ObjectPooler.Instance != null)
+                    ObjectPooler.Instance.ReturnToPool(this);
+            }
+        }            
     }
 
     public ProjectileTypes GetProjectileType()
@@ -45,12 +49,27 @@ public class Projectile :  MonoBehaviour
         ObjectPooler.Instance.ReturnToPool(this);
            if (collision != null)
            {
-                if (collision.gameObject.GetComponentInParent<Target>() && collision.gameObject.CompareTag("Enemy"))
+                if (collision.gameObject.GetComponentInParent<Target>() != null)
                 {
                     Target target = collision.gameObject.GetComponentInParent<Target>();
                     if (target.enemyBrain != null && target.GetEnemy() == true && target.IsDead == false && AttackWeapon != null)
                     {
-                        AttackWeapon.DoAttack(target, target.enemyBrain.GetThisEnemy().ThisEnemySO.DodgeChance);
+                        if (collision.gameObject.CompareTag("Enemy"))
+                        {
+                            AttackWeapon.DoAttack(target, target.enemyBrain.GetThisEnemy().ThisEnemySO.DodgeChance, false);
+                            if (!target.Dodging)
+                            {
+
+                            }
+                        }   
+                        else if (collision.gameObject.CompareTag("Head"))
+                        {
+                            AttackWeapon.DoAttack(target, target.enemyBrain.GetThisEnemy().ThisEnemySO.DodgeChance, true);
+                            if (!target.Dodging)
+                            {
+
+                            }
+                        }
                     }
                 }
                 ContactPoint contactPoint = collision.GetContact(0);
@@ -67,7 +86,7 @@ public class Projectile :  MonoBehaviour
     private void Weapons_OnAttack(object sender, OnPlayerAttackEventArg e)
     {
         if (e != null && e.weaponCategory == WeaponCategories.ProjectileShoot)
-        {
+        {          
             AttackWeapon = e.weapon;
             weaponBrain = e.weaponBrain;
             firePosition = e.weaponBrain.transform.position;

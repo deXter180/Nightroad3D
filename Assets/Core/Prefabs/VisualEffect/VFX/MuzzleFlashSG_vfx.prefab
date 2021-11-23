@@ -28,6 +28,7 @@ Transform:
   m_LocalRotation: {x: -0.000000020489093, y: 2.3266214e-10, z: 2.057978e-12, w: 1}
   m_LocalPosition: {x: 662, y: 117.96, z: 509.33}
   m_LocalScale: {x: 0.4201443, y: 0.41773742, z: 0.45822358}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -89,6 +90,7 @@ VisualEffect:
       m_Array: []
 --- !u!73398921 &1612806716907959096
 VFXRenderer:
+  serializedVersion: 1
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -106,10 +108,6 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

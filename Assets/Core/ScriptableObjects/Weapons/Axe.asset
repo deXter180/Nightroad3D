@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damageAmount: 100
   maxAmmo: 0
-  attackSpeed: 0.7
+  attackSpeed: 2.5
   attackRange: 60
   critChance: 0.7
   critBonus: 2

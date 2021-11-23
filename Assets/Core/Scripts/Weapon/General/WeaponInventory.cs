@@ -26,6 +26,7 @@ public class WeaponInventory : MonoBehaviour
         weaponBrains = GetComponentsInChildren<WeaponBrain>(true);
         input = FindObjectOfType<InputControl>();
     }
+
     private void Start()
     {
         foreach (WeaponBrain WB in weaponBrains)

@@ -62,11 +62,7 @@ public class InventoryDragDropSystem : MonoBehaviour
                 dir = InventoryItemSO.Dir.Down;
             
         }        
-        RemoveFromInventory();        
-    }
-
-    private void FixedUpdate()
-    {
+        RemoveFromInventory();
         PositionDragObject();
     }
 

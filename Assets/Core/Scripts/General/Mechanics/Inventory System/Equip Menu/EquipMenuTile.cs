@@ -9,7 +9,6 @@ public class EquipMenuTile : MonoBehaviour
     [SerializeField] private int gridHeight;
     [SerializeField] private float cellSize;
     [SerializeField] private ItemTypes itemType;
-    private Input input;
     private bool isFilled;
     private Grid<GridObject> grid;
     private RectTransform rectTransform;
@@ -21,7 +20,6 @@ public class EquipMenuTile : MonoBehaviour
 
     private void Awake()
     {
-        input = FindObjectOfType<InputControl>();
         rectTransform = GetComponent<RectTransform>();
         grid = new Grid<GridObject>(gridWidth, gridHeight, cellSize, transform.position, (Grid<GridObject> g, int x, int y) => new GridObject(g, x, y));
         isFilled = false;

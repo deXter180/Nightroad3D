@@ -250,6 +250,12 @@ public static class AssetRefLoader
         completedObjs.Add(GO);
     }
 
+    public static AsyncOperationHandle InstantiateGO(AssetReference reference)
+    {
+        AsyncOperationHandle asyncOperation = reference.InstantiateAsync();
+        return asyncOperation;
+    }
+
     public static async Task CreatedAssetsAddToList<T>(List<AssetReference> references, List<T> completedObjs) where T : UnityEngine.Object
     {
         foreach (var reference in references)

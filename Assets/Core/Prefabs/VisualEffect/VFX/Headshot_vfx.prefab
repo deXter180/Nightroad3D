@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &6444302974364170847
+--- !u!1 &2573294743475210632
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,105 +8,81 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6580602659751649302}
-  - component: {fileID: 5306931667140010898}
-  - component: {fileID: 3405469300507509223}
+  - component: {fileID: 6397461562428685505}
+  - component: {fileID: 5047825876684902307}
+  - component: {fileID: 8200316932554926785}
   m_Layer: 0
-  m_Name: BulletTracer_vfx
+  m_Name: Headshot_vfx
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &6580602659751649302
+--- !u!4 &6397461562428685505
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6444302974364170847}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 661.91, y: 86.9, z: 511.64}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_GameObject: {fileID: 2573294743475210632}
+  m_LocalRotation: {x: -0.0000000018626451, y: -0, z: 7.275958e-12, w: 1}
+  m_LocalPosition: {x: 679.3, y: 62, z: 564.29}
+  m_LocalScale: {x: 5, y: 5, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!2083052967 &5306931667140010898
+--- !u!2083052967 &5047825876684902307
 VisualEffect:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6444302974364170847}
+  m_GameObject: {fileID: 2573294743475210632}
   m_Enabled: 1
-  m_Asset: {fileID: 8926484042661614526, guid: 0a567c79084d86d42b15759bcfabbd12, type: 3}
+  m_Asset: {fileID: 8926484042661614526, guid: 32260f542012593429643035c2ad3be4, type: 3}
   m_InitialEventName: 
   m_InitialEventNameOverriden: 1
   m_StartSeed: 0
-  m_ResetSeedOnPlay: 0
+  m_ResetSeedOnPlay: 1
   m_ResourceVersion: 1
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 100
-        m_Name: ParticleSpeed
-        m_Overridden: 1
-      - m_Value: 1000
-        m_Name: ParticleMinSpeed
-        m_Overridden: 1
-      - m_Value: 1.2
-        m_Name: ParticleSpeedMultyplr
-        m_Overridden: 1
-      - m_Value: 1.5
-        m_Name: TrailMinSpeed
-        m_Overridden: 1
-      - m_Value: 1.3
-        m_Name: TrailSpeedMultyplr
+      - m_Value: 0.2
+        m_Name: PartileDelay
         m_Overridden: 1
     m_Vector2f:
       m_Array:
-      - m_Value: {x: 0.1, y: 0.15}
-        m_Name: TrailDuration
-        m_Overridden: 1
-      - m_Value: {x: 3, y: 5}
-        m_Name: TrailSize
-        m_Overridden: 1
-      - m_Value: {x: 0.1, y: 0.3}
-        m_Name: ParticleDuration
-        m_Overridden: 1
-      - m_Value: {x: 0.5, y: 0.8}
+      - m_Value: {x: 1, y: 3}
         m_Name: ParticleSize
         m_Overridden: 1
-      - m_Value: {x: -10, y: -5}
-        m_Name: Min&MaxStartZPos
+      - m_Value: {x: 0.3, y: 0.5}
+        m_Name: PartileLifetime
+        m_Overridden: 1
+      - m_Value: {x: 0.3, y: 0.5}
+        m_Name: TextureSize
+        m_Overridden: 1
+      - m_Value: {x: 0.1, y: 0.3}
+        m_Name: TextureLifetime
         m_Overridden: 1
     m_Vector3f:
-      m_Array:
-      - m_Value: {x: 0, y: 0, z: 1}
-        m_Name: Direction
-        m_Overridden: 1
-      - m_Value: {x: 2, y: 2, z: 10}
-        m_Name: TrailScale
-        m_Overridden: 1
+      m_Array: []
     m_Vector4f:
       m_Array:
-      - m_Value: {x: 0.6792453, y: 0.14686088, z: 0, w: 1}
+      - m_Value: {x: 0.90085036, y: 0.15209389, z: 0.01274786, w: 0}
         m_Name: ParticleColor
         m_Overridden: 1
-      - m_Value: {x: 0.0627451, y: 0.8235294, z: 1.8117647, w: 1}
-        m_Name: TrailColor
+      - m_Value: {x: 0.9245283, y: 0.29607186, z: 0.030526895, w: 0}
+        m_Name: TextureColor
         m_Overridden: 1
     m_Uint:
       m_Array: []
     m_Int:
       m_Array:
-      - m_Value: 30
-        m_Name: MaxCount
-        m_Overridden: 1
-      - m_Value: 20
-        m_Name: MinCount
+      - m_Value: 15
+        m_Name: PartileCount
         m_Overridden: 1
     m_Matrix4x4f:
       m_Array: []
@@ -116,26 +92,57 @@ VisualEffect:
       m_Array:
       - m_Value:
           serializedVersion: 2
-          key0: {r: 0.0018211621, g: 0.31854683, b: 0.9559735, a: 1}
-          key1: {r: 0.3019758, g: 0.5386339, b: 0.735849, a: 1}
-          key2: {r: 0.510413, g: 0.6117711, b: 0.6981132, a: 0}
-          key3: {r: 1, g: 1, b: 1, a: 0}
+          key0: {r: 1, g: 1, b: 1, a: 1}
+          key1: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+          key2: {r: 0, g: 0, b: 0, a: 0.8}
+          key3: {r: 0, g: 0, b: 0, a: 0}
           key4: {r: 0, g: 0, b: 0, a: 0}
           key5: {r: 0, g: 0, b: 0, a: 0}
           key6: {r: 0, g: 0, b: 0, a: 0}
           key7: {r: 0, g: 0, b: 0, a: 0}
-          ctime0: 964
-          ctime1: 24672
-          ctime2: 39128
+          ctime0: 0
+          ctime1: 65535
+          ctime2: 0
+          ctime3: 0
+          ctime4: 0
+          ctime5: 0
+          ctime6: 0
+          ctime7: 0
+          atime0: 0
+          atime1: 6554
+          atime2: 52428
+          atime3: 65535
+          atime4: 0
+          atime5: 0
+          atime6: 0
+          atime7: 0
+          m_Mode: 0
+          m_NumColorKeys: 2
+          m_NumAlphaKeys: 4
+        m_Name: ColorGradient
+        m_Overridden: 1
+      - m_Value:
+          serializedVersion: 2
+          key0: {r: 0, g: 0, b: 0, a: 1}
+          key1: {r: 0.2735849, g: 0.26713243, b: 0.26197046, a: 1}
+          key2: {r: 0.5471698, g: 0.5445888, b: 0.5445888, a: 1}
+          key3: {r: 0.4811321, g: 0.4811321, b: 0.4811321, a: 1}
+          key4: {r: 0, g: 0, b: 0, a: 0}
+          key5: {r: 0, g: 0, b: 0, a: 0}
+          key6: {r: 0, g: 0, b: 0, a: 0}
+          key7: {r: 0, g: 0, b: 0, a: 0}
+          ctime0: 0
+          ctime1: 27949
+          ctime2: 46838
           ctime3: 65535
           ctime4: 0
           ctime5: 0
           ctime6: 0
           ctime7: 0
-          atime0: 386
-          atime1: 38743
-          atime2: 64571
-          atime3: 0
+          atime0: 0
+          atime1: 26214
+          atime2: 65535
+          atime3: 65535
           atime4: 0
           atime5: 0
           atime6: 0
@@ -143,20 +150,23 @@ VisualEffect:
           m_Mode: 0
           m_NumColorKeys: 4
           m_NumAlphaKeys: 3
-        m_Name: ParticleGradiant
+        m_Name: TextureGradient
         m_Overridden: 1
     m_NamedObject:
-      m_Array: []
+      m_Array:
+      - m_Value: {fileID: 2800000, guid: 294d673495ebc434d8ab19d6dde56989, type: 3}
+        m_Name: MainTexture
+        m_Overridden: 1
     m_Bool:
       m_Array: []
---- !u!73398921 &3405469300507509223
+--- !u!73398921 &8200316932554926785
 VFXRenderer:
   serializedVersion: 1
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6444302974364170847}
+  m_GameObject: {fileID: 2573294743475210632}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0

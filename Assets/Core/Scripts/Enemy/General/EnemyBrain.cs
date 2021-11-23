@@ -21,6 +21,7 @@ public class EnemyBrain : MonoBehaviour
     private VisualEffect vfxGraph;
     private BloodEffectOnHit bloodOnHit;
     private BloodEffectOnDeath bloodOnDeath;
+    private TriggerHeadshot headshot;
     private Target enemyTarget;
     private Animator animator;
     private TempShieldTrigger tempShield;
@@ -104,6 +105,7 @@ public class EnemyBrain : MonoBehaviour
         vfxGraph = GetComponentInChildren<VisualEffect>();
         bloodOnHit = GetComponentInChildren<BloodEffectOnHit>();
         bloodOnDeath = GetComponentInChildren<BloodEffectOnDeath>();
+        headshot = GetComponentInChildren<TriggerHeadshot>();
         animator = GetComponentInChildren<Animator>();
         playingAnim = false;
         isDying = false;
@@ -206,6 +208,10 @@ public class EnemyBrain : MonoBehaviour
         {
             bloodOnHit.PlayBloodOnHit();
             vfxGraph.Play();
+            if (e.IsHeadshot)
+            {
+                headshot.PlayHeadshotVFX();
+            }
         }
     }
 

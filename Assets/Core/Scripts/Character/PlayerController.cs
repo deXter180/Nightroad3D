@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     public int MaxHP { get => HitPoints; }
     public float DodgeChace { get => dodgeChance; }
     public float GroundHeight;
+    private float currentTime = 0;
     [SerializeField] private int HitPoints;
     [SerializeField] private float MoveSpeed;
     [SerializeField] private float MouseSensitivity;
@@ -74,13 +75,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        SetGravity(); 
-        if (!InventoryUIHandler.Instance.IsInventoryON)
-        {
-            Rotate();
-            Move();
-            Jump();
-        }        
+        SetGravity();                 
     }
 
     private void Update()
@@ -88,6 +83,21 @@ public class PlayerController : MonoBehaviour
         //OnTakingDamage()
         ControlInventory();
         SearchItemsInWorld();
+        HandleBaseMechanics();
+    }
+
+    private void HandleBaseMechanics()
+    {
+        while (currentTime < Time.time)
+        {
+            if (!InventoryUIHandler.Instance.IsInventoryON)
+            {
+                Rotate();
+                Move();
+                Jump();
+            }
+            currentTime += Time.fixedDeltaTime;
+        }
     }
 
     private void SetGravity()

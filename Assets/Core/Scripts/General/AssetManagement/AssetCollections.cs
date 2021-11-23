@@ -33,7 +33,6 @@ public class AssetCollections : MonoBehaviour
             Instance = this;
         }
         LoadSOAssets("ScriptableObject");
-        LoadGOAssets("PooledObjects");
         LoadAudioAssets("AudioFiles");
     }
 

@@ -2,12 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.AddressableAssets;
 
 public class ObjectPooler : MonoBehaviour
 {
     private List<Projectile> projectiles = new List<Projectile>();  
     [SerializeField] private int PoolSize;
+    private List<AssetReference> RefList = new List<AssetReference>();
+
     #region Singleton
     public static ObjectPooler Instance { get; private set; }
 
@@ -27,26 +30,21 @@ public class ObjectPooler : MonoBehaviour
 
     private void Start()
     {
-        StartCoroutine(InitializePool(ProjectileTypes.FireBall));      
+        StartCoroutine(InitializePool(ProjectileTypes.FireBall));
     }
 
     public IEnumerator InitializePool(ProjectileTypes projectileType)
     {
         yield return new WaitForSeconds(1f);
-        for (int i = 0; i < PoolSize; i++)
+        var assetRef = AssetCollections.Instance.GetProjectileAssetRef(projectileType);
+        if (assetRef != null)
         {
-            if (AssetCollections.Instance.GetProjectileAssetRef(projectileType) != null)
+            RefList.Add(assetRef);
+            for (int i = 0; i < PoolSize; i++)
             {
-                List<GameObject> _projectiles = AssetCollections.InstantiateAndGetAssetsByAssetRef(AssetCollections.Instance.GetProjectileAssetRef(projectileType));     //Instantiate(AssetCollections.GetProjectileObj(projectileType));
-                if (_projectiles != null && _projectiles.Count > 0)
-                {
-                    GameObject _projectile = _projectiles[0];
-                    _projectile.gameObject.SetActive(false);
-                    if (_projectile.GetComponent<Projectile>() != null)
-                        projectiles.Add(_projectile.GetComponent<Projectile>());
-                }                
-            }            
-        }
+                AssetRefLoader.InstantiateGO(assetRef).Completed += ObjectPooler_Completed;
+            }
+        }      
     }
 
     public void ReturnToPool(Projectile _projectile)
@@ -74,6 +72,33 @@ public class ObjectPooler : MonoBehaviour
             }
         }
         return null;
+    }
+
+    //~~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~~~~
+
+    private void ObjectPooler_Completed(AsyncOperationHandle obj)
+    {
+        GameObject GO = obj.Result as GameObject;
+        var notify = GO.GetComponent<NotifyOnDestroyByAssetRef>();
+        Projectile projectile = GO.GetComponent<Projectile>();
+        if (notify == null)
+        {
+            notify = GO.AddComponent<NotifyOnDestroyByAssetRef>();
+        }
+        if (projectile != null)
+        {
+            projectiles.Add(projectile);
+        }
+        notify.Destroyed += Notify_Destroyed;
+        var assetRef = AssetCollections.Instance.GetProjectileAssetRef(projectile.GetProjectileType());
+        notify.AssetReference = assetRef;
+        GO.SetActive(false);
+    }
+
+    private void Notify_Destroyed(UnityEngine.AddressableAssets.AssetReference assetRef, NotifyOnDestroyByAssetRef notify)
+    {
+        notify.Destroyed -= Notify_Destroyed;
+        AssetCollections.ReleaseAssetInstance(notify.gameObject, assetRef, false);
     }
 
 }

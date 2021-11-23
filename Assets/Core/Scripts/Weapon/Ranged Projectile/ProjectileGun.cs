@@ -16,6 +16,7 @@ public class ProjectileGun : MonoBehaviour
     private Light lighting;
     private Input input;
     public static event Action OnStopProjectileShoot;
+    private ObjectPooler objectPooler;
     
 
     private void Awake()
@@ -28,7 +29,12 @@ public class ProjectileGun : MonoBehaviour
         StartCoroutine(SetupWeapon());
     }
 
-    private void FixedUpdate()
+    private void Start()
+    {
+        objectPooler = ObjectPooler.Instance;
+    }
+
+    private void Update()
     {
         if (gameObject.activeInHierarchy && weaponBrain.IsWeaponReady())
         {
@@ -80,10 +86,10 @@ public class ProjectileGun : MonoBehaviour
     private IEnumerator Shoot(Action action) //Used in PlayerControl
     {
         StartCoroutine(PlayMuzzleLight());
-        if (ObjectPooler.Instance.GetPooledObject(GetProjectile(weaponType)) != null)
+        if (objectPooler.GetPooledObject(GetProjectile(weaponType)) != null)
         {
             WeaponInventory.Instance.IsAttacking = true;
-            var shot = ObjectPooler.Instance.GetPooledObject(GetProjectile(weaponType));
+            var shot = objectPooler.GetPooledObject(GetProjectile(weaponType));
             shot.transform.rotation = FiringPoint.rotation;
             shot.transform.position = FiringPoint.position;
             shot.gameObject.SetActive(true);
