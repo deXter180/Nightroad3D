@@ -6,19 +6,26 @@ using UnityEngine.VFX;
 
 public class RayGun : MonoBehaviour
 {
+    public int CurrentMagazineAmmo { get => currentMagazineAmmo; }
+    public int CurrentTotalAmmo { get => currentTotalAmmo; }
     [SerializeField] private float MuzzleFlashTime;
     [SerializeField] private Transform firePoint;
+    private PlayerInputAsset inputs;
+    private int currentMagazineAmmo;
+    private int currentTotalAmmo;
+    private int maxMagazineAmmo;
+    private int maxTotalAmmo;
     private float attackRange;
     private float attackSpeed;
     private float bloom;
     private bool isRanged;
+    private bool isReloading;
     private Weapons thisWeapon;
     private WeaponCategories weaponCategory;
     private WeaponTypes weaponType;
     private int PlayerLayer = 9;
     private int bitmask;
     private Camera cam;
-    private Input input;
     private WeaponBrain weaponBrain;
     private VisualEffect visualEffect;
     private Light lighting;
@@ -26,33 +33,63 @@ public class RayGun : MonoBehaviour
 
     private void Awake()
     {
-        input = FindObjectOfType<InputControl>();
         weaponBrain = GetComponent<WeaponBrain>();
         visualEffect = GetComponentInChildren<VisualEffect>();
         cam = Camera.main;
         bitmask = ~(1 << PlayerLayer);
         lighting = GetComponentInChildren<Light>();
+        isReloading = false;
         if (lighting.gameObject.activeInHierarchy)
             lighting.gameObject.SetActive(false);
         StartCoroutine(SetupWeapon());
+    }
+
+    private void OnEnable()
+    {
+        StartCoroutine(InputDone());
     }
 
     private void Update()
     {
         if (gameObject.activeInHierarchy && weaponBrain.IsWeaponReady())
         {
-            if (input.GetAttackHold() == 1 && !InventoryUIHandler.Instance.IsInventoryON)
+            if (!InventoryUIHandler.Instance.IsInventoryActive && !InputMenuUIHandler.Instance.IsMainMenuActive)
             {
-                if (WeaponInventory.Instance.IsAttacking == false)
+                if (WeaponManager.Instance.IsAttacking == false)
                 {
-                    StartCoroutine(Shoot(() => { WeaponInventory.Instance.IsAttacking = false; }));
+                    if (inputs.BasicControls.Shoot.ReadValue<float>() == 1)
+                    {
+                        if (currentMagazineAmmo > 0 && !isReloading)
+                        {                            
+                            StartCoroutine(Shoot(() => {
+                                WeaponManager.Instance.IsAttacking = false;
+                                currentMagazineAmmo -= 1;
+                                currentTotalAmmo -= 1;
+                                currentMagazineAmmo = currentTotalAmmo == 1 ? 1 : currentMagazineAmmo;
+                            }));
+                        }
+                        else
+                        {
+                            Debug.Log("RELOAD!");
+                        }
+                    }
+                    else if (inputs.BasicControls.Reload.triggered)
+                    {
+                        StartCoroutine(Reload(() => { isReloading = false; }));
+                    }                
+                }               
+                else
+                {
+                    OnStopRayShoot?.Invoke();
                 }
-            }
-            else
-            {
-                OnStopRayShoot?.Invoke();
-            }
+            }           
         }
+    }
+
+    private IEnumerator InputDone()
+    {
+        yield return new WaitUntil(() => InputManager.InputReady);
+        inputs = InputManager.InputActions;
     }
 
     private void PlayBulletTrailVfx()
@@ -80,6 +117,10 @@ public class RayGun : MonoBehaviour
         yield return new WaitUntil(() => weaponBrain.IsWeaponReady());
         thisWeapon = weaponBrain.GetThisWeapon();
         weaponType = weaponBrain.GetWeaponTypes();
+        maxMagazineAmmo = thisWeapon.ThisWeaponSO.AmmoPerMagazine;
+        maxTotalAmmo = thisWeapon.ThisWeaponSO.TotalAmmo;
+        currentMagazineAmmo = maxMagazineAmmo;
+        currentTotalAmmo =  maxTotalAmmo;
         weaponCategory = weaponBrain.GetWeaponCategories();
         attackRange = thisWeapon.ThisWeaponSO.AttackRange;
         attackSpeed = thisWeapon.ThisWeaponSO.AttackSpeed;
@@ -102,7 +143,7 @@ public class RayGun : MonoBehaviour
         StartCoroutine(PlayMuzzleLight());
         if (isRanged)
         {
-            WeaponInventory.Instance.IsAttacking = true;
+            WeaponManager.Instance.IsAttacking = true;
             thisWeapon.RaiseOnPlayerAttack(thisWeapon, weaponBrain, weaponCategory, weaponType);
             PlayBulletTrailVfx();            
             if (Physics.Raycast(cam.transform.position, GetShootDir(), out RaycastHit hit, attackRange, bitmask, QueryTriggerInteraction.Ignore))
@@ -142,6 +183,29 @@ public class RayGun : MonoBehaviour
             yield return new WaitForSeconds(attackSpeed);
             action.Invoke();
         }       
+    }
+
+    private IEnumerator Reload(Action action)
+    {
+        if (currentTotalAmmo > 0)
+        {
+            if (currentMagazineAmmo < maxMagazineAmmo)
+            {
+                if (currentTotalAmmo >= maxMagazineAmmo)
+                {
+                    currentMagazineAmmo = maxMagazineAmmo;
+                }
+                else
+                {
+                    currentMagazineAmmo = currentTotalAmmo;
+                }
+                isReloading = true;
+                currentMagazineAmmo = maxMagazineAmmo;
+                thisWeapon.RaiseOnPlayerReload(thisWeapon, weaponBrain, weaponType);
+                yield return new WaitForSeconds(weaponBrain.AnimDelay);
+                action.Invoke();
+            }
+        }      
     }
 
 }

@@ -270,7 +270,6 @@ public class LeanTween : MonoBehaviour {
     private static int finishedCnt;
     public static AnimationCurve punch = new AnimationCurve( new Keyframe(0.0f, 0.0f ), new Keyframe(0.112586f, 0.9976035f ), new Keyframe(0.3120486f, -0.1720615f ), new Keyframe(0.4316337f, 0.07030682f ), new Keyframe(0.5524869f, -0.03141804f ), new Keyframe(0.6549395f, 0.003909959f ), new Keyframe(0.770987f, -0.009817753f ), new Keyframe(0.8838775f, 0.001939224f ), new Keyframe(1.0f, 0.0f ) );
     public static AnimationCurve shake = new AnimationCurve( new Keyframe(0f, 0f), new Keyframe(0.25f, 1f), new Keyframe(0.75f, -1f), new Keyframe(1f, 0f) ) ;
-    private Input input;
     public static void init(){
         init(maxTweens);
     }
@@ -4022,7 +4021,7 @@ public class LTGUI {
         return null;
     }
 
-    public static bool hasNoOverlap( Rect rect, int depth, Input input ){
+    public static bool hasNoOverlap( Rect rect, int depth, PlayerInputAsset input){
         initRectCheck();
         bool hasNoOverlap = true;
         bool wasAddedToList = false;
@@ -4061,7 +4060,7 @@ public class LTGUI {
         return hasNoOverlap;
     }
 
-    public static bool pressedWithinRect(Rect rect, Input input)
+    public static bool pressedWithinRect(Rect rect, PlayerInputAsset input)
     {
         Vector2 vec2 = firstTouch(input);
         if (vec2.x < 0f)
@@ -4089,13 +4088,12 @@ public class LTGUI {
     //    return new Vector2(Mathf.NegativeInfinity, Mathf.NegativeInfinity);
     //}
 
-    public static Vector2 firstTouch(Input input)
+    public static Vector2 firstTouch(PlayerInputAsset input)
     {
-        if (input.IsMousePos)
+        if (input.BasicControls.MousePosition.WasPerformedThisFrame())
         {
-            return input.GetMousePosition();
+            return input.BasicControls.MousePosition.ReadValue<Vector2>();
         }
-
         return new Vector2(Mathf.NegativeInfinity, Mathf.NegativeInfinity);
     }
 

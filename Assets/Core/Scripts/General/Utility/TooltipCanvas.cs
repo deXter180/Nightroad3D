@@ -8,7 +8,7 @@ using TMPro;
 public class TooltipCanvas : MonoBehaviour {
 
     public static TooltipCanvas Instance { get; private set; }
-    private Input input;
+    private PlayerInputAsset inputs;
 
     [SerializeField]
     private RectTransform canvasRectTransform = null;
@@ -21,7 +21,6 @@ public class TooltipCanvas : MonoBehaviour {
         Instance = this;
         backgroundRectTransform = transform.Find("background").GetComponent<RectTransform>();
         textMeshPro = transform.Find("text").GetComponent<TextMeshProUGUI>();
-        input = FindObjectOfType<InputControl>();
         if (canvasRectTransform == null) 
         {
             Debug.LogError("Need to set Canvas Rect Transform!");
@@ -30,10 +29,15 @@ public class TooltipCanvas : MonoBehaviour {
         HideTooltip();
     }
 
+    private void OnEnable()
+    {
+        StartCoroutine(InputDone());
+    }
+
     private void Update() {
         SetText(getTooltipStringFunc());
 
-        Vector2 anchoredPosition = input.GetMouseDelta() / canvasRectTransform.localScale.x;
+        Vector2 anchoredPosition = inputs.BasicControls.MouseDelta.ReadValue<Vector2>() / canvasRectTransform.localScale.x;
         if (anchoredPosition.x + backgroundRectTransform.rect.width > canvasRectTransform.rect.width) {
             anchoredPosition.x = canvasRectTransform.rect.width - backgroundRectTransform.rect.width;
         }
@@ -41,6 +45,12 @@ public class TooltipCanvas : MonoBehaviour {
             anchoredPosition.y = canvasRectTransform.rect.height - backgroundRectTransform.rect.height;
         }
         transform.GetComponent<RectTransform>().anchoredPosition = anchoredPosition;
+    }
+
+    private IEnumerator InputDone()
+    {
+        yield return new WaitUntil(() => InputManager.InputReady);
+        inputs = InputManager.InputActions;
     }
 
     private void ShowTooltip(string tooltipString) {

@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class InventoryUIHandler : MonoBehaviour
 {
     public static InventoryUIHandler Instance { get; private set; }
-    public bool IsInventoryON { get; set; }
+    public bool IsInventoryActive { get; set; }
     private Canvas canvas;  
     private RectTransform UIRect;
     public Transform gridVisual;
@@ -29,7 +29,7 @@ public class InventoryUIHandler : MonoBehaviour
     private void Start()
     {
         canvas.enabled = false;
-        IsInventoryON = false;      
+        IsInventoryActive = false;      
     }
 
     public RectTransform GetCanvasTransfrom()
@@ -54,7 +54,7 @@ public class InventoryUIHandler : MonoBehaviour
 
     public void Control()
     {
-        if (!IsInventoryON)
+        if (!IsInventoryActive)
         {
             canvas.enabled = true;
         }

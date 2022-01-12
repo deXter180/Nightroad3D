@@ -17,22 +17,28 @@ public class Attack : State
 
     public override void Tick()
     {
-        if (enemyTrigger.IsTargetInRange && !enemyTrigger.IsTargetFleed)
+        if (enemyBrain.IsFrozen)
         {
-            InitiateAttack();
+            stateMachine.SetState(States.Stop);
         }
         else
         {
-            if (enemyTrigger.IsTargetFleed)
+            if (enemyTrigger.IsTargetInRange && !enemyTrigger.IsTargetFleed)
             {
-                stateMachine.SetState(States.Roam);
+                InitiateAttack();
             }
             else
             {
-                stateMachine.SetState(States.Chase);
+                if (enemyTrigger.IsTargetFleed)
+                {
+                    stateMachine.SetState(States.Roam);
+                }
+                else
+                {
+                    stateMachine.SetState(States.Chase);
+                }
             }
-        }
-        
+        }       
     }
 
     public override void OnEnter()

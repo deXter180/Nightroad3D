@@ -31,6 +31,7 @@ public class ObjectPooler : MonoBehaviour
     private void Start()
     {
         StartCoroutine(InitializePool(ProjectileTypes.FireBall));
+        StartCoroutine(InitializePool(ProjectileTypes.FireBallSpell));
     }
 
     public IEnumerator InitializePool(ProjectileTypes projectileType)

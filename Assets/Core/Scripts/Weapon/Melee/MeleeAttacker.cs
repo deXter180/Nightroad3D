@@ -8,7 +8,8 @@ public class MeleeAttacker : MonoBehaviour
     private Collider col;
     private Vector3 ColRange;
     private WeaponBrain weaponBrain;
-    private Input input;
+    private WeaponManager weaponManager;
+    private PlayerInputAsset inputs;
     private bool isHitting;
     public static event Action OnStopMeleeAttack;
 
@@ -16,19 +17,29 @@ public class MeleeAttacker : MonoBehaviour
     {
         col = GetComponentInChildren<Collider>();
         weaponBrain = GetComponent<WeaponBrain>();
-        input = FindObjectOfType<InputControl>();
         StartCoroutine(SetRange());
     }
 
     private void OnEnable()
     {
+        StartCoroutine(InputDone());    
+        weaponManager = WeaponManager.Instance;
         isHitting = false;
         GetRange();
     }
 
     private void Update()
     {
-        StartAttack();       
+        if (!InputMenuUIHandler.Instance.IsMainMenuActive && !InventoryUIHandler.Instance.IsInventoryActive)
+        {
+            StartAttack();
+        }              
+    }
+
+    private IEnumerator InputDone()
+    {
+        yield return new WaitUntil(() => InputManager.InputReady);
+        inputs = InputManager.InputActions;
     }
 
     private void GetRange()
@@ -46,11 +57,11 @@ public class MeleeAttacker : MonoBehaviour
     {
         if (gameObject.activeInHierarchy && weaponBrain.IsWeaponReady())
         {
-            if (input.GetAttackHold() == 1 && !InventoryUIHandler.Instance.IsInventoryON)
+            if (inputs.BasicControls.Shoot.ReadValue<float>() == 1)
             {
-                if (!WeaponInventory.Instance.IsAttacking)
+                if (!weaponManager.IsAttacking)
                 {
-                    weaponBrain.GetThisWeapon().RaiseOnPlayerAttack(weaponBrain.GetThisWeapon(), weaponBrain, weaponBrain.GetWeaponCategories(), weaponBrain.GetWeaponTypes());
+                    weaponBrain.GetThisWeapon().RaiseOnPlayerAttack(weaponBrain.GetThisWeapon(), weaponBrain, weaponBrain.GetWeaponCategories(), weaponBrain.GetWeaponTypes());              
                     isHitting = true;
                 }
                 else
@@ -68,70 +79,82 @@ public class MeleeAttacker : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (gameObject.activeInHierarchy && !InventoryUIHandler.Instance.IsInventoryON && isHitting)
+        if (!InventoryUIHandler.Instance.IsInventoryActive && !InputMenuUIHandler.Instance.IsMainMenuActive)
         {
-            if (!WeaponInventory.Instance.IsAttacking && collision != null)
+            if (gameObject.activeInHierarchy && isHitting)
             {
-                if (collision.gameObject.GetComponentInParent<Target>() != null)
+                if (!weaponManager.IsAttacking && collision != null)
                 {
-                    Target target = collision.gameObject.GetComponentInParent<Target>();
-                    if (target.enemyBrain != null && target.GetEnemy() == true && target.IsDead == false)
+                    if (collision.gameObject.GetComponentInParent<Target>() != null)
                     {
-                        if (collision.gameObject.CompareTag("Enemy"))
+                        Target target = collision.gameObject.GetComponentInParent<Target>();
+                        if (target.enemyBrain != null && target.GetEnemy() == true && target.IsDead == false)
                         {
-                            WeaponInventory.Instance.IsAttacking = true;
-                            weaponBrain.GetThisWeapon().DoAttack(target, target.enemyBrain.GetThisEnemy().ThisEnemySO.DodgeChance, false);
-                            StartCoroutine(Attacking(() => { WeaponInventory.Instance.IsAttacking = false; }));
+                            if (collision.gameObject.CompareTag("Enemy"))
+                            {
+                                weaponManager.IsAttacking = true;
+                                weaponBrain.GetThisWeapon().DoAttack(target, target.enemyBrain.GetThisEnemy().ThisEnemySO.DodgeChance, false);
+                                StartCoroutine(Attacking(() => { weaponManager.IsAttacking = false; }));
+                            }
+                            //else if (collision.gameObject.CompareTag("Head"))
+                            //{
+                            //    WeaponInventory.Instance.IsAttacking = true;
+                            //    weaponBrain.GetThisWeapon().DoAttack(target, target.enemyBrain.GetThisEnemy().ThisEnemySO.DodgeChance, true);
+                            //    StartCoroutine(Attacking(() => { WeaponInventory.Instance.IsAttacking = false; }));
+                            //}
+
                         }
-                        //else if (collision.gameObject.CompareTag("Head"))
-                        //{
-                        //    WeaponInventory.Instance.IsAttacking = true;
-                        //    weaponBrain.GetThisWeapon().DoAttack(target, target.enemyBrain.GetThisEnemy().ThisEnemySO.DodgeChance, true);
-                        //    StartCoroutine(Attacking(() => { WeaponInventory.Instance.IsAttacking = false; }));
-                        //}
-                                              
                     }
                 }
             }
-        }
+        }      
     }
 
     private void OnCollisionStay(Collision collision)
     {
-        if (gameObject.activeInHierarchy && !InventoryUIHandler.Instance.IsInventoryON && isHitting)
+        if (!InventoryUIHandler.Instance.IsInventoryActive && !InputMenuUIHandler.Instance.IsMainMenuActive)
         {
-            if (!WeaponInventory.Instance.IsAttacking && collision != null)
+            if (gameObject.activeInHierarchy && isHitting)
             {
-                if (collision.gameObject.GetComponentInParent<Target>() != null)
+                if (!weaponManager.IsAttacking && collision != null)
                 {
-                    Target target = collision.gameObject.GetComponentInParent<Target>();
-                    if (target.enemyBrain != null && target.GetEnemy() == true && target.IsDead == false)
+                    if (collision.gameObject.GetComponentInParent<Target>() != null)
                     {
-                        if (collision.gameObject.CompareTag("Enemy"))
+                        Target target = collision.gameObject.GetComponentInParent<Target>();
+                        if (target.enemyBrain != null && target.GetEnemy() == true && target.IsDead == false)
                         {
-                            WeaponInventory.Instance.IsAttacking = true;
-                            weaponBrain.GetThisWeapon().DoAttack(target, target.enemyBrain.GetThisEnemy().ThisEnemySO.DodgeChance, false);
-                            StartCoroutine(Attacking(() => { WeaponInventory.Instance.IsAttacking = false; }));
+                            if (collision.gameObject.CompareTag("Enemy"))
+                            {
+                                weaponManager.IsAttacking = true;
+                                weaponBrain.GetThisWeapon().DoAttack(target, target.enemyBrain.GetThisEnemy().ThisEnemySO.DodgeChance, false);
+                                StartCoroutine(Attacking(() => { weaponManager.IsAttacking = false; }));
+                            }
+                            //else if (collision.gameObject.CompareTag("Head"))
+                            //{
+                            //    WeaponInventory.Instance.IsAttacking = true;
+                            //    weaponBrain.GetThisWeapon().DoAttack(target, target.enemyBrain.GetThisEnemy().ThisEnemySO.DodgeChance, true);
+                            //    StartCoroutine(Attacking(() => { WeaponInventory.Instance.IsAttacking = false; }));
+                            //}
                         }
-                        //else if (collision.gameObject.CompareTag("Head"))
-                        //{
-                        //    WeaponInventory.Instance.IsAttacking = true;
-                        //    weaponBrain.GetThisWeapon().DoAttack(target, target.enemyBrain.GetThisEnemy().ThisEnemySO.DodgeChance, true);
-                        //    StartCoroutine(Attacking(() => { WeaponInventory.Instance.IsAttacking = false; }));
-                        //}
                     }
                 }
             }
         }
+       
     }
 
     private IEnumerator Attacking(Action action)
     {
-        if (WeaponInventory.Instance.IsAttacking == true)
+        if (weaponManager.IsAttacking == true)
         {
             yield return new WaitForSeconds(weaponBrain.GetThisWeapon().ThisWeaponSO.AttackSpeed);
             action.Invoke();
         }
+    }
+
+    private IEnumerator PlayVfx()
+    {
+        yield return new WaitForSeconds(weaponBrain.AnimDelay);
     }
 
 }

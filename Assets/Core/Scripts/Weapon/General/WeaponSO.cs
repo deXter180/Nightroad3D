@@ -6,7 +6,8 @@ using UnityEngine;
 public class WeaponSO : ScriptableObject, IAttack
 {
     [SerializeField] private int damageAmount;
-    [SerializeField] private int maxAmmo;
+    [SerializeField] private int ammoPerMagazine;
+    [SerializeField] private int totalAmmo;
     [SerializeField] private float attackSpeed;
     [SerializeField] private float attackRange;
     [SerializeField] private float critChance;
@@ -18,7 +19,8 @@ public class WeaponSO : ScriptableObject, IAttack
     [SerializeField] private Transform worldPrefab;
 
     public int DamageAmount => damageAmount;
-    public int MaxAmmo => maxAmmo;
+    public int AmmoPerMagazine => ammoPerMagazine;
+    public int TotalAmmo => totalAmmo;
     public float AttackSpeed => attackSpeed;
     public float AttackRange => attackRange;
     public float CritChance => critChance;

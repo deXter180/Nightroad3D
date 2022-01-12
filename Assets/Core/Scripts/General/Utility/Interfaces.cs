@@ -13,24 +13,6 @@ public interface IAttack
     float CritBonus { get; }
 }
 
-public interface Input
-{
-    public bool IsMousePos { get; }
-    float GetAttackHold();
-    Vector2 GetMouseDelta();
-    Vector2 GetMousePosition();
-    Vector2 GetMovement();
-    float GetJump();
-    float GetWeapon1();
-    float GetWeapon2();
-    float GetWeapon3();
-    float GetWeapon4();
-    bool GetInventory();
-    bool GetRotationItems();
-    bool GetMouseRightClick();
-    bool GetPickItems();
-}
-
 public interface IHeapItem<HeapObject> : IComparable<HeapObject>
 {
     int HeapIndex { get; set; }

@@ -18,18 +18,25 @@ public class Chase : State
 
     public override void Tick()
     {
-        if (enemyTrigger.IsTargetFleed && !enemyTrigger.IsTargetInRange)
+        if (enemyBrain.IsFrozen)
         {
-            stateMachine.SetState(States.Roam);
+            stateMachine.SetState(States.Stop);
         }
-        else if (enemyTrigger.IsTargetInRange && !enemyTrigger.IsTargetFleed)
+        else
         {
-            stateMachine.SetState(States.Attack);
-        }
-        else if (!enemyTrigger.IsTargetInRange && !enemyTrigger.IsTargetFleed)
-        {
-            ChaseTarget();
-        }
+            if (enemyTrigger.IsTargetFleed && !enemyTrigger.IsTargetInRange)
+            {
+                stateMachine.SetState(States.Roam);
+            }
+            else if (enemyTrigger.IsTargetInRange && !enemyTrigger.IsTargetFleed)
+            {
+                stateMachine.SetState(States.Attack);
+            }
+            else if (!enemyTrigger.IsTargetInRange && !enemyTrigger.IsTargetFleed)
+            {
+                ChaseTarget();
+            }
+        }        
     }
 
     public override void OnEnter()

@@ -5,15 +5,18 @@ using UnityEngine;
 public class FPSCamControl : MonoBehaviour
 {
     private Vector3 ConstantDistFromPlayer = new Vector3();
+    private PlayerController player;
+
 
     void Start()
     {
+        player = PlayerController.Instance;
         transform.parent = null;
-        ConstantDistFromPlayer = transform.position - PlayerController.Instance.transform.position;       
+        ConstantDistFromPlayer = transform.position - player.transform.position;       
     }
 
     void Update()
     {
-        transform.position = PlayerController.Instance.transform.position + ConstantDistFromPlayer;
+        transform.position = player.transform.position + ConstantDistFromPlayer;
     }
 }

@@ -18,7 +18,7 @@ public class CrosshairUIHandler : MonoBehaviour
 
     private void HandleCrosshair()
     {
-        if (InventoryUIHandler.Instance.IsInventoryON)
+        if (InventoryUIHandler.Instance.IsInventoryActive || InputMenuUIHandler.Instance.IsMainMenuActive)
         {
             canvas.enabled = false;
         }

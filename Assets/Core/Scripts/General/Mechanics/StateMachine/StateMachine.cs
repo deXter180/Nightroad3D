@@ -24,6 +24,7 @@ public class StateMachine
         StateDict.Add(States.Roam, new Roam(enemyBrain, this));
         StateDict.Add(States.Chase, new Chase(enemyBrain, this));
         StateDict.Add(States.Attack, new Attack(enemyBrain, this));
+        StateDict.Add(States.Stop, new Stop(enemyBrain, this));
     }
     public void SetState(States states)
     {
@@ -75,6 +76,7 @@ public class StateMachine
 
 public enum States
 {
+    Stop,
     Roam,
     Chase,
     Attack

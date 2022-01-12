@@ -6,27 +6,38 @@ using System;
 
 public class ProjectileGun : MonoBehaviour
 {
+    public int CurrentMagazineAmmo { get => currentMagazineAmmo; }
+    public int CurrentTotalAmmo { get => currentTotalAmmo; }
     [SerializeField] private float MuzzleFlashTime;
     [SerializeField] private Transform FiringPoint;
+    private PlayerInputAsset inputs;
+    private int currentMagazineAmmo;
+    private int currentTotalAmmo;
+    private int maxMagazineAmmo;
+    private int maxTotalAmmo;
+    private bool isReloading;
     private float attackSpeed;
     private Weapons thisWeapon;
     private WeaponCategories weaponCategory;
     private WeaponTypes weaponType;   
     private WeaponBrain weaponBrain;
     private Light lighting;
-    private Input input;
-    public static event Action OnStopProjectileShoot;
     private ObjectPooler objectPooler;
-    
+    public static event Action OnStopProjectileShoot;  
 
     private void Awake()
     {
+        isReloading = false;
         weaponBrain = GetComponent<WeaponBrain>();
-        input = FindObjectOfType<InputControl>();
         lighting = GetComponentInChildren<Light>();
         if (lighting.gameObject.activeInHierarchy)
             lighting.gameObject.SetActive(false);
         StartCoroutine(SetupWeapon());
+    }
+
+    private void OnEnable()
+    {
+        StartCoroutine(InputDone());
     }
 
     private void Start()
@@ -38,18 +49,45 @@ public class ProjectileGun : MonoBehaviour
     {
         if (gameObject.activeInHierarchy && weaponBrain.IsWeaponReady())
         {
-            if (input.GetAttackHold() == 1 && !InventoryUIHandler.Instance.IsInventoryON)
+            if (!InventoryUIHandler.Instance.IsInventoryActive && !InputMenuUIHandler.Instance.IsMainMenuActive)
             {
-                if (WeaponInventory.Instance.IsAttacking == false)
+                if (WeaponManager.Instance.IsAttacking == false)
                 {
-                    StartCoroutine(Shoot(() => { WeaponInventory.Instance.IsAttacking = false; }));
+                    if (inputs.BasicControls.Shoot.ReadValue<float>() == 1)
+                    {
+                        if (currentMagazineAmmo > 0 && !isReloading)
+                        {
+                            StartCoroutine(Shoot(() => {
+                                WeaponManager.Instance.IsAttacking = false;
+                                currentMagazineAmmo -= 1;
+                                currentTotalAmmo -= 1;
+                                currentMagazineAmmo = currentTotalAmmo == 1 ? 1 : currentMagazineAmmo;
+                            }));
+                        }
+                        else
+                        {
+                            Debug.Log("RELOAD!");
+                        }
+                    }
+                    else if (inputs.BasicControls.Reload.triggered)
+                    {
+                        StartCoroutine(Reload(() => { isReloading = false; }));
+                    }
+                }
+                else
+                {
+                    OnStopProjectileShoot?.Invoke();
                 }
             }
-            else
-            {
-                OnStopProjectileShoot?.Invoke();
-            }
+            
+            
         }  
+    }
+
+    private IEnumerator InputDone()
+    {
+        yield return new WaitUntil(() => InputManager.InputReady);
+        inputs = InputManager.InputActions;
     }
 
     private ProjectileTypes GetProjectile(WeaponTypes weaponType)
@@ -79,6 +117,10 @@ public class ProjectileGun : MonoBehaviour
         yield return new WaitUntil(() => weaponBrain.IsWeaponReady());
         thisWeapon = weaponBrain.GetThisWeapon();
         weaponType = weaponBrain.GetWeaponTypes();
+        maxMagazineAmmo = thisWeapon.ThisWeaponSO.AmmoPerMagazine;
+        maxTotalAmmo = thisWeapon.ThisWeaponSO.TotalAmmo;
+        currentMagazineAmmo = maxMagazineAmmo;
+        currentTotalAmmo = maxTotalAmmo;
         weaponCategory = weaponBrain.GetWeaponCategories();
         attackSpeed = weaponBrain.GetThisWeapon().ThisWeaponSO.AttackSpeed;
     }
@@ -88,7 +130,7 @@ public class ProjectileGun : MonoBehaviour
         StartCoroutine(PlayMuzzleLight());
         if (objectPooler.GetPooledObject(GetProjectile(weaponType)) != null)
         {
-            WeaponInventory.Instance.IsAttacking = true;
+            WeaponManager.Instance.IsAttacking = true;
             var shot = objectPooler.GetPooledObject(GetProjectile(weaponType));
             shot.transform.rotation = FiringPoint.rotation;
             shot.transform.position = FiringPoint.position;
@@ -96,6 +138,28 @@ public class ProjectileGun : MonoBehaviour
             thisWeapon.RaiseOnPlayerAttack(thisWeapon, weaponBrain, weaponCategory, weaponType);
             yield return new WaitForSeconds(attackSpeed);
             action.Invoke();
+        }
+    }
+
+    private IEnumerator Reload(Action action)
+    {
+        if (currentTotalAmmo > 0)
+        {
+            if (currentMagazineAmmo < maxMagazineAmmo)                
+            {
+                if (currentTotalAmmo >= maxMagazineAmmo)
+                {
+                    currentMagazineAmmo = maxMagazineAmmo;
+                }
+                else
+                {
+                    currentMagazineAmmo = currentTotalAmmo;
+                }
+                isReloading = true;                
+                thisWeapon.RaiseOnPlayerReload(thisWeapon, weaponBrain, weaponType);
+                yield return new WaitForSeconds(weaponBrain.AnimDelay);
+                action.Invoke();
+            }
         }
     }
 }

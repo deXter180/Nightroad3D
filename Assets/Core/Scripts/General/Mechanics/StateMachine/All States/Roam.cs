@@ -19,18 +19,25 @@ public class Roam : State
 
     public override void Tick()
     {
-        if (enemyTrigger.IsTargetFleed && !enemyTrigger.IsTargetInRange)
+        if (enemyBrain.IsFrozen)
         {
-            FollowPath();
+            stateMachine.SetState(States.Stop);
         }
-        else if (enemyTrigger.IsTargetInRange && !enemyTrigger.IsTargetFleed)
+        else
         {
-            stateMachine.SetState(States.Attack);
-        }
-        else if (!enemyTrigger.IsTargetInRange && !enemyTrigger.IsTargetFleed)
-        {
-            stateMachine.SetState(States.Chase);
-        }
+            if (enemyTrigger.IsTargetFleed && !enemyTrigger.IsTargetInRange)
+            {
+                FollowPath();
+            }
+            else if (enemyTrigger.IsTargetInRange && !enemyTrigger.IsTargetFleed)
+            {
+                stateMachine.SetState(States.Attack);
+            }
+            else if (!enemyTrigger.IsTargetInRange && !enemyTrigger.IsTargetFleed)
+            {
+                stateMachine.SetState(States.Chase);
+            }
+        }       
     }
 
     public override void OnEnter()

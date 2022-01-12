@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Enemy
   - Head
+  - AOESpell
   layers:
   - Default
   - TransparentFX
@@ -20,7 +21,7 @@ TagManager:
   - Weapons
   - Ammo
   - Enemy
-  - 
+  - AOESpell
   - 
   - 
   - 

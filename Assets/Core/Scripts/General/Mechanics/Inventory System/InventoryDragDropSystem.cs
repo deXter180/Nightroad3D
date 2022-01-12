@@ -6,7 +6,7 @@ using System;
 public class InventoryDragDropSystem : MonoBehaviour
 {
     public static InventoryDragDropSystem Instance { get; private set; }
-    private Input input;
+    private PlayerInputAsset inputs;
     private bool isDraggedFromInventory;
     private bool isDraggedFromMenu;
     public float dragSmoothness = 80f;
@@ -25,7 +25,6 @@ public class InventoryDragDropSystem : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        input = FindObjectOfType<InputControl>();
     }
 
     private void Start()
@@ -41,6 +40,11 @@ public class InventoryDragDropSystem : MonoBehaviour
         }
     }
 
+    private void OnEnable()
+    {
+        StartCoroutine(InputDone());
+    }
+
     private void OnDestroy()
     {
         inventorySystem.OnPlacedOnInventory -= InventorySystem_OnObjectPlaced;
@@ -52,27 +56,37 @@ public class InventoryDragDropSystem : MonoBehaviour
 
     private void Update()
     {
-        if (input.GetRotationItems())
+        if (inputs != null)
         {
-            if (isDraggedFromInventory)
+            if (inputs.UI.RotateInventoryItem.triggered)
             {
-                dir = InventoryItemSO.GetNextDir(dir);
+                if (isDraggedFromInventory)
+                {
+                    dir = InventoryItemSO.GetNextDir(dir);
+                }
+                else
+                    dir = InventoryItemSO.Dir.Down;
+
             }
-            else
-                dir = InventoryItemSO.Dir.Down;
-            
-        }        
-        RemoveFromInventory();
-        PositionDragObject();
+            RemoveFromInventory();
+            PositionDragObject();
+        }
+    }
+
+    private IEnumerator InputDone()
+    {
+        yield return new WaitUntil(() => InputManager.InputReady);
+        inputs = InputManager.InputActions;
     }
 
     private void PositionDragObject()
     {
-        if (InventoryUIHandler.Instance.IsInventoryON)
+        if (InventoryUIHandler.Instance.IsInventoryActive)
         {
+            Vector2 mousePos = inputs.BasicControls.MousePosition.ReadValue<Vector2>();
             if (draggingPOInventory != null)
             {
-                RectTransformUtility.ScreenPointToLocalPointInRectangle(inventorySystem.GetItemContainer(), input.GetMousePosition(), UICam, out Vector2 targetPosition);
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(inventorySystem.GetItemContainer(), mousePos, UICam, out Vector2 targetPosition);
                 targetPosition += new Vector2(-mouseDragAnchoredPosOffsetInv.x, -mouseDragAnchoredPosOffsetInv.y);
                 Vector2Int rotationOffset = draggingPOInventory.GetInventoryItemSO().GetRotationOffset(dir);
                 targetPosition += new Vector2(rotationOffset.x, rotationOffset.y) * inventorySystem.GetGrid().GetCellSize();
@@ -85,7 +99,7 @@ public class InventoryDragDropSystem : MonoBehaviour
             }
             if(draggingPOMenu != null && draggedMenuTile != null)
             {               
-                RectTransformUtility.ScreenPointToLocalPointInRectangle(draggedMenuTile.GetRectTransform(), input.GetMousePosition(), UICam, out Vector2 targetPosition);
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(draggedMenuTile.GetRectTransform(), mousePos, UICam, out Vector2 targetPosition);
                 targetPosition += new Vector2(-mouseDragGridPosOffsetMenu.x, -mouseDragGridPosOffsetMenu.y);
                 targetPosition /= 10f;
                 targetPosition = new Vector2(Mathf.Floor(targetPosition.x), Mathf.Floor(targetPosition.y));
@@ -183,10 +197,10 @@ public class InventoryDragDropSystem : MonoBehaviour
 
     private void RemoveFromInventory()
     {
-        if (InventoryUIHandler.Instance.IsInventoryON)
+        if (InventoryUIHandler.Instance.IsInventoryActive)
         {
-            Vector2 mousePos = input.GetMousePosition();
-            if (input.GetMouseRightClick() && IsOnInventory(mousePos))
+            Vector2 mousePos = inputs.BasicControls.MousePosition.ReadValue<Vector2>();
+            if (inputs.UI.RemoveInventoryItem.triggered && IsOnInventory(mousePos))
             {
                 RectTransformUtility.ScreenPointToLocalPointInRectangle(inventorySystem.GetItemContainer(), mousePos, UICam, out Vector2 anchoredPosition);
                 Vector2Int placedObjectOrigin = inventorySystem.GetGridLocalPos(anchoredPosition);
