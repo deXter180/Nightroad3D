@@ -5,16 +5,29 @@ using UnityEngine.AI;
 using UnityEngine.VFX;
 using System;
 
+public enum AnimType
+{
+    Idle,
+    Walk,
+    Attack,
+    Death
+}
+
 public class EnemyBrain : MonoBehaviour
 {
     private int layer = 1 << 0;
     private bool playingAnim;
     private bool isDying;
+    private bool isSpellAffected;
+    private bool isFrozen;
     private int currentAminHash;
     private AnimType animType;
+    private AnimType lastAnimType;
     [SerializeField] private EnemyTypes enemyType;
     private Vector3 startPos;
     private Enemy enemy;
+    private AOETargeted spellCasted;
+    private SpellTypes spellType;
     private StateMachine stateMachine;
     private EnemyTrigger enemyTrigger;
     private NavMeshAgent navAgent;
@@ -24,22 +37,21 @@ public class EnemyBrain : MonoBehaviour
     private TriggerHeadshot headshot;
     private Target enemyTarget;
     private Animator animator;
+    private WaitForSeconds attackAnimWait;
+    private WaitForSeconds deathAnimWait;
+    private WaitForSeconds postDeathWait = new WaitForSeconds(2f);
     private TempShieldTrigger tempShield;
     public Vector3 StartPos { get => startPos; }
+    public Target EnemyTarget { get => enemyTarget; }
     public NavMeshAgent navMeshAgent { get => navAgent; }  
+    public SpellTypes SpellType { get => spellType; }
+    public bool IsSpellAffected { get => isSpellAffected; }
+    public bool IsFrozen { get => isFrozen; }
     [HideInInspector] public bool IsSetupDone = false;
     private int idleHash = Animator.StringToHash("EnemyIdle");
     private int moveHash = Animator.StringToHash("EnemyMove");
     private int attackHash = Animator.StringToHash("EnemyAttack");
-    private int deathHash = Animator.StringToHash("EnemyDeath");
-    
-    private enum AnimType
-    {
-        Idle,
-        Walk,
-        Attack,
-        Death
-    }
+    private int deathHash = Animator.StringToHash("EnemyDeath");    
 
     private void OnEnable()
     {
@@ -62,6 +74,7 @@ public class EnemyBrain : MonoBehaviour
             enemyTarget.Resource.OnKilled -= Resource_OnKilled;
         }
         Weapons.OnPlayerDamage -= Weapons_OnPlayerDamage;
+        AOETargeted.OnAOESpellCast -= AOETargeted_OnAOESpellCast;
     }
 
     private void Update()
@@ -69,8 +82,30 @@ public class EnemyBrain : MonoBehaviour
         if (IsSetupDone)
         {
             stateMachine.Tick();
-            StartCoroutine(PlayAnim());
+            PlayAnim();
+            //StartCoroutine(PlayAnim());
         }      
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("AOESpell"))
+        {
+            if (!isSpellAffected && spellCasted != null)
+            {
+                isSpellAffected = true;
+                if (spellType == SpellTypes.FreezeBlast)
+                {
+                    isFrozen = true;
+                }
+                StartCoroutine(spellCasted.AddSpellEffect(this, () =>
+                {
+                    isSpellAffected = false;
+                    if (isFrozen) { isFrozen = false; }                        
+                }));
+            }
+            
+        }
     }
 
     public Enemy GetThisEnemy()
@@ -97,6 +132,7 @@ public class EnemyBrain : MonoBehaviour
         }
         enemy.OnEnemyAttack += Enemy_OnEnemyAttack;
         Weapons.OnPlayerDamage += Weapons_OnPlayerDamage;
+        AOETargeted.OnAOESpellCast += AOETargeted_OnAOESpellCast;
         enemyTrigger = GetComponentInChildren<EnemyTrigger>();
         enemyTrigger.TriggerSetup(enemy);
         tempShield = GetComponentInChildren<TempShieldTrigger>();
@@ -109,6 +145,8 @@ public class EnemyBrain : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
         playingAnim = false;
         isDying = false;
+        isSpellAffected = false;
+        isFrozen = false;
         stateMachine = new StateMachine(this);
         navAgent.speed = enemy.ThisEnemySO.MoveSpeed;
         stateMachine.OnStateChange += StateMachine_OnStateChange;
@@ -118,12 +156,39 @@ public class EnemyBrain : MonoBehaviour
         enemyTarget.SetEB(this);
         enemyTarget.OnDodge += EnemyTarget_OnDodge;
         enemyTarget.Resource.OnKilled += Resource_OnKilled;
+        AssignWaiters();
         IsSetupDone = true;
     }
 
     //~~~~~~~~~~~~~~~~~~~ Animation ~~~~~~~~~~~~~~~~~~~
 
-    private IEnumerator PlayAnim()
+    private void AssignWaiters()
+    {
+        AnimationClip[] clips = animator.runtimeAnimatorController.animationClips;
+        foreach(var clip in clips)
+        {
+            if (clip.name == "EnemyAttack")
+            {
+                attackAnimWait = new WaitForSeconds(clip.length);
+            }else if (clip.name == "EnemyDeath")
+            {
+                deathAnimWait = new WaitForSeconds(clip.length);
+            }
+        }
+    }
+
+    public void ChangeAnimType(AnimType AT)
+    {
+        lastAnimType = animType;
+        animType = AT;
+    }
+
+    public void ResetAnimType()
+    {
+        animType = lastAnimType;
+    }
+
+    private void PlayAnim()
     {
         //AnimStateCheck();
         if (!playingAnim && animType != AnimType.Death)
@@ -132,19 +197,16 @@ public class EnemyBrain : MonoBehaviour
             {
                 ChangeAnimState(idleHash);
                 playingAnim = false;
-                yield return null;
-
             }
             if (animType == AnimType.Walk)
             {
                 ChangeAnimState(moveHash);
                 playingAnim = false;
-                yield return null;
             }
             else if (animType == AnimType.Attack)
             {
                 ChangeAnimState(attackHash);
-                StartCoroutine(ApplyDelay());
+                StartCoroutine(DelayAnim(attackAnimWait));
             }
         }
         else if (animType == AnimType.Death && !isDying)
@@ -152,7 +214,7 @@ public class EnemyBrain : MonoBehaviour
             isDying = true;
             ChangeAnimState(deathHash);
             bloodOnDeath.PlayBloodOnDeath();
-            StartCoroutine(ApplyDelay());
+            StartCoroutine(DelayAnim(deathAnimWait));
             StartCoroutine(AfterKilled());
         }
     }
@@ -165,23 +227,18 @@ public class EnemyBrain : MonoBehaviour
         currentAminHash = animHash;
     }
 
-    private IEnumerator ApplyDelay()
-    {
-        yield return new WaitForEndOfFrame();
-        float animDelay = animator.GetCurrentAnimatorClipInfo(0)[0].clip.length;
-        StartCoroutine(DelayAnim(animDelay));
-    }
-
-    private IEnumerator DelayAnim(float animDelay)
-    {
-        yield return new WaitForSeconds(animDelay);
+    private IEnumerator DelayAnim(WaitForSeconds wait)
+    {     
+        if (!isFrozen)
+        {
+            yield return wait;
+        }
         playingAnim = false;
     }
 
     private IEnumerator AfterKilled()
     {
-        yield return new WaitForSeconds(2f);
-        //yield return new WaitWhile(() => playingAnim);
+        yield return postDeathWait;
         gameObject.SetActive(false);
         AssetCollections.ReleaseAssetInstance(gameObject, "Enemy", false);
     }
@@ -234,6 +291,11 @@ public class EnemyBrain : MonoBehaviour
                 if (animType != AnimType.Attack)
                     animType = AnimType.Attack;
             }
+            else if (obj.GetType() == typeof(Stop))
+            {
+                if (animType != AnimType.Idle)
+                    animType = AnimType.Idle;
+            }
             Debug.Log(obj);
         }        
     }
@@ -241,5 +303,11 @@ public class EnemyBrain : MonoBehaviour
     private void Enemy_OnEnemyAttack(object sender, OnEnemyAttackEventArg e)
     {
             
+    }
+
+    private void AOETargeted_OnAOESpellCast(object sender, OnAOESpellCastEventArg e)
+    {
+        spellCasted = e.spell;
+        spellType = e.spellType;
     }
 }

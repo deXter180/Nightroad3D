@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: RPG
   m_EditorClassIdentifier: 
   damageAmount: 500
-  maxAmmo: 30
+  ammoPerMagazine: 3
+  totalAmmo: 15
   attackSpeed: 2
   attackRange: 800
   critChance: 0.2

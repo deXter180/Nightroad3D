@@ -8,13 +8,15 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     //~~~~~~~~~~~~~~~~ Variables ~~~~~~~~~~~~~~~~~
-
+    
+    public float GroundHeight;
     public static PlayerController Instance { get; private set; }
     public Target PlayerTarget { get => target; }
     public int MaxHP { get => HitPoints; }
-    public float DodgeChace { get => dodgeChance; }
-    public float GroundHeight;
-    private float currentTime = 0;
+    public float DodgeChace { get => dodgeChance; }  
+    public bool IsCrouching { get => isCrouching; }
+    public Vector3 DashPos { get => dashPos; }
+    public Rigidbody PlayerRB { get => RB; }
     [SerializeField] private int HitPoints;
     [SerializeField] private float MoveSpeed;
     [SerializeField] private float MouseSensitivity;
@@ -23,9 +25,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float AttackSpeed;
     [SerializeField] private float AttackForce;
     [SerializeField] private float dodgeChance;
+    [SerializeField] private float crouchHeightPrecentage;
     [SerializeField] private float SelectionThreshold;
     [SerializeField] private Transform camTransform;
     [SerializeField] private InventorySystem mainInventory;
+    private PlayerInputAsset inputs;
     private PickedObject selectedPickedObject = null;
     private static float globalGravity = -9.81f;
     private Rigidbody RB;
@@ -33,12 +37,18 @@ public class PlayerController : MonoBehaviour
     private Target target;
     private Vector3 OldPos;
     private Vector3 gravity;
-    private Input input;
+    private Vector3 dashPos;
+    //private Input input;
     private int ground = 1 << 8;
     private int water = 1 << 4;
     private int pickableLayer = 1 << 6;
     private int bitmask;
     private float camControlX = 0f;
+    private float normalHeight;
+    private float crouchHeight;  
+    private float currentTime = 0;
+    private bool isCrouching;
+    private bool isToggledCrouching;
     public static event Action<InventoryItemSO> OnItemPicked;
 
     //~~~~~~~~~~~~~~~~~ Initialization ~~~~~~~~~~~~~~~~~~~
@@ -51,8 +61,7 @@ public class PlayerController : MonoBehaviour
         }
         else Instance = this;
         RB = GetComponent<Rigidbody>();
-        col = GetComponent<CapsuleCollider>();
-        input = GetComponent<InputControl>();
+        col = GetComponent<CapsuleCollider>();       
         target = GetComponent<Target>();
         bitmask = ground | water;
         gravity = globalGravity * GravityScale * Vector3.up;
@@ -61,14 +70,12 @@ public class PlayerController : MonoBehaviour
 
     private void OnEnable()
     {
+        StartCoroutine(InputDone());
         RB.useGravity = false;
         GetComponent<Target>().SetupMaxHP(MaxHP);
+        normalHeight = col.height;
+        crouchHeight = (normalHeight * crouchHeightPrecentage) / 100;
         //PickedObjectCols = new List<Collider>();
-    }
-
-    private void OnDisable()
-    {
-        
     }
 
     //~~~~~~~~~~~~~~~~ Mechanics ~~~~~~~~~~~~~~~~~~~~
@@ -80,21 +87,31 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        //OnTakingDamage()
-        ControlInventory();
-        SearchItemsInWorld();
-        HandleBaseMechanics();
+        if (inputs != null)
+        {
+            //OnTakingDamage()
+            InteractInWorld();
+            HandleBaseMechanics();
+        }       
+    }
+
+    private IEnumerator InputDone()
+    {
+        yield return new WaitUntil(() => InputManager.InputReady);
+        inputs = InputManager.InputActions;
     }
 
     private void HandleBaseMechanics()
     {
         while (currentTime < Time.time)
         {
-            if (!InventoryUIHandler.Instance.IsInventoryON)
+            if (!InventoryUIHandler.Instance.IsInventoryActive && !InputMenuUIHandler.Instance.IsMainMenuActive)
             {
                 Rotate();
-                Move();
+                Move(MoveSpeed);
                 Jump();
+                HoldCrouch();
+                ToggleCrouch();
             }
             currentTime += Time.fixedDeltaTime;
         }
@@ -105,19 +122,22 @@ public class PlayerController : MonoBehaviour
         RB.AddForce(gravity, ForceMode.Impulse);
     }
 
-    private void Move()
+    private void Move(float moveSpeed)
     {
-        float moveX = input.GetMovement().x;
-        float moveY = input.GetMovement().y;
-        Vector3 movePos = transform.position + (transform.right * moveX + transform.forward * moveY) * MoveSpeed * Time.fixedDeltaTime;
+        Vector2 movePosition = inputs.BasicControls.Movement.ReadValue<Vector2>();
+        float moveX = movePosition.x;
+        float moveY = movePosition.y;
+        dashPos = transform.right * moveX + transform.forward * moveY;
+        Vector3 movePos = transform.position + (dashPos * moveSpeed * Time.fixedDeltaTime);
         OldPos = transform.position;
         RB.MovePosition(movePos);
     }
 
     private void Rotate()
     {
-        float horizontalLook = input.GetMouseDelta().x * MouseSensitivity * Time.fixedDeltaTime;
-        float verticalLook = input.GetMouseDelta().y * MouseSensitivity * Time.fixedDeltaTime;
+        Vector2 mouseDeltaPos = inputs.BasicControls.MouseDelta.ReadValue<Vector2>();
+        float horizontalLook = mouseDeltaPos.x * MouseSensitivity * Time.fixedDeltaTime;
+        float verticalLook = mouseDeltaPos.y * MouseSensitivity * Time.fixedDeltaTime;
         camControlX -= verticalLook;
         camControlX = Mathf.Clamp(camControlX, -90f, 90f);
         camTransform.localEulerAngles = new Vector3(camControlX, transform.rotation.eulerAngles.y + horizontalLook, 0f);
@@ -138,7 +158,7 @@ public class PlayerController : MonoBehaviour
 
     private void Jump()
     {
-        if (input.GetJump() == 1)
+        if (inputs.BasicControls.Jump.ReadValue<float>() == 1)
         {
             if (GroundCheck())
             {
@@ -146,6 +166,52 @@ public class PlayerController : MonoBehaviour
                     RB.AddForce(transform.up * (JumpForce / 2), ForceMode.Impulse);
                 else
                     RB.AddForce(transform.up * JumpForce, ForceMode.Impulse);
+            }
+        }
+    }
+
+    private void HoldCrouch()
+    {
+        if (GroundCheck() && !isToggledCrouching)
+        {
+            if (inputs.BasicControls.HoldCrouch.ReadValue<float>() == 1)
+            {
+                if (!isCrouching)
+                {
+                    isCrouching = true;
+                    col.height = crouchHeight;
+                }
+            }
+            else
+            {
+                if (isCrouching)
+                {
+                    isCrouching = false;
+                    col.height = normalHeight;
+                }
+                
+            }
+        }      
+    }
+
+    private void ToggleCrouch()
+    {
+        if (GroundCheck())
+        {
+            if (inputs.BasicControls.ToggleCrouch.triggered)
+            {
+                if (!isCrouching)
+                {
+                    isCrouching = true;
+                    isToggledCrouching = true;
+                    col.height = crouchHeight;
+                }
+                else
+                {
+                    isCrouching = false;
+                    isToggledCrouching = false;
+                    col.height = normalHeight;
+                }
             }
         }
     }
@@ -165,30 +231,16 @@ public class PlayerController : MonoBehaviour
         else return true;
     }
 
-    private void ControlInventory()
-    {
-        if (input.GetInventory())
-        {
-            InventoryUIHandler.Instance.Control();
-            if (InventoryUIHandler.Instance.IsInventoryON)
-            {
-                InventoryUIHandler.Instance.IsInventoryON = false;
-            }
-            else InventoryUIHandler.Instance.IsInventoryON = true;
-        }
-    }
-
-    private void SearchItemsInWorld()
+    private void InteractInWorld()
     {
         var ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward); //Camera.main.ScreenPointToRay(input.GetMousePosition());
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, Camera.main.farClipPlane / 2, pickableLayer))
         {
-            selectedPickedObject = hit.transform.GetComponent<PickedObject>();
-            if (selectedPickedObject != null)
+            if (hit.transform.TryGetComponent<PickedObject>(out selectedPickedObject))
             {
                 selectedPickedObject.HighlightObject();
-                if (input.GetPickItems())
+                if (inputs.BasicControls.Interact.triggered)//input.GetPickItems())
                 {
                     if (mainInventory.TryAddingItem(selectedPickedObject.GetItemSO()))
                     {
@@ -232,6 +284,5 @@ public class PlayerController : MonoBehaviour
         return new Vector3(UnityEngine.Random.Range(minRange, maxRange), UnityEngine.Random.Range(minRange, maxRange), UnityEngine.Random.Range(minRange, maxRange));
     }
 
-
-    
+    //~~~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~~~
 }

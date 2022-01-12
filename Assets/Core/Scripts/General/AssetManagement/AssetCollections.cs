@@ -18,6 +18,7 @@ public class AssetCollections : MonoBehaviour
     private static List<InventoryItemSO> InventorySOList = new List<InventoryItemSO>();
     private static List<InventoryItemSO> WeaponInventorySOList= new List<InventoryItemSO>();
     private static List<WeaponSO> WeaponSOList = new List<WeaponSO>();
+    private static List<SpellBaseSO> spellSOList = new List<SpellBaseSO>();
     private static List<EnemySO> EnemySOList = new List<EnemySO>();
 
     public IList<IResourceLocation> AssetLocationList { get; } = new List<IResourceLocation>();
@@ -109,6 +110,18 @@ public class AssetCollections : MonoBehaviour
             if (weaponSO.WeaponType == weaponType)
             {
                 return weaponSO;
+            }
+        }
+        return null;
+    }
+
+    public static SpellBaseSO GetSpellSOFromList(SpellTypes spellType)
+    {
+        foreach(SpellBaseSO spellSO in spellSOList)
+        {
+            if (spellSO.SpellType == spellType)
+            {
+                return spellSO;
             }
         }
         return null;
@@ -344,6 +357,10 @@ public class AssetCollections : MonoBehaviour
         {
             EnemySOList.Add((EnemySO)obj);
         }
+        else if (obj.GetType() == typeof(SpellBaseSO))
+        {
+            spellSOList.Add((SpellBaseSO)obj);
+        }
     }
 
     private static void Notify_Destroyed(AssetReference assetReference, NotifyOnDestroyByAssetRef obj)
@@ -381,6 +398,27 @@ public enum WeaponCategories
     ProjectileShoot
 }
 
+public enum SpellTypes
+{
+    None, 
+    FireBlast,
+    FreezeBlast,
+    ElectricBlast,
+    Dash,    
+    FireBall,
+    IceSpike,
+    ElectricStorm
+}
+
+public enum SpellCategories
+{
+    None,
+    SingleTargetedProjectile,
+    SingleTargetedRaycast,
+    AOETargeted,
+    SelfTargeted
+}
+
 public enum EnemyTypes
 {
     None,
@@ -392,7 +430,9 @@ public enum ProjectileTypes
 {
     None,
     Bullet,
-    FireBall
+    FireBall,
+    FireBallSpell,
+    IceSpike
 }
 
 public enum ImpactTypes

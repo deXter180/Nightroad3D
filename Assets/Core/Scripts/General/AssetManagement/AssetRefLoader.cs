@@ -41,7 +41,7 @@ public static class AssetRefLoader
         var locations = await Addressables.LoadResourceLocationsAsync(assetLabelOrName).Task;
         foreach (var location in locations)
         {
-            createdObjs = await Addressables.InstantiateAsync(location).Task as T;           
+            createdObjs = await Addressables.InstantiateAsync(location).Task as T;
         }
     }
 
@@ -61,6 +61,13 @@ public static class AssetRefLoader
         {
             createdObjs = await Addressables.InstantiateAsync(location, Position, Quaternion.identity).Task as T;
         }
+    }
+
+    public static async Task<GameObject> CreatedAsset(string assetLabelOrName, Vector3 Position)
+    {
+        AsyncOperationHandle<GameObject> handle = Addressables.InstantiateAsync(assetLabelOrName, Position, Quaternion.identity);
+        await handle.Task;
+        return handle.Result;
     }
 
     public static async Task CreatedAsset<T>(string assetLabelOrName, T createdObjs, Transform Parent, Vector3 Position) where T : UnityEngine.Object

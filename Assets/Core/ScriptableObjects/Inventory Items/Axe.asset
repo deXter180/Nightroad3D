@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Axe
   m_EditorClassIdentifier: 
   ItemID: Axe1
-  ItemName: Giant Axe
+  ItemName: Big Axe
   ItemDescription: 
   Usable: 0
   Width: 2

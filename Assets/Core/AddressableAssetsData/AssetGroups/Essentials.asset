@@ -255,6 +255,37 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - ScriptableObject
+  - m_GUID: 5226e512031a72b46947ad18b4f4fd95
+    m_Address: PlayerInputAsset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 2060fb5e02589be46883a7861d2835bb
+    m_Address: Fireball_vfx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 7bb6ad0dabd8eac42a05e1bdc99b2e48
+    m_Address: Explosion_vfx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 203a17d882f219e4ea27085edc829bbe
+    m_Address: AOEFrostEffect_vfx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 9560a55e213ebce4fa15ca6faf22ca78
+    m_Address: AOEFrostSO
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ScriptableObject
+  - m_GUID: 7e26b841af0ec3b4994b91314de840d2
+    m_Address: DashSO
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ScriptableObject
+  - m_GUID: bb404b9fd44361247905a3ddd4e30a10
+    m_Address: FireballSO
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ScriptableObject
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: a4a4e4a7d2a8f1747af5efb44894e9c5, type: 2}
   m_SchemaSet:

@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Rifle
   m_EditorClassIdentifier: 
   damageAmount: 150
-  maxAmmo: 60
+  ammoPerMagazine: 30
+  totalAmmo: 90
   attackSpeed: 0.2
   attackRange: 1500
   critChance: 0.2
