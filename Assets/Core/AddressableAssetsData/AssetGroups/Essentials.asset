@@ -286,6 +286,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - ScriptableObject
+  - m_GUID: 775a2f0d29c204047ae8f85ce20d3202
+    m_Address: Outline_SpriteLit
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Materials
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: a4a4e4a7d2a8f1747af5efb44894e9c5, type: 2}
   m_SchemaSet:

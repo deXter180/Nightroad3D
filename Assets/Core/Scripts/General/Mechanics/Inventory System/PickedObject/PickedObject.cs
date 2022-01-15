@@ -4,8 +4,11 @@ using UnityEngine;
 
 public class PickedObject : MonoBehaviour
 {
+    private string hightlightMaterial = "Outline_SpriteLit";
     private BoxCollider col;
-    private Rigidbody RB;         
+    private Rigidbody RB;
+    private SpriteRenderer SR;
+    private Material defaultMaterial;
     private ItemTypes item;
     private WeaponTypes weapon;
     private InventoryItemSO itemSO;
@@ -17,7 +20,14 @@ public class PickedObject : MonoBehaviour
     {
         col = GetComponent<BoxCollider>();
         RB = GetComponent<Rigidbody>();
+        SR = GetComponentInChildren<SpriteRenderer>();
     }
+
+    private void Start()
+    {
+        defaultMaterial = SR.material;
+    }
+
     private void OnEnable()
     {
         col.isTrigger = true;
@@ -109,12 +119,12 @@ public class PickedObject : MonoBehaviour
 
     public void HighlightObject()
     {
-
+        SR.material = AssetCollections.GetMaterail(hightlightMaterial);
     }
 
     public void UnhighlightObject()
     {
-
+        SR.material = defaultMaterial;
     }
 
     

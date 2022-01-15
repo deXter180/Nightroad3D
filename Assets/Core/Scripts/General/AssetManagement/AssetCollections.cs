@@ -15,6 +15,7 @@ public class AssetCollections : MonoBehaviour
     private static Dictionary<AssetReference, List<GameObject>> InstantiatedGODictByAssetRef = new Dictionary<AssetReference, List<GameObject>>();
     private static Dictionary<ProjectileTypes, GameObject> GODictProjectile = new Dictionary<ProjectileTypes, GameObject>();
     private static Dictionary<WeaponTypes, AudioClip> ACDictWeapon = new Dictionary<WeaponTypes, AudioClip>();
+    private static Dictionary<string, Material> MaterailDict = new Dictionary<string, Material>();
     private static List<InventoryItemSO> InventorySOList = new List<InventoryItemSO>();
     private static List<InventoryItemSO> WeaponInventorySOList= new List<InventoryItemSO>();
     private static List<WeaponSO> WeaponSOList = new List<WeaponSO>();
@@ -35,6 +36,7 @@ public class AssetCollections : MonoBehaviour
         }
         LoadSOAssets("ScriptableObject");
         LoadAudioAssets("AudioFiles");
+        LoadMaterialAssets("Materials");
     }
 
     //~~~~~~~~~~~~~~~~~~~~~~~~ Utility Methods ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -74,6 +76,13 @@ public class AssetCollections : MonoBehaviour
             }
             return null;
         }
+        else return null;
+    }
+
+    public static Material GetMaterail(string name)
+    {
+        if (MaterailDict.TryGetValue(name, out Material material))
+            return material;
         else return null;
     }
 
@@ -268,6 +277,14 @@ public class AssetCollections : MonoBehaviour
         }
     }
 
+    private static async void LoadMaterialAssets(string label)
+    {
+        if (label == "Materials")
+        {
+            await AssetRefLoader.LoadedAssets<Material>(label, MaterialLoadCallback);
+        }
+    }  
+
     //~~~~~~~~~~~~~~~~~~~~~~~ Release Methods ~~~~~~~~~~~~~~~~~~~~~~~~
 
     public static void ReleaseAssetInstance(GameObject obj)
@@ -361,6 +378,11 @@ public class AssetCollections : MonoBehaviour
         {
             spellSOList.Add((SpellBaseSO)obj);
         }
+    }
+
+    private static void MaterialLoadCallback(Material obj)
+    {
+        MaterailDict.Add(obj.name, obj);
     }
 
     private static void Notify_Destroyed(AssetReference assetReference, NotifyOnDestroyByAssetRef obj)
