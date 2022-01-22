@@ -243,6 +243,38 @@ public class EnemyBrain : MonoBehaviour
         AssetCollections.ReleaseAssetInstance(gameObject, "Enemy", false);
     }
 
+    public Vector2 GetDirWRTPlayer(Camera cam)
+    {
+        if (navAgent != null)
+        {
+            Vector2 dir = (navAgent.destination - transform.position).normalized;
+            float dot = Vector2.Dot(cam.transform.forward, dir);
+            Vector2 result = Vector2.zero;
+            if (dot <= -0.5f)
+            {
+                result = new Vector2(0, 1);
+            }
+            else if (dot >= 0.5f)
+            {
+                result = new Vector2(0, -1);
+            }
+            else
+            {
+                float subDot = Vector2.Dot(cam.transform.right, dir);
+                if (subDot >= 0.5f)
+                {
+                    result = new Vector2(1, 0);
+                }
+                else if (subDot <= -0.5f)
+                {
+                    result = new Vector2(-1, 0);
+                }
+            }
+            return result;
+        }
+        return Vector2.zero;
+    }
+
     //~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~
 
     private void EnemyTarget_OnDodge()

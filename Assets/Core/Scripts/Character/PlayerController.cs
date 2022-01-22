@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     public int MaxHP { get => HitPoints; }
     public float DodgeChace { get => dodgeChance; }  
     public bool IsCrouching { get => isCrouching; }
+    public bool IsPlayerDead { get => isDead; }
     public Vector3 DashPos { get => dashPos; }
     public Rigidbody PlayerRB { get => RB; }
     [SerializeField] private int HitPoints;
@@ -48,8 +49,10 @@ public class PlayerController : MonoBehaviour
     private float crouchHeight;  
     private float currentTime = 0;
     private bool isCrouching;
+    private bool isDead;
     private bool isToggledCrouching;
     public static event Action<InventoryItemSO> OnItemPicked;
+    public static event Action OnPlayerDeath;
 
     //~~~~~~~~~~~~~~~~~ Initialization ~~~~~~~~~~~~~~~~~~~
 
@@ -66,6 +69,7 @@ public class PlayerController : MonoBehaviour
         bitmask = ground | water;
         gravity = globalGravity * GravityScale * Vector3.up;
         StartCoroutine(mainInventory.Test());
+        isDead = false;
     }
 
     private void OnEnable()
@@ -87,12 +91,23 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if (inputs != null)
+        if (!target.IsDead)
         {
-            //OnTakingDamage()
-            InteractInWorld();
-            HandleBaseMechanics();
-        }       
+            if (inputs != null)
+            {
+                //OnTakingDamage()
+                InteractInWorld();
+                HandleBaseMechanics();
+            }
+        }
+        else
+        {
+            if (!isDead)
+            {
+                OnPlayerDeath?.Invoke();
+                isDead = true;
+            }            
+        }              
     }
 
     private IEnumerator InputDone()

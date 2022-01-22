@@ -14,6 +14,7 @@ public class WeaponManager : MonoBehaviour
     private bool isRemoved;
     private bool IsInitialized => weaponInventory != null;
     private PlayerInputAsset inputs;
+    private PlayerController player;
     private Dictionary<WeaponTypes, WeaponBrain> weaponInventory;
     
     private void Awake()
@@ -28,6 +29,7 @@ public class WeaponManager : MonoBehaviour
 
     private void Start()
     {
+        player = PlayerController.Instance;
         StartCoroutine(InputDone());
         foreach (WeaponBrain WB in weaponBrains)
         {
@@ -52,8 +54,8 @@ public class WeaponManager : MonoBehaviour
     }
 
     private void Update()
-    {
-        if (inputs != null)
+    {       
+        if (inputs != null && !player.IsPlayerDead)
         {
             if (!SpellManager.Instance.IsCastingSpell && !InputMenuUIHandler.Instance.IsMainMenuActive)
             {

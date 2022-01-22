@@ -14,6 +14,7 @@ public class SpellManager : MonoBehaviour
     private Color castColor;
     private Transform spellCircle;
     private Vector3 AOEPosition;
+    private PlayerController player;
     private bool isInSpellCastMode;
     public bool IsInSpellCastMode { get => isInSpellCastMode; }
     public static SpellManager Instance { get; private set; }
@@ -45,6 +46,7 @@ public class SpellManager : MonoBehaviour
 
     private void Start()
     {
+        player = PlayerController.Instance;
         StartCoroutine(InputDone());
         StartCoroutine(Test());
         state = SpellCastState.Default;
@@ -55,7 +57,7 @@ public class SpellManager : MonoBehaviour
     private IEnumerator InputDone()
     {
         yield return new WaitUntil(() => InputManager.InputReady);
-        inputs = InputManager.InputActions;       
+        inputs = InputManager.InputActions;
     }
 
     private IEnumerator Test()  //Temporary. Remove afterwards
@@ -63,18 +65,18 @@ public class SpellManager : MonoBehaviour
         yield return new WaitForSeconds(2f);
         //AddSpell(SpellTypes.FireBall, SpellCategories.SingleTargetedProjectile);
         AddSpell(SpellTypes.Dash, SpellCategories.SelfTargeted);
-        AddSpell(SpellTypes.FreezeBlast, SpellCategories.AOETargeted);       
+        AddSpell(SpellTypes.FreezeBlast, SpellCategories.AOETargeted);
     }
 
     private void Update()
     {
-        if (inputs != null)
+        if (inputs != null && !player.IsPlayerDead)
         {
             if (!InventoryUIHandler.Instance.IsInventoryActive && !InputMenuUIHandler.Instance.IsMainMenuActive)
             {
                 SpellSelect();
             }
-        }                  
+        }
     }
 
     private void AddSpell(SpellTypes type, SpellCategories category)
@@ -97,13 +99,13 @@ public class SpellManager : MonoBehaviour
             if (spell != null)
             {
                 spellDict.Add(type, spell);
-            }            
-        }       
+            }
+        }
     }
 
     private void RemoveSpell(SpellTypes type)
     {
-        if(spellDict.Count > 0 && spellDict.ContainsKey(type))
+        if (spellDict.Count > 0 && spellDict.ContainsKey(type))
         {
             spellDict.Remove(type);
         }
@@ -148,7 +150,7 @@ public class SpellManager : MonoBehaviour
                                     state = SpellCastState.Cast;
                                 }
                             }
-                        }                     
+                        }
                     }
                     break;
                 case SpellCastState.SelectArea:
@@ -175,7 +177,8 @@ public class SpellManager : MonoBehaviour
                                 AOETargeted aoeSpell = (AOETargeted)spell;
                                 aoeSpell.SetSpellPos(AOEPosition);
                             }
-                            spell.CastSpell(() => {
+                            spell.CastSpell(() =>
+                            {
                                 IsCastingSpell = false;
                                 isInSpellCastMode = false;
                                 state = SpellCastState.Default;
@@ -184,7 +187,7 @@ public class SpellManager : MonoBehaviour
                     }
                     break;
             }
-        }             
+        }
     }
 
     private Spells GetSpell()
@@ -258,4 +261,7 @@ public class SpellManager : MonoBehaviour
                 break;
         }
     }
+
+    //~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~
+
 }
