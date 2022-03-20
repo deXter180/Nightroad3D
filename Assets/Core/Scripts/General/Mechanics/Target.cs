@@ -14,6 +14,7 @@ public class Target : MonoBehaviour
     public bool Dodging { get => dodging; }
     public bool Blocking { get; set; }
     public event Action OnDodge;
+    public static event Action<EnemyBrain> OnEnemyDead;
     
 
     //~~~~~~~~~~~~~~~~~~~~~~~~ Initialization ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -124,6 +125,10 @@ public class Target : MonoBehaviour
             if (Resource.IsDead == true)
             {
                 IsDead = Resource.IsDead;
+                if (IsEnemy)
+                {
+                    OnEnemyDead?.Invoke(EB);
+                }
                 Debug.Log("Dead !!");               
             }
         }

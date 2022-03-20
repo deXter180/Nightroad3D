@@ -15,6 +15,8 @@ public enum AnimType
 
 public class EnemyBrain : MonoBehaviour
 {
+    private string enemyID;
+    private string enemyName;
     private int layer = 1 << 0;
     private bool playingAnim;
     private bool isDying;
@@ -41,12 +43,14 @@ public class EnemyBrain : MonoBehaviour
     private WaitForSeconds deathAnimWait;
     private WaitForSeconds postDeathWait = new WaitForSeconds(2f);
     private TempShieldTrigger tempShield;
-    public Vector3 StartPos { get => startPos; }
-    public Target EnemyTarget { get => enemyTarget; }
-    public NavMeshAgent navMeshAgent { get => navAgent; }  
-    public SpellTypes SpellType { get => spellType; }
-    public bool IsSpellAffected { get => isSpellAffected; }
-    public bool IsFrozen { get => isFrozen; }
+    public string EnemyID => enemyID; 
+    public string EnemyName => enemyName;
+    public Vector3 StartPos => startPos; 
+    public Target EnemyTarget => enemyTarget; 
+    public NavMeshAgent navMeshAgent => navAgent; 
+    public SpellTypes SpellType => spellType; 
+    public bool IsSpellAffected => isSpellAffected; 
+    public bool IsFrozen  => isFrozen; 
     [HideInInspector] public bool IsSetupDone = false;
     private int idleHash = Animator.StringToHash("EnemyIdle");
     private int moveHash = Animator.StringToHash("EnemyMove");
@@ -133,6 +137,7 @@ public class EnemyBrain : MonoBehaviour
         enemy.OnEnemyAttack += Enemy_OnEnemyAttack;
         Weapons.OnPlayerDamage += Weapons_OnPlayerDamage;
         AOETargeted.OnAOESpellCast += AOETargeted_OnAOESpellCast;
+        enemyName = enemy.ThisEnemySO.EnemyName;
         enemyTrigger = GetComponentInChildren<EnemyTrigger>();
         enemyTrigger.TriggerSetup(enemy);
         tempShield = GetComponentInChildren<TempShieldTrigger>();
@@ -158,6 +163,13 @@ public class EnemyBrain : MonoBehaviour
         enemyTarget.Resource.OnKilled += Resource_OnKilled;
         AssignWaiters();
         IsSetupDone = true;
+    }
+
+    //!!!!!!!!!!!!Call this where instantiating enemies!!!!!!!!!!!!!!!!
+
+    public void SetupEnemyID(int count)
+    {
+        enemyID = $"{enemyType}{count}";
     }
 
     //~~~~~~~~~~~~~~~~~~~ Animation ~~~~~~~~~~~~~~~~~~~

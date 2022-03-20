@@ -488,4 +488,13 @@ public enum ItemTypes
     Weapon
 }
 
+public enum GoalTypes
+{
+    Assassination,
+    MassKillType,
+    MassKillAny,
+    Collect,
+    Delivery
+}
+
 #endregion
