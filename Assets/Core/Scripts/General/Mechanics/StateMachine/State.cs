@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public abstract class State
 {
@@ -10,7 +11,6 @@ public abstract class State
     protected StateMachine stateMachine;
     protected Target target;
     protected Rigidbody rigidbody;
-
 
     public State(GameObject gameObject, StateMachine SM)
     {

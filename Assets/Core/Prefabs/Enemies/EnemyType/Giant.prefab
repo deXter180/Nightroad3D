@@ -43,8 +43,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.8197192, y: 2.1080766, z: 0.21860747}
-  m_Center: {x: 0.008786283, y: -0.28564286, z: -0.10582102}
+  m_Size: {x: 1.6041609, y: 1.4149537, z: 0.21860747}
+  m_Center: {x: -0.0018818114, y: -0.6322044, z: -0.10582102}
 --- !u!1 &3647210335099023307
 GameObject:
   m_ObjectHideFlags: 0
@@ -177,8 +177,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 2793518746235166908, guid: 37db58da3e85da04492e77580b1675f5,
-    type: 3}
+  m_Sprite: {fileID: 475519678, guid: 1239ef5ace4a10b4b906eb07f82d0f33, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -200,7 +199,7 @@ Animator:
   m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 2ea4cd4b29a08bf4fa385fe1d90d89ac, type: 2}
-  m_CullingMode: 0
+  m_CullingMode: 2
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
@@ -235,7 +234,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6262995814613458834}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.229999, z: 0}
+  m_LocalPosition: {x: -0.06, y: 0.6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -254,8 +253,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.7123253, y: 0.6991257, z: 0.21860752}
-  m_Center: {x: 0.037660085, y: -0.110015996, z: 0}
+  m_Size: {x: 1.2883145, y: 0.9721789, z: 0.21860752}
+  m_Center: {x: 0.042144332, y: 0.026510613, z: 0}
 --- !u!114 &6482945452200642062
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -281,7 +280,7 @@ GameObject:
   - component: {fileID: 3011468984954862277}
   - component: {fileID: -2283531767560358604}
   - component: {fileID: 5862634206629950785}
-  - component: {fileID: 6227772627279410524}
+  - component: {fileID: 4084523237730022365}
   m_Layer: 12
   m_Name: Giant
   m_TagString: Enemy
@@ -375,7 +374,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsEnemy: 1
---- !u!114 &6227772627279410524
+--- !u!114 &4084523237730022365
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

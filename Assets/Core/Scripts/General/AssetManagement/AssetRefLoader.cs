@@ -70,6 +70,13 @@ public static class AssetRefLoader
         return handle.Result;
     }
 
+    public static async Task<GameObject> CreatedAsset(GameObject GO, Vector3 Position)
+    {
+        AsyncOperationHandle<GameObject> handle = Addressables.InstantiateAsync(GO, Position, Quaternion.identity);
+        await handle.Task;
+        return handle.Result;
+    }
+
     public static async Task CreatedAsset<T>(string assetLabelOrName, T createdObjs, Transform Parent, Vector3 Position) where T : UnityEngine.Object
     {
         var locations = await Addressables.LoadResourceLocationsAsync(assetLabelOrName).Task;

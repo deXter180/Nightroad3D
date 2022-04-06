@@ -89,7 +89,7 @@ public class AOETargeted : Spells
     public override async void CastSpell(Action action)
     {
         if (GetAssetName() != null)
-        {          
+        {
             GameObject GO = await AssetRefLoader.CreatedAsset(GetAssetName(), spellPosition);
             OnAOESpellCast?.Invoke(this, new OnAOESpellCastEventArg(this, spellType, spellCategory));
             await AssetRefLoader.ReleaseAssetInstance(GO, 2f);
@@ -153,7 +153,10 @@ public class SelfTargeted : Spells
                     }
                     Vector3 temp = player.transform.position + direction * 20f;
                     player.PlayerRB.MovePosition(temp);
-                    spellManager.DashVfx.Play();
+                    if (spellManager.GetSTSpellVfx(spellType) != null)
+                    {
+                        spellManager.GetSTSpellVfx(spellType).Play();
+                    }
                 }
                 break;
         }

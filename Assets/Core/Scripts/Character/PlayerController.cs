@@ -299,5 +299,21 @@ public class PlayerController : MonoBehaviour
         return new Vector3(UnityEngine.Random.Range(minRange, maxRange), UnityEngine.Random.Range(minRange, maxRange), UnityEngine.Random.Range(minRange, maxRange));
     }
 
+    public float GetAngle(GameObject _target)
+    {
+        Quaternion _rotationA = transform.rotation;
+        Quaternion _rotationB = _target.transform.rotation;
+
+        float _angle = Quaternion.Angle(_rotationA, _rotationB);
+
+        Vector3 _forwardA = _rotationA * Vector3.forward;
+        Vector3 _forwardB = _rotationB * Vector3.forward;
+
+        float _angleA = Mathf.Atan2(_forwardA.x, _forwardA.z) * Mathf.Rad2Deg;
+        float _angleB = Mathf.Atan2(_forwardB.x, _forwardB.z) * Mathf.Rad2Deg;
+
+        return Mathf.DeltaAngle(_angleA, _angleB);
+    }
+
     //~~~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~~~
 }

@@ -15,9 +15,9 @@ MonoBehaviour:
   spellType: 2
   spellCategory: 2
   projectileType: 0
+  castVfxType: 1
   duration: 1.5
   range: 0
   castDelay: 0
   isQuickCast: 0
   effectAmount: 0
-  SpellPrefabs: {fileID: 0}

@@ -5,28 +5,23 @@ using UnityEngine.AI;
 using UnityEngine.VFX;
 using System;
 
-public enum AnimType
-{
-    Idle,
-    Walk,
-    Attack,
-    Death
-}
-
 public class EnemyBrain : MonoBehaviour
 {
     private string enemyID;
     private string enemyName;
     private int layer = 1 << 0;
-    private bool playingAnim;
     private bool isDying;
     private bool isSpellAffected;
     private bool isFrozen;
-    private int currentAminHash;
-    private AnimType animType;
-    private AnimType lastAnimType;
+    private bool isMoving;
+    private bool isAttacking;
+    private Vector3 targetDir;
+    private float angle;
+    private int lastIndex;
+    private bool readyForAnim = false;
     [SerializeField] private EnemyTypes enemyType;
     private Vector3 startPos;
+    private Vector3 nextPos;
     private Enemy enemy;
     private AOETargeted spellCasted;
     private SpellTypes spellType;
@@ -39,8 +34,6 @@ public class EnemyBrain : MonoBehaviour
     private TriggerHeadshot headshot;
     private Target enemyTarget;
     private Animator animator;
-    private WaitForSeconds attackAnimWait;
-    private WaitForSeconds deathAnimWait;
     private WaitForSeconds postDeathWait = new WaitForSeconds(2f);
     private TempShieldTrigger tempShield;
     public string EnemyID => enemyID; 
@@ -52,10 +45,10 @@ public class EnemyBrain : MonoBehaviour
     public bool IsSpellAffected => isSpellAffected; 
     public bool IsFrozen  => isFrozen; 
     [HideInInspector] public bool IsSetupDone = false;
-    private int idleHash = Animator.StringToHash("EnemyIdle");
-    private int moveHash = Animator.StringToHash("EnemyMove");
-    private int attackHash = Animator.StringToHash("EnemyAttack");
-    private int deathHash = Animator.StringToHash("EnemyDeath");    
+    private int angleHash = Animator.StringToHash("Angle");
+    private int moveHash = Animator.StringToHash("IsMoving");
+    private int attackHash = Animator.StringToHash("IsAttacking");
+    private int deathHash = Animator.StringToHash("IsDead");    
 
     private void OnEnable()
     {
@@ -86,8 +79,12 @@ public class EnemyBrain : MonoBehaviour
         if (IsSetupDone)
         {
             stateMachine.Tick();
-            PlayAnim();
-            //StartCoroutine(PlayAnim());
+            if (navAgent.destination != nextPos)
+            {
+                nextPos = navAgent.destination;                           
+            }
+            CalculateAngle(new Vector3(nextPos.x, transform.position.y, nextPos.z));
+            PlayingAnim();
         }      
     }
 
@@ -148,8 +145,9 @@ public class EnemyBrain : MonoBehaviour
         bloodOnDeath = GetComponentInChildren<BloodEffectOnDeath>();
         headshot = GetComponentInChildren<TriggerHeadshot>();
         animator = GetComponentInChildren<Animator>();
-        playingAnim = false;
         isDying = false;
+        isMoving = false;
+        isAttacking = false;
         isSpellAffected = false;
         isFrozen = false;
         stateMachine = new StateMachine(this);
@@ -161,8 +159,15 @@ public class EnemyBrain : MonoBehaviour
         enemyTarget.SetEB(this);
         enemyTarget.OnDodge += EnemyTarget_OnDodge;
         enemyTarget.Resource.OnKilled += Resource_OnKilled;
-        AssignWaiters();
+        readyForAnim = true;
         IsSetupDone = true;
+    }
+
+    private IEnumerator AfterKilled()
+    {
+        yield return postDeathWait;
+        gameObject.SetActive(false);
+        AssetCollections.ReleaseAssetInstance(gameObject, "Enemy", false);
     }
 
     //!!!!!!!!!!!!Call this where instantiating enemies!!!!!!!!!!!!!!!!
@@ -174,117 +179,51 @@ public class EnemyBrain : MonoBehaviour
 
     //~~~~~~~~~~~~~~~~~~~ Animation ~~~~~~~~~~~~~~~~~~~
 
-    private void AssignWaiters()
+    public void CalculateAngle(Vector3 targetPos)
     {
-        AnimationClip[] clips = animator.runtimeAnimatorController.animationClips;
-        foreach(var clip in clips)
+        targetDir = targetPos - transform.position;
+        angle = Vector3.SignedAngle(targetDir, transform.forward, Vector3.up);
+        lastIndex = GetIndex(angle);
+    }
+
+    private int GetIndex(float _angl)
+    {
+        //front
+        if (_angl <= -133 || _angl >= 133)
         {
-            if (clip.name == "EnemyAttack")
-            {
-                attackAnimWait = new WaitForSeconds(clip.length);
-            }else if (clip.name == "EnemyDeath")
-            {
-                deathAnimWait = new WaitForSeconds(clip.length);
-            }
+            lastIndex = 0;
         }
-    }
 
-    public void ChangeAnimType(AnimType AT)
-    {
-        lastAnimType = animType;
-        animType = AT;
-    }
-
-    public void ResetAnimType()
-    {
-        animType = lastAnimType;
-    }
-
-    private void PlayAnim()
-    {
-        //AnimStateCheck();
-        if (!playingAnim && animType != AnimType.Death)
+        //Left
+        else if (_angl >= -133 && _angl < -43)
         {
-            if (animType == AnimType.Idle)
-            {
-                ChangeAnimState(idleHash);
-                playingAnim = false;
-            }
-            if (animType == AnimType.Walk)
-            {
-                ChangeAnimState(moveHash);
-                playingAnim = false;
-            }
-            else if (animType == AnimType.Attack)
-            {
-                ChangeAnimState(attackHash);
-                StartCoroutine(DelayAnim(attackAnimWait));
-            }
+            lastIndex = 3;
         }
-        else if (animType == AnimType.Death && !isDying)
+
+        //back
+        else if (_angl >= -43 && _angl <= 43)
         {
-            isDying = true;
-            ChangeAnimState(deathHash);
-            bloodOnDeath.PlayBloodOnDeath();
-            StartCoroutine(DelayAnim(deathAnimWait));
-            StartCoroutine(AfterKilled());
+            lastIndex = 2;
         }
-    }
 
-    private void ChangeAnimState(int animHash)
-    {
-        if (currentAminHash == animHash) return;
-        playingAnim = true;
-        animator.PlayInFixedTime(animHash);
-        currentAminHash = animHash;
-    }
-
-    private IEnumerator DelayAnim(WaitForSeconds wait)
-    {     
-        if (!isFrozen)
+        //Right
+        else if (_angl > 43 && _angl <= 133)
         {
-            yield return wait;
+            lastIndex = 1;
         }
-        playingAnim = false;
+
+        return lastIndex;
     }
 
-    private IEnumerator AfterKilled()
+    private void PlayingAnim()
     {
-        yield return postDeathWait;
-        gameObject.SetActive(false);
-        AssetCollections.ReleaseAssetInstance(gameObject, "Enemy", false);
-    }
-
-    public Vector2 GetDirWRTPlayer(Camera cam)
-    {
-        if (navAgent != null)
+        if (readyForAnim)
         {
-            Vector2 dir = (navAgent.destination - transform.position).normalized;
-            float dot = Vector2.Dot(cam.transform.forward, dir);
-            Vector2 result = Vector2.zero;
-            if (dot <= -0.5f)
-            {
-                result = new Vector2(0, 1);
-            }
-            else if (dot >= 0.5f)
-            {
-                result = new Vector2(0, -1);
-            }
-            else
-            {
-                float subDot = Vector2.Dot(cam.transform.right, dir);
-                if (subDot >= 0.5f)
-                {
-                    result = new Vector2(1, 0);
-                }
-                else if (subDot <= -0.5f)
-                {
-                    result = new Vector2(-1, 0);
-                }
-            }
-            return result;
-        }
-        return Vector2.zero;
+            animator.SetFloat(angleHash, lastIndex);
+            animator.SetBool(moveHash, isMoving);
+            animator.SetBool(attackHash, isAttacking);
+            animator.SetBool(deathHash, isDying);
+        }       
     }
 
     //~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~
@@ -299,7 +238,10 @@ public class EnemyBrain : MonoBehaviour
         if (e != null)
         {
             navAgent.isStopped = true;
-            animType = AnimType.Death;
+            isDying = true;
+            isMoving = false;
+            isAttacking = false;
+            StartCoroutine(AfterKilled());
         }        
     }
 
@@ -318,30 +260,26 @@ public class EnemyBrain : MonoBehaviour
 
     private void StateMachine_OnStateChange(State obj)
     {
-        if (animType != AnimType.Death)
+        if (obj.GetType() == typeof(Roam))
         {
-            if (obj.GetType() == typeof(Roam))
-            {
-                if (animType != AnimType.Walk)
-                    animType = AnimType.Walk;
-            }
-            else if (obj.GetType() == typeof(Chase))
-            {
-                if (animType != AnimType.Walk)
-                    animType = AnimType.Walk;
-            }
-            else if (obj.GetType() == typeof(Attack))
-            {
-                if (animType != AnimType.Attack)
-                    animType = AnimType.Attack;
-            }
-            else if (obj.GetType() == typeof(Stop))
-            {
-                if (animType != AnimType.Idle)
-                    animType = AnimType.Idle;
-            }
-            Debug.Log(obj);
-        }        
+            isMoving = true;
+            isAttacking = false;
+        }
+        else if (obj.GetType() == typeof(Chase))
+        {
+            isMoving = true;
+            isAttacking = false;
+        }
+        else if (obj.GetType() == typeof(Attack))
+        {
+            isMoving = false;
+            isAttacking = true;
+        }
+        else if (obj.GetType() == typeof(Stop))
+        {
+            isAttacking = false;
+            isMoving = false;
+        }
     }
 
     private void Enemy_OnEnemyAttack(object sender, OnEnemyAttackEventArg e)

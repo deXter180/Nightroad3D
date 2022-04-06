@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,9 +9,10 @@ public class SpellManager : MonoBehaviour
     [SerializeField] private int SpellCount;
     [SerializeField] private float selectionRange;
     [SerializeField] private Transform SelectionCircle;
-    [SerializeField] private VisualEffect CastVfx;
-    public VisualEffect DashVfx;
     public Transform FirePoint;
+    [SerializeField] private List<STSpells> SelfSpellList;
+    [SerializeField] private List<CastEffect> CastVFXList;
+    private VisualEffect CastVfx;   
     private Color castColor;
     private Transform spellCircle;
     private Vector3 AOEPosition;
@@ -52,6 +54,8 @@ public class SpellManager : MonoBehaviour
         state = SpellCastState.Default;
         spellCircle = Instantiate(SpellManager.Instance.SelectionCircle);
         spellCircle.gameObject.SetActive(false);
+
+        
     }
 
     private IEnumerator InputDone()
@@ -63,9 +67,9 @@ public class SpellManager : MonoBehaviour
     private IEnumerator Test()  //Temporary. Remove afterwards
     {
         yield return new WaitForSeconds(2f);
-        //AddSpell(SpellTypes.FireBall, SpellCategories.SingleTargetedProjectile);
+        AddSpell(SpellTypes.FireBall, SpellCategories.SingleTargetedProjectile);
         AddSpell(SpellTypes.Dash, SpellCategories.SelfTargeted);
-        AddSpell(SpellTypes.FreezeBlast, SpellCategories.AOETargeted);
+        //AddSpell(SpellTypes.FreezeBlast, SpellCategories.AOETargeted);
     }
 
     private void Update()
@@ -169,6 +173,7 @@ public class SpellManager : MonoBehaviour
                             if (spell.SpellCategory != SpellCategories.SelfTargeted)
                             {
                                 GetCastColor(spell.SpellType);
+                                GetCastVfx(spell.ThisSpellSO.CastVfxType);
                                 CastVfx.SetVector4("Color", castColor);
                                 CastVfx.Play();
                             }
@@ -202,6 +207,29 @@ public class SpellManager : MonoBehaviour
             i++;
         }
         return null;
+    }
+
+    public VisualEffect GetSTSpellVfx(SpellTypes spellType)
+    {
+        foreach (var vfx in SelfSpellList)
+        {
+            if (vfx.spellType == spellType)
+            {
+                return vfx.vfx;
+            }
+        }
+        return null;
+    }
+
+    private void GetCastVfx(SpellCastTypes castType)
+    {
+        foreach (var vfx in CastVFXList)
+        {
+            if (vfx.castType == castType)
+            {
+                CastVfx = vfx.vfx;
+            }
+        }
     }
 
     private void DrawAreaSelection()
@@ -264,4 +292,19 @@ public class SpellManager : MonoBehaviour
 
     //~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~
 
+}
+
+
+[Serializable]
+public class STSpells
+{
+    public SpellTypes spellType;
+    public VisualEffect vfx;
+}
+
+[Serializable]
+public class CastEffect
+{
+    public SpellCastTypes castType;
+    public VisualEffect vfx;
 }

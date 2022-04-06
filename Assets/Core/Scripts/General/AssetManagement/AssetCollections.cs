@@ -269,14 +269,6 @@ public class AssetCollections : MonoBehaviour
         }
     }
 
-    private static async void LoadGOAssets(string label)
-    {
-        if (label != "ScriptableObject" && label != "AudioFiles")
-        {
-            await AssetRefLoader.LoadedAssets<GameObject>(label, GOLoadCallback);
-        }
-    }
-
     private static async void LoadMaterialAssets(string label)
     {
         if (label == "Materials")
@@ -430,6 +422,12 @@ public enum SpellTypes
     FireBall,
     IceSpike,
     ElectricStorm
+}
+
+public enum SpellCastTypes
+{
+    None,
+    Basic
 }
 
 public enum SpellCategories

@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ba6779e1bcdb4d49b15a50cf60c0dd7, type: 3}
+  m_Name: RifleInvSO
+  m_EditorClassIdentifier: 
+  ItemID: Rifle1
+  ItemName: Laser Rifle
+  ItemDescription: 
+  Usable: 0
+  Width: 2
+  Height: 2
+  itemType: 10
+  weaponType: 2
+  Rarity: 0
+  AttributeAmount: 0
+  AttributeIcon: {fileID: 0}
+  inventoryPrefab: {fileID: 1294162741782843208, guid: 86cbe06d378bef344b14696828490958,
+    type: 3}
+  worldPrefab: {fileID: 8894386925816183298, guid: c5aef482cb4b0234fa86c34d8e3727af,
+    type: 3}

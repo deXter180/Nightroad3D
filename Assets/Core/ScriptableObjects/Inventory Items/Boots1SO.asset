@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ba6779e1bcdb4d49b15a50cf60c0dd7, type: 3}
+  m_Name: Boots1SO
+  m_EditorClassIdentifier: 
+  ItemID: Boots1
+  ItemName: Knight Boots
+  ItemDescription: 
+  Usable: 0
+  Width: 1
+  Height: 2
+  itemType: 7
+  Rarity: 0
+  AttributeAmount: 0
+  AttributeIcon: {fileID: 0}
+  inventoryPrefab: {fileID: 3087600099325537613, guid: 28061d0bf6003584489d2aaa6e4cc7ee,
+    type: 3}
+  worldPrefab: {fileID: 3305865399682479684, guid: 12f422fbc7a57e6428a36680c7c8892f,
+    type: 3}

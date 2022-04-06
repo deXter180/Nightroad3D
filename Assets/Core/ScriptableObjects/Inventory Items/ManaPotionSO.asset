@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ba6779e1bcdb4d49b15a50cf60c0dd7, type: 3}
+  m_Name: ManaPotionSO
+  m_EditorClassIdentifier: 
+  ItemID: ManaPotion
+  ItemName: Mana Potion
+  ItemDescription: 
+  Usable: 1
+  Width: 1
+  Height: 1
+  itemType: 9
+  Rarity: 0
+  AttributeAmount: 0
+  AttributeIcon: {fileID: 0}
+  inventoryPrefab: {fileID: 8239183794235482773, guid: f22e522c55b2df74b88f06e1687702d8,
+    type: 3}
+  worldPrefab: {fileID: 8930470513072554153, guid: 7633f1399ecb93d42aa224470bb6339e,
+    type: 3}

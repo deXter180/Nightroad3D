@@ -71,8 +71,9 @@ public class Roam : State
             {
                 pathIndex = 0;
             }
+            enemyBrain.navMeshAgent.SetDestination(path[pathIndex]);
         }
-        enemyBrain.navMeshAgent.SetDestination(path[pathIndex]);
+        
     }
 
     private Vector3 GetRandomPosition()
