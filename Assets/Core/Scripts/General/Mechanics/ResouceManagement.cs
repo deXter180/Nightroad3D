@@ -4,10 +4,10 @@ using UnityEngine;
 
 public sealed class ResourceManagement
 {
+    private int MaxMana;
+    private int MaxHealth;
     public int CurrentHealth { get; private set; }
-    public int CurrentEnergy { get; private set; }
     public int CurrentMana { get; private set; }
-
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Declaring eventhandler for ondamage event ~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -19,15 +19,7 @@ public sealed class ResourceManagement
             CurrentHP = currentHP;
         }
     }
-    public class EnergyEventArgs : EventArgs
-    {
-        public int CurrentEnergy { get; set; }
-        public EnergyEventArgs(int currentEnergy)
-        {
-            CurrentEnergy = currentEnergy;
-        }
-    }
-    public class ManaEventArgs
+    public class ManaEventArgs : EventArgs
     {
         public int CurrentMana { get; set; }
         public ManaEventArgs(int currentMana)
@@ -39,9 +31,10 @@ public sealed class ResourceManagement
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~ Declaring Events ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     public event EventHandler<DamagedEventArgs> OnDamaged;
+    public event EventHandler<DamagedEventArgs> OnHealthGain;
     public event EventHandler OnKilled;
-    public event EventHandler<EnergyEventArgs> OnEnergyExpense;
     public event EventHandler<ManaEventArgs> OnManaExpense;
+    public event EventHandler<ManaEventArgs> OnManaGain;
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~ Checking for Death ~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -51,14 +44,12 @@ public sealed class ResourceManagement
 
     public void SetHealth(int MaxHP)
     {
+        this.MaxHealth = MaxHP;
         CurrentHealth = MaxHP;
-    }
-    public void SetEnregy(int MaxEnergy)
-    {
-        CurrentEnergy = MaxEnergy;
     }
     public void SetMana(int MaxMana)
     {
+        this.MaxMana = MaxMana;
         CurrentMana = MaxMana;
     }
 
@@ -77,17 +68,31 @@ public sealed class ResourceManagement
             }
         }
     }
-    public void EnergyExpense(int pAmount) 
+
+    public void HealthGain(int pAmount)
     {
-        if (pAmount < CurrentEnergy)
+        if (pAmount + CurrentHealth <= MaxHealth)
         {
-            CurrentEnergy -= pAmount;
-            OnEnergyExpense?.Invoke(this, new EnergyEventArgs(CurrentEnergy));
+            CurrentHealth += pAmount;
+            OnHealthGain.Invoke(this, new DamagedEventArgs(CurrentHealth));
+        }
+    }
+
+    public void ManaExpense(int pAmount) 
+    {
+        if (pAmount < CurrentMana)
+        {
+            CurrentMana -= pAmount;
+            OnManaExpense?.Invoke(this, new ManaEventArgs(CurrentMana));
         }
     }
     public void EnergyGain(int pAmount)
     {
-
+        if (pAmount + CurrentMana <= MaxMana)
+        {
+            CurrentMana += pAmount;
+            OnManaGain?.Invoke(this, new ManaEventArgs(CurrentMana));
+        }
     }
 
     

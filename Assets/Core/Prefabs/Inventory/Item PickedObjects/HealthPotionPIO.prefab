@@ -26,6 +26,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4879302133982219081}
   m_Father: {fileID: 517431416205743418}
@@ -58,6 +59,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8448840522667361070}
   m_RootOrder: 0
@@ -124,7 +126,7 @@ GameObject:
   m_Component:
   - component: {fileID: 517431416205743418}
   - component: {fileID: 4796327188805664077}
-  - component: {fileID: -7398829643905493255}
+  - component: {fileID: 799546301989179601}
   - component: {fileID: -9169717618195846548}
   - component: {fileID: 8064653802769403353}
   m_Layer: 6
@@ -144,6 +146,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.9896328, y: 0.9896328, z: 0.9896328}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8448840522667361070}
   m_Father: {fileID: 0}
@@ -162,7 +165,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 3.1862028, y: 4.352192, z: 2.0186744}
   m_Center: {x: -0.035266895, y: 0.14455444, z: 0.03897157}
---- !u!54 &-7398829643905493255
+--- !u!54 &799546301989179601
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -172,7 +175,7 @@ Rigidbody:
   serializedVersion: 2
   m_Mass: 1
   m_Drag: 0
-  m_AngularDrag: 0
+  m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0

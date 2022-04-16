@@ -1,0 +1,1 @@
+EXTERNAL startQuest(name)

@@ -58,7 +58,7 @@ public class PlacedObject : MonoBehaviour
 
     public ItemTypes GetItemType()
     {
-        return inventoryItemSO.itemType;
+        return inventoryItemSO.ItemType;
     }
 
     public string GetItemID()

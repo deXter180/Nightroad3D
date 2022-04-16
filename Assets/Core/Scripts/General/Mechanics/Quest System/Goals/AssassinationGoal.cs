@@ -8,7 +8,7 @@ public class AssassinationGoal : Goal
     public string EnemyName { get; private set; }
     public EnemyTypes EnemyType { get; private set; }
 
-    public AssassinationGoal(string enemyID, string enemyName,EnemyTypes enemyType)
+    public AssassinationGoal(string enemyID, string enemyName, EnemyTypes enemyType)
     {
         EnemyID = enemyID;
         EnemyType = enemyType;
@@ -16,14 +16,18 @@ public class AssassinationGoal : Goal
         CurrentAmount = 0;
         IsCompleted = false;
         EnemyName = enemyName;
-        Description = $"Assassinate {EnemyName} to get the Rewards!";
-
     }
 
     public override void Initialize()
     {
         base.Initialize();
         Target.OnEnemyDead += Target_OnEnemyDead;
+    }
+
+    public override void Closer()
+    {
+        base.Closer();
+        Target.OnEnemyDead -= Target_OnEnemyDead;
     }
 
     private void Target_OnEnemyDead(EnemyBrain EB)

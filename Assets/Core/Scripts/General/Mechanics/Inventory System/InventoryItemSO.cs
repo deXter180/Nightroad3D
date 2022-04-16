@@ -12,8 +12,8 @@ public class InventoryItemSO : ScriptableObject
     public bool Usable;
     public int Width;
     public int Height;
-    public ItemTypes itemType;
-    public WeaponTypes weaponType;
+    public ItemTypes ItemType;
+    public WeaponTypes WeaponType;
     public ItemRarity Rarity;
     [SerializeField] public int AttributeAmount;
     [SerializeField] public Texture2D AttributeIcon;

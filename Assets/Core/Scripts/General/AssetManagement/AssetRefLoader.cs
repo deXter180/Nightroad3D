@@ -34,7 +34,7 @@ public static class AssetRefLoader
         }       
     }
 
-    //~~~~~~~~~~~~~~~~~~~~~~~ Create Asset ~~~~~~~~~~~~~~~~~~~~~~~~~
+    //~~~~~~~~~~~~~~~~~~~~~~~ Create Asset Async ~~~~~~~~~~~~~~~~~~~~~~~~~
 
     public static async Task CreatedAsset<T>(string assetLabelOrName, T createdObjs) where T : UnityEngine.Object
     {
@@ -66,6 +66,13 @@ public static class AssetRefLoader
     public static async Task<GameObject> CreatedAsset(string assetLabelOrName, Vector3 Position)
     {
         AsyncOperationHandle<GameObject> handle = Addressables.InstantiateAsync(assetLabelOrName, Position, Quaternion.identity);
+        await handle.Task;
+        return handle.Result;
+    }
+
+    public static async Task<GameObject> CreatedAsset(string assetLabelOrName, Transform parent)
+    {
+        AsyncOperationHandle<GameObject> handle = Addressables.InstantiateAsync(assetLabelOrName, parent);
         await handle.Task;
         return handle.Result;
     }
@@ -221,6 +228,11 @@ public static class AssetRefLoader
     {
         int delayInMilli = Mathf.FloorToInt(delayTime * 1000);
         await Task.Delay(delayInMilli);
+        Addressables.ReleaseInstance(gameObject);
+    }
+
+    public static void ReleaseAssetInstance(GameObject gameObject)
+    {
         Addressables.ReleaseInstance(gameObject);
     }
 

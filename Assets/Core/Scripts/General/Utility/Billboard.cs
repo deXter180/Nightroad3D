@@ -5,12 +5,10 @@ using UnityEngine;
 public class Billboard : MonoBehaviour
 {
     private Camera mainCam;
-    private EnemyBrain enemyBrain;
 
     private void Start()
     {
         mainCam = Camera.main;
-        enemyBrain = GetComponent<EnemyBrain>();
     }
 
     private bool IsVisibleToCamera()
@@ -34,13 +32,5 @@ public class Billboard : MonoBehaviour
         }        
         // Alternative method but bends the asset when the player comes too close
         //transform.forward = new Vector3(Camera.main.transform.forward.x, transform.forward.y, Camera.main.transform.forward.z);
-    }
-
-    private void Update()
-    {
-        if (enemyBrain != null)
-        {
-            //Debug.Log(enemyBrain.GetDirWRTPlayer(mainCam));
-        }
     }
 }

@@ -15,6 +15,7 @@ public class AssetCollections : MonoBehaviour
     private static Dictionary<AssetReference, List<GameObject>> InstantiatedGODictByAssetRef = new Dictionary<AssetReference, List<GameObject>>();
     private static Dictionary<ProjectileTypes, GameObject> GODictProjectile = new Dictionary<ProjectileTypes, GameObject>();
     private static Dictionary<WeaponTypes, AudioClip> ACDictWeapon = new Dictionary<WeaponTypes, AudioClip>();
+    private static Dictionary<string, QuestSO> QuestDict = new Dictionary<string, QuestSO>();
     private static Dictionary<string, Material> MaterailDict = new Dictionary<string, Material>();
     private static List<InventoryItemSO> InventorySOList = new List<InventoryItemSO>();
     private static List<InventoryItemSO> WeaponInventorySOList= new List<InventoryItemSO>();
@@ -112,6 +113,14 @@ public class AssetCollections : MonoBehaviour
         return null;
     }
 
+    public static QuestSO GetQeust(string name)
+    {
+        if (QuestDict.TryGetValue(name, out QuestSO quest))
+            return quest;
+
+        return null;
+    }
+
     public static WeaponSO GetWeaponSOFromList(WeaponTypes weaponType)
     {
         foreach (WeaponSO weaponSO in WeaponSOList)
@@ -140,7 +149,7 @@ public class AssetCollections : MonoBehaviour
     {
         foreach (var invSO in InventorySOList)
         {
-            if (invSO.itemType == itemType)
+            if (invSO.ItemType == itemType)
             {
                 return invSO;
             }
@@ -152,7 +161,7 @@ public class AssetCollections : MonoBehaviour
     {
         foreach (var temp in WeaponInventorySOList)
         {
-            if (temp.weaponType == WT)
+            if (temp.WeaponType == WT)
             {
                 return temp;
             }
@@ -165,7 +174,7 @@ public class AssetCollections : MonoBehaviour
         List<InventoryItemSO> itemList = new List<InventoryItemSO>();
         foreach (var invSO in InventorySOList)
         {
-            if (invSO.itemType == itemType)
+            if (invSO.ItemType == itemType)
             {
                 itemList.Add(invSO);
             }
@@ -285,7 +294,6 @@ public class AssetCollections : MonoBehaviour
             Destroy(obj);
     }
 
-
     public static void ReleaseAssetInstance(GameObject obj, string label, bool IsReleaseCompletely)
     {
         Addressables.ReleaseInstance(obj);
@@ -348,7 +356,7 @@ public class AssetCollections : MonoBehaviour
         if (obj.GetType() == typeof(InventoryItemSO))
         {
             InventoryItemSO itemSO = (InventoryItemSO)obj;
-            if (itemSO.weaponType == WeaponTypes.None)
+            if (itemSO.WeaponType == WeaponTypes.None)
             {
                 InventorySOList.Add(itemSO);
             }
@@ -369,6 +377,11 @@ public class AssetCollections : MonoBehaviour
         else if (obj.GetType() == typeof(SpellBaseSO))
         {
             spellSOList.Add((SpellBaseSO)obj);
+        }
+        else if (obj.GetType() == typeof(QuestSO))
+        {
+            QuestSO quest = (QuestSO)obj;
+            QuestDict.Add(quest.name, quest);
         }
     }
 

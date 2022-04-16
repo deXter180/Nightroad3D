@@ -78,7 +78,7 @@ public class EquipMenuTile : MonoBehaviour
     public bool TryPlaceItem(InventoryItemSO inventoryItemSO)
     {
         //bool isValidPos = grid.IsValidGridPos(placedObjectOrigin);
-        bool isValidType = inventoryItemSO.itemType == itemType;
+        bool isValidType = inventoryItemSO.ItemType == itemType;
         if (isValidType && transform.childCount < 1)
         {
             Vector2Int placedObjectOrigin = new Vector2Int(0, 0);

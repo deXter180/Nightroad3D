@@ -5,16 +5,19 @@ using UnityEngine;
 public class Target : MonoBehaviour
 {
     private bool dodging;
+    private int currentHP;
     private EnemyBrain EB;
     [SerializeField] private bool IsEnemy;
     [HideInInspector] public int MaxHP { get; set; }
     [HideInInspector] public bool IsDead { get; set; }
     public ResourceManagement Resource = new ResourceManagement();
-    public EnemyBrain enemyBrain { get => EB; }
-    public bool Dodging { get => dodging; }
+    public int CurrentHP => currentHP;
+    public EnemyBrain enemyBrain => EB;
+    public bool Dodging => dodging;
     public bool Blocking { get; set; }
     public event Action OnDodge;
     public static event Action<EnemyBrain> OnEnemyDead;
+    public event Action OnCritShot;
     
 
     //~~~~~~~~~~~~~~~~~~~~~~~~ Initialization ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -41,7 +44,9 @@ public class Target : MonoBehaviour
 
     public void SetupMaxHP(int maxHP)
     {
+        MaxHP = maxHP;
         Resource.SetHealth(maxHP);
+        currentHP = maxHP;
     }
 
     public void SetEB(EnemyBrain enemyBrain)
@@ -69,6 +74,10 @@ public class Target : MonoBehaviour
             IsDodging(dodgeChance);
             if (dodging == false)
             {
+                if (dmg >= currentHP)
+                {
+                    OnCritShot?.Invoke();
+                }
                 Resource.Damage(dmg);
             }
             else
@@ -87,6 +96,7 @@ public class Target : MonoBehaviour
             if (dodging == false)
             {
                 dmg += (int)(dmg * critBonus);
+                OnCritShot?.Invoke();
                 Resource.Damage(dmg);
             }
             else
@@ -116,6 +126,7 @@ public class Target : MonoBehaviour
         if (e != null)
         {
             Debug.Log(e.CurrentHP);
+            currentHP = e.CurrentHP;
         }
     }
     private void OnKilled(object sender, EventArgs e)
@@ -125,6 +136,7 @@ public class Target : MonoBehaviour
             if (Resource.IsDead == true)
             {
                 IsDead = Resource.IsDead;
+                currentHP = 0;
                 if (IsEnemy)
                 {
                     OnEnemyDead?.Invoke(EB);

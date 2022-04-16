@@ -7,6 +7,7 @@ public class InventoryDragDropSystem : MonoBehaviour
 {
     public static InventoryDragDropSystem Instance { get; private set; }
     private PlayerInputAsset inputs;
+    private GameController gameController;
     private bool isDraggedFromInventory;
     private bool isDraggedFromMenu;
     public float dragSmoothness = 80f;
@@ -31,7 +32,7 @@ public class InventoryDragDropSystem : MonoBehaviour
     {
         inventorySystem = InventorySystem.Instance;
         inventoryUI = InventoryUIHandler.Instance;
-        inventorySystem.OnPlacedOnInventory += InventorySystem_OnObjectPlaced;
+        InventorySystem.OnPlacedOnInventory += InventorySystem_OnObjectPlaced;
         isDraggedFromInventory = false;
         isDraggedFromMenu = false;
         foreach(var tile in EquipMenuControl.EquipTileList)
@@ -47,7 +48,7 @@ public class InventoryDragDropSystem : MonoBehaviour
 
     private void OnDestroy()
     {
-        inventorySystem.OnPlacedOnInventory -= InventorySystem_OnObjectPlaced;
+        InventorySystem.OnPlacedOnInventory -= InventorySystem_OnObjectPlaced;
         foreach (var tile in EquipMenuControl.EquipTileList)
         {
             tile.OnPlacedOnMenu -= Tile_OnObjectPlacedinEquipTile;
@@ -77,11 +78,12 @@ public class InventoryDragDropSystem : MonoBehaviour
     {
         yield return new WaitUntil(() => InputManager.InputReady);
         inputs = InputManager.InputActions;
+        gameController = GameController.Instance;
     }
 
     private void PositionDragObject()
     {
-        if (InventoryUIHandler.Instance.IsInventoryActive)
+        if (gameController.IsInventoryActive)
         {
             Vector2 mousePos = inputs.BasicControls.MousePosition.ReadValue<Vector2>();
             if (draggingPOInventory != null)
@@ -197,7 +199,7 @@ public class InventoryDragDropSystem : MonoBehaviour
 
     private void RemoveFromInventory()
     {
-        if (InventoryUIHandler.Instance.IsInventoryActive)
+        if (gameController.IsInventoryActive)
         {
             Vector2 mousePos = inputs.BasicControls.MousePosition.ReadValue<Vector2>();
             if (inputs.UI.RemoveInventoryItem.triggered && IsOnInventory(mousePos))
@@ -207,7 +209,7 @@ public class InventoryDragDropSystem : MonoBehaviour
                 if (inventorySystem.GetGrid().GetGridObject(placedObjectOrigin.x, placedObjectOrigin.y).GetPlacedObject() != null)
                 {
                     PlacedObject placedObject = inventorySystem.GetGrid().GetGridObject(placedObjectOrigin.x, placedObjectOrigin.y).GetPlacedObject();
-                    WeaponTypes WT = placedObject.GetInventoryItemSO().weaponType;
+                    WeaponTypes WT = placedObject.GetInventoryItemSO().WeaponType;
                     placedObject.DestroySelf();
                     inventorySystem.RemoveFromInventoryList(placedObject);
                     List<Vector2Int> gridPosList = placedObject.GetGridPosList();

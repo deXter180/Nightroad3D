@@ -3,65 +3,85 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Linq;
+using Ink.Runtime;
 
 
 [CreateAssetMenu(fileName = "NewQuest", menuName = "Quests/New")]
 public class QuestSO : ScriptableObject
 {
     private Timer _timer;
-    [Header("QuestData")]
-    [SerializeField] private List<GoalItem> _goalItems;
-    [SerializeField] private RewardItems _rewardItem;    
-    [SerializeField] private string _name;
+    private Story questStory;
+    private string questComplete = "Completed";
+    private string questFail = "Failed";
+    [Header("QuestData")]        
+    [SerializeField] [Tooltip("Name of the Quest")] private string _name;
+    [SerializeField] [Tooltip("Name of Ink variable to track status of this quest")] private string stateVariableName;
     [TextArea(2, 10)] [SerializeField] private string _description;
+    [TextArea(2, 4)] [SerializeField] [Tooltip("Text to show if all goals of this quest are completed")] private string allGoalsCompletionText;
+    [TextArea(2, 4)] [SerializeField] [Tooltip("Text to show if any goal of this quest is incomplete")] private string anyGoalFailureText;
+    [TextArea(2, 4)] [SerializeField] [Tooltip("Text to show if this quest is completed")] private string questCompletionText;
+    [TextArea(2, 4)] [SerializeField] [Tooltip("Text to show if this quest is failed")] private string questFailureText;  
     [SerializeField] private bool _isComplex;
     [SerializeField] private bool _isWithTimer;
     [SerializeField] private int _durationInMinutes;
-    [SerializeField] private int _XPRewardAmount;
+    [SerializeField] private int _XPRewardAmount;   
+    [SerializeField] private List<GoalItem> _goalItems;
+    [SerializeField] private RewardItems _rewardItem;
     public List<Goal> Goals { get; private set; } = new List<Goal>();
     public string TimeLeft { get; private set; }
-    public bool IsCompleted { get; private set; }
-    public bool IsFailed { get; private set; }
+    public bool AllGoalsSatisfied { get; private set; }
+    public bool IsCompleted { get; set; }
+    public bool IsFailed { get; set; }
     public RewardItems RewardItem => _rewardItem;
     public string Name => _name;
+    public string StateVariableName => stateVariableName;
     public string Description => _description;
+    public string AllGoalsCompletionText => allGoalsCompletionText;
+    public string AnyGoalFailureText => anyGoalFailureText;
+    public string QuestCompletionText => questCompletionText;
+    public string QuestFailureText => questFailureText;   
     public bool IsComplex => _isComplex;
     public bool IsWithTimer => _isWithTimer;
     public int DurationInMinutes => _durationInMinutes;
     public int XPRewardAmount => _XPRewardAmount;
     public Timer QuestTimer => _timer;
-
-    public static event Action<QuestSO> OnQuestStart;
-    public static event Action<QuestSO> OnQuestCompletion;
-    public static event Action<QuestSO> OnQuestFailure;
+    public Story QuestStory => questStory;
+    public event Action<string, QuestSO> OnQuestGoalsCompleted;
+    public event Action<string, QuestSO> OnQuestGoalsFailed;
 
     public void StartQuest()
     {
-        IsCompleted = false;
+        AllGoalsSatisfied = false;
         IsFailed = false;
+        IsCompleted = false;
         SetGoals();
         SetTimer();
-        OnQuestStart?.Invoke(this);
+    }
+
+    public void SetStoryName(Story story)
+    {
+        questStory = story;
     }
 
     private void SetGoals()
     {
         foreach(var goalItem in _goalItems)
         {
+            Goal goal = null;
             switch (goalItem.GoalType)
             {
                 case (GoalTypes.Assassination):
                     {
-                        Goals.Add(new AssassinationGoal(
+                        goal = new AssassinationGoal(
                         goalItem.EnemyInfo.EnemyID,
                         goalItem.EnemyInfo.EnemyName,
                         goalItem.EnemyInfo.EnemyType
-                        ));
+                        );
                     }                    
                     break;
                 case (GoalTypes.Collect):
                     {
-
+                        goal = new CollectionGoal(goalItem.CollectInfo.item, goalItem.RequiredAmount);                 
                     }
                     break;
                 case (GoalTypes.MassKillAny):
@@ -80,6 +100,13 @@ public class QuestSO : ScriptableObject
                     }
                     break;
             }
+            if (goal != null)
+            {
+                goal.Description = goalItem.Description;
+                goal.GoalCompleteText = goalItem.GoalCompletionText;
+                goal.GoalFailureText = goalItem.GoalFailureText;
+                Goals.Add(goal);
+            }            
         }
 
     }
@@ -97,11 +124,7 @@ public class QuestSO : ScriptableObject
     {
         if (!_isWithTimer)
         {
-            IsCompleted = Goals.All(g => g.IsCompleted);
-            if (IsCompleted)
-            {
-                OnQuestCompletion?.Invoke(this);
-            }
+            CheckGoalStatus();
         }
         else
         {
@@ -111,30 +134,74 @@ public class QuestSO : ScriptableObject
                 {
                     _timer.StartTimer();
                     TimeLeft = _timer.TimeString;
-                    IsCompleted = Goals.All(g => g.IsCompleted);
-                    if (IsCompleted)
-                    {
-
-                        OnQuestCompletion?.Invoke(this);
+                    CheckGoalStatus();
+                    if (AllGoalsSatisfied)
+                    {                        
                         _timer = null;
                     }
                 }
                 else
                 {
-                    if (!IsCompleted)
+                    if (!AllGoalsSatisfied)
                     {
                         IsFailed = true;
-                        OnQuestFailure?.Invoke(this);
                         _timer = null;
                     }
                 }
-            }
-            
+            }           
         }
        
     }
 
-    public void GiveReward()
+    private void CheckGoalStatus()
+    {
+        bool temp = AllGoalsSatisfied;
+        AllGoalsSatisfied = Goals.All(g => g.IsCompleted);
+        if (AllGoalsSatisfied != temp)
+        {
+            if (AllGoalsSatisfied)
+                OnQuestGoalsCompleted?.Invoke(allGoalsCompletionText, this);
+            else
+            {
+                OnQuestGoalsFailed?.Invoke(anyGoalFailureText, this);
+            }
+        }       
+    }
+
+    public void CheckCurrentState(string varName, object state)
+    {
+        string temp = (string)state;
+        if (temp == questComplete)
+        {
+            IsCompleted = true;
+            GiveReward();
+        }
+        else if (temp == questFail)
+        {
+            IsFailed = true;
+        }
+        if (IsCompleted || IsFailed)
+        {
+            QuestManager.ActiveQuestDict.Remove(this.name);
+            GoalsCloser();
+            if (QuestManager.AllQuestsCompletedInStory(questStory))
+            {
+                questStory.RemoveVariableObserver();
+            }           
+        }
+        
+    }
+
+    private void GoalsCloser()
+    {
+        foreach (var goal in Goals)
+        {
+            goal.Closer();
+        }
+        Goals.Clear();
+    }
+
+    private void GiveReward()
     {
         //Add item to inventory
     }
@@ -145,7 +212,17 @@ public class GoalItem
 {
     public GoalTypes GoalType;
     public int RequiredAmount;
+    public string Description;
+    public string GoalCompletionText;
+    public string GoalFailureText;
+    public ColletionItem CollectInfo;
     public EnemyInfoItem EnemyInfo;
+}
+
+[Serializable]
+public class ColletionItem
+{
+    public ItemTypes item;
 }
 
 [Serializable]

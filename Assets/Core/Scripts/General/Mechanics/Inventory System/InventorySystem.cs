@@ -10,10 +10,12 @@ public class InventorySystem : MonoBehaviour
     private float throwDistance = 20f;
     private float cellSize;
     private Grid<GridObject> grid;
-    private List<PlacedObject> InventoryList;
+    private List<PlacedObject> InventoryList = new List<PlacedObject>();
     private RectTransform itemContainer;
     private InventoryUIHandler inventoryUI;
-    public event EventHandler<PlacedObject> OnPlacedOnInventory;
+    public static event EventHandler<PlacedObject> OnPlacedOnInventory;
+    public static event Action<ItemTypes> OnAddingInInventory;
+    public static event Action<ItemTypes> OnRemovingFromInventory;
     public static InventorySystem Instance { get; private set; }
     public int PlacedObjectCount { get; private set; }
 
@@ -24,7 +26,6 @@ public class InventorySystem : MonoBehaviour
         cellSize = inventoryUI.GetCellSize();
         grid = new Grid<GridObject>(gridWidth, gridHeight, cellSize, transform.position, (Grid<GridObject> g, int x, int y) => new GridObject(g, x, y));
         itemContainer = transform.Find("ItemContainer").GetComponent<RectTransform>();
-        InventoryList = new List<PlacedObject>();
     }
 
     //~~~~~~~~~~~~~~~~~~ Utilities ~~~~~~~~~~~~~~~~~~
@@ -127,7 +128,9 @@ public class InventorySystem : MonoBehaviour
                     Vector2Int temp = new Vector2Int(x, y);
                     if (TryPlaceItem(inventoryItemSO, temp, InventoryItemSO.Dir.Down))
                     {
-                        InventoryList.Add(inventoryItemSO.InventoryPrefab.GetComponent<PlacedObject>());
+                        PlacedObject placedObject = inventoryItemSO.InventoryPrefab.GetComponent<PlacedObject>();
+                        InventoryList.Add(placedObject);
+                        OnAddingInInventory?.Invoke(inventoryItemSO.ItemType);
                         return true;
                     }
                 }
@@ -194,6 +197,8 @@ public class InventorySystem : MonoBehaviour
         {
             PlacedObject placedObject = grid.GetGridObject(removeGridPos.x, removeGridPos.y).GetPlacedObject();
             placedObject.DestroySelf();
+            InventoryList.Remove(placedObject);
+            OnRemovingFromInventory(placedObject.GetItemType());
             List<Vector2Int> gridPosList = placedObject.GetGridPosList();
             foreach (Vector2Int gridPos in gridPosList)
             {

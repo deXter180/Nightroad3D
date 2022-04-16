@@ -18,7 +18,8 @@ MonoBehaviour:
   Usable: 0
   Width: 2
   Height: 2
-  itemType: 8
+  ItemType: 8
+  WeaponType: 0
   Rarity: 0
   AttributeAmount: 0
   AttributeIcon: {fileID: 0}

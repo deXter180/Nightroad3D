@@ -228,6 +228,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - Materials
+  - m_GUID: 60d4cbef9ab488f4daea1ce0b06ad082
+    m_Address: QTest1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ScriptableObject
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 6d502e12c696e704dbf8897e1fcf5855, type: 2}
   m_SchemaSet:
