@@ -38,17 +38,23 @@ public class InventoryDragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragH
             canvasGroup.alpha = 0.7f;
             canvasGroup.blocksRaycasts = false;
             
-            if (dragDropSystem.IsOnMenu(eventData.position, out EquipMenuTile menuTile) && placedObject.GetEquipTile() != null)
+            if (dragDropSystem.IsOnWeaponMenu(eventData.position, out EquipMenuWeaponTile weaponTile) && placedObject.GetWeaponEquipTile() != null)
             {
                 equipMenu.transform.SetAsLastSibling();
-                InventoryItemSO.CreateGridVisual(transform.GetChild(0), placedObject.GetInventoryItemSO(), 200 , true);
-                dragDropSystem.StartedDragging(placedObject, placedObject.GetEquipTile(), eventData.position);
+                InventoryItemSO.CreateGridVisual(transform.GetChild(0), placedObject.GetInventoryItemSO(), 200 , InventoryItemSO.TileTypes.WeaponTile);
+                dragDropSystem.StartedDragging(placedObject, placedObject.GetWeaponEquipTile(), eventData.position);
 
+            }
+            else if (dragDropSystem.IsOnSpellMenu(eventData.position, out EquipMenuSpellTile spellTile) && placedObject.GetSpellEquipTile() != null)
+            {
+                equipMenu.transform.SetAsLastSibling();
+                InventoryItemSO.CreateGridVisual(transform.GetChild(0), placedObject.GetInventoryItemSO(), 50, InventoryItemSO.TileTypes.SpellTile);
+                dragDropSystem.StartedDragging(placedObject, placedObject.GetSpellEquipTile(), eventData.position);
             }
             else if (dragDropSystem.IsOnInventory(eventData.position))
             {
                 inventorySystem.transform.SetAsLastSibling();
-                InventoryItemSO.CreateGridVisual(transform.GetChild(0), placedObject.GetInventoryItemSO(), cellSize, false);
+                InventoryItemSO.CreateGridVisual(transform.GetChild(0), placedObject.GetInventoryItemSO(), cellSize, InventoryItemSO.TileTypes.InventoryTile);
                 dragDropSystem.StartedDragging(placedObject, eventData.position);
             }           
         }       

@@ -18,6 +18,7 @@ public class WeaponSO : ScriptableObject, IAttack
     [SerializeField] private bool isRanged;
     [SerializeField] private Transform worldPrefab;
 
+
     public int DamageAmount => damageAmount;
     public int AmmoPerMagazine => ammoPerMagazine;
     public int TotalAmmo => totalAmmo;

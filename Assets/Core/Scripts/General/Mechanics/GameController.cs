@@ -10,7 +10,7 @@ public class GameController : MonoBehaviour
     private bool isDialogueActive;
     private InventoryUIHandler inventoryUI;
     private MainMenuUIHandler mainMenu;
-    private CrosshairUIHandler crosshair;
+    private HeadUpDisplayHandler crosshair;
     private DialogueManager dialogueManager;
     private SpellManager spellManager;
     private PlayerInputAsset inputs;
@@ -51,7 +51,7 @@ public class GameController : MonoBehaviour
         inputs = InputManager.InputActions;
         inventoryUI = InventoryUIHandler.Instance;
         mainMenu = MainMenuUIHandler.Instance;
-        crosshair = CrosshairUIHandler.Instance;
+        crosshair = HeadUpDisplayHandler.Instance;
         dialogueManager = DialogueManager.Instance;
         spellManager = SpellManager.Instance;
     }

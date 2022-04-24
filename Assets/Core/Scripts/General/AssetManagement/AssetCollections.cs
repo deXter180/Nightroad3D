@@ -18,7 +18,8 @@ public class AssetCollections : MonoBehaviour
     private static Dictionary<string, QuestSO> QuestDict = new Dictionary<string, QuestSO>();
     private static Dictionary<string, Material> MaterailDict = new Dictionary<string, Material>();
     private static List<InventoryItemSO> InventorySOList = new List<InventoryItemSO>();
-    private static List<InventoryItemSO> WeaponInventorySOList= new List<InventoryItemSO>();
+    private static List<InventoryItemSO> WeaponInventorySOList = new List<InventoryItemSO>();
+    private static List<InventoryItemSO> SpellInventorySOList = new List<InventoryItemSO>();
     private static List<WeaponSO> WeaponSOList = new List<WeaponSO>();
     private static List<SpellBaseSO> spellSOList = new List<SpellBaseSO>();
     private static List<EnemySO> EnemySOList = new List<EnemySO>();
@@ -162,6 +163,18 @@ public class AssetCollections : MonoBehaviour
         foreach (var temp in WeaponInventorySOList)
         {
             if (temp.WeaponType == WT)
+            {
+                return temp;
+            }
+        }
+        return null;
+    }
+
+    public static InventoryItemSO GetSpellInventorySO(SpellTypes ST)
+    {
+        foreach (var temp in SpellInventorySOList)
+        {
+            if (temp.SpellType == ST)
             {
                 return temp;
             }
@@ -356,13 +369,17 @@ public class AssetCollections : MonoBehaviour
         if (obj.GetType() == typeof(InventoryItemSO))
         {
             InventoryItemSO itemSO = (InventoryItemSO)obj;
-            if (itemSO.WeaponType == WeaponTypes.None)
+            if (itemSO.WeaponType == WeaponTypes.None && itemSO.SpellType == SpellTypes.None)
             {
                 InventorySOList.Add(itemSO);
             }
-            else
+            else if (itemSO.WeaponType != WeaponTypes.None && itemSO.SpellType == SpellTypes.None)
             {
                 WeaponInventorySOList.Add(itemSO);
+            }
+            else if (itemSO.SpellType != SpellTypes.None && itemSO.WeaponType == WeaponTypes.None)
+            {
+                SpellInventorySOList.Add(itemSO);
             }
             
         }
@@ -496,7 +513,8 @@ public enum ItemTypes
     Boots,
     Helmet,
     ManaPotion,
-    Weapon
+    Weapon,
+    Spell
 }
 
 public enum GoalTypes

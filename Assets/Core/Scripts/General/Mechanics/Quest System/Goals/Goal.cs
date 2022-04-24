@@ -13,8 +13,8 @@ public class Goal
     public int RequiredAmount { get; set; }
     public int CurrentAmount { get; set; }
 
-    public event Action<string> OnGoalCompletion;
-    public event Action<string> OnGoalFailPostCompletion;
+    public event Action<string, Goal> OnGoalCompletion;
+    public event Action<string, Goal> OnGoalFailure;
 
     public virtual void Initialize()
     {
@@ -34,17 +34,14 @@ public class Goal
         }
         else
         {
-            if (IsCompleted)
-            {
-                IsCompleted = false;
-                OnGoalFailPostCompletion?.Invoke(GoalFailureText);
-            }
+            IsCompleted = false;
+            OnGoalFailure?.Invoke(GoalFailureText, this);
         }      
     }
 
     private void Complete()
     {
         IsCompleted = true;
-        OnGoalCompletion?.Invoke(GoalCompleteText);
+        OnGoalCompletion?.Invoke(GoalCompleteText, this);
     }
 }

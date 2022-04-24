@@ -9,7 +9,8 @@ public class PlacedObject : MonoBehaviour
     private InventoryItemSO inventoryItemSO;
     private Vector2Int origin;
     private InventoryItemSO.Dir dir;
-    private EquipMenuTile equipMenu;
+    private EquipMenuWeaponTile weaponTile;
+    private EquipMenuSpellTile spellTile;
     private RectTransform rectTransform;
     public bool IsPlacedOnMenu { get => isPlacedOnMenu; }
 
@@ -21,14 +22,24 @@ public class PlacedObject : MonoBehaviour
         rectTransform = GetComponent<RectTransform>();
     }
 
-    public void SetEquipTile(EquipMenuTile tile)
+    public void SetWeaponEquipTile(EquipMenuWeaponTile tile)
     {
-        equipMenu = tile;
+        weaponTile = tile;
     }
 
-    public EquipMenuTile GetEquipTile()
+    public EquipMenuWeaponTile GetWeaponEquipTile()
     {
-        return equipMenu;
+        return weaponTile;
+    }
+
+    public void SetSpellEquipTile(EquipMenuSpellTile tile)
+    {
+        spellTile = tile;
+    }
+
+    public EquipMenuSpellTile GetSpellEquipTile()
+    {
+        return spellTile;
     }
 
     public Vector2Int GetGridPos()
@@ -94,12 +105,12 @@ public class PlacedObject : MonoBehaviour
         placedObject.dir = dir;
         placedObject.origin = origin;
         placedObject.SetupDone();
-        placedObject.SetEquipTile(null);
+        placedObject.SetWeaponEquipTile(null);
         placedObject.isPlacedOnMenu = false;
         return placedObject;
     }
 
-    public static PlacedObject Create(Transform parent, EquipMenuTile menuTile, Vector2 anchoredPos, Vector2Int origin, InventoryItemSO inventoryItemSO)
+    public static PlacedObject Create(Transform parent, EquipMenuWeaponTile menuTile, Vector2 anchoredPos, Vector2Int origin, InventoryItemSO inventoryItemSO)
     {
         Transform placedObjectTransform = Instantiate(inventoryItemSO.InventoryPrefab, parent);
         placedObjectTransform.localScale = new Vector3(0.8f, 0.8f);
@@ -112,7 +123,25 @@ public class PlacedObject : MonoBehaviour
         placedObject.dir = InventoryItemSO.Dir.Down;
         placedObject.origin = origin;
         placedObject.SetupDone();
-        placedObject.SetEquipTile(menuTile);
+        placedObject.SetWeaponEquipTile(menuTile);
+        placedObject.isPlacedOnMenu = true;
+        return placedObject;
+    }
+
+    public static PlacedObject Create(Transform parent, EquipMenuSpellTile menuTile, Vector2 anchoredPos, Vector2Int origin, InventoryItemSO inventoryItemSO)
+    {
+        Transform placedObjectTransform = Instantiate(inventoryItemSO.InventoryPrefab, parent);
+        placedObjectTransform.localScale = new Vector3(0.35f, 0.35f);
+        placedObjectTransform.rotation = Quaternion.identity;
+        anchoredPos = new Vector2(7, 6);
+        RectTransform rectTransform = placedObjectTransform.GetComponent<RectTransform>();
+        rectTransform.anchoredPosition = anchoredPos;
+        PlacedObject placedObject = placedObjectTransform.GetComponent<PlacedObject>();
+        placedObject.inventoryItemSO = inventoryItemSO;
+        placedObject.dir = InventoryItemSO.Dir.Down;
+        placedObject.origin = origin;
+        placedObject.SetupDone();
+        placedObject.SetSpellEquipTile(menuTile);
         placedObject.isPlacedOnMenu = true;
         return placedObject;
     }

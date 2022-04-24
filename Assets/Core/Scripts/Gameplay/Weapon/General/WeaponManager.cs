@@ -15,8 +15,11 @@ public class WeaponManager : MonoBehaviour
     private bool IsInitialized => weaponInventory != null;
     private PlayerInputAsset inputs;
     private PlayerController player;
-    private Dictionary<WeaponTypes, WeaponBrain> weaponInventory;
+    public static Dictionary<WeaponTypes, WeaponBrain> weaponInventory;
+    private Dictionary<WeaponBrain, RangedWeapon> rangedWeaponDict = new Dictionary<WeaponBrain, RangedWeapon>();
     private GameController gameController;
+    public static event Action<RangedWeapon> OnRangeWeaponEquip;
+    public static event Action OnMeleeWeaponEquip;
     
     private void Awake()
     {
@@ -31,15 +34,16 @@ public class WeaponManager : MonoBehaviour
     private void Start()
     {
         player = PlayerController.Instance;
+        gameController = GameController.Instance;
         StartCoroutine(InputDone());
         foreach (WeaponBrain WB in weaponBrains)
         {
             WB.gameObject.SetActive(false);
         }
-        foreach (var menuTile in EquipMenuControl.EquipTileList)
+        foreach (var menuTile in EquipMenuControl.WeaponTileList)
         {
-            menuTile.OnPlacedOnMenu += MenuTile_OnPlacedOnMenu;
-            menuTile.OnRemovedFromMenu += MenuTile_OnRemovedFromMenu;
+            menuTile.OnPlacedOnWeaponMenu += MenuTile_OnPlacedOnMenu;
+            menuTile.OnRemovedFromWeaponMenu += MenuTile_OnRemovedFromMenu;
         }
         InitializeInventory();
         isRemoved = false;
@@ -47,27 +51,20 @@ public class WeaponManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        foreach (var menuTile in EquipMenuControl.EquipTileList)
+        foreach (var menuTile in EquipMenuControl.WeaponTileList)
         {
-            menuTile.OnPlacedOnMenu -= MenuTile_OnPlacedOnMenu;
-            menuTile.OnRemovedFromMenu -= MenuTile_OnRemovedFromMenu;
+            menuTile.OnPlacedOnWeaponMenu -= MenuTile_OnPlacedOnMenu;
+            menuTile.OnRemovedFromWeaponMenu -= MenuTile_OnRemovedFromMenu;
         }
     }
 
     private void Update()
-    {       
-        if (inputs != null && !player.IsPlayerDead)
+    {
+        if (inputs != null && !player.IsPlayerDead && gameController != null)
         {
-            if (gameController == null)
+            if (!gameController.IsInventoryActive)
             {
-                gameController = GameController.Instance;
-            }
-            if (gameController != null)
-            {
-                if (gameController.IsInventoryActive)
-                {
-                    WeaponSelect();
-                }
+                WeaponSelect();
             }
             //if (!SpellManager.Instance.IsCastingSpell && !MainMenuUIHandler.Instance.IsMainMenuActive)
             //{
@@ -132,6 +129,25 @@ public class WeaponManager : MonoBehaviour
                     if (weaponInventory.Count == 1)
                     {
                         weaponBrains[i].gameObject.SetActive(true);
+                        if (weaponBrains[i].GetThisWeapon().ThisWeaponSO != null)
+                        {
+                            WeaponSO weaponSO = weaponBrains[i].GetThisWeapon().ThisWeaponSO;
+                            if (weaponSO.IsRanged)
+                            {
+                                if (rangedWeaponDict.ContainsKey(weaponBrains[i]))
+                                {
+                                    OnRangeWeaponEquip?.Invoke(rangedWeaponDict[weaponBrains[i]]);
+                                }
+                                else
+                                {
+                                    if (weaponBrains[i].TryGetComponent<RangedWeapon>(out RangedWeapon rangedWeapon))
+                                    {
+                                        rangedWeaponDict.Add(weaponBrains[i], rangedWeapon);
+                                        OnRangeWeaponEquip?.Invoke(rangedWeapon);
+                                    }
+                                }
+                            }
+                        }
                         SelectedWeapon = 0;
                     }
                 }
@@ -160,6 +176,29 @@ public class WeaponManager : MonoBehaviour
             if (i == SelectedWeapon)
             {
                 weapon.gameObject.SetActive(true);
+                if (weapon.GetThisWeapon().ThisWeaponSO != null)
+                {
+                    WeaponSO weaponSO = weapon.GetThisWeapon().ThisWeaponSO;
+                    if (weaponSO.IsRanged)
+                    {
+                        if (rangedWeaponDict.ContainsKey(weapon))
+                        {
+                            OnRangeWeaponEquip?.Invoke(rangedWeaponDict[weapon]);
+                        }
+                        else
+                        {
+                            if (weapon.TryGetComponent<RangedWeapon>(out RangedWeapon rangedWeapon))
+                            {
+                                rangedWeaponDict.Add(weapon, rangedWeapon);
+                                OnRangeWeaponEquip?.Invoke(rangedWeapon);
+                            }
+                        }                        
+                    }
+                    else
+                    {
+                        OnMeleeWeaponEquip?.Invoke();
+                    }
+                }             
             }
             else
                 weapon.gameObject.SetActive(false);
@@ -178,21 +217,36 @@ public class WeaponManager : MonoBehaviour
     private void WeaponSelect()
     {
         int previousWeapon = SelectedWeapon;
-        if (inputs.WeaponSelection.Weapon1.triggered && weaponInventory.Count >= 1)
+        if (inputs.WeaponSelection.Weapon1.triggered)
         {
-            SelectedWeapon = 0;
+            if (weaponInventory.Count >= 1)
+            {
+                SelectedWeapon = 0;
+            }
+            
         }
-        else if (inputs.WeaponSelection.Weapon2.triggered && weaponInventory.Count >= 2)
+        if (inputs.WeaponSelection.Weapon2.triggered)
         {
-            SelectedWeapon = 1;
+            if (weaponInventory.Count >= 2)
+            {
+                SelectedWeapon = 1;
+            }
+            
         }
-        else if (inputs.WeaponSelection.Weapon3.triggered && weaponInventory.Count >= 3)
+        if (inputs.WeaponSelection.Weapon3.triggered)
         {
-            SelectedWeapon = 2;
+            if (weaponInventory.Count >= 3)
+            {
+                SelectedWeapon = 2;
+            }
+            
         }
-        else if (inputs.WeaponSelection.Weapon4.triggered && weaponInventory.Count >= 4)
+        if (inputs.WeaponSelection.Weapon4.triggered)
         {
-            SelectedWeapon = 3;
+            if (weaponInventory.Count >= 4)
+            {
+                SelectedWeapon = 3;
+            }            
         }
         if (previousWeapon != SelectedWeapon)
         {

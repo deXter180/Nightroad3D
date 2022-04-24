@@ -11,10 +11,12 @@ public class PickedObject : MonoBehaviour
     private Material defaultMaterial;
     private ItemTypes item;
     private WeaponTypes weapon;
+    private SpellTypes spell;
     private InventoryItemSO itemSO;
     private static float throwDistance = 5f;
-    public WeaponTypes weaponTypes { get => weapon; }
-    public ItemTypes itemType { get => item; }
+    public WeaponTypes WeaponTypes { get => weapon; }
+    public SpellTypes SpellType { get => spell; }
+    public ItemTypes ItemType { get => item; }
 
     private void Awake()
     {
@@ -25,7 +27,10 @@ public class PickedObject : MonoBehaviour
 
     private void Start()
     {
-        defaultMaterial = SR.material;
+        if (SR != null)
+        {
+            defaultMaterial = SR.material;
+        }        
     }
 
     private void OnEnable()
@@ -47,7 +52,7 @@ public class PickedObject : MonoBehaviour
         Transform spawnedTransform = Instantiate(AssetCollections.GetInventoryItemSOFromList(itemType).WorldPrefab, PlayerController.Instance.GetRandomDirWithoutY(throwDistance, -throwDistance) + groundPos, Quaternion.identity);
         PickedObject pickedObject = spawnedTransform.GetComponent<PickedObject>();
         pickedObject.itemSO = SO;
-        pickedObject.SetupInGameWorld(itemType, WeaponTypes.None);
+        pickedObject.SetupInGameWorld(itemType);
         return pickedObject;
     }
 
@@ -60,6 +65,18 @@ public class PickedObject : MonoBehaviour
         PickedObject pickedObject = spawnedTransform.GetComponent<PickedObject>();
         pickedObject.itemSO = SO;
         pickedObject.SetupInGameWorld(ItemTypes.Weapon, weaponType);
+        return pickedObject;
+    }
+
+    public static PickedObject SpawnSpellWorld(SpellTypes spellType, InventoryItemSO SO, Vector3 position)
+    {
+        float posX = position.x;
+        float posZ = position.z;
+        Vector3 groundPos = new Vector3(posX, PlayerController.Instance.GroundHeight, posZ);
+        Transform spawnedTransform = Instantiate(AssetCollections.GetSpellInventorySO(spellType).WorldPrefab, PlayerController.Instance.GetRandomDirWithoutY(throwDistance, -throwDistance) + groundPos, Quaternion.identity);
+        PickedObject pickedObject = spawnedTransform.GetComponent<PickedObject>();
+        pickedObject.itemSO = SO;
+        pickedObject.SetupInGameWorld(ItemTypes.Spell, spellType);
         return pickedObject;
     }
 
@@ -101,10 +118,21 @@ public class PickedObject : MonoBehaviour
         else return false;
     }
 
-    private void SetupInGameWorld(ItemTypes item, WeaponTypes weapon)
+    private void SetupInGameWorld(ItemTypes item)
     {
         this.item = item;
-        this.weapon = weapon;
+    }
+
+    private void SetupInGameWorld(ItemTypes item, WeaponTypes weaponType)
+    {
+        this.item = item;
+        this.weapon = weaponType;
+    }
+
+    private void SetupInGameWorld(ItemTypes item, SpellTypes spellType)
+    {
+        this.item = item;
+        this.spell = spellType;
     }
 
     public Rigidbody GetThisRB()
@@ -119,12 +147,19 @@ public class PickedObject : MonoBehaviour
 
     public void HighlightObject()
     {
-        SR.material = AssetCollections.GetMaterail(hightlightMaterial);
+        if (SR != null)
+        {
+            SR.material = AssetCollections.GetMaterail(hightlightMaterial);
+        }
+        
     }
 
     public void UnhighlightObject()
     {
-        SR.material = defaultMaterial;
+        if (SR != null)
+        {
+            SR.material = defaultMaterial;
+        }        
     }
 
     

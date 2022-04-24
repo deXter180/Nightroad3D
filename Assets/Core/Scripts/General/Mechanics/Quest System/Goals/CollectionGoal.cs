@@ -12,6 +12,7 @@ public class CollectionGoal : Goal
         RequiredAmount = requiredAmount;
         CurrentAmount = 0;
         IsCompleted = false;
+
     }
 
     public override void Initialize()
@@ -32,7 +33,7 @@ public class CollectionGoal : Goal
     {
         if (ItemType == obj)
         {
-            CurrentAmount++;
+            CurrentAmount--;          
             Evaluate();
         }
     }
@@ -41,7 +42,7 @@ public class CollectionGoal : Goal
     {
         if (ItemType == obj)
         {
-            CurrentAmount--;
+            CurrentAmount++;
             Evaluate();
         }
     }

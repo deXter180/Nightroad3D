@@ -4,20 +4,12 @@ using System;
 using UnityEngine;
 using UnityEngine.VFX;
 
-public class RayGun : MonoBehaviour
+public class RayGun : RangedWeapon
 {
-    public int CurrentMagazineAmmo { get => currentMagazineAmmo; }
-    public int CurrentTotalAmmo { get => currentTotalAmmo; }
     [SerializeField] private float MuzzleFlashTime;
     [SerializeField] private Transform firePoint;
     private PlayerInputAsset inputs;
     private GameController gameController;
-    private int currentMagazineAmmo;
-    private int currentTotalAmmo;
-    private int maxMagazineAmmo;
-    private int maxTotalAmmo;
-    private float attackRange;
-    private float attackSpeed;
     private float bloom;
     private bool isRanged;
     private bool isReloading;
@@ -56,7 +48,7 @@ public class RayGun : MonoBehaviour
         {
             gameController = GameController.Instance;
         }
-        if (gameController != null)
+        if (gameController != null && inputs != null)
         {
             if (gameObject.activeInHierarchy && weaponBrain.IsWeaponReady())
             {
@@ -73,6 +65,7 @@ public class RayGun : MonoBehaviour
                                     currentMagazineAmmo -= 1;
                                     currentTotalAmmo -= 1;
                                     currentMagazineAmmo = currentTotalAmmo == 1 ? 1 : currentMagazineAmmo;
+                                    CallEvent(this);
                                 }));
                             }
                             else
@@ -98,6 +91,7 @@ public class RayGun : MonoBehaviour
     {
         yield return new WaitUntil(() => InputManager.InputReady);
         inputs = InputManager.InputActions;
+        weaponBrain.GetThisWeapon();
     }
 
     private void PlayBulletTrailVfx()
@@ -134,6 +128,7 @@ public class RayGun : MonoBehaviour
         attackSpeed = thisWeapon.ThisWeaponSO.AttackSpeed;
         bloom = thisWeapon.ThisWeaponSO.Bloom;
         isRanged = thisWeapon.ThisWeaponSO.IsRanged;
+        isReady = true;
     }
 
     private Vector3 GetShootDir()
@@ -201,6 +196,7 @@ public class RayGun : MonoBehaviour
                 }
                 isReloading = true;
                 currentMagazineAmmo = maxMagazineAmmo;
+                CallEvent(this);
                 thisWeapon.RaiseOnPlayerReload(thisWeapon, weaponBrain, weaponType);
                 yield return new WaitForSeconds(weaponBrain.AnimDelay);
                 action.Invoke();

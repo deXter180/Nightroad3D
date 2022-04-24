@@ -6,6 +6,8 @@ public class Target : MonoBehaviour
 {
     private bool dodging;
     private int currentHP;
+    private int currentMana;
+    private int maxMana;
     private EnemyBrain EB;
     [SerializeField] private bool IsEnemy;
     [HideInInspector] public int MaxHP { get; set; }
@@ -26,7 +28,7 @@ public class Target : MonoBehaviour
     {
         if (Resource != null)                              // HealthSystem Event subscription
         {
-            Resource.OnDamaged += OnDamage;
+            Resource.OnHealthLoss += OnDamage;
             Resource.OnKilled += OnKilled;
         }
         dodging = false;
@@ -37,7 +39,7 @@ public class Target : MonoBehaviour
     {
         if (Resource != null)                              // HealthSystem Event desubscription
         {
-            Resource.OnDamaged -= OnDamage;
+            Resource.OnHealthLoss -= OnDamage;
             Resource.OnKilled -= OnKilled;
         }
     }
@@ -47,6 +49,13 @@ public class Target : MonoBehaviour
         MaxHP = maxHP;
         Resource.SetHealth(maxHP);
         currentHP = maxHP;
+    }
+
+    public void SetupMaxMana(int maxMana)
+    {
+        this.maxMana = maxMana;
+        Resource.SetMana(maxMana);
+        currentMana = maxMana;
     }
 
     public void SetEB(EnemyBrain enemyBrain)
@@ -108,6 +117,11 @@ public class Target : MonoBehaviour
         
     }
 
+    public void AddHealth(int healthToAdd)
+    {
+        Resource.HealthGain(healthToAdd);
+    }
+
     //~~~~~~~~~~~~~~~~~~~~~~~~~~ Dodge function ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     private void IsDodging(float dodgeChance)
@@ -119,7 +133,19 @@ public class Target : MonoBehaviour
         else dodging = false;
     }
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~ Events Callback ~~~~~~~~~~~~~~~~~~~~~~~~
+    //~~~~~~~~~~~~~~~~~~~~~~~~~ Mana Functions ~~~~~~~~~~~~~~~~~~~~~~~~
+
+    public void UseMana(int manaCost)
+    {
+        Resource.ManaLoss(manaCost);
+    }
+
+    public void AddMana(int manaToAdd)
+    {
+        Resource.ManaGain(manaToAdd);
+    }
+
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~~~~~~
 
     private void OnDamage(object sender, ResourceManagement.DamagedEventArgs e)
     {

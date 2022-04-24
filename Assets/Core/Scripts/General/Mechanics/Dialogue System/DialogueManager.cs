@@ -13,7 +13,6 @@ public class DialogueManager : MonoBehaviour
     private Story activeStory;   
     private GameController gameController;
     private QuestManager questManager;
-    private string stateInkList = "QuestStates"; 
     private WaitForSeconds endDelay = new WaitForSeconds(10f);
     [SerializeField] private Transform dialoguePanel;
     [SerializeField] private Transform choicePanel;  
@@ -65,7 +64,7 @@ public class DialogueManager : MonoBehaviour
             activeStory = new Story(storyTextAsset.text);
             ActiveStoryDict.Add(storyTextAsset.name, activeStory);
             activeStory.allowExternalFunctionFallbacks = true;
-            activeStory.BindExternalFunction("startQuest", (string name) => { StartQuest(name); });
+            activeStory.BindExternalFunction("StartQuest", (string name) => { StartQuest(name); });
             RefreshStory();
         }        
     }
@@ -89,6 +88,20 @@ public class DialogueManager : MonoBehaviour
             if (ActiveStoryDict.TryGetValue(storyTextAsset.name, out Story story))
             {
                 activeStory = story;
+                if (QuestManager.AllQuestInStoryDict.TryGetValue(story, out List<QuestSO> quests))
+                {
+                    foreach(var q in quests)
+                    {
+                        if (q.AllGoalsSatisfied)
+                        {
+                            q.FinalizeState(true, this);                            
+                        }
+                        if (q.IsFailed)
+                        {
+                            q.FinalizeState(false, this);
+                        }
+                    }
+                }
                 RefreshStory();
             }
         }     
@@ -97,7 +110,7 @@ public class DialogueManager : MonoBehaviour
     private void RefreshStory()
     {
         if (activeStory != null)
-        {            
+        {               
             dialoguebox.gameObject.SetActive(true);
             endButton.gameObject.SetActive(true);
             gameController.SetDialogueActive(true);
@@ -151,13 +164,7 @@ public class DialogueManager : MonoBehaviour
         gameController.SetDialogueActive(false);
     }
 
-    public void StartQuest(string name)
-    {       
-        if (questManager.StartNewQuest(name, activeStory))
-        {         
-            Debug.Log(activeStory.state.currentPathString);
-        }
-    }
+    
 
     private IEnumerator DelayEnd()
     {
@@ -184,33 +191,11 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    //~~~~~~~~~~~~~~~~~~ Utility ~~~~~~~~~~~~~~~~~~~~
-
-    private List<string> GetStateInkListItem()
+    public void StartQuest(string name)
     {
-        List<string> tempList = new List<string>();
-        var temp = activeStory.variablesState[stateInkList] as InkList;
-        foreach (var item in temp.all)
+        if (questManager.StartNewQuest(name, activeStory))
         {
-            tempList.Add(item.Key.itemName);
+
         }
-        return tempList;
     }
-
-    private void AddToStateInkList(string ListItemToAdd)
-    {
-        var tempList = activeStory.variablesState[stateInkList] as InkList;
-        InkListItem listItem = new InkListItem(stateInkList, ListItemToAdd);
-        tempList.AddItem(listItem);
-        activeStory.variablesState[stateInkList] = tempList;
-    }
-
-    private void RemoveFromStateInkList(string ListItemToRemove)
-    {
-        var tempList = activeStory.variablesState[stateInkList] as InkList;
-        InkListItem listItem = new InkListItem(stateInkList, ListItemToRemove);
-        tempList.Remove(listItem);
-        activeStory.variablesState[stateInkList] = tempList;
-    }
-
 }

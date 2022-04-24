@@ -10,10 +10,10 @@ public class InventorySystem : MonoBehaviour
     private float throwDistance = 20f;
     private float cellSize;
     private Grid<GridObject> grid;
-    private List<PlacedObject> InventoryList = new List<PlacedObject>();
+    private List<PlacedObject> InventoryList;
     private RectTransform itemContainer;
     private InventoryUIHandler inventoryUI;
-    public static event EventHandler<PlacedObject> OnPlacedOnInventory;
+    public event EventHandler<PlacedObject> OnPlacedOnInventory;
     public static event Action<ItemTypes> OnAddingInInventory;
     public static event Action<ItemTypes> OnRemovingFromInventory;
     public static InventorySystem Instance { get; private set; }
@@ -26,6 +26,7 @@ public class InventorySystem : MonoBehaviour
         cellSize = inventoryUI.GetCellSize();
         grid = new Grid<GridObject>(gridWidth, gridHeight, cellSize, transform.position, (Grid<GridObject> g, int x, int y) => new GridObject(g, x, y));
         itemContainer = transform.Find("ItemContainer").GetComponent<RectTransform>();
+        InventoryList = new List<PlacedObject>();
     }
 
     //~~~~~~~~~~~~~~~~~~ Utilities ~~~~~~~~~~~~~~~~~~
@@ -44,10 +45,9 @@ public class InventorySystem : MonoBehaviour
         PickedObject.SpawnWeaponWorld(WeaponTypes.Rifle, AssetCollections.GetWeaponInventorySO(WeaponTypes.Rifle), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
         PickedObject.SpawnWeaponWorld(WeaponTypes.RocketLauncher, AssetCollections.GetWeaponInventorySO(WeaponTypes.RocketLauncher), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
         PickedObject.SpawnWeaponWorld(WeaponTypes.Shotgun, AssetCollections.GetWeaponInventorySO(WeaponTypes.Shotgun), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
-        //TryAddingItem(AssetCollections.GetWeaponInventorySO(WeaponTypes.Axe));
-        //TryAddingItem(AssetCollections.GetWeaponInventorySO(WeaponTypes.Rifle));
-        //TryAddingItem(AssetCollections.GetWeaponInventorySO(WeaponTypes.RocketLauncher));
-        //TryAddingItem(AssetCollections.GetWeaponInventorySO(WeaponTypes.Shotgun));
+        PickedObject.SpawnSpellWorld(SpellTypes.Dash, AssetCollections.GetSpellInventorySO(SpellTypes.Dash), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
+        PickedObject.SpawnSpellWorld(SpellTypes.FireBall, AssetCollections.GetSpellInventorySO(SpellTypes.FireBall), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
+        PickedObject.SpawnSpellWorld(SpellTypes.FreezeBlast, AssetCollections.GetSpellInventorySO(SpellTypes.FreezeBlast), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
     }
 
     #region
@@ -88,14 +88,10 @@ public class InventorySystem : MonoBehaviour
         return itemContainer;
     }
 
-    public void AddToInventoryList(PlacedObject placedObject)
-    {
-        InventoryList.Add(placedObject);
-    }
-
     public void RemoveFromInventoryList(PlacedObject placedObject)
     {
         InventoryList.Remove(placedObject);
+        OnRemovingFromInventory?.Invoke((placedObject.GetItemType()));
     }
     #endregion
 
@@ -196,9 +192,8 @@ public class InventorySystem : MonoBehaviour
         if (grid.GetGridObject(removeGridPos.x, removeGridPos.y).GetPlacedObject() != null)
         {
             PlacedObject placedObject = grid.GetGridObject(removeGridPos.x, removeGridPos.y).GetPlacedObject();
-            placedObject.DestroySelf();
-            InventoryList.Remove(placedObject);
-            OnRemovingFromInventory(placedObject.GetItemType());
+            RemoveFromInventoryList(placedObject);          
+            placedObject.DestroySelf();                      
             List<Vector2Int> gridPosList = placedObject.GetGridPosList();
             foreach (Vector2Int gridPos in gridPosList)
             {

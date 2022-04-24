@@ -18,6 +18,7 @@ public class SpellManager : MonoBehaviour
     private Vector3 AOEPosition;
     private PlayerController player;
     private GameController gameController;
+    private bool isRemoved;
     private bool isInSpellCastMode;
     public bool IsInSpellCastMode { get => isInSpellCastMode; }
     public static SpellManager Instance { get; private set; }
@@ -51,12 +52,24 @@ public class SpellManager : MonoBehaviour
     {
         player = PlayerController.Instance;
         StartCoroutine(InputDone());
-        StartCoroutine(Test());
         state = SpellCastState.Default;
         spellCircle = Instantiate(SpellManager.Instance.SelectionCircle);
         spellCircle.gameObject.SetActive(false);
+        foreach (var tile in EquipMenuControl.SpellTileList)
+        {
+            tile.OnPlacedOnSpellMenu += Tile_OnPlacedOnSpellMenu;
+            tile.OnRemovedFromSpellMenu += Tile_OnRemovedFromSpellMenu;
+        }
+        isRemoved = false;
+    }
 
-        
+    private void OnDestroy()
+    {
+        foreach (var tile in EquipMenuControl.SpellTileList)
+        {
+            tile.OnPlacedOnSpellMenu -= Tile_OnPlacedOnSpellMenu;
+            tile.OnRemovedFromSpellMenu -= Tile_OnRemovedFromSpellMenu;
+        }
     }
 
     private IEnumerator InputDone()
@@ -64,14 +77,6 @@ public class SpellManager : MonoBehaviour
         yield return new WaitUntil(() => InputManager.InputReady);
         inputs = InputManager.InputActions;
         gameController = GameController.Instance;
-    }
-
-    private IEnumerator Test()  //Temporary. Remove afterwards
-    {
-        yield return new WaitForSeconds(2f);
-        AddSpell(SpellTypes.FireBall, SpellCategories.SingleTargetedProjectile);
-        AddSpell(SpellTypes.Dash, SpellCategories.SelfTargeted);
-        //AddSpell(SpellTypes.FreezeBlast, SpellCategories.AOETargeted);
     }
 
     private void Update()
@@ -129,7 +134,7 @@ public class SpellManager : MonoBehaviour
                         {
                             SelectedSpellIndex = 0;
                             spell = GetSpell();
-                            if (spell != null)
+                            if (spell != null && spell.ThisSpellSO.ManaCost <= player.CurrentMana)
                             {
                                 if (spell.SpellCategory == SpellCategories.AOETargeted)
                                 {
@@ -145,7 +150,7 @@ public class SpellManager : MonoBehaviour
                         {
                             SelectedSpellIndex = 1;
                             spell = GetSpell();
-                            if (spell != null)
+                            if (spell != null && spell.ThisSpellSO.ManaCost <= player.CurrentMana)
                             {
                                 if (spell.SpellCategory == SpellCategories.AOETargeted)
                                 {
@@ -186,6 +191,7 @@ public class SpellManager : MonoBehaviour
                             }
                             spell.CastSpell(() =>
                             {
+                                player.PlayerTarget.UseMana(spell.ThisSpellSO.ManaCost);
                                 IsCastingSpell = false;
                                 isInSpellCastMode = false;
                                 state = SpellCastState.Default;
@@ -294,6 +300,24 @@ public class SpellManager : MonoBehaviour
 
     //~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~
 
+    private void Tile_OnPlacedOnSpellMenu(object sender, PlacedObject e)
+    {
+        InventoryItemSO inventoryItem = e.GetInventoryItemSO();
+        if (inventoryItem.ItemType == ItemTypes.Spell && inventoryItem.SpellType != SpellTypes.None && inventoryItem.SpellCategory != SpellCategories.None)
+        {
+            AddSpell(inventoryItem.SpellType, inventoryItem.SpellCategory);
+        }
+    }
+
+    private void Tile_OnRemovedFromSpellMenu(object sender, PlacedObject e)
+    {
+        InventoryItemSO inventoryItem = e.GetInventoryItemSO();
+        if (inventoryItem.ItemType == ItemTypes.Spell && inventoryItem.SpellType != SpellTypes.None && inventoryItem.SpellCategory != SpellCategories.None)
+        {
+            RemoveSpell(inventoryItem.SpellType);
+            isRemoved = true;
+        }
+    }   
 }
 
 

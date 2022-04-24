@@ -12,13 +12,17 @@ public class PlayerController : MonoBehaviour
     public float GroundHeight;
     public static PlayerController Instance { get; private set; }
     public Target PlayerTarget { get => target; }
-    public int MaxHP { get => HitPoints; }
+    public int MaxHitPoints { get => maxHitPoints; }
+    public int MaxMana { get => maxMana; }
+    public int CurrentHP { get; private set; }
+    public int CurrentMana { get; private set; }
     public float DodgeChace { get => dodgeChance; }  
     public bool IsCrouching { get => isCrouching; }
     public bool IsPlayerDead { get => isDead; }
     public Vector3 DashPos { get => dashPos; }
     public Rigidbody PlayerRB { get => RB; }
-    [SerializeField] private int HitPoints;
+    [SerializeField] private int maxHitPoints;
+    [SerializeField] private int maxMana;
     [SerializeField] private float MoveSpeed;
     [SerializeField] private float MouseSensitivity;
     [SerializeField] private float JumpForce;
@@ -55,7 +59,6 @@ public class PlayerController : MonoBehaviour
     private bool isCrouching;
     private bool isDead;
     private bool isToggledCrouching;  
-    public static event Action<InventoryItemSO> OnItemPicked;
     public static event Action OnPlayerDeath;
 
     //~~~~~~~~~~~~~~~~~ Initialization ~~~~~~~~~~~~~~~~~~~
@@ -80,9 +83,16 @@ public class PlayerController : MonoBehaviour
     {
         StartCoroutine(InputDone());
         RB.useGravity = false;
-        GetComponent<Target>().SetupMaxHP(MaxHP);
+        CurrentHP = maxHitPoints;
+        CurrentMana = maxMana;
+        GetComponent<Target>().SetupMaxHP(MaxHitPoints);
+        GetComponent<Target>().SetupMaxMana(maxMana);
         normalHeight = col.height;
         crouchHeight = (normalHeight * crouchHeightPrecentage) / 100;
+        target.Resource.OnHealthGain += Resource_OnHealthGain;
+        target.Resource.OnHealthLoss += Resource_OnHealthLoss;
+        target.Resource.OnManaGain += Resource_OnManaGain;
+        target.Resource.OnManaLoss += Resource_OnManaLoss;
         //PickedObjectCols = new List<Collider>();
     }
 
@@ -110,8 +120,17 @@ public class PlayerController : MonoBehaviour
             {
                 OnPlayerDeath?.Invoke();
                 isDead = true;
+                PostPlayerDeath();
             }            
         }              
+    }
+
+    private void PostPlayerDeath()
+    {
+        target.Resource.OnHealthGain -= Resource_OnHealthGain;
+        target.Resource.OnHealthLoss -= Resource_OnHealthLoss;
+        target.Resource.OnManaGain -= Resource_OnManaGain;
+        target.Resource.OnManaLoss -= Resource_OnManaLoss;
     }
 
     private IEnumerator InputDone()
@@ -258,7 +277,7 @@ public class PlayerController : MonoBehaviour
         {
             var ray = new Ray(Helpers.MainCam.transform.position, Helpers.MainCam.transform.forward); //Camera.main.ScreenPointToRay(input.GetMousePosition());
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, Helpers.MainCam.farClipPlane / 35, npcLayer))
+            if (Physics.Raycast(ray, out hit, Helpers.MainCam.farClipPlane / 35, npcLayer)) //Interact with NPC
             {
                 if (hit.transform.TryGetComponent<NPCBrain>(out selectedNPC))
                 {
@@ -286,7 +305,7 @@ public class PlayerController : MonoBehaviour
                     dialogueManager.UnHighlight();
                 }
             }
-            if (Physics.Raycast(ray, out hit, Helpers.MainCam.farClipPlane / 20, pickableLayer))
+            if (Physics.Raycast(ray, out hit, Helpers.MainCam.farClipPlane / 20, pickableLayer)) //Interact with Inventory items
             {
                 if (hit.transform.TryGetComponent<PickedObject>(out selectedPickedObject))
                 {
@@ -296,7 +315,6 @@ public class PlayerController : MonoBehaviour
                         if (mainInventory.TryAddingItem(selectedPickedObject.GetItemSO()))
                         {
                             selectedPickedObject.DestroySelf();
-                            OnItemPicked?.Invoke(selectedPickedObject.GetItemSO());
                         }
                         else
                         {
@@ -314,7 +332,13 @@ public class PlayerController : MonoBehaviour
                 }
             }
         }
-       
+        else if (gameController.IsDialogueActive || gameController.IsInventoryActive || gameController.IsMainMenuActive)
+        {
+            if (selectedNPC != null)
+            {
+                dialogueManager.UnHighlight();
+            }
+        }
     }
 
     public Vector3 GetRandomDirWithoutY(float minRange, float maxRange)
@@ -354,4 +378,24 @@ public class PlayerController : MonoBehaviour
     }
 
     //~~~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~~~
+
+    private void Resource_OnManaLoss(object sender, ResourceManagement.ManaEventArgs e)
+    {
+        CurrentMana = e.CurrentMana;
+    }
+
+    private void Resource_OnManaGain(object sender, ResourceManagement.ManaEventArgs e)
+    {
+        CurrentMana = e.CurrentMana;
+    }
+
+    private void Resource_OnHealthLoss(object sender, ResourceManagement.DamagedEventArgs e)
+    {
+        CurrentHP = e.CurrentHP;
+    }
+
+    private void Resource_OnHealthGain(object sender, ResourceManagement.DamagedEventArgs e)
+    {
+        CurrentHP = e.CurrentHP;
+    }
 }

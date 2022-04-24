@@ -7,9 +7,6 @@ using System.Linq;
 
 public class QuestManager : MonoBehaviour
 {
-    private string questStart = "Start";
-    private string goalSatisfied = "GoalSatisfied";
-    private string goalUnsatisfied = "GoalUnsatisfied";
     public string QuestText { get; private set; }
     public string GoalText { get; private set; }
     public static QuestManager Instance { get; private set; }   
@@ -46,26 +43,24 @@ public class QuestManager : MonoBehaviour
             else
             {
                 List<QuestSO> questList = new List<QuestSO>();
+                questList.Add(quest);
                 AllQuestInStoryDict.Add(story, questList);
             }
             quest.StartQuest();
             quest.SetStoryName(story);
-            story.variablesState[quest.StateVariableName] = questStart;
-            story.ObserveVariable(quest.StateVariableName, (string varName, object val) => {
-                quest.CheckCurrentState(varName, val);
-            });
             ActiveQuestDict.Add(quest.name, quest);
-            quest.OnQuestGoalsCompleted += OnQuestGoalsCompleted;
-            quest.OnQuestGoalsFailed += OnQuestGoalsFailed;
+            quest.OnQuestCompleted += OnQuestGoalsCompleted;
+            quest.OnQuestFailed += OnQuestGoalsFailed;
             foreach(var g in quest.Goals)
             {
                 g.OnGoalCompletion += OnGoalCompletion;
-                g.OnGoalFailPostCompletion += OnGoalFailPostCompletion;
+                g.OnGoalFailure += OnGoalFailPostCompletion;
+                g.Initialize();
             }
             return true;
         }
         return false;
-    } 
+    }   
 
     private void CheckForQuestCompletion()
     {
@@ -75,39 +70,29 @@ public class QuestManager : MonoBehaviour
         }
     }
 
-    public static bool AllQuestsCompletedInStory(Story story)
-    {
-        bool temp = AllQuestInStoryDict[story].All(g => g.IsCompleted || g.IsFailed);
-        if (temp)
-        {
-            AllQuestInStoryDict.Remove(story);
-        }
-        return temp;
-    }
-
-    //~~~~~~~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~~~~~~~~
-
-   
+    //~~~~~~~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~~~~~~~~ 
 
     private void OnQuestGoalsCompleted(string obj, QuestSO quest)
     {
         QuestText = obj;
-        quest.QuestStory.variablesState[quest.StateVariableName] = goalSatisfied;
+        Debug.Log(QuestText);
     }
 
     private void OnQuestGoalsFailed(string obj, QuestSO quest)
     {
         QuestText = obj;
-        quest.QuestStory.variablesState[quest.StateVariableName] = goalUnsatisfied;
+        Debug.Log(QuestText);
     }
   
-    private void OnGoalFailPostCompletion(string obj)
+    private void OnGoalFailPostCompletion(string obj, Goal goal)
     {
         GoalText = obj;
+        Debug.Log(GoalText);
     }
 
-    private void OnGoalCompletion(string obj)
+    private void OnGoalCompletion(string obj, Goal goal)
     {
         GoalText = obj;
+        Debug.Log(GoalText);
     }
 }

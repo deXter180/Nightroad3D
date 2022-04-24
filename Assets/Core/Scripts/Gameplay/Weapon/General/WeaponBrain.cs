@@ -32,12 +32,16 @@ public class WeaponBrain : MonoBehaviour
 
     private void Awake()
     {
-        animator = GetComponentInChildren<Animator>();       
+        animator = GetComponentInChildren<Animator>();
+    }
+
+    private void Start()
+    {
+        SetWeapon();
     }
 
     private void OnEnable()
-    {
-        StartCoroutine(SetWeapon());
+    {      
         Weapons.OnPlayerAttack += Weapons_OnAttack;
         Weapons.OnPlayerReload += Weapons_OnPlayerReload;
         IsAttacking = false;       
@@ -46,7 +50,7 @@ public class WeaponBrain : MonoBehaviour
         ProjectileGun.OnStopProjectileShoot += ProjectileGun_OnStopProjectileShoot;
         RayShotGun.OnStopSGShoot += RayShotGun_OnStopSGShoot;
         animType = AnimType.Walk;
-        playingAnim = false;
+        playingAnim = false;       
     }
 
     private void OnDisable()
@@ -65,9 +69,8 @@ public class WeaponBrain : MonoBehaviour
         AudioManager.Instance.PlayWeaponSound(IsAttacking, weaponTypes);
     }
 
-    private IEnumerator SetWeapon()
+    private void SetWeapon()
     {
-        yield return new WaitForSeconds(1f);
         if (weapon == null)
         {
             weapon = new Weapons(this, weaponTypes);
@@ -77,6 +80,7 @@ public class WeaponBrain : MonoBehaviour
 
     public Weapons GetThisWeapon()
     {
+        SetWeapon();
         return weapon;
     }
 

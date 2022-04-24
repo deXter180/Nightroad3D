@@ -11,20 +11,17 @@ public class QuestSO : ScriptableObject
 {
     private Timer _timer;
     private Story questStory;
-    private string questComplete = "Completed";
-    private string questFail = "Failed";
     [Header("QuestData")]        
     [SerializeField] [Tooltip("Name of the Quest")] private string _name;
-    [SerializeField] [Tooltip("Name of Ink variable to track status of this quest")] private string stateVariableName;
+    [SerializeField] [Tooltip("Name main knot in INK story")] private string mainKnotName;
+    [SerializeField] [Tooltip("Name of Completion INK variable to track status of this quest")] private string completionStateName;
+    [SerializeField] [Tooltip("Name of Failure INK variable to track status of this quest")] private string failureStateName;
     [TextArea(2, 10)] [SerializeField] private string _description;
-    [TextArea(2, 4)] [SerializeField] [Tooltip("Text to show if all goals of this quest are completed")] private string allGoalsCompletionText;
-    [TextArea(2, 4)] [SerializeField] [Tooltip("Text to show if any goal of this quest is incomplete")] private string anyGoalFailureText;
     [TextArea(2, 4)] [SerializeField] [Tooltip("Text to show if this quest is completed")] private string questCompletionText;
     [TextArea(2, 4)] [SerializeField] [Tooltip("Text to show if this quest is failed")] private string questFailureText;  
     [SerializeField] private bool _isComplex;
     [SerializeField] private bool _isWithTimer;
     [SerializeField] private int _durationInMinutes;
-    [SerializeField] private int _XPRewardAmount;   
     [SerializeField] private List<GoalItem> _goalItems;
     [SerializeField] private RewardItems _rewardItem;
     public List<Goal> Goals { get; private set; } = new List<Goal>();
@@ -34,20 +31,16 @@ public class QuestSO : ScriptableObject
     public bool IsFailed { get; set; }
     public RewardItems RewardItem => _rewardItem;
     public string Name => _name;
-    public string StateVariableName => stateVariableName;
     public string Description => _description;
-    public string AllGoalsCompletionText => allGoalsCompletionText;
-    public string AnyGoalFailureText => anyGoalFailureText;
     public string QuestCompletionText => questCompletionText;
     public string QuestFailureText => questFailureText;   
     public bool IsComplex => _isComplex;
     public bool IsWithTimer => _isWithTimer;
     public int DurationInMinutes => _durationInMinutes;
-    public int XPRewardAmount => _XPRewardAmount;
     public Timer QuestTimer => _timer;
     public Story QuestStory => questStory;
-    public event Action<string, QuestSO> OnQuestGoalsCompleted;
-    public event Action<string, QuestSO> OnQuestGoalsFailed;
+    public event Action<string, QuestSO> OnQuestCompleted;
+    public event Action<string, QuestSO> OnQuestFailed;
 
     public void StartQuest()
     {
@@ -56,11 +49,15 @@ public class QuestSO : ScriptableObject
         IsCompleted = false;
         SetGoals();
         SetTimer();
+        
     }
 
     public void SetStoryName(Story story)
     {
         questStory = story;
+        questStory.onChoosePathString += Story_onChoosePathString;
+
+        questStory.onError += QuestStory_onError;
     }
 
     private void SetGoals()
@@ -102,6 +99,8 @@ public class QuestSO : ScriptableObject
             }
             if (goal != null)
             {
+                goal.OnGoalCompletion += Goal_OnGoalCompletion;
+                goal.OnGoalFailure += Goal_OnGoalFailure;
                 goal.Description = goalItem.Description;
                 goal.GoalCompleteText = goalItem.GoalCompletionText;
                 goal.GoalFailureText = goalItem.GoalFailureText;
@@ -154,48 +153,44 @@ public class QuestSO : ScriptableObject
     }
 
     private void CheckGoalStatus()
-    {
-        bool temp = AllGoalsSatisfied;
-        AllGoalsSatisfied = Goals.All(g => g.IsCompleted);
-        if (AllGoalsSatisfied != temp)
-        {
-            if (AllGoalsSatisfied)
-                OnQuestGoalsCompleted?.Invoke(allGoalsCompletionText, this);
-            else
-            {
-                OnQuestGoalsFailed?.Invoke(anyGoalFailureText, this);
-            }
-        }       
+    {       
+        AllGoalsSatisfied = Goals.All(g => g.IsCompleted);    
     }
 
-    public void CheckCurrentState(string varName, object state)
+    public void FinalizeState(bool isCompleted, MonoBehaviour mono)
     {
-        string temp = (string)state;
-        if (temp == questComplete)
+        questStory.ResetCallstack();
+        if (isCompleted)
         {
-            IsCompleted = true;
+            questStory.ChoosePathString(completionStateName);
+            OnQuestCompleted?.Invoke(questCompletionText, this);
             GiveReward();
         }
-        else if (temp == questFail)
+        else
         {
-            IsFailed = true;
+            questStory.ChoosePathString(failureStateName);
+            OnQuestFailed?.Invoke(questFailureText, this);
         }
-        if (IsCompleted || IsFailed)
-        {
-            QuestManager.ActiveQuestDict.Remove(this.name);
-            GoalsCloser();
-            if (QuestManager.AllQuestsCompletedInStory(questStory))
-            {
-                questStory.RemoveVariableObserver();
-            }           
-        }
-        
+        mono.StartCoroutine(EndQuest());
+    }
+
+    public IEnumerator EndQuest()
+    {
+        yield return Helpers.GetWait(5f);       
+        GoalsCloser();
+        questStory.onChoosePathString -= Story_onChoosePathString;
+        QuestManager.ActiveQuestDict.Remove(this.name);
+        QuestManager.AllQuestInStoryDict[questStory].Remove(this);
+        questStory.ResetCallstack();
+        questStory.ChoosePathString(mainKnotName);
     }
 
     private void GoalsCloser()
     {
         foreach (var goal in Goals)
         {
+            goal.OnGoalCompletion -= Goal_OnGoalCompletion;
+            goal.OnGoalFailure -= Goal_OnGoalFailure;
             goal.Closer();
         }
         Goals.Clear();
@@ -204,6 +199,36 @@ public class QuestSO : ScriptableObject
     private void GiveReward()
     {
         //Add item to inventory
+        Debug.Log("Got Rewarded !");
+    }
+
+    //~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~~~
+
+    private void Story_onChoosePathString(string arg1, object[] arg2)
+    {
+        if (arg1.Equals(completionStateName))
+        {
+            
+        }
+        else if (arg1.Equals(failureStateName))
+        {
+            
+        }
+    }
+
+    private void Goal_OnGoalFailure(string obj, Goal goal)
+    {
+        
+    }
+
+    private void Goal_OnGoalCompletion(string obj, Goal goal)
+    {
+        
+    }
+
+    private void QuestStory_onError(string message, Ink.ErrorType type) //Debugging
+    {
+        Debug.Log(message);
     }
 }
 
@@ -212,9 +237,9 @@ public class GoalItem
 {
     public GoalTypes GoalType;
     public int RequiredAmount;
-    public string Description;
-    public string GoalCompletionText;
-    public string GoalFailureText;
+    [TextArea(2, 4)] [Tooltip("Goal Description")] public string Description;
+    [TextArea(2, 4)] [Tooltip("Text to show if all goals of this quest are completed")] public string GoalCompletionText;
+    [TextArea(2, 4)] [Tooltip("Text to show if any goal of this quest is incomplete")] public string GoalFailureText;
     public ColletionItem CollectInfo;
     public EnemyInfoItem EnemyInfo;
 }

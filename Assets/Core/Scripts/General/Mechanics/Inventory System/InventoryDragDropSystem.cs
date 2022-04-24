@@ -7,14 +7,17 @@ public class InventoryDragDropSystem : MonoBehaviour
 {
     public static InventoryDragDropSystem Instance { get; private set; }
     private PlayerInputAsset inputs;
+    private PlayerController playerController;
     private GameController gameController;
     private bool isDraggedFromInventory;
     private bool isDraggedFromMenu;
     public float dragSmoothness = 80f;
     private InventoryItemSO.Dir dir;
     private PlacedObject draggingPOInventory;
-    private PlacedObject draggingPOMenu;
-    private EquipMenuTile draggedMenuTile;
+    private PlacedObject draggingPOWeaponMenu;
+    private PlacedObject draggingPOSpellMenu;
+    private EquipMenuWeaponTile draggedWeaponTile;
+    private EquipMenuSpellTile draggedSpellTile;
     private InventorySystem inventorySystem;
     private InventoryUIHandler inventoryUI;
     private Vector2Int mouseDragGridPosOffsetInventory;
@@ -32,12 +35,13 @@ public class InventoryDragDropSystem : MonoBehaviour
     {
         inventorySystem = InventorySystem.Instance;
         inventoryUI = InventoryUIHandler.Instance;
-        InventorySystem.OnPlacedOnInventory += InventorySystem_OnObjectPlaced;
+        playerController = PlayerController.Instance;
+        inventorySystem.OnPlacedOnInventory += InventorySystem_OnObjectPlaced;
         isDraggedFromInventory = false;
         isDraggedFromMenu = false;
-        foreach(var tile in EquipMenuControl.EquipTileList)
+        foreach(var tile in EquipMenuControl.WeaponTileList)
         {
-            tile.OnPlacedOnMenu += Tile_OnObjectPlacedinEquipTile;
+            tile.OnPlacedOnWeaponMenu += Tile_OnObjectPlacedinEquipTile;
         }
     }
 
@@ -48,10 +52,10 @@ public class InventoryDragDropSystem : MonoBehaviour
 
     private void OnDestroy()
     {
-        InventorySystem.OnPlacedOnInventory -= InventorySystem_OnObjectPlaced;
-        foreach (var tile in EquipMenuControl.EquipTileList)
+        inventorySystem.OnPlacedOnInventory -= InventorySystem_OnObjectPlaced;
+        foreach (var tile in EquipMenuControl.WeaponTileList)
         {
-            tile.OnPlacedOnMenu -= Tile_OnObjectPlacedinEquipTile;
+            tile.OnPlacedOnWeaponMenu -= Tile_OnObjectPlacedinEquipTile;
         }
     }
 
@@ -99,14 +103,24 @@ public class InventoryDragDropSystem : MonoBehaviour
                 rect.anchoredPosition = Vector2.Lerp(rect.anchoredPosition, targetPosition, Time.deltaTime * dragSmoothness);
                 draggingPOInventory.transform.rotation = Quaternion.Lerp(draggingPOInventory.transform.rotation, Quaternion.Euler(0, 0, -draggingPOInventory.GetInventoryItemSO().GetRotationAngle(dir)), Time.deltaTime * 15f);
             }
-            if(draggingPOMenu != null && draggedMenuTile != null)
+            if(draggingPOWeaponMenu != null && draggedWeaponTile != null)
             {               
-                RectTransformUtility.ScreenPointToLocalPointInRectangle(draggedMenuTile.GetRectTransform(), mousePos, UICam, out Vector2 targetPosition);
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(draggedWeaponTile.GetRectTransform(), mousePos, UICam, out Vector2 targetPosition);
                 targetPosition += new Vector2(-mouseDragGridPosOffsetMenu.x, -mouseDragGridPosOffsetMenu.y);
                 targetPosition /= 10f;
                 targetPosition = new Vector2(Mathf.Floor(targetPosition.x), Mathf.Floor(targetPosition.y));
                 targetPosition *= 10f;
-                RectTransform rect = draggingPOMenu.GetComponent<RectTransform>();
+                RectTransform rect = draggingPOWeaponMenu.GetComponent<RectTransform>();
+                rect.anchoredPosition = Vector2.Lerp(rect.anchoredPosition, targetPosition, Time.deltaTime * dragSmoothness);
+            }
+            if(draggingPOSpellMenu != null && draggedSpellTile != null)
+            {
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(draggedSpellTile.GetRectTransform(), mousePos, UICam, out Vector2 targetPosition);
+                targetPosition += new Vector2(-mouseDragGridPosOffsetMenu.x, -mouseDragGridPosOffsetMenu.y);
+                targetPosition /= 10f;
+                targetPosition = new Vector2(Mathf.Floor(targetPosition.x), Mathf.Floor(targetPosition.y));
+                targetPosition *= 10f;
+                RectTransform rect = draggingPOSpellMenu.GetComponent<RectTransform>();
                 rect.anchoredPosition = Vector2.Lerp(rect.anchoredPosition, targetPosition, Time.deltaTime * dragSmoothness);
             }
         }              
@@ -132,12 +146,29 @@ public class InventoryDragDropSystem : MonoBehaviour
         }         
     }
 
-    public void StartedDragging(PlacedObject placedObject, EquipMenuTile menuTile, Vector2 mousePos)
+    public void StartedDragging(PlacedObject placedObject, EquipMenuWeaponTile menuTile, Vector2 mousePos)
     {
         if (placedObject != null && menuTile != null)
         {           
-            draggingPOMenu = placedObject;
-            draggedMenuTile = menuTile;
+            draggingPOWeaponMenu = placedObject;
+            draggedWeaponTile = menuTile;
+            Cursor.visible = false;
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(menuTile.GetRectTransform(), mousePos, UICam, out Vector2 anchoredPosition))
+            {
+                isDraggedFromMenu = true;
+                Vector2Int mouseGridPos = menuTile.GetGridPos(anchoredPosition);
+                mouseDragGridPosOffsetMenu = Vector2.zero;
+                mouseDragGridPosOffsetMenu = anchoredPosition - placedObject.GetComponent<RectTransform>().anchoredPosition;
+            }
+        }
+    }
+
+    public void StartedDragging(PlacedObject placedObject, EquipMenuSpellTile menuTile, Vector2 mousePos)
+    {
+        if (placedObject != null && menuTile != null)
+        {
+            draggingPOSpellMenu = placedObject;
+            draggedSpellTile = menuTile;
             Cursor.visible = false;
             if (RectTransformUtility.ScreenPointToLocalPointInRectangle(menuTile.GetRectTransform(), mousePos, UICam, out Vector2 anchoredPosition))
             {
@@ -154,16 +185,21 @@ public class InventoryDragDropSystem : MonoBehaviour
         if (placedObject != null)
         {
             draggingPOInventory = null;
-            draggingPOMenu = null;
-            draggedMenuTile = null;
+            draggingPOWeaponMenu = null;
+            draggedWeaponTile = null;
+            draggedSpellTile = null;
             isDraggedFromInventory = false;
             isDraggedFromMenu = false;
             bool tryPlaceItem = false;
             Cursor.visible = true;
             Vector2Int OriginOnInventory = new Vector2Int();                                
-            if (placedObject.GetEquipTile() != null)
+            if (placedObject.GetWeaponEquipTile() != null)
             {
-                placedObject.GetEquipTile().TryRemoveItem();
+                placedObject.GetWeaponEquipTile().TryRemoveItem();
+            }
+            else if (placedObject.GetSpellEquipTile() != null)
+            {
+                placedObject.GetSpellEquipTile().TryRemoveItem();
             }
             else
             {
@@ -177,9 +213,13 @@ public class InventoryDragDropSystem : MonoBehaviour
                 {
                     tryPlaceItem = inventorySystem.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO, OriginOnInventory, dir);
                 }
-                else if (IsOnMenu(mousePos, out EquipMenuTile menuTile))
+                else if (IsOnWeaponMenu(mousePos, out EquipMenuWeaponTile weaponTile))
                 {
-                    tryPlaceItem = menuTile.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO);
+                    tryPlaceItem = weaponTile.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO);
+                }
+                else if (IsOnSpellMenu(mousePos, out EquipMenuSpellTile spellTile))
+                {
+                    tryPlaceItem = spellTile.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO);
                 }
             }            
             if (tryPlaceItem)
@@ -189,9 +229,9 @@ public class InventoryDragDropSystem : MonoBehaviour
             else
             {
                 inventorySystem.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO, placedObject.GetGridPos(), placedObject.GetDir());
-                if (placedObject.GetEquipTile() != null)
+                if (placedObject.GetWeaponEquipTile() != null)
                 {
-                    placedObject.GetEquipTile().TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO);
+                    placedObject.GetWeaponEquipTile().TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO);
                 }
             }
         }        
@@ -209,7 +249,9 @@ public class InventoryDragDropSystem : MonoBehaviour
                 if (inventorySystem.GetGrid().GetGridObject(placedObjectOrigin.x, placedObjectOrigin.y).GetPlacedObject() != null)
                 {
                     PlacedObject placedObject = inventorySystem.GetGrid().GetGridObject(placedObjectOrigin.x, placedObjectOrigin.y).GetPlacedObject();
-                    WeaponTypes WT = placedObject.GetInventoryItemSO().WeaponType;
+                    InventoryItemSO item = placedObject.GetInventoryItemSO();
+                    WeaponTypes WT = item.WeaponType;
+                    SpellTypes ST = item.SpellType;
                     placedObject.DestroySelf();
                     inventorySystem.RemoveFromInventoryList(placedObject);
                     List<Vector2Int> gridPosList = placedObject.GetGridPosList();
@@ -217,15 +259,18 @@ public class InventoryDragDropSystem : MonoBehaviour
                     {
                         inventorySystem.GetGrid().GetGridObject(gridPos.x, gridPos.y).ClearPlacedObject();
                     }
-                    if (WT == WeaponTypes.None)
+                    if (WT == WeaponTypes.None && ST == SpellTypes.None)
                     {
-                        PickedObject pickedObject = PickedObject.SpawnItemsWorld(placedObject.GetItemType(), placedObject.GetInventoryItemSO(),PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(15f, -15f));
+                        PickedObject pickedObject = PickedObject.SpawnItemsWorld(placedObject.GetItemType(), item, playerController.transform.position + playerController.GetRandomPosWithoutY(15f, -15f));
                     }
-                    else
+                    else if (WT != WeaponTypes.None && ST == SpellTypes.None)
                     {
-                        PickedObject pickedObject = PickedObject.SpawnWeaponWorld(WT, placedObject.GetInventoryItemSO(), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(15f, -15f));
+                        PickedObject pickedObject = PickedObject.SpawnWeaponWorld(WT, item, playerController.transform.position + playerController.GetRandomPosWithoutY(15f, -15f));
                     }
-                    
+                    else if (ST != SpellTypes.None && WT == WeaponTypes.None)
+                    {
+                        PickedObject pickedObject = PickedObject.SpawnSpellWorld(ST, item, playerController.transform.position + playerController.GetRandomPosWithoutY(15f, -15f));
+                    }
                 }
             }
         }           
@@ -241,9 +286,23 @@ public class InventoryDragDropSystem : MonoBehaviour
         return mouseOffset;
     }
 
-    public bool IsOnMenu(Vector2 currentPosition, out EquipMenuTile menuTile)
+    public bool IsOnWeaponMenu(Vector2 currentPosition, out EquipMenuWeaponTile menuTile)
     {
-        foreach (var menu in EquipMenuControl.EquipTileList)
+        foreach (var menu in EquipMenuControl.WeaponTileList)
+        {
+            if (RectTransformUtility.RectangleContainsScreenPoint(menu.GetRectTransform(), currentPosition, UICam))
+            {
+                menuTile = menu;
+                return true;
+            }
+        }
+        menuTile = null;
+        return false;
+    }
+
+    public bool IsOnSpellMenu(Vector2 currentPosition, out EquipMenuSpellTile menuTile)
+    {
+        foreach (var menu in EquipMenuControl.SpellTileList)
         {
             if (RectTransformUtility.RectangleContainsScreenPoint(menu.GetRectTransform(), currentPosition, UICam))
             {
@@ -257,7 +316,7 @@ public class InventoryDragDropSystem : MonoBehaviour
 
     public bool IsOnMenu(Vector2 currentPosition)
     {
-        foreach (var menu in EquipMenuControl.EquipTileList)
+        foreach (var menu in EquipMenuControl.WeaponTileList)
         {
             if (RectTransformUtility.RectangleContainsScreenPoint(menu.GetRectTransform(), currentPosition, UICam))
             {

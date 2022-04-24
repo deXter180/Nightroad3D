@@ -16,7 +16,9 @@ public class SpellBaseSO : ScriptableObject
     [SerializeField] private float castDelay;
     [SerializeField] private bool isQuickCast;
     [SerializeField] private int effectAmount;
+    [SerializeField] private int manaCost;
 
+    public int ManaCost => manaCost;
     public int EffectAmount => effectAmount;
     public float Duration => duration;
     public float Range => range;

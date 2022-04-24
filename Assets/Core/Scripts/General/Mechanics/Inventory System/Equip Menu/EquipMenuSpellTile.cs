@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class EquipMenuTile : MonoBehaviour
+public class EquipMenuSpellTile : MonoBehaviour
 {
     [SerializeField] private int gridWidth;
     [SerializeField] private int gridHeight;
@@ -15,8 +15,8 @@ public class EquipMenuTile : MonoBehaviour
     private PlacedObject currentPlacedObject;
     public PlacedObject MenuPlacedObject { get => currentPlacedObject; }
     public bool IsFilled { get => isFilled; }
-    public event EventHandler<PlacedObject> OnPlacedOnMenu;
-    public event EventHandler<PlacedObject> OnRemovedFromMenu;
+    public event EventHandler<PlacedObject> OnPlacedOnSpellMenu;
+    public event EventHandler<PlacedObject> OnRemovedFromSpellMenu;
 
     private void Awake()
     {
@@ -87,7 +87,7 @@ public class EquipMenuTile : MonoBehaviour
             currentPlacedObject = placedObject;
             grid.GetGridObject(0, 0).SetPlacedObject(placedObject);
             isFilled = true;
-            OnPlacedOnMenu?.Invoke(this, placedObject);
+            OnPlacedOnSpellMenu?.Invoke(this, placedObject);
             return true;
         }
         else { return false; }
@@ -101,14 +101,13 @@ public class EquipMenuTile : MonoBehaviour
             {
                 currentPlacedObject.DestroySelf();
                 grid.GetGridObject(0, 0).ClearPlacedObject();
-                OnRemovedFromMenu?.Invoke(this, currentPlacedObject);
+                OnRemovedFromSpellMenu?.Invoke(this, currentPlacedObject);
                 isFilled = false;
                 currentPlacedObject = null;
                 transform.DetachChildren();
                 return true;
-            }           
+            }
         }
         return false;
     }
-
 }

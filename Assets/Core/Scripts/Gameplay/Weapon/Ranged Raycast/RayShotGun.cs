@@ -4,21 +4,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.VFX;
 
-public class RayShotGun : MonoBehaviour
+public class RayShotGun : RangedWeapon
 {
-    public int CurrentMagazineAmmo { get => currentMagazineAmmo; }
-    public int CurrentTotalAmmo { get => currentTotalAmmo; }
     [SerializeField] private float MuzzleFlashTime;
     [SerializeField] private Transform firePoint;
     [SerializeField] private int PelletsCount;
     private PlayerInputAsset inputs;
     private GameController gameController;
-    private int currentMagazineAmmo;
-    private int currentTotalAmmo;
-    private int maxMagazineAmmo;
-    private int maxTotalAmmo;
-    private float attackRange;
-    private float attackSpeed;
     private float bloom;
     private bool isReloading;
     private bool isRanged;
@@ -57,7 +49,7 @@ public class RayShotGun : MonoBehaviour
         {
             gameController = GameController.Instance;
         }
-        if (gameController != null)
+        if (gameController != null && inputs != null)
         {
             if (gameObject.activeInHierarchy && weaponBrain.IsWeaponReady())
             {
@@ -74,6 +66,7 @@ public class RayShotGun : MonoBehaviour
                                     currentMagazineAmmo -= 1;
                                     currentTotalAmmo -= 1;
                                     currentMagazineAmmo = currentTotalAmmo == 1 ? 1 : currentMagazineAmmo;
+                                    CallEvent(this);
                                 }));
                             }
                             else
@@ -101,6 +94,7 @@ public class RayShotGun : MonoBehaviour
     {
         yield return new WaitUntil(() => InputManager.InputReady);
         inputs = InputManager.InputActions;
+        weaponBrain.GetThisWeapon();
     }
 
     private IEnumerator SetupWeapon()
@@ -117,6 +111,7 @@ public class RayShotGun : MonoBehaviour
         attackSpeed = thisWeapon.ThisWeaponSO.AttackSpeed;
         bloom = thisWeapon.ThisWeaponSO.Bloom;
         isRanged = thisWeapon.ThisWeaponSO.IsRanged;
+        isReady = true;
     }
 
     private IEnumerator PlayMuzzleLight()
@@ -207,6 +202,7 @@ public class RayShotGun : MonoBehaviour
                 }
                 isReloading = true;
                 currentMagazineAmmo = maxMagazineAmmo;
+                CallEvent(this);
                 thisWeapon.RaiseOnPlayerReload(thisWeapon, weaponBrain, weaponType);
                 yield return new WaitForSeconds(weaponBrain.AnimDelay);
                 action.Invoke();

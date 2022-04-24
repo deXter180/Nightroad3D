@@ -6,6 +6,12 @@ using UnityEngine.UI;
 [CreateAssetMenu(fileName = "New Item", menuName = "Inventory/Item")]
 public class InventoryItemSO : ScriptableObject
 {
+    public enum TileTypes
+    {
+        SpellTile,
+        WeaponTile,
+        InventoryTile
+    }
     public string ItemID;  
     public string ItemName;
     public string ItemDescription;
@@ -14,6 +20,8 @@ public class InventoryItemSO : ScriptableObject
     public int Height;
     public ItemTypes ItemType;
     public WeaponTypes WeaponType;
+    public SpellTypes SpellType;
+    public SpellCategories SpellCategory;
     public ItemRarity Rarity;
     [SerializeField] public int AttributeAmount;
     [SerializeField] public Texture2D AttributeIcon;
@@ -114,12 +122,12 @@ public class InventoryItemSO : ScriptableObject
     }
     #endregion
 
-    public static void CreateGridVisual(Transform visualParentTransform, InventoryItemSO inventoryItemSO, float cellSize, bool isOnMenu)
+    public static void CreateGridVisual(Transform visualParentTransform, InventoryItemSO inventoryItemSO, float cellSize, TileTypes tileType)
     {
         Transform visualTransform = Instantiate(InventoryUIHandler.Instance.gridVisual, visualParentTransform);
         visualTransform.gameObject.SetActive(false);
         RectTransform rectTransform = visualTransform.GetComponent<RectTransform>();
-        if (!isOnMenu)
+        if (tileType == TileTypes.InventoryTile)
         {
             if (inventoryItemSO.Width == 1 && inventoryItemSO.Height == 1)
             {
@@ -138,9 +146,13 @@ public class InventoryItemSO : ScriptableObject
                 rectTransform.sizeDelta = new Vector2(inventoryItemSO.Width, inventoryItemSO.Height) * cellSize;
             }
         }
-        else
+        else if (tileType == TileTypes.WeaponTile)
         {
             rectTransform.sizeDelta = new Vector2(cellSize, cellSize);
+        }
+        else if (tileType == TileTypes.SpellTile)
+        {
+            rectTransform.sizeDelta = new Vector2(cellSize * 3.2f, cellSize * 3.2f);
         }        
         //rectTransform.sizeDelta = new Vector2(inventoryItemSO.Width, inventoryItemSO.Height) * cellSize;
         rectTransform.anchoredPosition = Vector2.zero;

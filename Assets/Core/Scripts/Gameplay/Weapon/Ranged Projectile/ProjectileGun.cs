@@ -4,20 +4,13 @@ using UnityEngine;
 using System;
 //using UnityEngine.PlayerLoop;
 
-public class ProjectileGun : MonoBehaviour
+public class ProjectileGun : RangedWeapon
 {
-    public int CurrentMagazineAmmo { get => currentMagazineAmmo; }
-    public int CurrentTotalAmmo { get => currentTotalAmmo; }
     [SerializeField] private float MuzzleFlashTime;
     [SerializeField] private Transform FiringPoint;
     private PlayerInputAsset inputs;
     private GameController gameController;
-    private int currentMagazineAmmo;
-    private int currentTotalAmmo;
-    private int maxMagazineAmmo;
-    private int maxTotalAmmo;
     private bool isReloading;
-    private float attackSpeed;
     private Weapons thisWeapon;
     private WeaponCategories weaponCategory;
     private WeaponTypes weaponType;   
@@ -52,7 +45,7 @@ public class ProjectileGun : MonoBehaviour
         {
             gameController = GameController.Instance;
         }
-        if (gameController != null)
+        if (gameController != null && inputs != null)
         {
             if (gameObject.activeInHierarchy && weaponBrain.IsWeaponReady())
             {
@@ -69,6 +62,7 @@ public class ProjectileGun : MonoBehaviour
                                     currentMagazineAmmo -= 1;
                                     currentTotalAmmo -= 1;
                                     currentMagazineAmmo = currentTotalAmmo == 1 ? 1 : currentMagazineAmmo;
+                                    CallEvent(this);
                                 }));
                             }
                             else
@@ -97,6 +91,7 @@ public class ProjectileGun : MonoBehaviour
     {
         yield return new WaitUntil(() => InputManager.InputReady);
         inputs = InputManager.InputActions;
+        weaponBrain.GetThisWeapon();
     }
 
     private ProjectileTypes GetProjectile(WeaponTypes weaponType)
@@ -132,6 +127,7 @@ public class ProjectileGun : MonoBehaviour
         currentTotalAmmo = maxTotalAmmo;
         weaponCategory = weaponBrain.GetWeaponCategories();
         attackSpeed = weaponBrain.GetThisWeapon().ThisWeaponSO.AttackSpeed;
+        isReady = true;
     }
 
     private IEnumerator Shoot(Action action) //Used in PlayerControl
@@ -164,7 +160,8 @@ public class ProjectileGun : MonoBehaviour
                 {
                     currentMagazineAmmo = currentTotalAmmo;
                 }
-                isReloading = true;                
+                isReloading = true;
+                CallEvent(this);
                 thisWeapon.RaiseOnPlayerReload(thisWeapon, weaponBrain, weaponType);
                 yield return new WaitForSeconds(weaponBrain.AnimDelay);
                 action.Invoke();

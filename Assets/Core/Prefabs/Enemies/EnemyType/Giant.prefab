@@ -434,7 +434,7 @@ PrefabInstance:
     - target: {fileID: 5047825876684902307, guid: 692cbf834ff479049a9a8e5ddf72f10b,
         type: 3}
       propertyPath: m_InitialEventNameOverriden
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5047825876684902307, guid: 692cbf834ff479049a9a8e5ddf72f10b,
         type: 3}
@@ -625,7 +625,7 @@ PrefabInstance:
     - target: {fileID: 4551104349282486472, guid: 680153f350016474d947873a975b3097,
         type: 3}
       propertyPath: m_InitialEventNameOverriden
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5368140271618368645, guid: 680153f350016474d947873a975b3097,
         type: 3}

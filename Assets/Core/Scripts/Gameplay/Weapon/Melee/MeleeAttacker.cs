@@ -35,7 +35,7 @@ public class MeleeAttacker : MonoBehaviour
         {
             gameController = GameController.Instance;
         }
-        if (gameController != null)
+        if (gameController != null && inputs != null)
         {
             if (!gameController.IsMainMenuActive && !gameController.IsInventoryActive)
             {
@@ -48,6 +48,7 @@ public class MeleeAttacker : MonoBehaviour
     {
         yield return new WaitUntil(() => InputManager.InputReady);
         inputs = InputManager.InputActions;
+        weaponBrain.GetThisWeapon();
     }
 
     private void GetRange()
