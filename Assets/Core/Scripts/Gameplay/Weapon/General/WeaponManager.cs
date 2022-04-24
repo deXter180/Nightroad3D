@@ -129,25 +129,7 @@ public class WeaponManager : MonoBehaviour
                     if (weaponInventory.Count == 1)
                     {
                         weaponBrains[i].gameObject.SetActive(true);
-                        if (weaponBrains[i].GetThisWeapon().ThisWeaponSO != null)
-                        {
-                            WeaponSO weaponSO = weaponBrains[i].GetThisWeapon().ThisWeaponSO;
-                            if (weaponSO.IsRanged)
-                            {
-                                if (rangedWeaponDict.ContainsKey(weaponBrains[i]))
-                                {
-                                    OnRangeWeaponEquip?.Invoke(rangedWeaponDict[weaponBrains[i]]);
-                                }
-                                else
-                                {
-                                    if (weaponBrains[i].TryGetComponent<RangedWeapon>(out RangedWeapon rangedWeapon))
-                                    {
-                                        rangedWeaponDict.Add(weaponBrains[i], rangedWeapon);
-                                        OnRangeWeaponEquip?.Invoke(rangedWeapon);
-                                    }
-                                }
-                            }
-                        }
+                        VerifyIfRanged(weaponBrains[i].GetThisWeapon().ThisWeaponSO, weaponBrains[i]);
                         SelectedWeapon = 0;
                     }
                 }
@@ -176,29 +158,7 @@ public class WeaponManager : MonoBehaviour
             if (i == SelectedWeapon)
             {
                 weapon.gameObject.SetActive(true);
-                if (weapon.GetThisWeapon().ThisWeaponSO != null)
-                {
-                    WeaponSO weaponSO = weapon.GetThisWeapon().ThisWeaponSO;
-                    if (weaponSO.IsRanged)
-                    {
-                        if (rangedWeaponDict.ContainsKey(weapon))
-                        {
-                            OnRangeWeaponEquip?.Invoke(rangedWeaponDict[weapon]);
-                        }
-                        else
-                        {
-                            if (weapon.TryGetComponent<RangedWeapon>(out RangedWeapon rangedWeapon))
-                            {
-                                rangedWeaponDict.Add(weapon, rangedWeapon);
-                                OnRangeWeaponEquip?.Invoke(rangedWeapon);
-                            }
-                        }                        
-                    }
-                    else
-                    {
-                        OnMeleeWeaponEquip?.Invoke();
-                    }
-                }             
+                VerifyIfRanged(weapon.GetThisWeapon().ThisWeaponSO, weapon);                           
             }
             else
                 weapon.gameObject.SetActive(false);
@@ -258,6 +218,32 @@ public class WeaponManager : MonoBehaviour
             SelectedWeapon = 0;
             SelectWeapon();
             isRemoved = false;
+        }
+    }
+
+    private void VerifyIfRanged(WeaponSO weaponSO, WeaponBrain weapon)
+    {
+        if (weaponSO != null && weapon != null)
+        {
+            if (weaponSO.IsRanged)
+            {
+                if (rangedWeaponDict.ContainsKey(weapon))
+                {
+                    OnRangeWeaponEquip?.Invoke(rangedWeaponDict[weapon]);
+                }
+                else
+                {
+                    if (weapon.TryGetComponent<RangedWeapon>(out RangedWeapon rangedWeapon))
+                    {
+                        rangedWeaponDict.Add(weapon, rangedWeapon);
+                        OnRangeWeaponEquip?.Invoke(rangedWeapon);
+                    }
+                }
+            }
+            else
+            {
+                OnMeleeWeaponEquip?.Invoke();
+            }
         }
     }
 
