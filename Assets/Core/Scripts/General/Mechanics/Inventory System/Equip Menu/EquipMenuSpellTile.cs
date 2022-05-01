@@ -79,18 +79,21 @@ public class EquipMenuSpellTile : MonoBehaviour
     {
         //bool isValidPos = grid.IsValidGridPos(placedObjectOrigin);
         bool isValidType = inventoryItemSO.ItemType == itemType;
-        if (isValidType && transform.childCount < 1)
+        if (isValidType && transform.childCount < 1 && !isFilled)
         {
             Vector2Int placedObjectOrigin = new Vector2Int(0, 0);
             PlacedObject placedObject = PlacedObject.Create(transform, this, rectTransform.anchoredPosition, placedObjectOrigin, inventoryItemSO);
             transform.SetAsLastSibling();
-            currentPlacedObject = placedObject;
-            grid.GetGridObject(0, 0).SetPlacedObject(placedObject);
-            isFilled = true;
-            OnPlacedOnSpellMenu?.Invoke(this, placedObject);
-            return true;
+            if (currentPlacedObject == null)
+            {
+                currentPlacedObject = placedObject;
+                grid.GetGridObject(0, 0).SetPlacedObject(placedObject);
+                isFilled = true;
+                OnPlacedOnSpellMenu?.Invoke(this, placedObject);
+                return true;
+            }           
         }
-        else { return false; }
+        return false;
     }
 
     public bool TryRemoveItem()
@@ -109,5 +112,12 @@ public class EquipMenuSpellTile : MonoBehaviour
             }
         }
         return false;
+    }
+
+    public void ResetTile()
+    {
+        transform.DeleteChildren();
+        currentPlacedObject = null;
+        isFilled = false;
     }
 }

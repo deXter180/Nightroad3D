@@ -15,7 +15,7 @@ public class RainEntryTrigger : MonoBehaviour
     {
         if (col.gameObject.CompareTag("Player"))
         {
-            StartCoroutine(rainParticleSystem.EnableRain());
+            rainParticleSystem.EnableRain();
         }
     }
 }

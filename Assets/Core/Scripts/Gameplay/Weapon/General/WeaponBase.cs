@@ -16,7 +16,7 @@ public class Weapons
     public Weapons(WeaponBrain wb, WeaponTypes weaponTypes)
     {
         this.weaponBrain = wb;
-        weaponSO = AssetCollections.GetWeaponSOFromList(weaponTypes);
+        weaponSO = GameController.GetWeaponSOFromList(weaponTypes);
     }
 
     public void RaiseOnPlayerAttack(Weapons weapon, WeaponBrain weaponBrain, WeaponCategories weaponCategory, WeaponTypes weaponType)

@@ -49,7 +49,7 @@ public class Grid<GridObject>
         
         //~~~~~~~~~~~~~~~~~~~~~ Debug ~~~~~~~~~~~~~~~~~~~~~~~~
 
-        bool showDebug = true;
+        bool showDebug = false;
         if (showDebug)
         {
             for (int x = 0; x < gridArray.GetLength(0); x++)
@@ -200,3 +200,59 @@ public class Grid<GridObject>
 
     #endregion
 }
+
+
+
+//~~~~~~~~~~~~~~~ Grid Object Class ~~~~~~~~~~~~~~~~
+
+#region
+
+public class GridObject
+{
+    private Grid<GridObject> grid;
+    private int x;
+    private int y;
+    public PlacedObject placedObject;
+
+    public GridObject(Grid<GridObject> grid, int x, int y)
+    {
+        this.grid = grid;
+        this.x = x;
+        this.y = y;
+        placedObject = null;
+    }
+
+    public override string ToString()
+    {
+        return x + ", " + y + "\n" + placedObject;
+    }
+
+    public void SetPlacedObject(PlacedObject placedObject)
+    {
+        this.placedObject = placedObject;
+        grid.TriggerGridObjectChanged(x, y);
+    }
+
+    public void ClearPlacedObject()
+    {
+        placedObject = null;
+        grid.TriggerGridObjectChanged(x, y);
+    }
+
+    public PlacedObject GetPlacedObject()
+    {
+        return placedObject;
+    }
+
+    public bool CanBuild()
+    {
+        return placedObject == null;
+    }
+
+    public bool HasPlacedObject()
+    {
+        return placedObject != null;
+    }
+}
+
+#endregion

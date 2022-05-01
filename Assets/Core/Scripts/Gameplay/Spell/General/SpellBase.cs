@@ -18,7 +18,7 @@ public abstract class Spells
     {
         this.spellType = spellType;
         spellCategory = category;
-        spellSO = AssetCollections.GetSpellSOFromList(spellType);
+        spellSO = GameController.GetSpellSOFromList(spellType);
         spellManager = SpellManager.Instance;
     }
 
@@ -66,7 +66,7 @@ public class SingleTargetedProjectile : Spells
 
     public void SpawnHitVfx(Vector3 HitPointPos)
     {
-        AssetRefLoader.CreateAndReleaseAsset("Explosion_vfx", HitPointPos, 0.3f);
+        AssetLoader.CreateAndReleaseAsset("Explosion_vfx", HitPointPos, 0.3f);
     }
 }
 
@@ -86,13 +86,12 @@ public class AOETargeted : Spells
         spellPosition = position;
     }
 
-    public override async void CastSpell(Action action)
+    public override void CastSpell(Action action)
     {
         if (GetAssetName() != null)
         {
-            GameObject GO = await AssetRefLoader.CreatedAsset(GetAssetName(), spellPosition);
+            AssetLoader.CreateAndReleaseAsset(GetAssetName(), spellPosition, 2f);
             OnAOESpellCast?.Invoke(this, new OnAOESpellCastEventArg(this, spellType, spellCategory));
-            await AssetRefLoader.ReleaseAssetInstance(GO, 2f);
             action.Invoke();
         }       
     }

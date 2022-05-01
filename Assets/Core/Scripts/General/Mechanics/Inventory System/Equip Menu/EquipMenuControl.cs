@@ -2,21 +2,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EquipMenuControl : MonoBehaviour
+public class EquipMenuControl : Singleton<EquipMenuControl>
 {
     public static List<EquipMenuWeaponTile> WeaponTileList = new List<EquipMenuWeaponTile>();
     public static List<EquipMenuSpellTile> SpellTileList = new List<EquipMenuSpellTile>();
-    public static EquipMenuControl Instance { get; private set; }
-    public RectTransform menuContainer;
-    public Camera UICam;
 
-    private void Awake()
+    protected override void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else Destroy(Instance);
+        base.Awake();
+        InitializeEquipMenu();
+    }
+
+    private void OnEnable()
+    {
+        SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
+    }
+
+    private void OnDisable()
+    {
+        SceneLoader.OnNewGameStart -= SceneLoader_OnNewGameStart;
+    }
+
+    private void InitializeEquipMenu()
+    {
         EquipMenuWeaponTile[] equipWeaponArray = GetComponentsInChildren<EquipMenuWeaponTile>();
         EquipMenuSpellTile[] equipSpellArray = GetComponentsInChildren<EquipMenuSpellTile>();
         foreach (var tile in equipWeaponArray)
@@ -30,8 +38,36 @@ public class EquipMenuControl : MonoBehaviour
             tile.GetRectTransform().sizeDelta = new Vector2(50, 50);
             SpellTileList.Add(tile);
         }
-
-
     }
 
+    private void ResetEquipMenu()
+    {
+        if (WeaponTileList != null && SpellTileList != null)
+        {
+            WeaponTileList.Clear();
+            SpellTileList.Clear();
+            InitializeEquipMenu();
+            foreach(var tile in WeaponTileList)
+            {
+                if (tile != null)
+                {
+                    tile.ResetTile();
+                }               
+            }
+            foreach(var tile in SpellTileList)
+            {
+                if (tile != null)
+                {
+                    tile.ResetTile();
+                }                
+            }
+        }
+    }
+
+    //~~~~~~~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~~~~~~
+
+    private void SceneLoader_OnNewGameStart()
+    {
+        ResetEquipMenu();
+    }
 }

@@ -6,9 +6,8 @@ using UnityEngine.UI;
 using Ink.Runtime;
 using System;
 
-public class DialogueManager : MonoBehaviour
+public class DialogueManager : Singleton<DialogueManager>
 {
-    public static DialogueManager Instance { get; private set; }
     private Vector3 screenPos;
     private Story activeStory;   
     private GameController gameController;
@@ -24,17 +23,9 @@ public class DialogueManager : MonoBehaviour
     public static Dictionary<string, Story> ActiveStoryDict = new Dictionary<string, Story>();
     private Dictionary<Story, string> lastTextFromStoryDict = new Dictionary<Story, string>();
 
-    private void Awake()
+    protected override void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(Instance);
-            Instance = this;
-        }
+        base.Awake();      
     }
 
     private void Start()
@@ -49,11 +40,13 @@ public class DialogueManager : MonoBehaviour
     private void OnEnable()
     {
         endButton.onClick.AddListener(() => EndConversation());
+        SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
     }
 
     private void OnDisable()
     {
         endButton.onClick.RemoveAllListeners();
+        SceneLoader.OnNewGameStart -= SceneLoader_OnNewGameStart;
     }
 
     public void SetupStory(TextAsset storyTextAsset)
@@ -164,8 +157,6 @@ public class DialogueManager : MonoBehaviour
         gameController.SetDialogueActive(false);
     }
 
-    
-
     private IEnumerator DelayEnd()
     {
         yield return endDelay;
@@ -197,5 +188,23 @@ public class DialogueManager : MonoBehaviour
         {
 
         }
+    }
+
+    //~~~~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~~~~~~
+
+    private void SceneLoader_OnNewGameStart()
+    {
+        activeStory = null;
+        foreach (var s in ActiveStoryDict.Values)
+        {
+            var temp = QuestManager.AllQuestInStoryDict[s];
+            foreach (var q in temp)
+            {
+                q.ResetQuest();
+            }
+        }
+        questManager.ResetAllQuests();
+        ActiveStoryDict.Clear();
+        lastTextFromStoryDict.Clear();
     }
 }

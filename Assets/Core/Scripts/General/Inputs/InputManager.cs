@@ -16,14 +16,14 @@ public class InputManager : MonoBehaviour
     private static bool inputReady = false;
     public static List<InputMenuTab> MenuTabsList = new List<InputMenuTab>();
 
-    private void Awake()
+    private void OnEnable()
     {
         if (InputActions == null)
         {
             InputActions = new PlayerInputAsset();
             InputActions.Enable();
-            inputReady = true;
         }
+        inputReady = true;
         InputMenuTab[] tempArray = GetComponentsInChildren<InputMenuTab>();
         foreach (var menuTab in tempArray)
         {
@@ -31,7 +31,7 @@ public class InputManager : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         InputActions.Disable();
         InputActions.Dispose();

@@ -117,8 +117,7 @@ public class WeaponBrain : MonoBehaviour
 
     public void SpawnHitVfx(Vector3 HitPointPos)
     {
-
-        AssetRefLoader.CreateAndReleaseAsset(GetWeaponName(), HitPointPos, 0.3f);
+        AssetLoader.CreateAndReleaseAsset(GetWeaponName(), HitPointPos, 0.3f);
     }
 
     //~~~~~~~~~~~~~~~~~~ Weaapon Animation ~~~~~~~~~~~~~~~~~~

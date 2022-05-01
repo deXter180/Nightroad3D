@@ -8,7 +8,7 @@ public class Billboard : MonoBehaviour
 
     private void Start()
     {
-        mainCam = Camera.main;
+        mainCam = Helpers.MainCam;
     }
 
     private bool IsVisibleToCamera()

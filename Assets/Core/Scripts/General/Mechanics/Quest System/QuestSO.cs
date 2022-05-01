@@ -202,6 +202,17 @@ public class QuestSO : ScriptableObject
         Debug.Log("Got Rewarded !");
     }
 
+    public void ResetQuest()
+    {
+        questStory = null;
+        _timer = null;
+        foreach (var g in Goals)
+        {
+            g.Closer();
+        }
+        Goals.Clear();
+    }
+
     //~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~~~
 
     private void Story_onChoosePathString(string arg1, object[] arg2)

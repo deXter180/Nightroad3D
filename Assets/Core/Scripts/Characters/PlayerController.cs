@@ -5,12 +5,11 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : PersistentSingleton<PlayerController>
 {
     //~~~~~~~~~~~~~~~~ Variables ~~~~~~~~~~~~~~~~~
     
     public float GroundHeight;
-    public static PlayerController Instance { get; private set; }
     public Target PlayerTarget { get => target; }
     public int MaxHitPoints { get => maxHitPoints; }
     public int MaxMana { get => maxMana; }
@@ -33,9 +32,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float crouchHeightPrecentage;
     [SerializeField] private float SelectionThreshold;
     [SerializeField] private Transform camTransform;
-    [SerializeField] private InventorySystem mainInventory;
+    private InventorySystem mainInventory;
     private PlayerInputAsset inputs;
     private GameController gameController;
+    private WeaponManager weaponManager;
+    private SpellManager spellManager;
     private DialogueManager dialogueManager;
     private PickedObject selectedPickedObject = null;
     private NPCBrain selectedNPC = null;
@@ -43,6 +44,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody RB;
     private CapsuleCollider col;
     private Target target;
+    private AudioListener audioListener;
     private Vector3 OldPos;
     private Vector3 gravity;
     private Vector3 dashPos;
@@ -56,6 +58,8 @@ public class PlayerController : MonoBehaviour
     private float normalHeight;
     private float crouchHeight;  
     private float currentTime = 0;
+    private float gravityControl;
+    private bool isJumping;
     private bool isCrouching;
     private bool isDead;
     private bool isToggledCrouching;  
@@ -63,36 +67,37 @@ public class PlayerController : MonoBehaviour
 
     //~~~~~~~~~~~~~~~~~ Initialization ~~~~~~~~~~~~~~~~~~~
 
-    private void Awake()
+    protected override void Awake()
     {
-        if (Instance != null)
-        {
-            Destroy(Instance);
-        }
-        else Instance = this;
+        base.Awake();
         RB = GetComponent<Rigidbody>();
         col = GetComponent<CapsuleCollider>();       
         target = GetComponent<Target>();
+        weaponManager = GetComponentInChildren<WeaponManager>();
+        spellManager = GetComponentInChildren<SpellManager>();
         bitmask = ground | water;
-        gravity = globalGravity * GravityScale * Vector3.up;
-        StartCoroutine(mainInventory.Test());
+        
         isDead = false;
     }
 
-    private void OnEnable()
+    private void Start()
     {
         StartCoroutine(InputDone());
+        AssignInv();
+        AssignGameControl();
+        AssignDialogueManager();
+        audioListener = Helpers.MainCam.GetComponent<AudioListener>();
         RB.useGravity = false;
-        CurrentHP = maxHitPoints;
-        CurrentMana = maxMana;
-        GetComponent<Target>().SetupMaxHP(MaxHitPoints);
-        GetComponent<Target>().SetupMaxMana(maxMana);
         normalHeight = col.height;
         crouchHeight = (normalHeight * crouchHeightPrecentage) / 100;
+        SceneLoader.OnMainMenuSceneLoad += SceneLoader_OnMainMenuSceneLoad;
+        SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
+        AssetLoader.OnSingleSceneLoad += AssetLoader_OnSingleSceneLoad;
         target.Resource.OnHealthGain += Resource_OnHealthGain;
         target.Resource.OnHealthLoss += Resource_OnHealthLoss;
         target.Resource.OnManaGain += Resource_OnManaGain;
         target.Resource.OnManaLoss += Resource_OnManaLoss;
+        isJumping = false;
         //PickedObjectCols = new List<Collider>();
     }
 
@@ -100,7 +105,18 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        SetGravity();                 
+        if (RB != null)
+        {
+            if (RB.velocity.y > 14)
+            {
+                gravityControl = GravityScale + 1;
+            }
+            else
+            {
+                gravityControl = GravityScale;
+            }
+            SetGravity();           
+        }                        
     }
 
     private void Update()
@@ -127,6 +143,9 @@ public class PlayerController : MonoBehaviour
 
     private void PostPlayerDeath()
     {
+        SceneLoader.OnMainMenuSceneLoad -= SceneLoader_OnMainMenuSceneLoad;
+        SceneLoader.OnNewGameStart -= SceneLoader_OnNewGameStart;
+        AssetLoader.OnSingleSceneLoad -= AssetLoader_OnSingleSceneLoad;
         target.Resource.OnHealthGain -= Resource_OnHealthGain;
         target.Resource.OnHealthLoss -= Resource_OnHealthLoss;
         target.Resource.OnManaGain -= Resource_OnManaGain;
@@ -135,10 +154,11 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator InputDone()
     {
-        yield return new WaitUntil(() => InputManager.InputReady);
-        inputs = InputManager.InputActions;
-        gameController = GameController.Instance;
-        dialogueManager = DialogueManager.Instance;
+        if (inputs == null)
+        {
+            yield return new WaitUntil(() => InputManager.InputReady);
+            inputs = InputManager.InputActions;
+        }      
     }
 
     private void HandleBaseMechanics()
@@ -157,8 +177,27 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void AssignInv()
+    {
+        if (mainInventory == null)
+            mainInventory = InventorySystem.Instance;
+    }
+
+    private void AssignGameControl()
+    {
+        if (gameController == null)
+            gameController = GameController.Instance;
+    }
+
+    private void AssignDialogueManager()
+    {
+        if (dialogueManager == null)
+            dialogueManager = DialogueManager.Instance;
+    }
+
     private void SetGravity()
     {
+        gravity = globalGravity * gravityControl * Vector3.up;
         RB.AddForce(gravity, ForceMode.Impulse);
     }
 
@@ -202,11 +241,19 @@ public class PlayerController : MonoBehaviour
         {
             if (GroundCheck())
             {
-                if (RB.velocity.y > 2f)
-                    RB.AddForce(transform.up * (JumpForce / 2), ForceMode.Impulse);
-                else
-                    RB.AddForce(transform.up * JumpForce, ForceMode.Impulse);
-            }
+                if (!isJumping)
+                {                  
+                    if (RB.velocity.y > 1)
+                    {
+                        RB.AddForce(transform.up * (JumpForce / 2), ForceMode.Impulse);
+                    }
+                    else
+                    {
+                        RB.AddForce(transform.up * JumpForce, ForceMode.Impulse);
+                    }
+                    isJumping = true;
+                }
+            }          
         }
     }
 
@@ -259,7 +306,12 @@ public class PlayerController : MonoBehaviour
     private bool GroundCheck()
     {
         Physics.BoxCast(col.bounds.center, transform.localScale / 2, Vector3.down, out RaycastHit hit, Quaternion.identity, col.bounds.extents.y, bitmask);
-        return hit.collider != null;
+        if (hit.collider)
+        {
+            isJumping = false;
+            return true;
+        }
+        else return false;
     }
 
     public bool IsMoving(Vector3 newPos)
@@ -318,7 +370,7 @@ public class PlayerController : MonoBehaviour
                         }
                         else
                         {
-                            selectedPickedObject.AddForceToItemSpawn(GetRandomDirWithoutY(1f, -1f));
+                            selectedPickedObject.AddForceToItemSpawn(GetRandomDirWithoutY(2f, -2f));
                         }
                     }
                 }
@@ -378,6 +430,33 @@ public class PlayerController : MonoBehaviour
     }
 
     //~~~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~~~
+
+    private void SceneLoader_OnNewGameStart()
+    {
+        gameObject.SetActive(true);
+        audioListener.enabled = true;
+        StartCoroutine(InputDone());
+        AssignInv();
+        AssignGameControl();
+        AssignDialogueManager();
+        GetComponent<Target>().SetupMaxHP(MaxHitPoints);
+        GetComponent<Target>().SetupMaxMana(maxMana);
+        CurrentHP = maxHitPoints;
+        CurrentMana = maxMana;
+        spellManager.SetupSpellCircle();
+    }
+
+    private void SceneLoader_OnMainMenuSceneLoad()
+    {
+        gameObject.SetActive(false);
+        weaponManager.DisableAllWeapons();
+        audioListener.enabled = false;
+    }
+
+    private void AssetLoader_OnSingleSceneLoad(UnityEngine.ResourceManagement.ResourceProviders.SceneInstance obj)
+    {
+        gameObject.SetActive(true);
+    }
 
     private void Resource_OnManaLoss(object sender, ResourceManagement.ManaEventArgs e)
     {

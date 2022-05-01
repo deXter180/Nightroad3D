@@ -5,25 +5,16 @@ using Ink.Runtime;
 using System;
 using System.Linq;
 
-public class QuestManager : MonoBehaviour
+public class QuestManager : Singleton<QuestManager>
 {
     public string QuestText { get; private set; }
     public string GoalText { get; private set; }
-    public static QuestManager Instance { get; private set; }   
     public static Dictionary<string, QuestSO> ActiveQuestDict = new Dictionary<string, QuestSO>();
     public static Dictionary<Story, List<QuestSO>> AllQuestInStoryDict = new Dictionary<Story, List<QuestSO>>();
 
-    private void Awake()
+    protected override void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(Instance);
-            Instance = this;
-        }
+        base.Awake();
     }
 
     private void Update()
@@ -33,7 +24,7 @@ public class QuestManager : MonoBehaviour
 
     public bool StartNewQuest(string questName, Story story)
     {
-        QuestSO quest = AssetCollections.GetQeust(questName);
+        QuestSO quest = GameController.GetQeust(questName);
         if (quest != null)
         {
             if (AllQuestInStoryDict.ContainsKey(story))
@@ -68,6 +59,16 @@ public class QuestManager : MonoBehaviour
         {
             q.CheckGoals();
         }
+    }
+
+    public void ResetAllQuests()
+    {
+        foreach (var q in ActiveQuestDict.Values)
+        {
+            q.ResetQuest();
+        }
+        ActiveQuestDict.Clear();
+        AllQuestInStoryDict.Clear();
     }
 
     //~~~~~~~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~~~~~~~~ 

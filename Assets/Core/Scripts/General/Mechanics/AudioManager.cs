@@ -4,34 +4,26 @@ using UnityEngine;
 
 
 [RequireComponent(typeof(AudioSource))]
-public class AudioManager : MonoBehaviour
+public class AudioManager : Singleton<AudioManager>
 {
-    public static AudioManager Instance { get; private set; }
     private AudioSource audioSource;
 
-    private void Awake()
+    protected override void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else 
-        {
-            Destroy(Instance);
-        }           
+        base.Awake();         
         audioSource = GetComponent<AudioSource>();
     }
 
     public void PlayWeaponSound(bool controlSound, WeaponTypes weaponType)
     {
-        if (AssetCollections.GetAudioClipByWeaponType(weaponType) != null)
+        if (GameController.GetAudioClipByWeaponType(weaponType) != null)
         {
             if (weaponType == WeaponTypes.Rifle)
             {
                 if (controlSound)
                 {
                     if (!audioSource.isPlaying)
-                        audioSource.PlayOneShot(AssetCollections.GetAudioClipByWeaponType(weaponType), 0.5f);
+                        audioSource.PlayOneShot(GameController.GetAudioClipByWeaponType(weaponType), 0.5f);
                 }
                 else
                 {

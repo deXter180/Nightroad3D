@@ -53,7 +53,7 @@ public class RayShotGun : RangedWeapon
         {
             if (gameObject.activeInHierarchy && weaponBrain.IsWeaponReady())
             {
-                if (!gameController.IsInventoryActive && !gameController.IsMainMenuActive)
+                if (!gameController.IsInventoryActive && !gameController.IsMainMenuActive && !gameController.IsCastingSpell)
                 {
                     if (WeaponManager.Instance.IsAttacking == false)
                     {

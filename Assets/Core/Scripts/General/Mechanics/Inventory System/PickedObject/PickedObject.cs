@@ -49,7 +49,7 @@ public class PickedObject : MonoBehaviour
         float posX = position.x;
         float posZ = position.z;
         Vector3 groundPos = new Vector3(posX, PlayerController.Instance.GroundHeight, posZ);
-        Transform spawnedTransform = Instantiate(AssetCollections.GetInventoryItemSOFromList(itemType).WorldPrefab, PlayerController.Instance.GetRandomDirWithoutY(throwDistance, -throwDistance) + groundPos, Quaternion.identity);
+        Transform spawnedTransform = Instantiate(GameController.GetInventoryItemSOFromList(itemType).WorldPrefab, PlayerController.Instance.GetRandomDirWithoutY(throwDistance, -throwDistance) + groundPos, Quaternion.identity);
         PickedObject pickedObject = spawnedTransform.GetComponent<PickedObject>();
         pickedObject.itemSO = SO;
         pickedObject.SetupInGameWorld(itemType);
@@ -61,7 +61,7 @@ public class PickedObject : MonoBehaviour
         float posX = position.x;
         float posZ = position.z;
         Vector3 groundPos = new Vector3(posX, PlayerController.Instance.GroundHeight, posZ);
-        Transform spawnedTransform = Instantiate(AssetCollections.GetWeaponInventorySO(weaponType).WorldPrefab, PlayerController.Instance.GetRandomDirWithoutY(throwDistance, -throwDistance) + groundPos, Quaternion.identity);
+        Transform spawnedTransform = Instantiate(GameController.GetWeaponInventorySO(weaponType).WorldPrefab, PlayerController.Instance.GetRandomDirWithoutY(throwDistance, -throwDistance) + groundPos, Quaternion.identity);
         PickedObject pickedObject = spawnedTransform.GetComponent<PickedObject>();
         pickedObject.itemSO = SO;
         pickedObject.SetupInGameWorld(ItemTypes.Weapon, weaponType);
@@ -73,7 +73,7 @@ public class PickedObject : MonoBehaviour
         float posX = position.x;
         float posZ = position.z;
         Vector3 groundPos = new Vector3(posX, PlayerController.Instance.GroundHeight, posZ);
-        Transform spawnedTransform = Instantiate(AssetCollections.GetSpellInventorySO(spellType).WorldPrefab, PlayerController.Instance.GetRandomDirWithoutY(throwDistance, -throwDistance) + groundPos, Quaternion.identity);
+        Transform spawnedTransform = Instantiate(GameController.GetSpellInventorySO(spellType).WorldPrefab, PlayerController.Instance.GetRandomDirWithoutY(throwDistance, -throwDistance) + groundPos, Quaternion.identity);
         PickedObject pickedObject = spawnedTransform.GetComponent<PickedObject>();
         pickedObject.itemSO = SO;
         pickedObject.SetupInGameWorld(ItemTypes.Spell, spellType);
@@ -88,7 +88,7 @@ public class PickedObject : MonoBehaviour
             Vector3 randomDir = PlayerController.Instance.GetRandomDirWithoutY(1f, -1f);
             float posX = position.x;
             float posZ = position.z;
-            Transform spawnedTransform = Instantiate(AssetCollections.GetInventoryItemSOFromList(itemType).WorldPrefab, new Vector3(posX, PlayerController.Instance.GroundHeight, posZ) + randomDir * 100f, Quaternion.identity);
+            Transform spawnedTransform = Instantiate(GameController.GetInventoryItemSOFromList(itemType).WorldPrefab, new Vector3(posX, PlayerController.Instance.GroundHeight, posZ) + randomDir * 100f, Quaternion.identity);
             pickedObjects[i] = spawnedTransform.GetComponent<PickedObject>();
             pickedObjects[i].AddForceToItemSpawn(randomDir);
             pickedObjects[i].SetupInGameWorld(itemType, WeaponTypes.None);
@@ -149,7 +149,7 @@ public class PickedObject : MonoBehaviour
     {
         if (SR != null)
         {
-            SR.material = AssetCollections.GetMaterail(hightlightMaterial);
+            SR.material = GameController.GetMaterail(hightlightMaterial);
         }
         
     }

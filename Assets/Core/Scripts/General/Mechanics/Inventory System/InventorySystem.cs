@@ -3,51 +3,59 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class InventorySystem : MonoBehaviour
+public class InventorySystem : Singleton<InventorySystem>
 {
     [SerializeField] private int gridWidth;
     [SerializeField] private int gridHeight;
     private float throwDistance = 20f;
     private float cellSize;
     private Grid<GridObject> grid;
+    private bool isInitialized => InventoryList != null;
     private List<PlacedObject> InventoryList;
-    private RectTransform itemContainer;
     private InventoryUIHandler inventoryUI;
-    public event EventHandler<PlacedObject> OnPlacedOnInventory;
+    private InventoryContainor itemContainor;
+    public static event EventHandler<PlacedObject> OnPlacedOnInventory;
     public static event Action<ItemTypes> OnAddingInInventory;
     public static event Action<ItemTypes> OnRemovingFromInventory;
-    public static InventorySystem Instance { get; private set; }
-    public int PlacedObjectCount { get; private set; }
 
-    private void Awake()
+    protected override void Awake()
     {
-        Instance = Instance == null ? this : null;
+        base.Awake();
+        itemContainor = GetComponentInChildren<InventoryContainor>();
         inventoryUI = GetComponentInParent<InventoryUIHandler>();
         cellSize = inventoryUI.GetCellSize();
         grid = new Grid<GridObject>(gridWidth, gridHeight, cellSize, transform.position, (Grid<GridObject> g, int x, int y) => new GridObject(g, x, y));
-        itemContainer = transform.Find("ItemContainer").GetComponent<RectTransform>();
-        InventoryList = new List<PlacedObject>();
+        InitializeInventory();
+    }
+
+    private void OnEnable()
+    {
+        SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
+    }
+
+    private void OnDisable()
+    {
+        SceneLoader.OnNewGameStart -= SceneLoader_OnNewGameStart;
     }
 
     //~~~~~~~~~~~~~~~~~~ Utilities ~~~~~~~~~~~~~~~~~~
 
-    public IEnumerator Test()
+    private void Test()
     {
-        yield return new WaitForSeconds(2f);
-        TryAddingItem(AssetCollections.GetInventoryItemSOFromList(ItemTypes.HealthPotion));
-        TryAddingItem(AssetCollections.GetInventoryItemSOFromList(ItemTypes.Armor));
-        TryAddingItem(AssetCollections.GetInventoryItemSOFromList(ItemTypes.Gloves));
-        TryAddingItem(AssetCollections.GetInventoryItemSOFromList(ItemTypes.Boots));
-        TryAddingItem(AssetCollections.GetInventoryItemSOFromList(ItemTypes.Shield));
-        TryAddingItem(AssetCollections.GetInventoryItemSOFromList(ItemTypes.Helmet));
-        TryAddingItem(AssetCollections.GetInventoryItemSOFromList(ItemTypes.ManaPotion));
-        PickedObject.SpawnWeaponWorld(WeaponTypes.Axe, AssetCollections.GetWeaponInventorySO(WeaponTypes.Axe), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
-        PickedObject.SpawnWeaponWorld(WeaponTypes.Rifle, AssetCollections.GetWeaponInventorySO(WeaponTypes.Rifle), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
-        PickedObject.SpawnWeaponWorld(WeaponTypes.RocketLauncher, AssetCollections.GetWeaponInventorySO(WeaponTypes.RocketLauncher), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
-        PickedObject.SpawnWeaponWorld(WeaponTypes.Shotgun, AssetCollections.GetWeaponInventorySO(WeaponTypes.Shotgun), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
-        PickedObject.SpawnSpellWorld(SpellTypes.Dash, AssetCollections.GetSpellInventorySO(SpellTypes.Dash), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
-        PickedObject.SpawnSpellWorld(SpellTypes.FireBall, AssetCollections.GetSpellInventorySO(SpellTypes.FireBall), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
-        PickedObject.SpawnSpellWorld(SpellTypes.FreezeBlast, AssetCollections.GetSpellInventorySO(SpellTypes.FreezeBlast), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
+        TryAddingItem(GameController.GetInventoryItemSOFromList(ItemTypes.HealthPotion));
+        TryAddingItem(GameController.GetInventoryItemSOFromList(ItemTypes.Armor));
+        TryAddingItem(GameController.GetInventoryItemSOFromList(ItemTypes.Gloves));
+        TryAddingItem(GameController.GetInventoryItemSOFromList(ItemTypes.Boots));
+        TryAddingItem(GameController.GetInventoryItemSOFromList(ItemTypes.Shield));
+        TryAddingItem(GameController.GetInventoryItemSOFromList(ItemTypes.Helmet));
+        TryAddingItem(GameController.GetInventoryItemSOFromList(ItemTypes.ManaPotion));
+        PickedObject.SpawnWeaponWorld(WeaponTypes.Axe, GameController.GetWeaponInventorySO(WeaponTypes.Axe), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
+        PickedObject.SpawnWeaponWorld(WeaponTypes.Rifle, GameController.GetWeaponInventorySO(WeaponTypes.Rifle), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
+        PickedObject.SpawnWeaponWorld(WeaponTypes.RocketLauncher, GameController.GetWeaponInventorySO(WeaponTypes.RocketLauncher), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
+        PickedObject.SpawnWeaponWorld(WeaponTypes.Shotgun, GameController.GetWeaponInventorySO(WeaponTypes.Shotgun), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
+        PickedObject.SpawnSpellWorld(SpellTypes.Dash, GameController.GetSpellInventorySO(SpellTypes.Dash), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
+        PickedObject.SpawnSpellWorld(SpellTypes.FireBall, GameController.GetSpellInventorySO(SpellTypes.FireBall), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
+        PickedObject.SpawnSpellWorld(SpellTypes.FreezeBlast, GameController.GetSpellInventorySO(SpellTypes.FreezeBlast), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
     }
 
     #region
@@ -85,7 +93,7 @@ public class InventorySystem : MonoBehaviour
 
     public RectTransform GetItemContainer()
     {
-        return itemContainer;
+        return itemContainor.ContainorRect;
     }
 
     public void RemoveFromInventoryList(PlacedObject placedObject)
@@ -96,6 +104,14 @@ public class InventorySystem : MonoBehaviour
     #endregion
 
     //~~~~~~~~~~~~~~~~~~ Main Functions ~~~~~~~~~~~~~~~~~~~
+
+    public void InitializeInventory()
+    {
+        if (!isInitialized)
+            InventoryList = new List<PlacedObject>();
+        else
+            return;
+    }
 
     public bool IsInventoryFull()
     {
@@ -114,24 +130,27 @@ public class InventorySystem : MonoBehaviour
 
     public bool TryAddingItem(InventoryItemSO inventoryItemSO)
     {
-
-        for (int x = 0; x < grid.GetWidth(); x++)
+        InitializeInventory();
+        if (grid != null)
         {
-            for (int y = 0; y < grid.GetHeight(); y++)
+            for (int x = 0; x < grid.GetWidth(); x++)
             {
-                if (grid.GetGridObject(x, y).CanBuild())
+                for (int y = 0; y < grid.GetHeight(); y++)
                 {
-                    Vector2Int temp = new Vector2Int(x, y);
-                    if (TryPlaceItem(inventoryItemSO, temp, InventoryItemSO.Dir.Down))
+                    if (grid.GetGridObject(x, y).CanBuild())
                     {
-                        PlacedObject placedObject = inventoryItemSO.InventoryPrefab.GetComponent<PlacedObject>();
-                        InventoryList.Add(placedObject);
-                        OnAddingInInventory?.Invoke(inventoryItemSO.ItemType);
-                        return true;
+                        Vector2Int temp = new Vector2Int(x, y);
+                        if (TryPlaceItem(inventoryItemSO, temp, InventoryItemSO.Dir.Down))
+                        {
+                            PlacedObject placedObject = inventoryItemSO.InventoryPrefab.GetComponent<PlacedObject>();
+                            InventoryList.Add(placedObject);
+                            OnAddingInInventory?.Invoke(inventoryItemSO.ItemType);
+                            return true;
+                        }
                     }
                 }
             }
-        }
+        }    
         return false;
     }    
 
@@ -153,7 +172,6 @@ public class InventorySystem : MonoBehaviour
                 break;
             }
         }
-
         if (canPlace)
         {
             Vector2Int rotationOffset = inventoryItemSO.GetRotationOffset(dir);
@@ -173,18 +191,16 @@ public class InventorySystem : MonoBehaviour
                     placedObjectWorldPos = grid.GetWorldPosAtOrigin(placedObjectOrigin.x, placedObjectOrigin.y) + new Vector3(rotationOffset.x - 0.2f, rotationOffset.y - 0.2f) * grid.GetCellSize();
                     break;
             }
-            PlacedObject placedObject = PlacedObject.Create(itemContainer, placedObjectWorldPos, placedObjectOrigin, dir, inventoryItemSO);
+            PlacedObject placedObject = PlacedObject.Create(itemContainor.ContainorRect, placedObjectWorldPos, placedObjectOrigin, dir, inventoryItemSO);
             placedObject.transform.rotation = Quaternion.Euler(0, 0, -inventoryItemSO.GetRotationAngle(dir));
-
-            foreach(Vector2Int gridPos in gridPosList)
+            foreach (Vector2Int gridPos in gridPosList)
             {
                 grid.GetGridObject(gridPos.x, gridPos.y).SetPlacedObject(placedObject);
             }
-            PlacedObjectCount = itemContainer.childCount;
             OnPlacedOnInventory?.Invoke(this, placedObject);
             return true;
         }
-        else { return false; }
+        return false;
     }
 
     public bool TryRemoveItemAt(Vector2Int removeGridPos)
@@ -207,7 +223,26 @@ public class InventorySystem : MonoBehaviour
         }
     }
 
+    public void ClearGrid()
+    {
+        foreach (var obj in grid.gridArray)
+        {
+            obj.ClearPlacedObject();
+        }
+    }
+
+    //~~~~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~~~~
+
+    private void SceneLoader_OnNewGameStart()
+    {
+        ClearGrid();
+        itemContainor.ContainorRect.DeleteChildren();
+        InventoryList = new List<PlacedObject>();        
+        Test(); // Remove this
+    }
+
     //~~~~~~~~~~~~~~~~~ Save & Load ~~~~~~~~~~~~~~~~~~~~
+
     #region
     [Serializable]
     public struct AddedItem
@@ -258,7 +293,7 @@ public class InventorySystem : MonoBehaviour
 
         foreach(AddedItem addedItem in listAddedItem.addedItemList)
         {
-            TryPlaceItem(AssetCollections.GetInventoryItemSOFromList(addedItem.itemType), addedItem.gridPos, addedItem.dir);
+            TryPlaceItem(GameController.GetInventoryItemSOFromList(addedItem.itemType), addedItem.gridPos, addedItem.dir);
         }
     }
     #endregion

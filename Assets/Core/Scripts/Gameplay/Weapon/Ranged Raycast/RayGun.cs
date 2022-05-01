@@ -43,7 +43,7 @@ public class RayGun : RangedWeapon
     }
 
     private void Update()
-    {
+    {       
         if (gameController == null)
         {
             gameController = GameController.Instance;
@@ -52,7 +52,7 @@ public class RayGun : RangedWeapon
         {
             if (gameObject.activeInHierarchy && weaponBrain.IsWeaponReady())
             {
-                if (!gameController.IsInventoryActive && !gameController.IsMainMenuActive)
+                if (!gameController.IsInventoryActive && !gameController.IsMainMenuActive && !gameController.IsCastingSpell)
                 {
                     if (WeaponManager.Instance.IsAttacking == false)
                     {

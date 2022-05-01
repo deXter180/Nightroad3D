@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class InventoryDragDropSystem : MonoBehaviour
+public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
 {
-    public static InventoryDragDropSystem Instance { get; private set; }
     private PlayerInputAsset inputs;
     private PlayerController playerController;
     private GameController gameController;
@@ -26,33 +25,38 @@ public class InventoryDragDropSystem : MonoBehaviour
     [SerializeField] private Camera UICam;
 
 
-    private void Awake()
+    protected override void Awake()
     {
-        Instance = this;
+        base.Awake();     
     }
 
     private void Start()
     {
+        StartCoroutine(InputDone());
+        gameController = GameController.Instance;
         inventorySystem = InventorySystem.Instance;
         inventoryUI = InventoryUIHandler.Instance;
-        playerController = PlayerController.Instance;
-        inventorySystem.OnPlacedOnInventory += InventorySystem_OnObjectPlaced;
-        isDraggedFromInventory = false;
-        isDraggedFromMenu = false;
-        foreach(var tile in EquipMenuControl.WeaponTileList)
-        {
-            tile.OnPlacedOnWeaponMenu += Tile_OnObjectPlacedinEquipTile;
-        }
     }
 
     private void OnEnable()
-    {
-        StartCoroutine(InputDone());
+    {        
+        playerController = PlayerController.Instance;
+        SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
+        InventorySystem.OnPlacedOnInventory += InventorySystem_OnObjectPlaced;
+        isDraggedFromInventory = false;
+        isDraggedFromMenu = false;
+        foreach (var tile in EquipMenuControl.WeaponTileList)
+        {
+            tile.OnPlacedOnWeaponMenu += Tile_OnObjectPlacedinEquipTile;
+        }
+        isDraggedFromInventory = false;
+        isDraggedFromMenu = false;
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
-        inventorySystem.OnPlacedOnInventory -= InventorySystem_OnObjectPlaced;
+        InventorySystem.OnPlacedOnInventory -= InventorySystem_OnObjectPlaced;
+        SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
         foreach (var tile in EquipMenuControl.WeaponTileList)
         {
             tile.OnPlacedOnWeaponMenu -= Tile_OnObjectPlacedinEquipTile;
@@ -80,9 +84,11 @@ public class InventoryDragDropSystem : MonoBehaviour
 
     private IEnumerator InputDone()
     {
-        yield return new WaitUntil(() => InputManager.InputReady);
-        inputs = InputManager.InputActions;
-        gameController = GameController.Instance;
+        if (inputs == null)
+        {
+            yield return new WaitUntil(() => InputManager.InputReady);
+            inputs = InputManager.InputActions;
+        }       
     }
 
     private void PositionDragObject()
@@ -346,5 +352,15 @@ public class InventoryDragDropSystem : MonoBehaviour
     private void Tile_OnObjectPlacedinEquipTile(object sender, PlacedObject e)
     {
         
+    }
+
+    private void SceneLoader_OnNewGameStart()
+    {
+        StartCoroutine(SetPlayer());
+        IEnumerator SetPlayer()
+        {
+            yield return Helpers.GetWait(1f);
+            playerController = PlayerController.Instance;
+        }
     }
 }

@@ -167,7 +167,7 @@ public class EnemyBrain : MonoBehaviour
     {
         yield return postDeathWait;
         gameObject.SetActive(false);
-        AssetCollections.ReleaseAssetInstance(gameObject, "Enemy", false);
+        AssetLoader.ReleaseAssetInstance(gameObject);
     }
 
     //!!!!!!!!!!!!Call this where instantiating enemies!!!!!!!!!!!!!!!!

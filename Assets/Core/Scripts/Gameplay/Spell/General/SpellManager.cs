@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.VFX;
 
-public class SpellManager : MonoBehaviour
+public class SpellManager : Singleton<SpellManager>
 {
     [SerializeField] private int SpellCount;
     [SerializeField] private float selectionRange;
@@ -21,14 +21,14 @@ public class SpellManager : MonoBehaviour
     private bool isRemoved;
     private bool isInSpellCastMode;
     public bool IsInSpellCastMode { get => isInSpellCastMode; }
-    public static SpellManager Instance { get; private set; }
     private int SelectedSpellIndex = 0;
     private Spells spell = null;
     private bool inRange;
     private int bitmask = 1 << 8 | 1 << 7;
     public bool IsCastingSpell { get; set; }
     private PlayerInputAsset inputs;
-    private Dictionary<SpellTypes, Spells> spellDict = new Dictionary<SpellTypes, Spells>();
+    private bool IsInitialized => spellDict != null;
+    private Dictionary<SpellTypes, Spells> spellDict;
     private SpellCastState state;
     private enum SpellCastState
     {
@@ -37,13 +37,9 @@ public class SpellManager : MonoBehaviour
         Cast
     }
 
-    private void Awake()
+    protected override void Awake()
     {
-        if (Instance != null)
-        {
-            Destroy(Instance);
-        }
-        else Instance = this;
+        base.Awake();
         IsCastingSpell = false;
         isInSpellCastMode = false;
     }
@@ -53,30 +49,25 @@ public class SpellManager : MonoBehaviour
         player = PlayerController.Instance;
         StartCoroutine(InputDone());
         state = SpellCastState.Default;
-        spellCircle = Instantiate(SpellManager.Instance.SelectionCircle);
-        spellCircle.gameObject.SetActive(false);
+        SetupSpellCircle();    
+        isRemoved = false;
+        SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
         foreach (var tile in EquipMenuControl.SpellTileList)
         {
             tile.OnPlacedOnSpellMenu += Tile_OnPlacedOnSpellMenu;
             tile.OnRemovedFromSpellMenu += Tile_OnRemovedFromSpellMenu;
         }
-        isRemoved = false;
+        Initialize();
     }
 
     private void OnDestroy()
     {
+        SceneLoader.OnNewGameStart -= SceneLoader_OnNewGameStart;
         foreach (var tile in EquipMenuControl.SpellTileList)
         {
             tile.OnPlacedOnSpellMenu -= Tile_OnPlacedOnSpellMenu;
             tile.OnRemovedFromSpellMenu -= Tile_OnRemovedFromSpellMenu;
         }
-    }
-
-    private IEnumerator InputDone()
-    {
-        yield return new WaitUntil(() => InputManager.InputReady);
-        inputs = InputManager.InputActions;
-        gameController = GameController.Instance;
     }
 
     private void Update()
@@ -90,8 +81,36 @@ public class SpellManager : MonoBehaviour
         }
     }
 
+    private void Initialize()
+    {
+        if (!IsInitialized)
+            spellDict = new Dictionary<SpellTypes, Spells>();
+        else
+            return;
+    }
+
+    private IEnumerator InputDone()
+    {
+        if (inputs == null)
+        {
+            yield return new WaitUntil(() => InputManager.InputReady);
+            inputs = InputManager.InputActions;
+            gameController = GameController.Instance;
+        }
+    }
+
+    public void SetupSpellCircle()
+    {
+        if (spellCircle == null)
+        {
+            spellCircle = Instantiate(SpellManager.Instance.SelectionCircle);
+            spellCircle.gameObject.SetActive(false);
+        }        
+    }
+
     private void AddSpell(SpellTypes type, SpellCategories category)
     {
+        Initialize();
         if (spellDict.Count < SpellCount)
         {
             Spells spell = null;
@@ -124,6 +143,7 @@ public class SpellManager : MonoBehaviour
 
     private void SpellSelect()
     {
+        Initialize();
         if (spellDict.Count >= 1 && !IsCastingSpell)
         {
             switch (state)
@@ -192,16 +212,24 @@ public class SpellManager : MonoBehaviour
                             spell.CastSpell(() =>
                             {
                                 player.PlayerTarget.UseMana(spell.ThisSpellSO.ManaCost);
-                                IsCastingSpell = false;
-                                isInSpellCastMode = false;
                                 state = SpellCastState.Default;
+                                StartCoroutine(CastDelay());
                             });
+                            
                         }
                     }
                     break;
             }
         }
+        IEnumerator CastDelay()
+        {
+            yield return Helpers.GetWait(0.5f);
+            IsCastingSpell = false;
+            isInSpellCastMode = false;
+        }
     }
+
+    
 
     private Spells GetSpell()
     {
@@ -317,7 +345,12 @@ public class SpellManager : MonoBehaviour
             RemoveSpell(inventoryItem.SpellType);
             isRemoved = true;
         }
-    }   
+    }
+
+    private void SceneLoader_OnNewGameStart()
+    {
+        spellDict = new Dictionary<SpellTypes, Spells>();
+    }
 }
 
 

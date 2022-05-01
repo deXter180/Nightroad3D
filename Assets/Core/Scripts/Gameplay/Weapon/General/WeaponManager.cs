@@ -4,9 +4,8 @@ using UnityEngine;
 using System;
 using System.Linq;
 
-public class WeaponManager : MonoBehaviour
+public class WeaponManager : Singleton<WeaponManager>
 {
-    public static WeaponManager Instance { get; private set; }
     [HideInInspector] public bool IsAttacking = false;
     [SerializeField] private int WeaponCount = 4;
     private int SelectedWeapon = 0;
@@ -20,14 +19,11 @@ public class WeaponManager : MonoBehaviour
     private GameController gameController;
     public static event Action<RangedWeapon> OnRangeWeaponEquip;
     public static event Action OnMeleeWeaponEquip;
+    public static event Action OnWeaponEmpty;
     
-    private void Awake()
+    protected override void Awake()
     {
-        if (Instance != null)
-        {
-            Destroy(Instance);
-        }
-        else Instance = this;
+        base.Awake();
         weaponBrains = GetComponentsInChildren<WeaponBrain>(true);
     }
 
@@ -45,12 +41,14 @@ public class WeaponManager : MonoBehaviour
             menuTile.OnPlacedOnWeaponMenu += MenuTile_OnPlacedOnMenu;
             menuTile.OnRemovedFromWeaponMenu += MenuTile_OnRemovedFromMenu;
         }
+        SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
         InitializeInventory();
         isRemoved = false;
     }
 
     private void OnDestroy()
     {
+        SceneLoader.OnNewGameStart -= SceneLoader_OnNewGameStart;
         foreach (var menuTile in EquipMenuControl.WeaponTileList)
         {
             menuTile.OnPlacedOnWeaponMenu -= MenuTile_OnPlacedOnMenu;
@@ -85,8 +83,7 @@ public class WeaponManager : MonoBehaviour
         if (IsInitialized)
             return;
         else
-        weaponInventory = new Dictionary<WeaponTypes, WeaponBrain>();
-      
+        weaponInventory = new Dictionary<WeaponTypes, WeaponBrain>();     
     }
 
     public bool InInventory(WeaponTypes weaponType)
@@ -166,7 +163,7 @@ public class WeaponManager : MonoBehaviour
         }
     }
 
-    private void DisableAllWeapons()
+    public void DisableAllWeapons()
     {
         foreach (WeaponBrain WB in weaponBrains)
         {
@@ -265,7 +262,15 @@ public class WeaponManager : MonoBehaviour
         {
             RemoveWeapon(itemSO.WeaponType);
             isRemoved = true;
+            if (weaponInventory.Count < 1)
+            {
+                OnWeaponEmpty?.Invoke();
+            }
         }
     }
 
+    private void SceneLoader_OnNewGameStart()
+    {
+        weaponInventory = new Dictionary<WeaponTypes, WeaponBrain>();
+    }
 }

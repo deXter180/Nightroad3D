@@ -5,45 +5,75 @@ using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.AddressableAssets;
 
-public class ObjectPooler : MonoBehaviour
+public class ObjectPooler : Singleton<ObjectPooler>
 {
-    private List<Projectile> projectiles = new List<Projectile>();  
     [SerializeField] private int PoolSize;
-    private List<AssetReference> RefList = new List<AssetReference>();
+    [SerializeField] private List<AssetPackages> AssetRefList = new List<AssetPackages>();
+    private List<Projectile> projectiles;     
 
-    #region Singleton
-    public static ObjectPooler Instance { get; private set; }
-
-    void Awake()
+    protected override void Awake()
     {
-        if (Instance != null)
-        {
-            Destroy(Instance);
-        }
-        else
-        {
-            Instance = this;
-        }
+        base.Awake();
     }
 
-    #endregion
 
     private void Start()
     {
-        StartCoroutine(InitializePool(ProjectileTypes.FireBall));
-        StartCoroutine(InitializePool(ProjectileTypes.FireBallSpell));
+        AssetLoader.OnGOCreatedWithAssetRef += AssetRefLoader_OnGOCreated;
+        SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
     }
 
-    public IEnumerator InitializePool(ProjectileTypes projectileType)
+    private void OnDisable()
     {
-        yield return new WaitForSeconds(1f);
-        var assetRef = AssetCollections.Instance.GetProjectileAssetRef(projectileType);
+        AssetLoader.OnGOCreatedWithAssetRef -= AssetRefLoader_OnGOCreated;
+        SceneLoader.OnNewGameStart -= SceneLoader_OnNewGameStart;
+    }
+
+    private AssetReference GetProjectileAssetRef(ProjectileTypes projectileType)
+    {
+        if (AssetRefList.Count > 0)
+        {
+            foreach (var asset in AssetRefList)
+            {
+                if (asset.impactTypes == ImpactTypes.None && asset.projectileTypes != ProjectileTypes.None)
+                {
+                    if (asset.projectileTypes == projectileType)
+                    {
+                        return asset.Reference;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private AssetReference GetImpactAssetRef(ImpactTypes impactType)
+    {
+        if (AssetRefList.Count > 0)
+        {
+            foreach (var asset in AssetRefList)
+            {
+                if (asset.projectileTypes == ProjectileTypes.None && asset.impactTypes != ImpactTypes.None)
+                {
+                    if (asset.impactTypes == impactType)
+                    {
+                        return asset.Reference;
+                    }
+                }
+            }
+            return null;
+        }
+        else return null;
+    }
+
+    public void InitializePool(ProjectileTypes projectileType)
+    {
+        var assetRef = GetProjectileAssetRef(projectileType);
         if (assetRef != null)
         {
-            RefList.Add(assetRef);
             for (int i = 0; i < PoolSize; i++)
             {
-                AssetRefLoader.InstantiateGO(assetRef).Completed += ObjectPooler_Completed;
+                AssetLoader.CreateGOAsset(assetRef);              
             }
         }      
     }
@@ -77,29 +107,37 @@ public class ObjectPooler : MonoBehaviour
 
     //~~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~~~~
 
-    private void ObjectPooler_Completed(AsyncOperationHandle obj)
+    private void SceneLoader_OnNewGameStart()
     {
-        GameObject GO = obj.Result as GameObject;
-        var notify = GO.GetComponent<NotifyOnDestroyByAssetRef>();
-        Projectile projectile = GO.GetComponent<Projectile>();
-        if (notify == null)
+        projectiles = new List<Projectile>();
+        InitializePool(ProjectileTypes.FireBall);
+        InitializePool(ProjectileTypes.FireBallSpell);
+    }
+
+    private void AssetRefLoader_OnGOCreated(GameObject GO, AssetReference reference)
+    {
+        if (GO != null)
         {
-            notify = GO.AddComponent<NotifyOnDestroyByAssetRef>();
+            var notify = GO.GetComponent<NotifyOnDestroyByAssetRef>();
+            Projectile projectile = GO.GetComponent<Projectile>();
+            if (notify == null)
+            {
+                notify = GO.AddComponent<NotifyOnDestroyByAssetRef>();
+            }
+            if (projectile != null)
+            {
+                projectiles.Add(projectile);
+            }
+            notify.Destroyed += Notify_Destroyed;
+            notify.AssetReference = reference;
+            GO.SetActive(false);
         }
-        if (projectile != null)
-        {
-            projectiles.Add(projectile);
-        }
-        notify.Destroyed += Notify_Destroyed;
-        var assetRef = AssetCollections.Instance.GetProjectileAssetRef(projectile.GetProjectileType());
-        notify.AssetReference = assetRef;
-        GO.SetActive(false);
     }
 
     private void Notify_Destroyed(UnityEngine.AddressableAssets.AssetReference assetRef, NotifyOnDestroyByAssetRef notify)
     {
         notify.Destroyed -= Notify_Destroyed;
-        AssetCollections.ReleaseAssetInstance(notify.gameObject, assetRef, false);
+        AssetLoader.ReleaseAssetInstance(notify.gameObject);
     }
 
 }

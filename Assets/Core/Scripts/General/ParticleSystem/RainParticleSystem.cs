@@ -7,47 +7,52 @@ public class RainParticleSystem : MonoBehaviour
     [SerializeField] private float OwnYPosition;
     [SerializeField] private float RainYLocalPos;
     [SerializeField] private float CloudYLocalPos;
+    private string rainVfxName = "Rain_pfx";
+    private string cloudVfxName = "Clouds_pfx";
+    private GameObject rainGO;
+    private GameObject cloudGO;
 
     private void Awake()
     {
         transform.position = new Vector3(transform.position.x, OwnYPosition, transform.position.z);
     }
 
-    public IEnumerator EnableRain()
+    private void OnEnable()
     {
-        AssetCollections.InstantiateAssetsByName("Rain_VFX", this.transform);
-        List<GameObject> VfxList = new List<GameObject>();
-        VfxList = AssetCollections.GetGOListFromDictByName("Rain_VFX");
-        yield return new WaitForSeconds(1f);
-        if (VfxList != null && VfxList.Count > 0)
-        {
-            foreach (var temp in VfxList)
-            {
-                temp.transform.rotation = Quaternion.identity;
-                if (temp.name == "Rain_vfx")
-                {
-                    temp.transform.localPosition = new Vector3(0, RainYLocalPos, 0);
-                }
-                else if (temp.name == "Clouds_vfx")
-                {
-                    temp.transform.localPosition = new Vector3(0, CloudYLocalPos, 0);
-                }
-            }
-        }
+        AssetLoader.OnGOCreated += AssetRefLoader_OnGOCreated;
+    }
+
+    private void OnDisable()
+    {
+        AssetLoader.OnGOCreated -= AssetRefLoader_OnGOCreated;
+    }
+
+    public void EnableRain()
+    {
+        AssetLoader.CreateGOAsset(rainVfxName, this.transform);
+        AssetLoader.CreateGOAsset(cloudVfxName, this.transform);
     }
 
     public void DisableRain()
     {
-        List<GameObject> VfxList = new List<GameObject>();
-        VfxList = AssetCollections.GetGOListFromDictByName("Rain_VFX");
-        if (VfxList != null && VfxList.Count > 0)
-        {
-            foreach (var temp in VfxList)
-            {
-                AssetCollections.ReleaseAssetInstance(temp, "Rain_VFX", false);
-            }
-        }       
+        AssetLoader.ReleaseAssetInstance(rainGO);
+        AssetLoader.ReleaseAssetInstance(cloudGO);
     }
 
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+    private void AssetRefLoader_OnGOCreated(GameObject obj)
+    {
+        obj.transform.rotation = Quaternion.identity;
+        if (obj.name == rainVfxName)
+        {
+            rainGO = obj;
+            obj.transform.localPosition = new Vector3(0, RainYLocalPos, 0);
+        }
+        else if (obj.name == cloudVfxName)
+        {
+            cloudGO = obj;
+            obj.transform.localPosition = new Vector3(0, CloudYLocalPos, 0);
+        }
+    }
 }

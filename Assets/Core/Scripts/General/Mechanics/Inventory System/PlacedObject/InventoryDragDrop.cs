@@ -12,7 +12,6 @@ public class InventoryDragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragH
     private float cellSize;
     private InventoryDragDropSystem dragDropSystem;
     private EquipMenuControl equipMenu;
-    private InventoryUIHandler inventoryUI;
     private InventorySystem inventorySystem;
 
     private void Awake()
@@ -22,11 +21,10 @@ public class InventoryDragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragH
         cellSize = InventoryUIHandler.Instance.GetCellSize();
     }
 
-    private void Start()
+    private void OnEnable()
     {
         dragDropSystem = InventoryDragDropSystem.Instance;
         equipMenu = EquipMenuControl.Instance;
-        inventoryUI = InventoryUIHandler.Instance;
         inventorySystem = InventorySystem.Instance;
     }
 

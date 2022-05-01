@@ -17,6 +17,7 @@ public static class Helpers
     }
 
     private static Dictionary<float, WaitForSeconds> WaitDict = new Dictionary<float, WaitForSeconds>();
+
     public static WaitForSeconds GetWait(float time)
     {
         if (WaitDict.TryGetValue(time, out var wait)) return wait;
@@ -25,7 +26,9 @@ public static class Helpers
     }
 
     private static PointerEventData eventDataCurrentPos;
+
     private static List<RaycastResult> results;
+
     public static bool IsOverUI()
     {
         if (inputAction == null) inputAction = InputManager.InputActions;
@@ -43,5 +46,34 @@ public static class Helpers
     public static void DeleteChildren(this Transform t)
     {
         foreach (Transform child in t) Object.Destroy(child.gameObject);
+    }
+}
+
+public abstract class StaticInstance<T> : MonoBehaviour where T : MonoBehaviour
+{
+    public static T Instance { get; private set; }
+    protected virtual void Awake() => Instance = this as T;
+    protected virtual void OnApplicationQuit()
+    {
+        Instance = null;
+        Destroy(gameObject);
+    }
+}
+
+public abstract class Singleton<T> : StaticInstance<T> where T : MonoBehaviour
+{
+    protected override void Awake()
+    {
+        if (!Instance) base.Awake();
+        else Destroy(gameObject);
+    }
+}
+
+public abstract class PersistentSingleton<T> : Singleton<T> where T : MonoBehaviour
+{
+    protected override void Awake()
+    {
+        base.Awake();
+        DontDestroyOnLoad(gameObject);
     }
 }
