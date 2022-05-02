@@ -39,7 +39,7 @@ public class PrimaryMainMenuUIHandler : MonoBehaviour
 
     public void StartNewGame()
     {
-        AssetLoader.LoadFreshGameInstance("PSLevel1");
+        SceneLoader.LoadNewGame("PSLevel1");
     }
 
     public void ContinueGame()

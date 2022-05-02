@@ -160,9 +160,7 @@ public static class AssetLoader
         }
         Addressables.LoadSceneAsync(nameKey, UnityEngine.SceneManagement.LoadSceneMode.Additive).Completed += (asyncHandle) =>
         {
-            clearPreviousScene = true;
-            previousScene = asyncHandle.Result;
-            OnAdditiveSceneLoad?.Invoke(previousScene);
+            OnAdditiveSceneLoad?.Invoke(asyncHandle.Result);
         };
     }
 
@@ -178,9 +176,7 @@ public static class AssetLoader
         }
         Addressables.LoadSceneAsync(nameKey, UnityEngine.SceneManagement.LoadSceneMode.Single, false).Completed += (handle) =>
         {
-            clearPreviousScene = true;
-            previousScene = handle.Result;
-            OnSingleSceneLoad?.Invoke(previousScene);
+            OnSingleSceneLoad?.Invoke(handle.Result);
         };
     }
 

@@ -48,6 +48,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
     private Vector3 OldPos;
     private Vector3 gravity;
     private Vector3 dashPos;
+    private Vector3 originalPlayerPos;
     //private Input input;
     private int ground = 1 << 8;
     private int water = 1 << 4;
@@ -98,6 +99,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
         target.Resource.OnManaGain += Resource_OnManaGain;
         target.Resource.OnManaLoss += Resource_OnManaLoss;
         isJumping = false;
+        originalPlayerPos = transform.position;
         //PickedObjectCols = new List<Collider>();
     }
 
@@ -433,6 +435,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
 
     private void SceneLoader_OnNewGameStart()
     {
+        transform.position = originalPlayerPos;
         gameObject.SetActive(true);
         audioListener.enabled = true;
         StartCoroutine(InputDone());

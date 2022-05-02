@@ -13723,7 +13723,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: Test Scene
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -20176,6 +20176,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1350231078}
   m_CullTransparentMesh: 1
+--- !u!114 &1357126452 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 754685134099437997, guid: 4e27b26d9babba548bb6f62a0557ed6c,
+    type: 3}
+  m_PrefabInstance: {fileID: 860508948}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!2083052967 &1373318779 stripped
 VisualEffect:
   m_CorrespondingSourceObject: {fileID: 3713017282170840333, guid: 3b7f5ee8332bd3143b0032fdacc6838d,
@@ -23217,7 +23229,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1655617797}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2083244895}
+        m_TargetAssemblyTypeName: InGameMainMenuUIHandler, Core.Assembly
+        m_MethodName: LoadTestScene
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1655617797
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27411,6 +27435,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   menuCanvas: {fileID: 69884598}
+  loaderCanvas: {fileID: 15444571}
+  progessbar: {fileID: 1357126452}
 --- !u!1 &2087213349
 GameObject:
   m_ObjectHideFlags: 0

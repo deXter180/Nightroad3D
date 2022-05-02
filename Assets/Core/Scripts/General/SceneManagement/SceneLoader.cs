@@ -9,8 +9,8 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 public class SceneLoader : PersistentSingleton<SceneLoader>
 {
-    private static bool clearPreviousScene = false;
-    private static SceneInstance previousLoadedScene;
+    public static bool clearPreviousScene = false;
+    public static SceneInstance previousLoadedScene;
     public static event Action OnNewGameStart;
     public static event Action OnMainMenuSceneLoad;
 
@@ -46,8 +46,13 @@ public class SceneLoader : PersistentSingleton<SceneLoader>
         };
     }
 
-    public static void LoadNewSingleScene(string nameKey)
+    public static void LoadNewGame(string nameKey)
     {        
+        AssetLoader.LoadFreshGameInstance(nameKey);
+    }
+
+    public static void LoadNewSingleScene(string nameKey)
+    {
         AssetLoader.LoadAddressableLevelSingle(nameKey, previousLoadedScene, clearPreviousScene);       
     }
 
@@ -63,18 +68,22 @@ public class SceneLoader : PersistentSingleton<SceneLoader>
         StartCoroutine(DelayInvoke());
         IEnumerator DelayInvoke()
         {
-            yield return Helpers.GetWait(1f);
+            yield return Helpers.GetWait(0.5f);
+            previousLoadedScene = obj;
+            clearPreviousScene = true;
             OnNewGameStart?.Invoke();
         }
     }
 
-    private static void AssetLoader_OnSingleSceneLoad(SceneInstance obj)
+    private void AssetLoader_OnSingleSceneLoad(SceneInstance obj)
     {
-
+        previousLoadedScene = obj;
+        clearPreviousScene = true;
     }
 
-    private static void AssetLoader_OnAdditiveSceneLoad(SceneInstance obj)
+    private void AssetLoader_OnAdditiveSceneLoad(SceneInstance obj)
     {
-
+        previousLoadedScene = obj;
+        clearPreviousScene = true;
     }
 }
