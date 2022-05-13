@@ -55,12 +55,12 @@ public class Attack : State
 
     private void InitiateAttack()
     {
-        if (!IsAttacking && PlayerController.Instance.PlayerTarget != null)
+        if (!IsAttacking && player.PlayerTarget != null)
         {
-            if (!PlayerController.Instance.PlayerTarget.IsDead && !PlayerController.Instance.PlayerTarget.GetEnemy())
+            if (!player.PlayerTarget.IsDead && !player.PlayerTarget.GetEnemy())
             {
                 IsAttacking = true;
-                enemyBrain.GetThisEnemy().DoAttack(PlayerController.Instance.PlayerTarget, PlayerController.Instance.DodgeChace);
+                enemyBrain.GetThisEnemy().DoAttack(player.PlayerTarget, player.DodgeChace);
                 enemyBrain.GetThisEnemy().RaiseOnEnemyAttack(enemyBrain.GetEnemyType());
                 enemyBrain.StartCoroutine(Attacking(() => { IsAttacking = false; }));
             }

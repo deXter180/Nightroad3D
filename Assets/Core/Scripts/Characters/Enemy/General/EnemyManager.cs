@@ -43,17 +43,16 @@ public class Enemy
 
     public virtual void DoAttack(Target enemyTarget, float enemyDodgeChance)
     {
-        if (UnityEngine.Random.value <= enemySO.CritChance) //&& CurrentEnergy >= EnergyCosts[0])
+        int damageAmount = enemySO.DamageAmount - Mathf.RoundToInt((enemySO.DamageAmount * enemyBrain.MenuControl.GetArmorBlockPct()) / 100);
+        if (UnityEngine.Random.value <= enemySO.CritChance)
         {
-            enemyTarget.DoCritDamage(enemySO.CritBonus, enemySO.DamageAmount, enemyDodgeChance);
+            enemyTarget.DoCritDamage(enemySO.CritBonus, damageAmount, enemyDodgeChance);
             OnEnemyDamage?.Invoke(this, new OnEnemyDamageEventArg(true));
-            //target.Resource.EnergyExpense(EnergyCosts[0]);
         }
         else
         {
-            enemyTarget.DoDamage(enemySO.DamageAmount, enemyDodgeChance);
+            enemyTarget.DoDamage(damageAmount, enemyDodgeChance);
             OnEnemyDamage?.Invoke(this, new OnEnemyDamageEventArg(false));
-            //target.Resource.EnergyExpense(EnergyCosts[1]);
         }
     }
 }

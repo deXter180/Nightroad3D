@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class EquipMenuControl : Singleton<EquipMenuControl>
 {
+    private bool isArmorAdded;
+    private ArmorTypes equippedArmorType;
+    public bool IsArmorAdded => isArmorAdded;
     public static List<EquipMenuWeaponTile> WeaponTileList = new List<EquipMenuWeaponTile>();
     public static List<EquipMenuSpellTile> SpellTileList = new List<EquipMenuSpellTile>();
 
@@ -16,11 +19,22 @@ public class EquipMenuControl : Singleton<EquipMenuControl>
     private void OnEnable()
     {
         SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
+        isArmorAdded = false;
     }
 
     private void OnDisable()
     {
         SceneLoader.OnNewGameStart -= SceneLoader_OnNewGameStart;
+        foreach (var tile in WeaponTileList)
+        {
+            tile.OnPlacedOnWeaponMenu -= Tile_OnPlacedOnWeaponMenu;
+            tile.OnRemovedFromWeaponMenu -= Tile_OnRemovedFromWeaponMenu;
+        }
+        foreach (var tile in SpellTileList)
+        {
+            tile.OnPlacedOnSpellMenu -= Tile_OnPlacedOnSpellMenu;
+            tile.OnRemovedFromSpellMenu -= Tile_OnRemovedFromSpellMenu;
+        }
     }
 
     private void InitializeEquipMenu()
@@ -29,17 +43,20 @@ public class EquipMenuControl : Singleton<EquipMenuControl>
         EquipMenuSpellTile[] equipSpellArray = GetComponentsInChildren<EquipMenuSpellTile>();
         foreach (var tile in equipWeaponArray)
         {
+            tile.OnPlacedOnWeaponMenu += Tile_OnPlacedOnWeaponMenu;
+            tile.OnRemovedFromWeaponMenu += Tile_OnRemovedFromWeaponMenu;
             tile.GetRectTransform().sizeDelta = new Vector2(100, 100);
             WeaponTileList.Add(tile);
         }
-
         foreach (var tile in equipSpellArray)
         {
+            tile.OnPlacedOnSpellMenu += Tile_OnPlacedOnSpellMenu;
+            tile.OnRemovedFromSpellMenu += Tile_OnRemovedFromSpellMenu;
             tile.GetRectTransform().sizeDelta = new Vector2(50, 50);
             SpellTileList.Add(tile);
         }
     }
-
+    
     private void ResetEquipMenu()
     {
         if (WeaponTileList != null && SpellTileList != null)
@@ -64,10 +81,47 @@ public class EquipMenuControl : Singleton<EquipMenuControl>
         }
     }
 
+    public float GetArmorBlockPct()
+    {
+        if (isArmorAdded && equippedArmorType != ArmorTypes.None)
+        {
+            return GameController.GetArmorSOFromList(equippedArmorType).BlockPercentage;
+        }
+        else return 0;
+    }
+
     //~~~~~~~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~~~~~~
 
     private void SceneLoader_OnNewGameStart()
     {
         ResetEquipMenu();
+    }
+
+    private void Tile_OnPlacedOnWeaponMenu(object sender, PlacedObject e)
+    {
+        if (e.GetItemType() == ItemTypes.Armor)
+        {
+            isArmorAdded = true;
+            equippedArmorType = e.GetInventoryItemSO().ArmorType;
+        }
+    }
+
+    private void Tile_OnRemovedFromWeaponMenu(object sender, PlacedObject e)
+    {
+        if (e.GetItemType() == ItemTypes.Armor)
+        {
+            isArmorAdded = false;
+            equippedArmorType = ArmorTypes.None;
+        }
+    }
+
+    private void Tile_OnPlacedOnSpellMenu(object sender, PlacedObject e)
+    {
+
+    }
+
+    private void Tile_OnRemovedFromSpellMenu(object sender, PlacedObject e)
+    {
+
     }
 }

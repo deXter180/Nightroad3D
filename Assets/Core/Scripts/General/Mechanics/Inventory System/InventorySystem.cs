@@ -17,6 +17,7 @@ public class InventorySystem : Singleton<InventorySystem>
     public static event EventHandler<PlacedObject> OnPlacedOnInventory;
     public static event Action<ItemTypes> OnAddingInInventory;
     public static event Action<ItemTypes> OnRemovingFromInventory;
+    public static event Action<ItemTypes> OnConsumingFromInventory;
 
     protected override void Awake()
     {
@@ -56,6 +57,9 @@ public class InventorySystem : Singleton<InventorySystem>
         PickedObject.SpawnSpellWorld(SpellTypes.Dash, GameController.GetSpellInventorySO(SpellTypes.Dash), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
         PickedObject.SpawnSpellWorld(SpellTypes.FireBall, GameController.GetSpellInventorySO(SpellTypes.FireBall), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
         PickedObject.SpawnSpellWorld(SpellTypes.FreezeBlast, GameController.GetSpellInventorySO(SpellTypes.FreezeBlast), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
+        PickedObject.SpawnItemsWorld(ItemTypes.Ammo, GameController.GetInventoryItemSOFromList(ItemTypes.Ammo, WeaponTypes.Rifle), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance), WeaponTypes.Rifle);
+        PickedObject.SpawnItemsWorld(ItemTypes.Ammo, GameController.GetInventoryItemSOFromList(ItemTypes.Ammo, WeaponTypes.RocketLauncher), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance), WeaponTypes.RocketLauncher);
+        PickedObject.SpawnItemsWorld(ItemTypes.Ammo, GameController.GetInventoryItemSOFromList(ItemTypes.Ammo, WeaponTypes.Shotgun), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance), WeaponTypes.Shotgun);
     }
 
     #region
@@ -101,6 +105,13 @@ public class InventorySystem : Singleton<InventorySystem>
         InventoryList.Remove(placedObject);
         OnRemovingFromInventory?.Invoke((placedObject.GetItemType()));
     }
+
+    public void ConsumeFromInventory(PlacedObject placedObject)
+    {
+        InventoryList.Remove(placedObject);
+        OnConsumingFromInventory?.Invoke(placedObject.GetItemType());
+    }
+
     #endregion
 
     //~~~~~~~~~~~~~~~~~~ Main Functions ~~~~~~~~~~~~~~~~~~~
@@ -140,9 +151,8 @@ public class InventorySystem : Singleton<InventorySystem>
                     if (grid.GetGridObject(x, y).CanBuild())
                     {
                         Vector2Int temp = new Vector2Int(x, y);
-                        if (TryPlaceItem(inventoryItemSO, temp, InventoryItemSO.Dir.Down))
+                        if (TryPlaceItem(inventoryItemSO, temp, InventoryItemSO.Dir.Down, out PlacedObject placedObject))
                         {
-                            PlacedObject placedObject = inventoryItemSO.InventoryPrefab.GetComponent<PlacedObject>();
                             InventoryList.Add(placedObject);
                             OnAddingInInventory?.Invoke(inventoryItemSO.ItemType);
                             return true;
@@ -154,7 +164,7 @@ public class InventorySystem : Singleton<InventorySystem>
         return false;
     }    
 
-    public bool TryPlaceItem(InventoryItemSO inventoryItemSO, Vector2Int placedObjectOrigin, InventoryItemSO.Dir dir)
+    public bool TryPlaceItem(InventoryItemSO inventoryItemSO, Vector2Int placedObjectOrigin, InventoryItemSO.Dir dir, out PlacedObject placedObject)
     {
         List<Vector2Int> gridPosList = inventoryItemSO.GetGridPositionList(placedObjectOrigin, dir);
         bool canPlace = true;
@@ -191,7 +201,7 @@ public class InventorySystem : Singleton<InventorySystem>
                     placedObjectWorldPos = grid.GetWorldPosAtOrigin(placedObjectOrigin.x, placedObjectOrigin.y) + new Vector3(rotationOffset.x - 0.2f, rotationOffset.y - 0.2f) * grid.GetCellSize();
                     break;
             }
-            PlacedObject placedObject = PlacedObject.Create(itemContainor.ContainorRect, placedObjectWorldPos, placedObjectOrigin, dir, inventoryItemSO);
+            placedObject = PlacedObject.Create(itemContainor.ContainorRect, placedObjectWorldPos, placedObjectOrigin, dir, inventoryItemSO);
             placedObject.transform.rotation = Quaternion.Euler(0, 0, -inventoryItemSO.GetRotationAngle(dir));
             foreach (Vector2Int gridPos in gridPosList)
             {
@@ -200,6 +210,7 @@ public class InventorySystem : Singleton<InventorySystem>
             OnPlacedOnInventory?.Invoke(this, placedObject);
             return true;
         }
+        placedObject = null;
         return false;
     }
 
@@ -217,10 +228,29 @@ public class InventorySystem : Singleton<InventorySystem>
             }
             return true;
         }
-        else
-        { 
-            return false;
+        return false;
+    }
+
+    public bool RemoveItem(PlacedObject placedObject)
+    {
+        if (InventoryList.Contains(placedObject))
+        {
+            foreach (var obj in grid.gridArray)
+            {
+                if (obj.GetPlacedObject() == placedObject)
+                {
+                    RemoveFromInventoryList(placedObject);
+                    placedObject.DestroySelf();
+                    List<Vector2Int> gridPosList = placedObject.GetGridPosList();
+                    foreach (Vector2Int gridPos in gridPosList)
+                    {
+                        grid.GetGridObject(gridPos.x, gridPos.y).ClearPlacedObject();
+                    }
+                    return true;
+                }
+            }
         }
+        return false;
     }
 
     public void ClearGrid()
@@ -229,6 +259,36 @@ public class InventorySystem : Singleton<InventorySystem>
         {
             obj.ClearPlacedObject();
         }
+    }
+
+    private bool IsAmmoAvailable()
+    {
+        foreach (var item in InventoryList)
+        {
+            if (item.GetItemType() == ItemTypes.Ammo)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public PlacedObject GetAvailableAmmo(WeaponTypes weaponType)
+    {
+        if (IsAmmoAvailable())
+        {
+            foreach (var item in InventoryList)
+            {
+                if (item.GetItemType() == ItemTypes.Ammo)
+                {
+                    if (item.GetInventoryItemSO().WeaponType == weaponType)
+                    {
+                        return item;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     //~~~~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~~~~
@@ -293,7 +353,7 @@ public class InventorySystem : Singleton<InventorySystem>
 
         foreach(AddedItem addedItem in listAddedItem.addedItemList)
         {
-            TryPlaceItem(GameController.GetInventoryItemSOFromList(addedItem.itemType), addedItem.gridPos, addedItem.dir);
+            TryPlaceItem(GameController.GetInventoryItemSOFromList(addedItem.itemType), addedItem.gridPos, addedItem.dir, out PlacedObject placedObject);
         }
     }
     #endregion

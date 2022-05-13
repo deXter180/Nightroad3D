@@ -106,6 +106,7 @@ public class PlacedObject : MonoBehaviour
         placedObject.origin = origin;
         placedObject.SetupDone();
         placedObject.SetWeaponEquipTile(null);
+        placedObject.SetSpellEquipTile(null);
         placedObject.isPlacedOnMenu = false;
         return placedObject;
     }

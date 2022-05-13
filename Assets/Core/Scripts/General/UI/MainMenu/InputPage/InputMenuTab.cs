@@ -28,9 +28,9 @@ public class InputMenuTab : MonoBehaviour
     {
         if (inputReference != null)
         {
-            InputManager.LoadBindingOverride(actionName);
-            defaultAction = inputReference.action;
             GetBindingInfo();
+            InputManager.LoadBindingOverride(actionName);
+            defaultAction = inputReference.action;           
             UpdateUI();
         }
         rebindButton.onClick.AddListener(() => DoRebind());
@@ -56,7 +56,9 @@ public class InputMenuTab : MonoBehaviour
     private void GetBindingInfo()
     {
         if (inputReference.action != null)
+        {
             actionName = inputReference.action.name;
+        }            
         if (inputReference.action.bindings.Count > selectedBinding)
         {
             inputBinding = inputReference.action.bindings[selectedBinding];

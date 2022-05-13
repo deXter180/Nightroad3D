@@ -24,9 +24,9 @@ public class Weapons
         InvokeOnAttack(new OnPlayerAttackEventArg(weapon, weaponBrain, weaponCategory, weaponType));
     }
 
-    public void RaiseOnPlayerReload(Weapons weapon, WeaponBrain weaponBrain, WeaponTypes weaponType)
+    public void RaiseOnPlayerReload(Weapons weapon, RangedWeapon rangedWeapon, WeaponTypes weaponType)
     {
-        InvokeOnReload(new OnPlayerReloadEventArg(weapon, weaponBrain, weaponType));
+        InvokeOnReload(new OnPlayerReloadEventArg(weapon, rangedWeapon, weaponType));
     }
 
     private void InvokeOnAttack(OnPlayerAttackEventArg eventArg)
@@ -100,13 +100,13 @@ public class OnPlayerAttackEventArg : EventArgs
 public class OnPlayerReloadEventArg : EventArgs
 {
     public Weapons weapon;
-    public WeaponBrain weaponBrain;
+    public RangedWeapon rangedWeapon;
     public WeaponTypes weaponType;
 
-    public OnPlayerReloadEventArg(Weapons WP, WeaponBrain WB, WeaponTypes WT)
+    public OnPlayerReloadEventArg(Weapons WP, RangedWeapon RW, WeaponTypes WT)
     {
         weapon = WP;
-        weaponBrain = WB;
+        rangedWeapon = RW;
         weaponType = WT; 
     }
 }

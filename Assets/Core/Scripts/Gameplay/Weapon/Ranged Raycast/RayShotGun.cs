@@ -119,7 +119,7 @@ public class RayShotGun : RangedWeapon
         if (!lighting.gameObject.activeInHierarchy)
         {
             lighting.gameObject.SetActive(true);
-            yield return new WaitForSeconds(MuzzleFlashTime);
+            yield return Helpers.GetWait(MuzzleFlashTime);
             lighting.gameObject.SetActive(false);
         }
     }
@@ -182,7 +182,7 @@ public class RayShotGun : RangedWeapon
                 }
             }
         }
-        yield return new WaitForSeconds(attackSpeed);
+        yield return Helpers.GetWait(attackSpeed);
         action.Invoke();
     }
 
@@ -203,8 +203,8 @@ public class RayShotGun : RangedWeapon
                 isReloading = true;
                 currentMagazineAmmo = maxMagazineAmmo;
                 CallEvent(this);
-                thisWeapon.RaiseOnPlayerReload(thisWeapon, weaponBrain, weaponType);
-                yield return new WaitForSeconds(weaponBrain.AnimDelay);
+                thisWeapon.RaiseOnPlayerReload(thisWeapon, this, weaponType);
+                yield return Helpers.GetWait(weaponBrain.AnimDelay);
                 action.Invoke();
             }
         }

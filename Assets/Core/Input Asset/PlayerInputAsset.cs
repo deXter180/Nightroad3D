@@ -64,7 +64,7 @@ public partial class @PlayerInputAsset : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""HoldCrouch"",
+                    ""name"": ""Hold Crouch"",
                     ""type"": ""Value"",
                     ""id"": ""e84912b1-170f-4912-bec6-9d1f8040351d"",
                     ""expectedControlType"": ""Button"",
@@ -73,7 +73,7 @@ public partial class @PlayerInputAsset : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""ToggleCrouch"",
+                    ""name"": ""Toggle Crouch"",
                     ""type"": ""Button"",
                     ""id"": ""e0b4fa95-6a4e-4388-b42b-54180c2a457b"",
                     ""expectedControlType"": ""Button"",
@@ -118,7 +118,7 @@ public partial class @PlayerInputAsset : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""CastSpell1"",
+                    ""name"": ""Cast Spell 1"",
                     ""type"": ""Button"",
                     ""id"": ""a21cb27c-1da0-4142-8ad4-2237a2655074"",
                     ""expectedControlType"": ""Button"",
@@ -127,7 +127,7 @@ public partial class @PlayerInputAsset : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""CastSpell2"",
+                    ""name"": ""Cast Spell 2"",
                     ""type"": ""Button"",
                     ""id"": ""e53f17cb-1e80-4558-8988-08b6a0877452"",
                     ""expectedControlType"": ""Button"",
@@ -232,7 +232,7 @@ public partial class @PlayerInputAsset : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""HoldCrouch"",
+                    ""action"": ""Hold Crouch"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -243,7 +243,7 @@ public partial class @PlayerInputAsset : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""ToggleCrouch"",
+                    ""action"": ""Toggle Crouch"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -294,11 +294,11 @@ public partial class @PlayerInputAsset : IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""07c88052-9749-4f73-a432-4d617ee955f9"",
-                    ""path"": ""<Mouse>/rightButton"",
+                    ""path"": ""<Keyboard>/z"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""CastSpell1"",
+                    ""action"": ""Cast Spell 1"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -309,7 +309,7 @@ public partial class @PlayerInputAsset : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""CastSpell2"",
+                    ""action"": ""Cast Spell 2"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -408,7 +408,7 @@ public partial class @PlayerInputAsset : IInputActionCollection2, IDisposable
             ""id"": ""d2e4e58a-f91b-4716-9a73-9ee5360f56e6"",
             ""actions"": [
                 {
-                    ""name"": ""RotateInventoryItem"",
+                    ""name"": ""Rotate Item"",
                     ""type"": ""Button"",
                     ""id"": ""9926fa4a-a039-456d-81ac-b19c6f81c115"",
                     ""expectedControlType"": ""Button"",
@@ -417,7 +417,7 @@ public partial class @PlayerInputAsset : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""RemoveInventoryItem"",
+                    ""name"": ""Remove Item"",
                     ""type"": ""Button"",
                     ""id"": ""0493e25d-fd4a-4e7c-94ee-e76ea83261c8"",
                     ""expectedControlType"": ""Button"",
@@ -433,6 +433,15 @@ public partial class @PlayerInputAsset : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Consume Item"",
+                    ""type"": ""Button"",
+                    ""id"": ""fa9812ad-7759-4791-8204-70c4b03c334f"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -443,7 +452,7 @@ public partial class @PlayerInputAsset : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""RotateInventoryItem"",
+                    ""action"": ""Rotate Item"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -454,7 +463,7 @@ public partial class @PlayerInputAsset : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""RemoveInventoryItem"",
+                    ""action"": ""Remove Item"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -466,6 +475,17 @@ public partial class @PlayerInputAsset : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Menu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c7534c87-960b-4de7-902c-a4ab9f5ad501"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Consume Item"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -480,14 +500,14 @@ public partial class @PlayerInputAsset : IInputActionCollection2, IDisposable
         m_BasicControls_MousePosition = m_BasicControls.FindAction("MousePosition", throwIfNotFound: true);
         m_BasicControls_Movement = m_BasicControls.FindAction("Movement", throwIfNotFound: true);
         m_BasicControls_Jump = m_BasicControls.FindAction("Jump", throwIfNotFound: true);
-        m_BasicControls_HoldCrouch = m_BasicControls.FindAction("HoldCrouch", throwIfNotFound: true);
-        m_BasicControls_ToggleCrouch = m_BasicControls.FindAction("ToggleCrouch", throwIfNotFound: true);
+        m_BasicControls_HoldCrouch = m_BasicControls.FindAction("Hold Crouch", throwIfNotFound: true);
+        m_BasicControls_ToggleCrouch = m_BasicControls.FindAction("Toggle Crouch", throwIfNotFound: true);
         m_BasicControls_Inventory = m_BasicControls.FindAction("Inventory", throwIfNotFound: true);
         m_BasicControls_Reload = m_BasicControls.FindAction("Reload", throwIfNotFound: true);
         m_BasicControls_Interact = m_BasicControls.FindAction("Interact", throwIfNotFound: true);
         m_BasicControls_Shoot = m_BasicControls.FindAction("Shoot", throwIfNotFound: true);
-        m_BasicControls_CastSpell1 = m_BasicControls.FindAction("CastSpell1", throwIfNotFound: true);
-        m_BasicControls_CastSpell2 = m_BasicControls.FindAction("CastSpell2", throwIfNotFound: true);
+        m_BasicControls_CastSpell1 = m_BasicControls.FindAction("Cast Spell 1", throwIfNotFound: true);
+        m_BasicControls_CastSpell2 = m_BasicControls.FindAction("Cast Spell 2", throwIfNotFound: true);
         // WeaponSelection
         m_WeaponSelection = asset.FindActionMap("WeaponSelection", throwIfNotFound: true);
         m_WeaponSelection_Weapon1 = m_WeaponSelection.FindAction("Weapon 1", throwIfNotFound: true);
@@ -496,9 +516,10 @@ public partial class @PlayerInputAsset : IInputActionCollection2, IDisposable
         m_WeaponSelection_Weapon4 = m_WeaponSelection.FindAction("Weapon 4", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
-        m_UI_RotateInventoryItem = m_UI.FindAction("RotateInventoryItem", throwIfNotFound: true);
-        m_UI_RemoveInventoryItem = m_UI.FindAction("RemoveInventoryItem", throwIfNotFound: true);
+        m_UI_RotateItem = m_UI.FindAction("Rotate Item", throwIfNotFound: true);
+        m_UI_RemoveItem = m_UI.FindAction("Remove Item", throwIfNotFound: true);
         m_UI_Menu = m_UI.FindAction("Menu", throwIfNotFound: true);
+        m_UI_ConsumeItem = m_UI.FindAction("Consume Item", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -736,16 +757,18 @@ public partial class @PlayerInputAsset : IInputActionCollection2, IDisposable
     // UI
     private readonly InputActionMap m_UI;
     private IUIActions m_UIActionsCallbackInterface;
-    private readonly InputAction m_UI_RotateInventoryItem;
-    private readonly InputAction m_UI_RemoveInventoryItem;
+    private readonly InputAction m_UI_RotateItem;
+    private readonly InputAction m_UI_RemoveItem;
     private readonly InputAction m_UI_Menu;
+    private readonly InputAction m_UI_ConsumeItem;
     public struct UIActions
     {
         private @PlayerInputAsset m_Wrapper;
         public UIActions(@PlayerInputAsset wrapper) { m_Wrapper = wrapper; }
-        public InputAction @RotateInventoryItem => m_Wrapper.m_UI_RotateInventoryItem;
-        public InputAction @RemoveInventoryItem => m_Wrapper.m_UI_RemoveInventoryItem;
+        public InputAction @RotateItem => m_Wrapper.m_UI_RotateItem;
+        public InputAction @RemoveItem => m_Wrapper.m_UI_RemoveItem;
         public InputAction @Menu => m_Wrapper.m_UI_Menu;
+        public InputAction @ConsumeItem => m_Wrapper.m_UI_ConsumeItem;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -755,28 +778,34 @@ public partial class @PlayerInputAsset : IInputActionCollection2, IDisposable
         {
             if (m_Wrapper.m_UIActionsCallbackInterface != null)
             {
-                @RotateInventoryItem.started -= m_Wrapper.m_UIActionsCallbackInterface.OnRotateInventoryItem;
-                @RotateInventoryItem.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnRotateInventoryItem;
-                @RotateInventoryItem.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnRotateInventoryItem;
-                @RemoveInventoryItem.started -= m_Wrapper.m_UIActionsCallbackInterface.OnRemoveInventoryItem;
-                @RemoveInventoryItem.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnRemoveInventoryItem;
-                @RemoveInventoryItem.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnRemoveInventoryItem;
+                @RotateItem.started -= m_Wrapper.m_UIActionsCallbackInterface.OnRotateItem;
+                @RotateItem.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnRotateItem;
+                @RotateItem.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnRotateItem;
+                @RemoveItem.started -= m_Wrapper.m_UIActionsCallbackInterface.OnRemoveItem;
+                @RemoveItem.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnRemoveItem;
+                @RemoveItem.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnRemoveItem;
                 @Menu.started -= m_Wrapper.m_UIActionsCallbackInterface.OnMenu;
                 @Menu.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnMenu;
                 @Menu.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnMenu;
+                @ConsumeItem.started -= m_Wrapper.m_UIActionsCallbackInterface.OnConsumeItem;
+                @ConsumeItem.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnConsumeItem;
+                @ConsumeItem.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnConsumeItem;
             }
             m_Wrapper.m_UIActionsCallbackInterface = instance;
             if (instance != null)
             {
-                @RotateInventoryItem.started += instance.OnRotateInventoryItem;
-                @RotateInventoryItem.performed += instance.OnRotateInventoryItem;
-                @RotateInventoryItem.canceled += instance.OnRotateInventoryItem;
-                @RemoveInventoryItem.started += instance.OnRemoveInventoryItem;
-                @RemoveInventoryItem.performed += instance.OnRemoveInventoryItem;
-                @RemoveInventoryItem.canceled += instance.OnRemoveInventoryItem;
+                @RotateItem.started += instance.OnRotateItem;
+                @RotateItem.performed += instance.OnRotateItem;
+                @RotateItem.canceled += instance.OnRotateItem;
+                @RemoveItem.started += instance.OnRemoveItem;
+                @RemoveItem.performed += instance.OnRemoveItem;
+                @RemoveItem.canceled += instance.OnRemoveItem;
                 @Menu.started += instance.OnMenu;
                 @Menu.performed += instance.OnMenu;
                 @Menu.canceled += instance.OnMenu;
+                @ConsumeItem.started += instance.OnConsumeItem;
+                @ConsumeItem.performed += instance.OnConsumeItem;
+                @ConsumeItem.canceled += instance.OnConsumeItem;
             }
         }
     }
@@ -805,8 +834,9 @@ public partial class @PlayerInputAsset : IInputActionCollection2, IDisposable
     }
     public interface IUIActions
     {
-        void OnRotateInventoryItem(InputAction.CallbackContext context);
-        void OnRemoveInventoryItem(InputAction.CallbackContext context);
+        void OnRotateItem(InputAction.CallbackContext context);
+        void OnRemoveItem(InputAction.CallbackContext context);
         void OnMenu(InputAction.CallbackContext context);
+        void OnConsumeItem(InputAction.CallbackContext context);
     }
 }

@@ -67,7 +67,7 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
     {
         if (inputs != null)
         {
-            if (inputs.UI.RotateInventoryItem.triggered)
+            if (inputs.UI.RotateItem.triggered)
             {
                 if (isDraggedFromInventory)
                 {
@@ -79,6 +79,7 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
             }
             RemoveFromInventory();
             PositionDragObject();
+            ConsumeItem();
         }
     }
 
@@ -217,7 +218,7 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
                 OriginOnInventory -= mouseDragGridPosOffsetInventory;
                 if (inventorySystem.IsValidGridPos(OriginOnInventory))
                 {
-                    tryPlaceItem = inventorySystem.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO, OriginOnInventory, dir);
+                    tryPlaceItem = inventorySystem.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO, OriginOnInventory, dir, out PlacedObject PO);
                 }
                 else if (IsOnWeaponMenu(mousePos, out EquipMenuWeaponTile weaponTile))
                 {
@@ -234,7 +235,7 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
             }
             else
             {
-                inventorySystem.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO, placedObject.GetGridPos(), placedObject.GetDir());
+                inventorySystem.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO, placedObject.GetGridPos(), placedObject.GetDir(), out PlacedObject PO);
                 if (placedObject.GetWeaponEquipTile() != null)
                 {
                     placedObject.GetWeaponEquipTile().TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO);
@@ -246,40 +247,108 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
     private void RemoveFromInventory()
     {
         if (gameController.IsInventoryActive)
-        {
-            Vector2 mousePos = inputs.BasicControls.MousePosition.ReadValue<Vector2>();
-            if (inputs.UI.RemoveInventoryItem.triggered && IsOnInventory(mousePos))
+        {           
+            if (inputs.UI.RemoveItem.triggered)
             {
-                RectTransformUtility.ScreenPointToLocalPointInRectangle(inventorySystem.GetItemContainer(), mousePos, UICam, out Vector2 anchoredPosition);
-                Vector2Int placedObjectOrigin = inventorySystem.GetGridLocalPos(anchoredPosition);
-                if (inventorySystem.GetGrid().GetGridObject(placedObjectOrigin.x, placedObjectOrigin.y).GetPlacedObject() != null)
+                Vector2 mousePos = inputs.BasicControls.MousePosition.ReadValue<Vector2>();
+                if (IsOnInventory(mousePos))
                 {
-                    PlacedObject placedObject = inventorySystem.GetGrid().GetGridObject(placedObjectOrigin.x, placedObjectOrigin.y).GetPlacedObject();
-                    InventoryItemSO item = placedObject.GetInventoryItemSO();
-                    WeaponTypes WT = item.WeaponType;
-                    SpellTypes ST = item.SpellType;
-                    placedObject.DestroySelf();
-                    inventorySystem.RemoveFromInventoryList(placedObject);
-                    List<Vector2Int> gridPosList = placedObject.GetGridPosList();
-                    foreach (Vector2Int gridPos in gridPosList)
+                    RectTransformUtility.ScreenPointToLocalPointInRectangle(inventorySystem.GetItemContainer(), mousePos, UICam, out Vector2 anchoredPosition);
+                    Vector2Int placedObjectOrigin = inventorySystem.GetGridLocalPos(anchoredPosition);
+                    if (inventorySystem.GetGrid().GetGridObject(placedObjectOrigin.x, placedObjectOrigin.y).GetPlacedObject() != null)
                     {
-                        inventorySystem.GetGrid().GetGridObject(gridPos.x, gridPos.y).ClearPlacedObject();
+                        PlacedObject placedObject = inventorySystem.GetGrid().GetGridObject(placedObjectOrigin.x, placedObjectOrigin.y).GetPlacedObject();
+                        InventoryItemSO item = placedObject.GetInventoryItemSO();
+                        ItemTypes IT = item.ItemType;
+                        WeaponTypes WT = item.WeaponType;
+                        SpellTypes ST = item.SpellType;
+                        placedObject.DestroySelf();
+                        inventorySystem.RemoveFromInventoryList(placedObject);
+                        List<Vector2Int> gridPosList = placedObject.GetGridPosList();
+                        foreach (Vector2Int gridPos in gridPosList)
+                        {
+                            inventorySystem.GetGrid().GetGridObject(gridPos.x, gridPos.y).ClearPlacedObject();
+                        }
+                        if (IT == ItemTypes.Spell)
+                        {
+                            if (ST != SpellTypes.None)
+                            {
+                                PickedObject pickedObject = PickedObject.SpawnSpellWorld(ST, item, playerController.transform.position + playerController.GetRandomPosWithoutY(15f, -15f));
+                            }
+                        }
+                        else if (IT == ItemTypes.Weapon)
+                        {
+                            if (WT != WeaponTypes.None)
+                            {
+                                PickedObject pickedObject = PickedObject.SpawnWeaponWorld(WT, item, playerController.transform.position + playerController.GetRandomPosWithoutY(15f, -15f));
+                            }
+                        }
+                        else
+                        {
+                            if (WT != WeaponTypes.None)
+                            {
+                                PickedObject pickedObject = PickedObject.SpawnItemsWorld(placedObject.GetItemType(), item, playerController.transform.position + playerController.GetRandomPosWithoutY(15f, -15f), WT);
+                            }
+                            else
+                            {
+                                PickedObject pickedObject = PickedObject.SpawnItemsWorld(placedObject.GetItemType(), item, playerController.transform.position + playerController.GetRandomPosWithoutY(15f, -15f));
+                            }
+
+                        }
                     }
-                    if (WT == WeaponTypes.None && ST == SpellTypes.None)
-                    {
-                        PickedObject pickedObject = PickedObject.SpawnItemsWorld(placedObject.GetItemType(), item, playerController.transform.position + playerController.GetRandomPosWithoutY(15f, -15f));
-                    }
-                    else if (WT != WeaponTypes.None && ST == SpellTypes.None)
-                    {
-                        PickedObject pickedObject = PickedObject.SpawnWeaponWorld(WT, item, playerController.transform.position + playerController.GetRandomPosWithoutY(15f, -15f));
-                    }
-                    else if (ST != SpellTypes.None && WT == WeaponTypes.None)
-                    {
-                        PickedObject pickedObject = PickedObject.SpawnSpellWorld(ST, item, playerController.transform.position + playerController.GetRandomPosWithoutY(15f, -15f));
-                    }
-                }
+                }               
             }
         }           
+    }
+
+    private void ConsumeItem()
+    {
+        if (gameController.IsInventoryActive)
+        {            
+            if (inputs.UI.ConsumeItem.triggered)
+            {
+                Vector2 mousePos = inputs.BasicControls.MousePosition.ReadValue<Vector2>();
+                if (IsOnInventory(mousePos))
+                {
+                    RectTransformUtility.ScreenPointToLocalPointInRectangle(inventorySystem.GetItemContainer(), mousePos, UICam, out Vector2 anchoredPosition);
+                    Vector2Int placedObjectOrigin = inventorySystem.GetGridLocalPos(anchoredPosition);
+                    if (inventorySystem.GetGrid().GetGridObject(placedObjectOrigin.x, placedObjectOrigin.y).GetPlacedObject() != null)
+                    {
+                        PlacedObject placedObject = inventorySystem.GetGrid().GetGridObject(placedObjectOrigin.x, placedObjectOrigin.y).GetPlacedObject();
+                        InventoryItemSO item = placedObject.GetInventoryItemSO();
+                        if (item.Usable)
+                        {
+                            if (item.ItemType == ItemTypes.HealthPotion)
+                            {
+                                if (playerController.PlayerTarget.Resource.HealthGain(item.AttributeAmount))
+                                {
+                                    placedObject.DestroySelf();
+                                    inventorySystem.ConsumeFromInventory(placedObject);
+                                    List<Vector2Int> gridPosList = placedObject.GetGridPosList();
+                                    foreach (Vector2Int gridPos in gridPosList)
+                                    {
+                                        inventorySystem.GetGrid().GetGridObject(gridPos.x, gridPos.y).ClearPlacedObject();
+                                    }
+                                }
+                            }
+                            if (item.ItemType == ItemTypes.ManaPotion)
+                            {
+                                if (playerController.PlayerTarget.Resource.ManaGain(item.AttributeAmount))
+                                {
+                                    placedObject.DestroySelf();
+                                    inventorySystem.ConsumeFromInventory(placedObject);
+                                    List<Vector2Int> gridPosList = placedObject.GetGridPosList();
+                                    foreach (Vector2Int gridPos in gridPosList)
+                                    {
+                                        inventorySystem.GetGrid().GetGridObject(gridPos.x, gridPos.y).ClearPlacedObject();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }              
+            }
+        }
     }
 
     public Vector2 GetPosOffset(Vector2 mousePos)

@@ -80,11 +80,8 @@ public class ProjectileGun : RangedWeapon
                         OnStopProjectileShoot?.Invoke();
                     }
                 }
-
-
             }
-        }
-             
+        }            
     }
 
     private IEnumerator InputDone()
@@ -111,7 +108,7 @@ public class ProjectileGun : RangedWeapon
         if (!lighting.gameObject.activeInHierarchy)
         {
             lighting.gameObject.SetActive(true);
-            yield return new WaitForSeconds(MuzzleFlashTime);
+            yield return Helpers.GetWait(MuzzleFlashTime);
             lighting.gameObject.SetActive(false);
         }
     }
@@ -141,7 +138,7 @@ public class ProjectileGun : RangedWeapon
             shot.transform.position = FiringPoint.position;
             shot.gameObject.SetActive(true);
             thisWeapon.RaiseOnPlayerAttack(thisWeapon, weaponBrain, weaponCategory, weaponType);
-            yield return new WaitForSeconds(attackSpeed);
+            yield return Helpers.GetWait(attackSpeed);
             action.Invoke();
         }
     }
@@ -162,8 +159,8 @@ public class ProjectileGun : RangedWeapon
                 }
                 isReloading = true;
                 CallEvent(this);
-                thisWeapon.RaiseOnPlayerReload(thisWeapon, weaponBrain, weaponType);
-                yield return new WaitForSeconds(weaponBrain.AnimDelay);
+                thisWeapon.RaiseOnPlayerReload(thisWeapon, this, weaponType);
+                yield return Helpers.GetWait(weaponBrain.AnimDelay);
                 action.Invoke();
             }
         }

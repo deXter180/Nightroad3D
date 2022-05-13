@@ -25,6 +25,7 @@ public class EnemyBrain : MonoBehaviour
     private Vector3 startPos;
     private Vector3 nextPos;
     private Enemy enemy;
+    private EquipMenuControl menuControl;
     private AOETargeted spellCasted;
     private SpellTypes spellType;
     private StateMachine stateMachine;
@@ -34,12 +35,12 @@ public class EnemyBrain : MonoBehaviour
     private BloodEffectOnDeath bloodOnDeath;
     private Target enemyTarget;
     private Animator animator;
-    private WaitForSeconds postDeathWait = new WaitForSeconds(2f);
     private TempShieldTrigger tempShield;
     public string EnemyID => enemyID; 
     public string EnemyName => enemyName;
     public Vector3 StartPos => startPos; 
-    public Target EnemyTarget => enemyTarget; 
+    public Target EnemyTarget => enemyTarget;
+    public EquipMenuControl MenuControl => menuControl;
     public NavMeshAgent navMeshAgent => navAgent; 
     public SpellTypes SpellType => spellType; 
     public bool IsSpellAffected => isSpellAffected; 
@@ -122,7 +123,7 @@ public class EnemyBrain : MonoBehaviour
 
     private IEnumerator SetEnemy()
     {
-        yield return new WaitForSeconds(1f);
+        yield return Helpers.GetWait(1);
         switch (enemyType)      
         {
             case EnemyTypes.Giant:
@@ -144,6 +145,7 @@ public class EnemyBrain : MonoBehaviour
         bloodOnHit = GetComponentInChildren<BloodEffectOnHit>();
         bloodOnDeath = GetComponentInChildren<BloodEffectOnDeath>();
         animator = GetComponentInChildren<Animator>();
+        menuControl = EquipMenuControl.Instance;
         isDying = false;
         isMoving = false;
         isAttacking = false;
@@ -162,13 +164,6 @@ public class EnemyBrain : MonoBehaviour
         readyForAnim = true;
         IsSetupDone = true;
     }   
-
-    private IEnumerator AfterKilled()
-    {
-        yield return postDeathWait;
-        gameObject.SetActive(false);
-        AssetLoader.ReleaseAssetInstance(gameObject);
-    }
 
     //!!!!!!!!!!!!Call this where instantiating enemies!!!!!!!!!!!!!!!!
 
@@ -247,6 +242,12 @@ public class EnemyBrain : MonoBehaviour
             isMoving = false;
             isAttacking = false;
             StartCoroutine(AfterKilled());
+            IEnumerator AfterKilled()
+            {
+                yield return Helpers.GetWait(2);
+                gameObject.SetActive(false);
+                AssetLoader.ReleaseAssetInstance(gameObject);
+            }
         }        
     }
 

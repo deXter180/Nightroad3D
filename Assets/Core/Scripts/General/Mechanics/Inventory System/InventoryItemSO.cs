@@ -20,6 +20,7 @@ public class InventoryItemSO : ScriptableObject
     public int Height;
     public ItemTypes ItemType;
     public WeaponTypes WeaponType;
+    public ArmorTypes ArmorType;
     public SpellTypes SpellType;
     public SpellCategories SpellCategory;
     public ItemRarity Rarity;

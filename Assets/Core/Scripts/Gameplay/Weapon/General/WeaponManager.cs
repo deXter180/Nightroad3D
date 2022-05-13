@@ -14,6 +14,7 @@ public class WeaponManager : Singleton<WeaponManager>
     private bool IsInitialized => weaponInventory != null;
     private PlayerInputAsset inputs;
     private PlayerController player;
+    private InventorySystem inventorySystem;
     public static Dictionary<WeaponTypes, WeaponBrain> weaponInventory;
     private Dictionary<WeaponBrain, RangedWeapon> rangedWeaponDict = new Dictionary<WeaponBrain, RangedWeapon>();
     private GameController gameController;
@@ -31,6 +32,7 @@ public class WeaponManager : Singleton<WeaponManager>
     {
         player = PlayerController.Instance;
         gameController = GameController.Instance;
+        inventorySystem = InventorySystem.Instance;
         StartCoroutine(InputDone());
         foreach (WeaponBrain WB in weaponBrains)
         {
@@ -42,6 +44,7 @@ public class WeaponManager : Singleton<WeaponManager>
             menuTile.OnRemovedFromWeaponMenu += MenuTile_OnRemovedFromMenu;
         }
         SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
+        Weapons.OnPlayerReload += Weapons_OnPlayerReload;
         InitializeInventory();
         isRemoved = false;
     }
@@ -49,6 +52,7 @@ public class WeaponManager : Singleton<WeaponManager>
     private void OnDestroy()
     {
         SceneLoader.OnNewGameStart -= SceneLoader_OnNewGameStart;
+        Weapons.OnPlayerReload += Weapons_OnPlayerReload;
         foreach (var menuTile in EquipMenuControl.WeaponTileList)
         {
             menuTile.OnPlacedOnWeaponMenu -= MenuTile_OnPlacedOnMenu;
@@ -245,6 +249,19 @@ public class WeaponManager : Singleton<WeaponManager>
     }
 
     //~~~~~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~~~
+
+    private void Weapons_OnPlayerReload(object sender, OnPlayerReloadEventArg e)
+    {
+        if (inventorySystem.GetAvailableAmmo(e.weaponType) != null)
+        {
+            PlacedObject placedObject = inventorySystem.GetAvailableAmmo(e.weaponType);
+            int ammoAmount = GameController.GetAmmoSOFromList(e.weaponType).AmmoAmountInPack;
+            if (e.rangedWeapon.AddAmmo(ammoAmount))
+            {
+                inventorySystem.RemoveItem(placedObject);
+            }
+        }
+    }
 
     private void MenuTile_OnPlacedOnMenu(object sender, PlacedObject e)
     {

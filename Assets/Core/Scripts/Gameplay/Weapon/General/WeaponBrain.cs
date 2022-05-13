@@ -164,24 +164,22 @@ public class WeaponBrain : MonoBehaviour
         {
             StartCoroutine(DelayReloadAnim(animDelay));
         }
-    }
-
-    private IEnumerator DelayAtkAnim(float animDelay)
-    {
-        yield return new WaitForSeconds(animDelay);
-        playingAnim = false;
-        if (weaponTypes != WeaponTypes.Rifle)
+        IEnumerator DelayAtkAnim(float animDelay)
         {
+            yield return Helpers.GetWait(animDelay);
+            playingAnim = false;
+            if (weaponTypes != WeaponTypes.Rifle)
+            {
+                animType = AnimType.Walk;
+            }
+        }
+        IEnumerator DelayReloadAnim(float animDelay)
+        {
+            yield return Helpers.GetWait(animDelay);
+            playingAnim = false;
             animType = AnimType.Walk;
         }
-    }
-
-    private IEnumerator DelayReloadAnim(float animDelay)
-    {
-        yield return new WaitForSeconds(animDelay);
-        playingAnim = false;
-        animType = AnimType.Walk;
-    }
+    }   
 
     //~~~~~~~~~~~~~~~~~~~~~ Event Callback ~~~~~~~~~~~~~~~~~~~~~
 

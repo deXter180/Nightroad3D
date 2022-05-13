@@ -17,7 +17,7 @@ public class CursorControl : MonoBehaviour
     {
         if (inputs != null)
         {
-            if (inputs.UI.RotateInventoryItem.triggered)
+            if (inputs.UI.RotateItem.triggered)
             {
                 ControlCursor();
             }

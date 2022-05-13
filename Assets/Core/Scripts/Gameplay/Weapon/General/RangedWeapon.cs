@@ -25,4 +25,15 @@ public class RangedWeapon : MonoBehaviour
     public int MaxMagazineAmmo => maxMagazineAmmo;
     public int MaxTotalAmmo => maxTotalAmmo;
     public bool IsReady => isReady;
+
+    public bool AddAmmo(int ammoAmount)
+    {
+        if (maxTotalAmmo - currentTotalAmmo >= ammoAmount)
+        {
+            currentTotalAmmo += ammoAmount;
+            OnAmmoAffected?.Invoke(this);
+            return true;
+        }
+        return false;
+    }
 }

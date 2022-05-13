@@ -40,6 +40,12 @@ public class RayGun : RangedWeapon
     private void OnEnable()
     {
         StartCoroutine(InputDone());
+        IEnumerator InputDone()
+        {
+            yield return new WaitUntil(() => InputManager.InputReady);
+            inputs = InputManager.InputActions;
+            weaponBrain.GetThisWeapon();
+        }
     }
 
     private void Update()
@@ -87,13 +93,6 @@ public class RayGun : RangedWeapon
         }          
     }
 
-    private IEnumerator InputDone()
-    {
-        yield return new WaitUntil(() => InputManager.InputReady);
-        inputs = InputManager.InputActions;
-        weaponBrain.GetThisWeapon();
-    }
-
     private void PlayBulletTrailVfx()
     {
         if (visualEffect != null)
@@ -101,16 +100,6 @@ public class RayGun : RangedWeapon
             Vector3 dir = firePoint.forward;
             visualEffect.SetVector3("Direction", dir);
             visualEffect.Play();
-        }
-    }
-
-    private IEnumerator PlayMuzzleLight()
-    {
-        if (!lighting.gameObject.activeInHierarchy)
-        {
-            lighting.gameObject.SetActive(true);
-            yield return new WaitForSeconds(MuzzleFlashTime);
-            lighting.gameObject.SetActive(false);
         }
     }
 
@@ -175,9 +164,18 @@ public class RayGun : RangedWeapon
                     weaponBrain.SpawnHitVfx(hit.point);                    
                 }
             }
-            yield return new WaitForSeconds(attackSpeed);
+            yield return Helpers.GetWait(attackSpeed);
             action.Invoke();
-        }       
+        }
+        IEnumerator PlayMuzzleLight()
+        {
+            if (!lighting.gameObject.activeInHierarchy)
+            {
+                lighting.gameObject.SetActive(true);
+                yield return Helpers.GetWait(MuzzleFlashTime);
+                lighting.gameObject.SetActive(false);
+            }
+        }
     }
 
     private IEnumerator Reload(Action action)
@@ -197,8 +195,8 @@ public class RayGun : RangedWeapon
                 isReloading = true;
                 currentMagazineAmmo = maxMagazineAmmo;
                 CallEvent(this);
-                thisWeapon.RaiseOnPlayerReload(thisWeapon, weaponBrain, weaponType);
-                yield return new WaitForSeconds(weaponBrain.AnimDelay);
+                thisWeapon.RaiseOnPlayerReload(thisWeapon, this, weaponType);
+                yield return Helpers.GetWait(weaponBrain.AnimDelay);
                 action.Invoke();
             }
         }      

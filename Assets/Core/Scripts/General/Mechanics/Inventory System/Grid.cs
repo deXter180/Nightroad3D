@@ -253,6 +253,11 @@ public class GridObject
     {
         return placedObject != null;
     }
+
+    public Vector2 GetGridObjectPos()
+    {
+        return new Vector2(x, y);
+    }
 }
 
 #endregion

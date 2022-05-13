@@ -226,6 +226,12 @@ public enum WeaponCategories
     ProjectileShoot
 }
 
+public enum ArmorTypes
+{
+    None,
+    RoyalPlate
+}
+
 public enum SpellTypes
 {
     None,

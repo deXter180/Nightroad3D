@@ -13,20 +13,24 @@ public sealed class ResourceManagement
 
     public class DamagedEventArgs : EventArgs
     {
+        public int ChangeAmount { get; set; } 
         public int CurrentHP { get; set; }
         public float currentHealthPct { get; set; }
-        public DamagedEventArgs(int currentHP, float healthPct)
+        public DamagedEventArgs(int changeAmount, int currentHP, float healthPct)
         {
+            ChangeAmount = changeAmount;
             CurrentHP = currentHP;
             currentHealthPct = healthPct;
         }
     }
     public class ManaEventArgs : EventArgs
     {
+        public int ChangeAmount { get; set; }
         public int CurrentMana { get; set; }
         public float currentManaPct { get; set; }
-        public ManaEventArgs(int currentMana, float manaPct)
+        public ManaEventArgs(int changeAmount, int currentMana, float manaPct)
         {
+            ChangeAmount = changeAmount;
             CurrentMana = currentMana;
             currentManaPct = manaPct;
         }
@@ -66,7 +70,7 @@ public sealed class ResourceManagement
             int totalDamageTaken = pAmount < CurrentHealth ? pAmount : CurrentHealth;
             CurrentHealth -= totalDamageTaken;
             float currentHealthPct = (float)CurrentHealth / (float)MaxHealth;
-            OnHealthLoss?.Invoke(this, new DamagedEventArgs(CurrentHealth, currentHealthPct));
+            OnHealthLoss?.Invoke(this, new DamagedEventArgs(pAmount, CurrentHealth, currentHealthPct));
             if (IsDead)
             {
                 OnKilled?.Invoke(this, EventArgs.Empty);
@@ -81,30 +85,34 @@ public sealed class ResourceManagement
             int totalManaLoss = pAmount < CurrentMana ? pAmount : CurrentMana;
             CurrentMana -= totalManaLoss;
             float currentManaPct = (float)CurrentMana / (float)MaxMana;
-            OnManaLoss?.Invoke(this, new ManaEventArgs(CurrentMana, currentManaPct));
+            OnManaLoss?.Invoke(this, new ManaEventArgs(pAmount, CurrentMana, currentManaPct));
         }
     }
 
-    public void HealthGain(int pAmount)
+    public bool HealthGain(int pAmount)
     {
         if (CurrentHealth < MaxHealth)
         {
             int hpLeft = MaxHealth - CurrentHealth;
             CurrentHealth += pAmount <= hpLeft ? pAmount : hpLeft;
             float currentHealthPct = (float)CurrentHealth / (float)MaxHealth;
-            OnHealthGain.Invoke(this, new DamagedEventArgs(CurrentHealth, currentHealthPct));
+            OnHealthGain.Invoke(this, new DamagedEventArgs(pAmount, CurrentHealth, currentHealthPct));
+            return true;
         }
+        return false;
     }
 
-    public void ManaGain(int pAmount) 
+    public bool ManaGain(int pAmount) 
     {
         if (CurrentMana < MaxMana)
         {
             int manaLeft = MaxMana - CurrentMana;
             CurrentMana += pAmount <= manaLeft ? pAmount : manaLeft;
             float currentManaPct = (float)CurrentMana / (float)MaxMana;
-            OnManaLoss?.Invoke(this, new ManaEventArgs(CurrentMana, currentManaPct));
+            OnManaGain?.Invoke(this, new ManaEventArgs(pAmount, CurrentMana, currentManaPct));
+            return true;
         }
+        return false;
     }
     //public void EnergyGain(int pAmount)
     //{

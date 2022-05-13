@@ -60,7 +60,7 @@ public class Chase : State
         {
             enemyBrain.navMeshAgent.speed = enemyBrain.navMeshAgent.speed * enemyBrain.GetThisEnemy().ThisEnemySO.SpeedMultiplier;           
         }
-        enemyBrain.navMeshAgent.SetDestination(PlayerController.Instance.transform.position);
+        enemyBrain.navMeshAgent.SetDestination(player.transform.position);
     }
 
 }

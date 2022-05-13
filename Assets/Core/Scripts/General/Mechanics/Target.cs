@@ -117,11 +117,6 @@ public class Target : MonoBehaviour
         
     }
 
-    public void AddHealth(int healthToAdd)
-    {
-        Resource.HealthGain(healthToAdd);
-    }
-
     //~~~~~~~~~~~~~~~~~~~~~~~~~~ Dodge function ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     private void IsDodging(float dodgeChance)
@@ -138,11 +133,6 @@ public class Target : MonoBehaviour
     public void UseMana(int manaCost)
     {
         Resource.ManaLoss(manaCost);
-    }
-
-    public void AddMana(int manaToAdd)
-    {
-        Resource.ManaGain(manaToAdd);
     }
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~~~~~~

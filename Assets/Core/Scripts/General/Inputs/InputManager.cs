@@ -16,7 +16,7 @@ public class InputManager : MonoBehaviour
     private static bool inputReady = false;
     public static List<InputMenuTab> MenuTabsList = new List<InputMenuTab>();
 
-    private void OnEnable()
+    private void Awake()
     {
         if (InputActions == null)
         {
@@ -90,7 +90,7 @@ public class InputManager : MonoBehaviour
         rebind.Start(); 
     }
 
-    public static String GetBindingName(string actionName, int bindingIndex)
+    public static string GetBindingName(string actionName, int bindingIndex)
     {
         if (InputActions == null)
         {
@@ -99,7 +99,14 @@ public class InputManager : MonoBehaviour
             inputReady = true;
         }       
         InputAction action = InputActions.asset.FindAction(actionName);
-        return action.GetBindingDisplayString(bindingIndex);
+        if (action != null)
+        {
+            return action.GetBindingDisplayString(bindingIndex);
+        }
+        else
+        {
+            return "";
+        }
     }
 
     private static bool CheckDuplicateBinding(InputAction action, int bindingIndex, bool allComposite)
@@ -147,11 +154,14 @@ public class InputManager : MonoBehaviour
             inputReady = true;
         }
         InputAction action = InputActions.asset.FindAction(actionName);
-        for(int i = 0; i < action.bindings.Count; i++)
+        if (action != null)
         {
-            if (!string.IsNullOrEmpty(PlayerPrefs.GetString(action.actionMap + action.name + i)))
-                action.ApplyBindingOverride(i, PlayerPrefs.GetString(action.actionMap + action.name + i));
-        }
+            for (int i = 0; i < action.bindings.Count; i++)
+            {
+                if (!string.IsNullOrEmpty(PlayerPrefs.GetString(action.actionMap + action.name + i)))
+                    action.ApplyBindingOverride(i, PlayerPrefs.GetString(action.actionMap + action.name + i));
+            }
+        }        
     }
 
     public static void ResetBinding(string actionName, int bindingIndex)

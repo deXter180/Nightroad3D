@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.EventSystems;
 
 public class GameController : PersistentSingleton<GameController>
 {
@@ -22,6 +23,8 @@ public class GameController : PersistentSingleton<GameController>
     private static List<InventoryItemSO> WeaponInventorySOList = new List<InventoryItemSO>();
     private static List<InventoryItemSO> SpellInventorySOList = new List<InventoryItemSO>();
     private static List<WeaponSO> WeaponSOList = new List<WeaponSO>();
+    private static List<AmmoSO> AmmoSOList = new List<AmmoSO>();
+    private static List<ArmorSO> ArmorSOList = new List<ArmorSO>();
     private static List<SpellBaseSO> spellSOList = new List<SpellBaseSO>();
     private static List<EnemySO> EnemySOList = new List<EnemySO>();
 
@@ -33,7 +36,7 @@ public class GameController : PersistentSingleton<GameController>
     protected override void Awake()
     {
         base.Awake();
-        AssetLoader.OnSOsLoaded += AssetRefLoader_OnSOsLoaded;
+        AssetLoader.OnSOsLoaded += AssetLoader_OnSOsLoaded;
         AssetLoader.OnSingleSceneLoad += AssetLoader_OnSingleSceneLoad;
         SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
         SceneLoader.OnMainMenuSceneLoad += SceneLoader_OnMainMenuSceneLoad;
@@ -54,7 +57,7 @@ public class GameController : PersistentSingleton<GameController>
 
     private void OnDisable()
     {
-        AssetLoader.OnSOsLoaded -= AssetRefLoader_OnSOsLoaded;
+        AssetLoader.OnSOsLoaded -= AssetLoader_OnSOsLoaded;
         AssetLoader.OnSingleSceneLoad -= AssetLoader_OnSingleSceneLoad;
         SceneLoader.OnNewGameStart -= SceneLoader_OnNewGameStart;
         SceneLoader.OnMainMenuSceneLoad -= SceneLoader_OnMainMenuSceneLoad;
@@ -221,6 +224,30 @@ public class GameController : PersistentSingleton<GameController>
         return null;
     }
 
+    public static AmmoSO GetAmmoSOFromList(WeaponTypes weaponType)
+    {
+        foreach (AmmoSO ammoSO in AmmoSOList)
+        {
+            if (ammoSO.WeaponType == weaponType)
+            {
+                return ammoSO;
+            }
+        }
+        return null;
+    }
+
+    public static ArmorSO GetArmorSOFromList(ArmorTypes armorType)
+    {
+        foreach (ArmorSO armorSO in ArmorSOList)
+        {
+            if (armorSO.ArmorType == armorType)
+            {
+                return armorSO;
+            }
+        }
+        return null;
+    }
+
     public static SpellBaseSO GetSpellSOFromList(SpellTypes spellType)
     {
         foreach (SpellBaseSO spellSO in spellSOList)
@@ -238,6 +265,18 @@ public class GameController : PersistentSingleton<GameController>
         foreach (var invSO in InventorySOList)
         {
             if (invSO.ItemType == itemType)
+            {
+                return invSO;
+            }
+        }
+        return null;
+    }
+
+    public static InventoryItemSO GetInventoryItemSOFromList(ItemTypes itemType, WeaponTypes weaponType)
+    {
+        foreach (var invSO in InventorySOList)
+        {
+            if (invSO.ItemType == itemType && invSO.WeaponType == weaponType)
             {
                 return invSO;
             }
@@ -278,34 +317,33 @@ public class GameController : PersistentSingleton<GameController>
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    private void AssetRefLoader_OnSOsLoaded(IList<ScriptableObject> obj)
+    private void AssetLoader_OnSOsLoaded(IList<ScriptableObject> obj)
     {
         foreach(var SO in obj)
         {
             if (SO.GetType() == typeof(InventoryItemSO))
             {
                 InventoryItemSO itemSO = (InventoryItemSO)SO;
-                if (itemSO.WeaponType == WeaponTypes.None && itemSO.SpellType == SpellTypes.None)
+                if (itemSO.ItemType == ItemTypes.Spell)
+                {
+                    if (itemSO.SpellType != SpellTypes.None && !SpellInventorySOList.Contains(itemSO))
+                    {
+                        SpellInventorySOList.Add(itemSO);
+                    }
+                }
+                else if (itemSO.ItemType == ItemTypes.Weapon)
+                {
+                    if (itemSO.WeaponType != WeaponTypes.None && !WeaponInventorySOList.Contains(itemSO))
+                    {
+                        WeaponInventorySOList.Add(itemSO);
+                    }
+                }
+                else
                 {
                     if (!InventorySOList.Contains(itemSO))
                     {
                         InventorySOList.Add(itemSO);
-                        InventorySOList.Add(itemSO);
-                    }                    
-                }
-                else if (itemSO.WeaponType != WeaponTypes.None && itemSO.SpellType == SpellTypes.None)
-                {
-                    if (!WeaponInventorySOList.Contains(itemSO))
-                    {
-                        WeaponInventorySOList.Add(itemSO);
-                    }                   
-                }
-                else if (itemSO.SpellType != SpellTypes.None && itemSO.WeaponType == WeaponTypes.None)
-                {
-                    if (!SpellInventorySOList.Contains(itemSO))
-                    {
-                        SpellInventorySOList.Add(itemSO);
-                    }                   
+                    }
                 }
             }
             else if (SO.GetType() == typeof(WeaponSO))
@@ -314,6 +352,20 @@ public class GameController : PersistentSingleton<GameController>
                 {
                     WeaponSOList.Add((WeaponSO)SO);
                 }               
+            }
+            else if (SO.GetType() == typeof(AmmoSO))
+            {
+                if (!AmmoSOList.Contains((AmmoSO)SO))
+                {
+                    AmmoSOList.Add((AmmoSO)SO);
+                }
+            }
+            else if (SO.GetType() == typeof(ArmorSO))
+            {
+                if (!ArmorSOList.Contains((ArmorSO)SO))
+                {
+                    ArmorSOList.Add((ArmorSO)SO);
+                }
             }
             else if (SO.GetType() == typeof(EnemySO))
             {
@@ -369,7 +421,7 @@ public class GameController : PersistentSingleton<GameController>
         mainMenu.Control(isMainMenuActive);
         inventoryUI.Control(isInventoryActive);
         crosshair.Control(false);
-        dialogueManager.EndConversation();
+        dialogueManager.EndConversation();      
     }
 
     private void SceneLoader_OnNewGameStart()
@@ -386,6 +438,5 @@ public class GameController : PersistentSingleton<GameController>
     {
         isInventoryActive = false;
         isMainMenuActive = false;
-        //loadUI.Control(false);
     }
 }

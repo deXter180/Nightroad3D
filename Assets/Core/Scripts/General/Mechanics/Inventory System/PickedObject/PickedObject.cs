@@ -44,19 +44,27 @@ public class PickedObject : MonoBehaviour
         return itemSO;
     }
 
-    public static PickedObject SpawnItemsWorld(ItemTypes itemType, InventoryItemSO SO,Vector3 position)
+    public static PickedObject SpawnItemsWorld(ItemTypes itemType, InventoryItemSO SO, Vector3 position, WeaponTypes weaponType = WeaponTypes.None)
     {
         float posX = position.x;
         float posZ = position.z;
         Vector3 groundPos = new Vector3(posX, PlayerController.Instance.GroundHeight, posZ);
-        Transform spawnedTransform = Instantiate(GameController.GetInventoryItemSOFromList(itemType).WorldPrefab, PlayerController.Instance.GetRandomDirWithoutY(throwDistance, -throwDistance) + groundPos, Quaternion.identity);
+        Transform spawnedTransform;
+        if (weaponType == WeaponTypes.None)
+        {
+            spawnedTransform = Instantiate(GameController.GetInventoryItemSOFromList(itemType).WorldPrefab, PlayerController.Instance.GetRandomDirWithoutY(throwDistance, -throwDistance) + groundPos, Quaternion.identity);
+        }
+        else
+        {
+            spawnedTransform = Instantiate(GameController.GetInventoryItemSOFromList(itemType, weaponType).WorldPrefab, PlayerController.Instance.GetRandomDirWithoutY(throwDistance, -throwDistance) + groundPos, Quaternion.identity);
+        }       
         PickedObject pickedObject = spawnedTransform.GetComponent<PickedObject>();
         pickedObject.itemSO = SO;
         pickedObject.SetupInGameWorld(itemType);
         return pickedObject;
     }
 
-    public static PickedObject SpawnWeaponWorld(WeaponTypes weaponType, InventoryItemSO SO,Vector3 position)
+    public static PickedObject SpawnWeaponWorld(WeaponTypes weaponType, InventoryItemSO SO, Vector3 position)
     {
         float posX = position.x;
         float posZ = position.z;

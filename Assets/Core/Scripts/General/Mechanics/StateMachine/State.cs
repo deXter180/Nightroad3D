@@ -11,6 +11,7 @@ public abstract class State
     protected StateMachine stateMachine;
     protected Target target;
     protected Rigidbody rigidbody;
+    protected PlayerController player;
 
     public State(GameObject gameObject, StateMachine SM)
     {
@@ -20,6 +21,7 @@ public abstract class State
         this.stateMachine = SM;
         this.target = gameObject.GetComponent<Target>();
         this.rigidbody = gameObject.GetComponent<Rigidbody>();
+        player = PlayerController.Instance;
     }
 
     public abstract void Tick();
