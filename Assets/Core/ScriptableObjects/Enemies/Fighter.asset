@@ -1,27 +1,3 @@
-%YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55fa94d8dec12b8418da0f877b65eebb, type: 3}
-  m_Name: Fighter
-  m_EditorClassIdentifier: 
-  maxHP: 0
-  damageAmount: 0
-  attackSpeed: 0
-  attackRange: 0
-  critChance: 0
-  critBonus: 0
-  enemyType: 2
-  dodgeChance: 0
-  isGroundUnit: 0
-  avoidanceRadius: 0
-  moveSpeed: 0
-  speedMultiplier: 0
-  WorldPrefab: {fileID: 0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:5b7570bcf964d16827abdb52bbabdbe6afc368ca26a1a7d36f38944df35dd43c
+size 624

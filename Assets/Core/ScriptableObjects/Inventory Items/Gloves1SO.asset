@@ -1,29 +1,3 @@
-%YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0ba6779e1bcdb4d49b15a50cf60c0dd7, type: 3}
-  m_Name: Gloves1SO
-  m_EditorClassIdentifier: 
-  ItemID: Gloves1
-  ItemName: Silver Gloves
-  ItemDescription: 
-  Usable: 0
-  Width: 2
-  Height: 1
-  ItemType: 5
-  WeaponType: 0
-  Rarity: 0
-  AttributeAmount: 0
-  AttributeIcon: {fileID: 0}
-  inventoryPrefab: {fileID: 230269167092907271, guid: 785fac7c1005e2b4783bc901df232260,
-    type: 3}
-  worldPrefab: {fileID: 3779381617661960356, guid: 362bbcc92a819b7459a90ae2fee30782,
-    type: 3}
+version https://git-lfs.github.com/spec/v1
+oid sha256:ebe1f9b91a84a74d74d655cd8e8f0207657172532ea4aa512755de017c265c5b
+size 788

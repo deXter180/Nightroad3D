@@ -1,29 +1,3 @@
-%YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0ba6779e1bcdb4d49b15a50cf60c0dd7, type: 3}
-  m_Name: Helmet1SO
-  m_EditorClassIdentifier: 
-  ItemID: Helmet1
-  ItemName: White Hood
-  ItemDescription: 
-  Usable: 0
-  Width: 2
-  Height: 2
-  ItemType: 8
-  WeaponType: 0
-  Rarity: 0
-  AttributeAmount: 0
-  AttributeIcon: {fileID: 0}
-  inventoryPrefab: {fileID: 1710384915719963653, guid: 6a96e204e994da045bc974607fe50de9,
-    type: 3}
-  worldPrefab: {fileID: 7059575527576850111, guid: 6d1efd6e0f7212c42b30ac77d1f77d13,
-    type: 3}
+version https://git-lfs.github.com/spec/v1
+oid sha256:319391f71d20bec2562be15f94b11fb7efc1f17cd437dce60d8dd4f446c5a8f9
+size 786
