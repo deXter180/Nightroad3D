@@ -840,7 +840,8 @@ MonoBehaviour:
   dodgeChance: 0
   crouchHeightPrecentage: 50
   SelectionThreshold: 0.97
-  camTransform: {fileID: 2082492898}
+  SlantingPower: 3
+  SlantingSpeed: 20
 --- !u!95 &27675695
 Animator:
   serializedVersion: 4
@@ -33577,9 +33578,9 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2082492895}
-  m_LocalRotation: {x: 0.02237883, y: 0.17964217, z: -0.0044163256, w: 0.9834676}
-  m_LocalPosition: {x: -4.003113, y: 2, z: 0}
-  m_LocalScale: {x: 1, y: 0.7983965, z: 0.99996614}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 2.1727128, z: -0.10910034}
+  m_LocalScale: {x: 1, y: 0.7980617, z: 1.0004914}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2049234914}
