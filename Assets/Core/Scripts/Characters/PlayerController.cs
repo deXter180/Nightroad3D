@@ -250,7 +250,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
             {
                 rotX = Mathf.LerpAngle(camTransform.rotation.eulerAngles.x, camControlX + (movePosition.y * SlantingPower), Time.fixedDeltaTime * SlantingSpeed);
             }          
-            float rotZ = Mathf.LerpAngle(camTransform.rotation.eulerAngles.z, movePosition.x * SlantingPower, Time.fixedDeltaTime * SlantingSpeed);
+            float rotZ = Mathf.LerpAngle(camTransform.rotation.eulerAngles.z, -movePosition.x * SlantingPower, Time.fixedDeltaTime * SlantingSpeed);
             camTransform.localEulerAngles = new Vector3(rotX, rotY, rotZ);
         }   
         transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y + horizontalLook, 0);
