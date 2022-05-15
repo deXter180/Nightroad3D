@@ -31,7 +31,9 @@ public class PlayerController : PersistentSingleton<PlayerController>
     [SerializeField] private float dodgeChance;
     [SerializeField] private float crouchHeightPrecentage;
     [SerializeField] private float SelectionThreshold;
-    [SerializeField] private Transform camTransform;
+    [SerializeField] private float SlantingPower;
+    [SerializeField] private float SlantingSpeed;
+    private Transform camTransform;
     private InventorySystem mainInventory;
     private PlayerInputAsset inputs;
     private GameController gameController;
@@ -45,10 +47,12 @@ public class PlayerController : PersistentSingleton<PlayerController>
     private CapsuleCollider col;
     private Target target;
     private AudioListener audioListener;
+    private Vector2 movePosition;
     private Vector3 OldPos;
     private Vector3 gravity;
     private Vector3 dashPos;
     private Vector3 originalPlayerPos;
+    private Vector3 ConstantDistFromPlayer;
     //private Input input;
     private int ground = 1 << 8;
     private int water = 1 << 4;
@@ -83,6 +87,8 @@ public class PlayerController : PersistentSingleton<PlayerController>
 
     private void Start()
     {
+        camTransform = Helpers.MainCam.transform;
+        ConstantDistFromPlayer = camTransform.position - transform.position;
         StartCoroutine(InputDone());
         AssignInv();
         AssignGameControl();
@@ -168,12 +174,14 @@ public class PlayerController : PersistentSingleton<PlayerController>
         while (currentTime < Time.time)
         {
             if (!gameController.IsInventoryActive && !gameController.IsMainMenuActive && !gameController.IsDialogueActive)
-            {
-                Rotate();
+            {                                              
                 Move(MoveSpeed);
+                Rotate();
+                UpdateCameraPosition();
                 Jump();
                 HoldCrouch();
-                ToggleCrouch();             
+                ToggleCrouch();
+                if (RB.velocity == Vector3.zero) movePosition = Vector2.zero;
             }
             currentTime += Time.fixedDeltaTime;
         }
@@ -203,9 +211,14 @@ public class PlayerController : PersistentSingleton<PlayerController>
         RB.AddForce(gravity, ForceMode.Impulse);
     }
 
+    private void UpdateCameraPosition()
+    {
+        camTransform.position = transform.position + ConstantDistFromPlayer;
+    }
+
     private void Move(float moveSpeed)
     {
-        Vector2 movePosition = inputs.BasicControls.Movement.ReadValue<Vector2>();
+        movePosition = inputs.BasicControls.Movement.ReadValue<Vector2>();
         float moveX = movePosition.x;
         float moveY = movePosition.y;
         dashPos = transform.right * moveX + transform.forward * moveY;
@@ -221,21 +234,27 @@ public class PlayerController : PersistentSingleton<PlayerController>
         float verticalLook = mouseDeltaPos.y * MouseSensitivity * Time.fixedDeltaTime;
         camControlX -= verticalLook;
         camControlX = Mathf.Clamp(camControlX, -90f, 90f);
-        camTransform.localEulerAngles = new Vector3(camControlX, transform.rotation.eulerAngles.y + horizontalLook, 0f);
+        float rotY = transform.rotation.eulerAngles.y + horizontalLook;
+        if (movePosition == Vector2.zero)
+        {           
+            camTransform.localEulerAngles = new Vector3(camControlX, rotY, 0f);
+        }
+        else
+        {
+            float rotX;
+            if (camControlX < -87 || camControlX > 87)
+            {
+                rotX = camControlX;              
+            }
+            else
+            {
+                rotX = Mathf.LerpAngle(camTransform.rotation.eulerAngles.x, camControlX + (movePosition.y * SlantingPower), Time.fixedDeltaTime * SlantingSpeed);
+            }          
+            float rotZ = Mathf.LerpAngle(camTransform.rotation.eulerAngles.z, movePosition.x * SlantingPower, Time.fixedDeltaTime * SlantingSpeed);
+            camTransform.localEulerAngles = new Vector3(rotX, rotY, rotZ);
+        }   
         transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y + horizontalLook, 0);
     }
-
-    //private void RotateChild() ** Don't use as a weird bug occuring with weapon visual rotating **
-    //{
-    //    float horizontalLook = input.GetMouseDelta().x * MouseSensitivity * Time.fixedDeltaTime;
-    //    float verticalLook = input.GetMouseDelta().y * MouseSensitivity * Time.fixedDeltaTime;
-    //    float camControlY = 0f;
-    //    camControlX -= verticalLook;
-    //    camControlY += horizontalLook;
-    //    camControlX = Mathf.Clamp(camControlX, -90f, 90f);
-    //    camTransform.localEulerAngles = new Vector3(camControlX, camControlY, 0f);        
-    //    transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y + horizontalLook, 0);
-    //}
 
     private void Jump()
     {
