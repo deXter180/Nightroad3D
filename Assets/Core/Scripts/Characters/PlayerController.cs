@@ -115,7 +115,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
     {
         if (RB != null)
         {
-            if (RB.velocity.y > 14)
+            if (RB.velocity.y > 30)
             {
                 gravityControl = GravityScale + 1;
             }
