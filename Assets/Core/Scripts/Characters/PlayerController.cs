@@ -11,6 +11,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
     
     public float GroundHeight;
     public Target PlayerTarget { get => target; }
+    public PlayerInputAsset Inputs { get => inputs; }
     public int MaxHitPoints { get => maxHitPoints; }
     public int MaxMana { get => maxMana; }
     public int CurrentHP { get; private set; }
@@ -33,8 +34,10 @@ public class PlayerController : PersistentSingleton<PlayerController>
     [SerializeField] private float SelectionThreshold;
     [SerializeField] private float SlantingPower;
     [SerializeField] private float SlantingSpeed;
+    [SerializeField] private CameraShake.ShakeProperty CamShakeOnDeath;
     private Transform camTransform;
     private InventorySystem mainInventory;
+    private Animator animator;
     private PlayerInputAsset inputs;
     private GameController gameController;
     private WeaponManager weaponManager;
@@ -47,12 +50,13 @@ public class PlayerController : PersistentSingleton<PlayerController>
     private CapsuleCollider col;
     private Target target;
     private AudioListener audioListener;
-    private Vector2 movePosition;
+    private Vector2 movePosition = Vector2.zero;
     private Vector3 OldPos;
     private Vector3 gravity;
     private Vector3 dashPos;
     private Vector3 originalPlayerPos;
     private Vector3 ConstantDistFromPlayer;
+    private Quaternion oldRot;
     //private Input input;
     private int ground = 1 << 8;
     private int water = 1 << 4;
@@ -67,7 +71,8 @@ public class PlayerController : PersistentSingleton<PlayerController>
     private bool isJumping;
     private bool isCrouching;
     private bool isDead;
-    private bool isToggledCrouching;  
+    private bool isDeathAnimFinish;
+    private bool isToggledCrouching;
     public static event Action OnPlayerDeath;
 
     //~~~~~~~~~~~~~~~~~ Initialization ~~~~~~~~~~~~~~~~~~~
@@ -78,15 +83,18 @@ public class PlayerController : PersistentSingleton<PlayerController>
         RB = GetComponent<Rigidbody>();
         col = GetComponent<CapsuleCollider>();       
         target = GetComponent<Target>();
+        animator = GetComponent<Animator>();
+        animator.enabled = false;
         weaponManager = GetComponentInChildren<WeaponManager>();
         spellManager = GetComponentInChildren<SpellManager>();
         bitmask = ground | water;
-        
         isDead = false;
+        isDeathAnimFinish = false;
     }
 
     private void Start()
     {
+        oldRot = Quaternion.identity;
         camTransform = Helpers.MainCam.transform;
         ConstantDistFromPlayer = camTransform.position - transform.position;
         StartCoroutine(InputDone());
@@ -107,6 +115,15 @@ public class PlayerController : PersistentSingleton<PlayerController>
         isJumping = false;
         originalPlayerPos = transform.position;
         //PickedObjectCols = new List<Collider>();
+
+        //Remove This !!!!!!!!!!!!!!!!!!!!!!!!
+        StartCoroutine(Test());
+        IEnumerator Test()
+        {
+            yield return Helpers.GetWait(5);
+            target.DoDamage(maxHitPoints, 0);
+
+        }
     }
 
     //~~~~~~~~~~~~~~~~ Mechanics ~~~~~~~~~~~~~~~~~~~~
@@ -127,29 +144,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
         }                        
     }
 
-    private void Update()
-    {
-        if (!target.IsDead)
-        {
-            if (inputs != null)
-            {
-                //OnTakingDamage()
-                InteractInWorld();
-                HandleBaseMechanics();
-            }
-        }
-        else
-        {
-            if (!isDead)
-            {
-                OnPlayerDeath?.Invoke();
-                isDead = true;
-                PostPlayerDeath();
-            }            
-        }              
-    }
-
-    private void PostPlayerDeath()
+    private void OnDestroy()
     {
         SceneLoader.OnMainMenuSceneLoad -= SceneLoader_OnMainMenuSceneLoad;
         SceneLoader.OnNewGameStart -= SceneLoader_OnNewGameStart;
@@ -158,6 +153,35 @@ public class PlayerController : PersistentSingleton<PlayerController>
         target.Resource.OnHealthLoss -= Resource_OnHealthLoss;
         target.Resource.OnManaGain -= Resource_OnManaGain;
         target.Resource.OnManaLoss -= Resource_OnManaLoss;
+    }
+
+    private void Update()
+    {
+        if (!target.IsDead)
+        {
+            if (inputs != null)
+            {
+                //OnTakingDamage()
+                InteractInWorld();
+                HandleBaseMechanics();                
+            }
+        }
+        else
+        {
+            if (!isDead)
+            {
+                OnPlayerDeath?.Invoke();
+                isDead = true;
+                animator.enabled = true;
+                animator.SetBool("IsDead", true);
+                CameraShake.Instance.StartShake(CamShakeOnDeath);
+            } 
+            if (!isDeathAnimFinish)
+            {                
+                UpdateCameraPosition();
+            }
+        }   
+        
     }
 
     private IEnumerator InputDone()
@@ -186,6 +210,8 @@ public class PlayerController : PersistentSingleton<PlayerController>
             currentTime += Time.fixedDeltaTime;
         }
     }
+
+
 
     private void AssignInv()
     {
@@ -234,27 +260,38 @@ public class PlayerController : PersistentSingleton<PlayerController>
         float verticalLook = mouseDeltaPos.y * MouseSensitivity * Time.fixedDeltaTime;
         camControlX -= verticalLook;
         camControlX = Mathf.Clamp(camControlX, -90f, 90f);
-        float rotY = transform.rotation.eulerAngles.y + horizontalLook;
+        float rotY = transform.rotation.eulerAngles.y + horizontalLook;       
         if (movePosition == Vector2.zero)
-        {           
-            camTransform.localEulerAngles = new Vector3(camControlX, rotY, 0f);
-        }
-        else
         {
-            float rotX;
-            if (camControlX < -87 || camControlX > 87)
+            if (oldRot != Quaternion.identity)
             {
-                rotX = camControlX;              
+                camTransform.rotation = Quaternion.Slerp(camTransform.rotation, oldRot, Time.fixedDeltaTime * SlantingSpeed);
+                oldRot = Quaternion.identity;
             }
             else
             {
-                rotX = Mathf.LerpAngle(camTransform.rotation.eulerAngles.x, camControlX + (movePosition.y * SlantingPower), Time.fixedDeltaTime * SlantingSpeed);
-            }          
-            float rotZ = Mathf.LerpAngle(camTransform.rotation.eulerAngles.z, -movePosition.x * SlantingPower, Time.fixedDeltaTime * SlantingSpeed);
-            camTransform.localEulerAngles = new Vector3(rotX, rotY, rotZ);
+                camTransform.eulerAngles = new Vector3(camControlX, rotY, 0f);
+            }
+        }
+        else
+        {
+            oldRot = camTransform.rotation;
+            float rotX;
+            if (camControlX < -87 || camControlX > 87)
+            {
+                rotX = camControlX;
+            }
+            else
+            {
+                rotX = Mathf.LerpAngle(camTransform.eulerAngles.x, camControlX + (movePosition.y * SlantingPower / 2), Time.fixedDeltaTime * SlantingSpeed);
+            }
+            float rotZ = Mathf.LerpAngle(camTransform.eulerAngles.z, -movePosition.x * SlantingPower, Time.fixedDeltaTime * SlantingSpeed);
+            camTransform.eulerAngles = new Vector3(rotX, rotY, rotZ);
         }   
         transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y + horizontalLook, 0);
     }
+
+    
 
     private void Jump()
     {
@@ -342,6 +379,12 @@ public class PlayerController : PersistentSingleton<PlayerController>
             return false;
         }
         else return true;
+    }
+
+    public void PostDeathAnim()
+    {
+        HeadUpDisplayHandler.Instance.ExecuteOnDeath();
+        isDeathAnimFinish = true;
     }
 
     private void InteractInWorld()
@@ -454,18 +497,23 @@ public class PlayerController : PersistentSingleton<PlayerController>
 
     private void SceneLoader_OnNewGameStart()
     {
+        Target target = GetComponent<Target>();
         transform.position = originalPlayerPos;
+        transform.rotation = Quaternion.identity;
         gameObject.SetActive(true);
         audioListener.enabled = true;
         StartCoroutine(InputDone());
         AssignInv();
         AssignGameControl();
         AssignDialogueManager();
-        GetComponent<Target>().SetupMaxHP(MaxHitPoints);
-        GetComponent<Target>().SetupMaxMana(maxMana);
+        target.SetupMaxHP(MaxHitPoints);
+        target.SetupMaxMana(maxMana);
+        isDead = target.IsDead = false;
+        animator.SetBool("IsDead", false);
         CurrentHP = maxHitPoints;
         CurrentMana = maxMana;
         spellManager.SetupSpellCircle();
+        animator.enabled = false;
     }
 
     private void SceneLoader_OnMainMenuSceneLoad()

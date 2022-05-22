@@ -9,64 +9,78 @@ public class RayShotGun : RangedWeapon
     [SerializeField] private float MuzzleFlashTime;
     [SerializeField] private Transform firePoint;
     [SerializeField] private int PelletsCount;
-    private PlayerInputAsset inputs;
+    [SerializeField] private CameraShake.ShakeProperty properties;
     private GameController gameController;
-    private float bloom;
-    private bool isReloading;
     private bool isRanged;
     private Weapons thisWeapon;
-    private WeaponCategories weaponCategory;
-    private WeaponTypes weaponType;
     private int PlayerLayer = 9;
     private int bitmask;
-    private Camera cam;
-    private WeaponBrain weaponBrain;
+    private CameraShake camShake;
     private VisualEffect visualEffect;
     private Light lighting;
     public static event Action OnStopSGShoot;
 
-    private void Awake()
+    protected override void Awake()
     {
-        isReloading = false;
+        base.Awake();
         weaponBrain = GetComponent<WeaponBrain>();
         visualEffect = GetComponentInChildren<VisualEffect>();
-        cam = Camera.main;
         bitmask = ~(1 << PlayerLayer);
         lighting = GetComponentInChildren<Light>();
         if (lighting.gameObject.activeInHierarchy)
-            lighting.gameObject.SetActive(false);       
+            lighting.gameObject.SetActive(false);
+        StartCoroutine(SetupWeapon());
+        IEnumerator SetupWeapon()
+        {
+            yield return new WaitUntil(() => weaponBrain.IsWeaponReady());
+            thisWeapon = weaponBrain.GetThisWeapon();
+            weaponType = weaponBrain.GetWeaponTypes();
+            maxMagazineAmmo = thisWeapon.ThisWeaponSO.AmmoPerMagazine;
+            maxTotalAmmo = thisWeapon.ThisWeaponSO.TotalAmmo;
+            currentMagazineAmmo = maxMagazineAmmo;
+            currentTotalAmmo = maxTotalAmmo;
+            weaponCategory = weaponBrain.GetWeaponCategories();
+            attackRange = thisWeapon.ThisWeaponSO.AttackRange;
+            attackDelay = thisWeapon.ThisWeaponSO.AttackDelay;
+            bloom = thisWeapon.ThisWeaponSO.Bloom;
+            isRanged = thisWeapon.ThisWeaponSO.IsRanged;
+            isReady = true;
+        }
     }
 
-    private void OnEnable()
+    protected override void Start()
     {
-        StartCoroutine(InputDone());
-        StartCoroutine(SetupWeapon());
+        base.Start();
+        camShake = CameraShake.Instance;
+        gameController = GameController.Instance;
+    }
+
+    private void OnDisable()
+    {
+        camShake.StopShake();
     }
 
     private void Update()
     {
-        if (gameController == null)
-        {
-            gameController = GameController.Instance;
-        }
         if (gameController != null && inputs != null)
         {
             if (gameObject.activeInHierarchy && weaponBrain.IsWeaponReady())
             {
                 if (!gameController.IsInventoryActive && !gameController.IsMainMenuActive && !gameController.IsCastingSpell)
                 {
-                    if (WeaponManager.Instance.IsAttacking == false)
+                    if (!WeaponManager.Instance.IsAttacking)
                     {
                         if (inputs.BasicControls.Shoot.ReadValue<float>() == 1)
                         {
                             if (currentMagazineAmmo > 0 && !isReloading)
                             {
-                                StartCoroutine(Shoot(() => {
-                                    WeaponManager.Instance.IsAttacking = false;
+                                StartCoroutine(Shoot(() => {                                  
                                     currentMagazineAmmo -= 1;
                                     currentTotalAmmo -= 1;
                                     currentMagazineAmmo = currentTotalAmmo == 1 ? 1 : currentMagazineAmmo;
+                                    camShake.StopShake();
                                     CallEvent(this);
+                                    WeaponManager.Instance.IsAttacking = false;
                                 }));
                             }
                             else
@@ -76,9 +90,8 @@ public class RayShotGun : RangedWeapon
                         }
                         else if (inputs.BasicControls.Reload.triggered)
                         {
-                            StartCoroutine(Reload(() => { isReloading = false; }));
+                            StartCoroutine(Reload(thisWeapon, weaponBrain, weaponType));
                         }
-
                     }
                     else
                     {
@@ -90,71 +103,18 @@ public class RayShotGun : RangedWeapon
        
     }
 
-    private IEnumerator InputDone()
-    {
-        yield return new WaitUntil(() => InputManager.InputReady);
-        inputs = InputManager.InputActions;
-        weaponBrain.GetThisWeapon();
-    }
-
-    private IEnumerator SetupWeapon()
-    {
-        yield return new WaitUntil(() => weaponBrain.IsWeaponReady());
-        thisWeapon = weaponBrain.GetThisWeapon();
-        weaponType = weaponBrain.GetWeaponTypes();
-        maxMagazineAmmo = thisWeapon.ThisWeaponSO.AmmoPerMagazine;
-        maxTotalAmmo = thisWeapon.ThisWeaponSO.TotalAmmo;
-        currentMagazineAmmo = maxMagazineAmmo;
-        currentTotalAmmo = maxTotalAmmo;
-        weaponCategory = weaponBrain.GetWeaponCategories();
-        attackRange = thisWeapon.ThisWeaponSO.AttackRange;
-        attackSpeed = thisWeapon.ThisWeaponSO.AttackSpeed;
-        bloom = thisWeapon.ThisWeaponSO.Bloom;
-        isRanged = thisWeapon.ThisWeaponSO.IsRanged;
-        isReady = true;
-    }
-
-    private IEnumerator PlayMuzzleLight()
-    {
-        if (!lighting.gameObject.activeInHierarchy)
-        {
-            lighting.gameObject.SetActive(true);
-            yield return Helpers.GetWait(MuzzleFlashTime);
-            lighting.gameObject.SetActive(false);
-        }
-    }
-
-    private void PlayBulletTrailVfx()
-    {
-        if (visualEffect != null)
-        {
-            Vector3 dir = firePoint.forward;
-            visualEffect.SetVector3("Direction", dir);
-            visualEffect.Play();
-        }
-    }
-
-    private Vector3 GetShootDir()
-    {
-        Vector3 t_bloom = cam.transform.position + cam.transform.forward * attackRange;
-        t_bloom += UnityEngine.Random.Range(-bloom, bloom) * cam.transform.up;
-        t_bloom += UnityEngine.Random.Range(-bloom, bloom) * cam.transform.right;
-        t_bloom -= cam.transform.position;
-        t_bloom.Normalize();
-        return t_bloom;
-    }
-
     public IEnumerator Shoot(Action action)
     {
         StartCoroutine(PlayMuzzleLight());
         if (isRanged)
         {
             WeaponManager.Instance.IsAttacking = true;
-            thisWeapon.RaiseOnPlayerAttack(thisWeapon, weaponBrain, weaponCategory, weaponType);
+            thisWeapon.RaiseOnPlayerAttack(thisWeapon, true, weaponBrain, weaponCategory, weaponType);
             PlayBulletTrailVfx();
+            camShake.StartShake(properties);
             for(int i = 0; i < PelletsCount; i++)
             {
-                if (Physics.Raycast(cam.transform.position, GetShootDir(), out RaycastHit hit, attackRange, bitmask, QueryTriggerInteraction.Ignore))
+                if (Physics.Raycast(cam.transform.position, GenerateRandomRecoil(), out RaycastHit hit, attackRange, bitmask, QueryTriggerInteraction.Ignore))
                 {
                     if (hit.collider != null)
                     {
@@ -179,35 +139,32 @@ public class RayShotGun : RangedWeapon
                         }
                         weaponBrain.SpawnHitVfx(hit.point);
                     }
+                    if (hit.rigidbody != null)
+                    {
+                        hit.rigidbody.AddForce(-hit.normal * thisWeapon.ThisWeaponSO.ImpactForce, ForceMode.Impulse);
+                    }
                 }
             }
         }
-        yield return Helpers.GetWait(attackSpeed);
+        yield return Helpers.GetWait(attackDelay);
         action.Invoke();
-    }
-
-    private IEnumerator Reload(Action action)
-    {
-        if (currentTotalAmmo > 0)
+        IEnumerator PlayMuzzleLight()
         {
-            if (currentMagazineAmmo < maxMagazineAmmo)
+            if (!lighting.gameObject.activeInHierarchy)
             {
-                if (currentTotalAmmo >= maxMagazineAmmo)
-                {
-                    currentMagazineAmmo = maxMagazineAmmo;
-                }
-                else
-                {
-                    currentMagazineAmmo = currentTotalAmmo;
-                }
-                isReloading = true;
-                currentMagazineAmmo = maxMagazineAmmo;
-                CallEvent(this);
-                thisWeapon.RaiseOnPlayerReload(thisWeapon, this, weaponType);
-                yield return Helpers.GetWait(weaponBrain.AnimDelay);
-                action.Invoke();
+                lighting.gameObject.SetActive(true);
+                yield return Helpers.GetWait(MuzzleFlashTime);
+                lighting.gameObject.SetActive(false);
+            }
+        }
+        void PlayBulletTrailVfx()
+        {
+            if (visualEffect != null)
+            {
+                Vector3 dir = firePoint.forward;
+                visualEffect.SetVector3("Direction", dir);
+                visualEffect.Play();
             }
         }
     }
-
 }

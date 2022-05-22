@@ -19,22 +19,34 @@ public class MeleeAttacker : MonoBehaviour
         col = GetComponentInChildren<Collider>();
         weaponBrain = GetComponent<WeaponBrain>();
         StartCoroutine(SetRange());
+        IEnumerator SetRange()
+        {
+            yield return new WaitUntil(() => weaponBrain.IsWeaponReady());
+            col.transform.localPosition = new Vector3(ColRange.x, ColRange.y, ColRange.z + weaponBrain.GetThisWeapon().ThisWeaponSO.AttackRange);
+        }
     }
 
-    private void OnEnable()
+    private void Start()
     {
-        StartCoroutine(InputDone());    
-        weaponManager = WeaponManager.Instance;
+        StartCoroutine(InputDone());
         isHitting = false;
         GetRange();
+        gameController = GameController.Instance;
+        weaponManager = WeaponManager.Instance;
+        IEnumerator InputDone()
+        {
+            yield return new WaitUntil(() => InputManager.InputReady);
+            inputs = InputManager.InputActions;
+            weaponBrain.GetThisWeapon();
+        }
+        void GetRange()
+        {
+            ColRange = col.transform.localPosition;
+        }
     }
 
     private void Update()
     {
-        if (gameController == null)
-        {
-            gameController = GameController.Instance;
-        }
         if (gameController != null && inputs != null)
         {
             if (!gameController.IsMainMenuActive && !gameController.IsInventoryActive)
@@ -42,25 +54,7 @@ public class MeleeAttacker : MonoBehaviour
                 StartAttack();
             }
         }                    
-    }
-
-    private IEnumerator InputDone()
-    {
-        yield return new WaitUntil(() => InputManager.InputReady);
-        inputs = InputManager.InputActions;
-        weaponBrain.GetThisWeapon();
-    }
-
-    private void GetRange()
-    {
-        ColRange = col.transform.localPosition;
-    }
-
-    private IEnumerator SetRange()
-    {
-        yield return new WaitUntil(() => weaponBrain.IsWeaponReady());
-        col.transform.localPosition = new Vector3(ColRange.x, ColRange.y, ColRange.z + weaponBrain.GetThisWeapon().ThisWeaponSO.AttackRange);
-    }
+    } 
 
     private void StartAttack()
     {
@@ -70,7 +64,7 @@ public class MeleeAttacker : MonoBehaviour
             {
                 if (!weaponManager.IsAttacking)
                 {
-                    weaponBrain.GetThisWeapon().RaiseOnPlayerAttack(weaponBrain.GetThisWeapon(), weaponBrain, weaponBrain.GetWeaponCategories(), weaponBrain.GetWeaponTypes());              
+                    weaponBrain.GetThisWeapon().RaiseOnPlayerAttack(weaponBrain.GetThisWeapon(), false, weaponBrain, weaponBrain.GetWeaponCategories(), weaponBrain.GetWeaponTypes());              
                     isHitting = true;
                 }
                 else
@@ -105,13 +99,6 @@ public class MeleeAttacker : MonoBehaviour
                                 weaponBrain.GetThisWeapon().DoAttack(target, target.enemyBrain.GetThisEnemy().ThisEnemySO.DodgeChance);
                                 StartCoroutine(Attacking(() => { weaponManager.IsAttacking = false; }));
                             }
-                            //else if (collision.gameObject.CompareTag("Head"))
-                            //{
-                            //    WeaponInventory.Instance.IsAttacking = true;
-                            //    weaponBrain.GetThisWeapon().DoAttack(target, target.enemyBrain.GetThisEnemy().ThisEnemySO.DodgeChance, true);
-                            //    StartCoroutine(Attacking(() => { WeaponInventory.Instance.IsAttacking = false; }));
-                            //}
-
                         }
                     }
                 }
@@ -138,12 +125,6 @@ public class MeleeAttacker : MonoBehaviour
                                 weaponBrain.GetThisWeapon().DoAttack(target, target.enemyBrain.GetThisEnemy().ThisEnemySO.DodgeChance);
                                 StartCoroutine(Attacking(() => { weaponManager.IsAttacking = false; }));
                             }
-                            //else if (collision.gameObject.CompareTag("Head"))
-                            //{
-                            //    WeaponInventory.Instance.IsAttacking = true;
-                            //    weaponBrain.GetThisWeapon().DoAttack(target, target.enemyBrain.GetThisEnemy().ThisEnemySO.DodgeChance, true);
-                            //    StartCoroutine(Attacking(() => { WeaponInventory.Instance.IsAttacking = false; }));
-                            //}
                         }
                     }
                 }
@@ -156,14 +137,14 @@ public class MeleeAttacker : MonoBehaviour
     {
         if (weaponManager.IsAttacking == true)
         {
-            yield return new WaitForSeconds(weaponBrain.GetThisWeapon().ThisWeaponSO.AttackSpeed);
+            yield return Helpers.GetWait(weaponBrain.GetThisWeapon().ThisWeaponSO.AttackDelay);
             action.Invoke();
         }
     }
 
     private IEnumerator PlayVfx()
     {
-        yield return new WaitForSeconds(weaponBrain.AnimDelay);
+        yield return Helpers.GetWait(weaponBrain.AnimDelay);
     }
 
 }

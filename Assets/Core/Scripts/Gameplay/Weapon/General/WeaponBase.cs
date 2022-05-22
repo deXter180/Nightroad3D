@@ -19,9 +19,9 @@ public class Weapons
         weaponSO = GameController.GetWeaponSOFromList(weaponTypes);
     }
 
-    public void RaiseOnPlayerAttack(Weapons weapon, WeaponBrain weaponBrain, WeaponCategories weaponCategory, WeaponTypes weaponType)
+    public void RaiseOnPlayerAttack(Weapons weapon, bool isRanged, WeaponBrain weaponBrain, WeaponCategories weaponCategory, WeaponTypes weaponType)
     {
-        InvokeOnAttack(new OnPlayerAttackEventArg(weapon, weaponBrain, weaponCategory, weaponType));
+        InvokeOnAttack(new OnPlayerAttackEventArg(weapon, isRanged, weaponBrain, weaponCategory, weaponType));
     }
 
     public void RaiseOnPlayerReload(Weapons weapon, RangedWeapon rangedWeapon, WeaponTypes weaponType)
@@ -84,13 +84,15 @@ public class OnPlayerDamageEventArg : EventArgs
 public class OnPlayerAttackEventArg : EventArgs
 {
     public Weapons weapon;
+    public bool isRanged;
     public WeaponBrain weaponBrain;
     public WeaponCategories weaponCategory;
     public WeaponTypes weaponType;
 
-    public OnPlayerAttackEventArg(Weapons WP, WeaponBrain WB, WeaponCategories WC, WeaponTypes WT)
+    public OnPlayerAttackEventArg(Weapons WP, bool ranged, WeaponBrain WB, WeaponCategories WC, WeaponTypes WT)
     {
         weapon = WP;
+        isRanged = ranged;
         weaponBrain = WB;
         weaponCategory = WC;
         weaponType = WT;

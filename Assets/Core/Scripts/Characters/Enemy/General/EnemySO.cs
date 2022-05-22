@@ -28,7 +28,7 @@ public class EnemySO : ScriptableObject, IAttack
     public int MaxHP => maxHP;
     public int DamageAmount => damageAmount;
     public int XPRewardOnDeath => xpRewardOnDeath;
-    public float AttackSpeed => attackSpeed;
+    public float AttackDelay => attackSpeed;
     public float AttackRange => attackRange;
     public float CritChance => critChance;
     public float CritBonus => critBonus;

@@ -16,6 +16,7 @@ public class WeaponBrain : MonoBehaviour
     private bool IsReady = false;
     private float animDelay;    
     public float AnimDelay { get => animDelay; }
+    public event Action OnStopPlayingReload;
     private enum AnimType
     {
         Idle,
@@ -147,14 +148,14 @@ public class WeaponBrain : MonoBehaviour
     private void ChangeAnimState(int animHash)
     {
         if (currentAminHash == animHash) return;
-        playingAnim = true;
+        playingAnim = true;       
         animator.PlayInFixedTime(animHash);
-        currentAminHash = animHash;     
+        currentAminHash = animHash;
     }
 
     private IEnumerator ApplyDelay()
     {
-        yield return new WaitForEndOfFrame();
+        yield return null;
         animDelay = animator.GetCurrentAnimatorClipInfo(0)[0].clip.length;
         if(animType == AnimType.Attack)
         {
@@ -178,6 +179,7 @@ public class WeaponBrain : MonoBehaviour
             yield return Helpers.GetWait(animDelay);
             playingAnim = false;
             animType = AnimType.Walk;
+            OnStopPlayingReload?.Invoke();
         }
     }   
 
@@ -202,9 +204,9 @@ public class WeaponBrain : MonoBehaviour
 
     private void RayGun_OnStopShoot()
     {
-        IsAttacking = false;
+        IsAttacking = false;       
         if (animType != AnimType.Walk)
-            animType = AnimType.Walk;        
+            animType = AnimType.Walk;
     }
 
     private void MeleeAttacker_OnStopMeleeAttack()

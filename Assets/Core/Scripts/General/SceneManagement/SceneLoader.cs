@@ -42,6 +42,7 @@ public class SceneLoader : PersistentSingleton<SceneLoader>
         SceneManager.LoadSceneAsync("Main Menu").completed += (handle) => 
         {
             AssetLoader.AsyncHandleDict.Clear();
+            FPSCamControl.Instance.DisableAudioListener();
             OnMainMenuSceneLoad?.Invoke();
         };
     }
@@ -49,6 +50,11 @@ public class SceneLoader : PersistentSingleton<SceneLoader>
     public static void LoadNewGame(string nameKey)
     {        
         AssetLoader.LoadFreshGameInstance(nameKey);
+        if (FPSCamControl.Instance != null)
+        {
+            //FPSCamControl.Instance.EnableAudioListener();
+        }
+        
     }
 
     public static void LoadNewSingleScene(string nameKey)

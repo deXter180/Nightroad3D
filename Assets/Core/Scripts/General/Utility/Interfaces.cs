@@ -7,7 +7,7 @@ using System;
 public interface IAttack
 {
     int DamageAmount { get; }
-    float AttackSpeed { get; }
+    float AttackDelay { get; }
     float AttackRange { get; }
     float CritChance { get; }
     float CritBonus { get; }

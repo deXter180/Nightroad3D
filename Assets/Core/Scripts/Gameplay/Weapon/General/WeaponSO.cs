@@ -7,8 +7,9 @@ public class WeaponSO : ScriptableObject, IAttack
 {
     [SerializeField] private int damageAmount;
     [SerializeField] private int ammoPerMagazine;
-    [SerializeField] private int totalAmmo;
-    [SerializeField] private float attackSpeed;
+    [SerializeField] private int totalAmmo;   
+    [SerializeField] [Tooltip("Not for Automatic weapons")] private float attackDelay;
+    [SerializeField] private float impactForce;
     [SerializeField] private float attackRange;
     [SerializeField] private float critChance;
     [SerializeField] private float critBonus;
@@ -22,8 +23,9 @@ public class WeaponSO : ScriptableObject, IAttack
     public int DamageAmount => damageAmount;
     public int AmmoPerMagazine => ammoPerMagazine;
     public int TotalAmmo => totalAmmo;
-    public float AttackSpeed => attackSpeed;
+    public float AttackDelay => attackDelay;
     public float AttackRange => attackRange;
+    public float ImpactForce => impactForce;
     public float CritChance => critChance;
     public float CritBonus => critBonus;
     public float Bloom => bloom;

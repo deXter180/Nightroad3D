@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HeadUpDisplayHandler : Singleton<HeadUpDisplayHandler>
 {
+    [SerializeField] private GameObject deathScreen;
     private BulletCounterUI bulletCounter;
+    private PlayerResourceBarUI resourceBar;
 
     private Canvas canvas;
 
@@ -13,7 +16,13 @@ public class HeadUpDisplayHandler : Singleton<HeadUpDisplayHandler>
         base.Awake();
         canvas = GetComponentInChildren<Canvas>();
         bulletCounter = GetComponentInChildren<BulletCounterUI>();
-        bulletCounter.gameObject.SetActive(false);
+        resourceBar = GetComponentInChildren<PlayerResourceBarUI>();
+        bulletCounter.gameObject.SetActive(false);        
+    }
+
+    private void Start()
+    {        
+        deathScreen.SetActive(false);
     }
 
     private void OnEnable()
@@ -30,6 +39,7 @@ public class HeadUpDisplayHandler : Singleton<HeadUpDisplayHandler>
         WeaponManager.OnWeaponEmpty -= WeaponManager_OnWeaponEmpty;
         WeaponManager.OnMeleeWeaponEquip -= WeaponManager_OnMeleeWeaponEquip;
         WeaponManager.OnRangeWeaponEquip -= WeaponManager_OnRangeWeaponEquip;
+
     }
 
     public void Control(bool isCrosshairActive)
@@ -37,11 +47,26 @@ public class HeadUpDisplayHandler : Singleton<HeadUpDisplayHandler>
         canvas.enabled = isCrosshairActive;
     }
 
+    public void ExecuteOnDeath()
+    {
+        bulletCounter.gameObject.SetActive(false);
+        resourceBar.gameObject.SetActive(false);
+        Control(true);
+        deathScreen.SetActive(true);      
+    }
+
+    public void AfterReturningToMainScene()
+    {
+        deathScreen.SetActive(false);
+    }
+
     //~~~~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~~~~~
 
     private void SceneLoader_OnNewGameStart()
     {
         bulletCounter.gameObject.SetActive(false);
+        resourceBar.ResetOnGameStart();
+        resourceBar.gameObject.SetActive(true);
     }
 
     private void WeaponManager_OnWeaponEmpty()

@@ -228,7 +228,7 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
                 {
                     tryPlaceItem = spellTile.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO);
                 }
-            }            
+            }
             if (tryPlaceItem)
             {
                 Debug.Log("Item is Placed");

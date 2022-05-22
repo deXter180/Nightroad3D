@@ -23,6 +23,12 @@ public class PlayerResourceBarUI : MonoBehaviour
         UnSunbscribeEvent(player);
     }
 
+    public void RunOnPlayerDeath()
+    {
+        UnSunbscribeEvent(player);
+        gameObject.SetActive(false);
+    }
+
     private void SupscribeEvent(PlayerController playerCon)
     {
         playerCon.PlayerTarget.Resource.OnHealthLoss += Resource_OnHealthLoss;
@@ -53,6 +59,14 @@ public class PlayerResourceBarUI : MonoBehaviour
             yield return null;
         }
         barImage.fillAmount = pct;
+    }
+
+    public void ResetOnGameStart()
+    {
+        player = PlayerController.Instance;
+        SupscribeEvent(player);
+        healthBarImage.fillAmount = 1;
+        manaBarImage.fillAmount = 1;
     }
 
 

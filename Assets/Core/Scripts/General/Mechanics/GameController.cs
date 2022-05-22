@@ -11,11 +11,13 @@ public class GameController : PersistentSingleton<GameController>
     private bool isDialogueActive;
     private InventoryUIHandler inventoryUI;
     private InGameMainMenuUIHandler mainMenu;
-    private HeadUpDisplayHandler crosshair;
+    private HeadUpDisplayHandler HUDHandler;
     private LoadUIHandler loadUI;
     private DialogueManager dialogueManager;
+    private ReturnToMenuButton returnButton;
     private SpellManager spellManager;
     private PlayerInputAsset inputs;
+    private PlayerController player;
     private static Dictionary<string, QuestSO> QuestDict = new Dictionary<string, QuestSO>();
     private static Dictionary<WeaponTypes, AudioClip> ACDictWeapon = new Dictionary<WeaponTypes, AudioClip>();
     private static Dictionary<string, Material> MaterailDict = new Dictionary<string, Material>();
@@ -44,6 +46,7 @@ public class GameController : PersistentSingleton<GameController>
         AssetLoader.LoadAnyAssets<AudioClip>("AudioFiles", ACLoadCallback);
         AssetLoader.LoadAnyAssets<Material>("Materials", MaterialLoadCallback);
         loadUI = GetComponentInChildren<LoadUIHandler>();
+        returnButton = GetComponentInChildren<ReturnToMenuButton>();
     }
 
     private void OnEnable()
@@ -52,7 +55,21 @@ public class GameController : PersistentSingleton<GameController>
         isInventoryActive = false;
         isMainMenuActive = false;
         isDialogueActive = false;
+        player = PlayerController.Instance;
         StartCoroutine(InputDone());
+        IEnumerator InputDone()
+        {
+            if (inputs == null)
+            {
+                yield return new WaitUntil(() => InputManager.InputReady);
+                inputs = InputManager.InputActions;
+                AssignMenuInstance();
+                AssignInvInstance();
+                AssignDialogueInstance();
+                AssignCrossInstance();
+                spellManager = SpellManager.Instance;
+            }
+        }
     }
 
     private void OnDisable()
@@ -67,23 +84,19 @@ public class GameController : PersistentSingleton<GameController>
     {
         if (inputs != null)
         {
-            ControlUI();
+            if (!player.IsPlayerDead)
+            {
+                ControlUI();
+            }
+            else
+            {
+                returnButton.AffectReturnButton(inputs.BasicControls.MousePosition.ReadValue<Vector2>(), inputs.BasicControls.Shoot.triggered);
+            }
+            
         }
     }
 
-    private IEnumerator InputDone()
-    {
-        if (inputs == null)
-        {
-            yield return new WaitUntil(() => InputManager.InputReady);
-            inputs = InputManager.InputActions;
-            AssignMenuInstance();
-            AssignInvInstance();
-            AssignDialogueInstance();
-            AssignCrossInstance();
-            spellManager = SpellManager.Instance;
-        }       
-    }
+    
 
     public void SetDialogueActive(bool isActive)
     {
@@ -95,7 +108,7 @@ public class GameController : PersistentSingleton<GameController>
         ControlMainMenu();
         ControlInventory();
         ControlDialogue();
-        ControlCrosshair();
+        ControlHUD();
     }
 
     private void AssignMenuInstance()
@@ -116,9 +129,9 @@ public class GameController : PersistentSingleton<GameController>
 
     private void AssignCrossInstance()
     {
-        if (crosshair == null)
+        if (HUDHandler == null)
         {
-            crosshair = HeadUpDisplayHandler.Instance;
+            HUDHandler = HeadUpDisplayHandler.Instance;
         }
     }
 
@@ -171,15 +184,15 @@ public class GameController : PersistentSingleton<GameController>
         
     }
 
-    private void ControlCrosshair()
+    private void ControlHUD()
     {
         if (isMainMenuActive || isInventoryActive)
         {
-            crosshair.Control(false);
+            HUDHandler.Control(false);
         }
         else
         {
-            crosshair.Control(true);
+            HUDHandler.Control(true);
         }
     }
 
@@ -420,7 +433,7 @@ public class GameController : PersistentSingleton<GameController>
         isMainMenuActive = true;
         mainMenu.Control(isMainMenuActive);
         inventoryUI.Control(isInventoryActive);
-        crosshair.Control(false);
+        HUDHandler.Control(false);
         dialogueManager.EndConversation();      
     }
 

@@ -3,20 +3,29 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
-public class FPSCamControl : MonoBehaviour
+public class FPSCamControl : Singleton<FPSCamControl>
 {
     private Camera mainCam;
     private Camera UICam;
     private UniversalAdditionalCameraData cameraData;
+    private AudioListener audioListener; 
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         mainCam = GetComponent<Camera>();
+        transform.parent = null;
+        audioListener = GetComponent<AudioListener>();
     }
 
-    void Start()
+    public void EnableAudioListener()
     {
-        transform.parent = null;               
+        audioListener.enabled = true;
+    }
+
+    public void DisableAudioListener()
+    {
+        audioListener.enabled = false;
     }
 
     private void OnEnable()
@@ -35,3 +44,4 @@ public class FPSCamControl : MonoBehaviour
         }
     }
 }
+

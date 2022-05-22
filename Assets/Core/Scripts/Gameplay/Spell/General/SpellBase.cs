@@ -150,16 +150,46 @@ public class SelfTargeted : Spells
                     {
                         direction = player.DashPos;
                     }
-                    Vector3 temp = player.transform.position + direction * 20f;
-                    player.PlayerRB.MovePosition(temp);
-                    if (spellManager.GetSTSpellVfx(spellType) != null)
-                    {
-                        spellManager.GetSTSpellVfx(spellType).Play();
-                    }
+                    Vector3 dir = player.transform.position + direction * 20f;
+                    player.PlayerRB.MovePosition(dir);
+                    PlayDashVFX(spellType, direction);
                 }
                 break;
         }
     }
+
+    private void PlayDashVFX(SpellTypes spellType, Vector3 direction)
+    {
+        if (spellManager.GetSTSpellVfx(spellType) != null)
+        {
+            VisualEffect vfx = spellManager.GetSTSpellVfx(spellType);
+            vfx.transform.localRotation = Quaternion.Euler(0, 0, 0);
+            vfx.SetFloat("Size", 0.04f);
+            vfx.transform.localPosition = new Vector3(0, vfx.transform.localPosition.y, vfx.transform.localPosition.z);
+            float temp1 = Vector3.Dot(direction, player.transform.forward);
+            if (temp1 <= -0.5f || temp1 >= 0.5f)
+            {
+                vfx.Play();
+            }
+            else
+            {
+                float temp2 = Vector3.Dot(direction, player.transform.right);
+                vfx.transform.localRotation = Quaternion.Euler(0, 90, 0);
+                vfx.SetFloat("Size", 0.1f);
+                if (temp2 >= 0.5f)
+                {
+                    vfx.transform.localPosition = new Vector3(0.4f, vfx.transform.localPosition.y, vfx.transform.localPosition.z);
+                }
+                else if (temp2 <= -0.5f)
+                {
+                    vfx.transform.localPosition = new Vector3(-0.4f, vfx.transform.localPosition.y, vfx.transform.localPosition.z);
+                }
+                vfx.Play();               
+            }
+        }
+    }
+
+   
 
 }
 
