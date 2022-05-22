@@ -252,6 +252,10 @@ public class WeaponManager : Singleton<WeaponManager>
 
     private void Weapons_OnPlayerReload(object sender, OnPlayerReloadEventArg e)
     {
+        if (inventorySystem == null)
+        {
+            inventorySystem = InventorySystem.Instance;
+        }
         if (inventorySystem.GetAvailableAmmo(e.weaponType) != null)
         {
             PlacedObject placedObject = inventorySystem.GetAvailableAmmo(e.weaponType);

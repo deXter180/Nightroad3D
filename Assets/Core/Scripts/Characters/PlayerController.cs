@@ -117,13 +117,13 @@ public class PlayerController : PersistentSingleton<PlayerController>
         //PickedObjectCols = new List<Collider>();
 
         //Remove This !!!!!!!!!!!!!!!!!!!!!!!!
-        StartCoroutine(Test());
-        IEnumerator Test()
-        {
-            yield return Helpers.GetWait(5);
-            target.DoDamage(maxHitPoints, 0);
+        //StartCoroutine(Test());
+        //IEnumerator Test()
+        //{
+        //    yield return Helpers.GetWait(5);
+        //    target.DoDamage(maxHitPoints, 0);
 
-        }
+        //}
     }
 
     //~~~~~~~~~~~~~~~~ Mechanics ~~~~~~~~~~~~~~~~~~~~
