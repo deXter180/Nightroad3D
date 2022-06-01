@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8950426843996536024}
   - component: {fileID: 1490034871075322545}
   - component: {fileID: 6683773880236868482}
+  - component: {fileID: -3116677934085907407}
   m_Layer: 5
   m_Name: Gloves1PLO
   m_TagString: Untagged
@@ -29,6 +30,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1.8, y: 0.8, z: 0.9}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2006122952116570677}
   m_Father: {fileID: 0}
@@ -75,6 +77,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 286a8aaddda8f254091860a98ab2c11a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-3116677934085907407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 466924701847142195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4253d01948c0eb24cada24d66e83aba3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  header: 
+  content: 
 --- !u!1 &1396452208574189492
 GameObject:
   m_ObjectHideFlags: 0
@@ -103,6 +119,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2006122952116570677}
   m_RootOrder: 0
@@ -176,6 +193,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2370792007143346650}
   m_Father: {fileID: 230269167092907271}

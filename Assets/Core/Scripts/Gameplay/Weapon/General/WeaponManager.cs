@@ -64,7 +64,7 @@ public class WeaponManager : Singleton<WeaponManager>
     {
         if (inputs != null && !player.IsPlayerDead && gameController != null)
         {
-            if (!gameController.IsInventoryActive)
+            if (!gameController.IsInventoryActive && !gameController.IsStashActive && !gameController.IsMainMenuActive)
             {
                 WeaponSelect();
             }
@@ -159,7 +159,7 @@ public class WeaponManager : Singleton<WeaponManager>
             if (i == SelectedWeapon)
             {
                 weapon.gameObject.SetActive(true);
-                VerifyIfRanged(weapon.GetThisWeapon().ThisWeaponSO, weapon);                           
+                VerifyIfRanged(weapon.GetThisWeapon().ThisWeaponSO, weapon);
             }
             else
                 weapon.gameObject.SetActive(false);

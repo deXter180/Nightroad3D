@@ -8,7 +8,6 @@ using System;
 
 public class DialogueManager : Singleton<DialogueManager>
 {
-    private Vector3 screenPos;
     private Story activeStory;   
     private GameController gameController;
     private QuestManager questManager;
@@ -18,7 +17,6 @@ public class DialogueManager : Singleton<DialogueManager>
     [SerializeField] private Transform dialoguePrefab;
     [SerializeField] private Transform choicePrefab;
     [SerializeField] private Button endButton;
-    [SerializeField] private Image TalkUIimage;
     [SerializeField] private Image dialoguebox;
     public static Dictionary<string, Story> ActiveStoryDict = new Dictionary<string, Story>();
     private Dictionary<Story, string> lastTextFromStoryDict = new Dictionary<Story, string>();
@@ -30,8 +28,7 @@ public class DialogueManager : Singleton<DialogueManager>
 
     private void Start()
     {
-        dialoguebox.gameObject.SetActive(false);
-        TalkUIimage.gameObject.SetActive(false);
+        dialoguebox.gameObject.SetActive(false);       
         endButton.gameObject.SetActive(false);
         gameController = GameController.Instance;
         questManager = QuestManager.Instance;
@@ -60,18 +57,6 @@ public class DialogueManager : Singleton<DialogueManager>
             activeStory.BindExternalFunction("StartQuest", (string name) => { StartQuest(name); });
             RefreshStory();
         }        
-    }
-
-    public void Highlight(Vector3 position)
-    {
-        TalkUIimage.gameObject.SetActive(true);
-        screenPos = Helpers.MainCam.WorldToScreenPoint(position);
-        TalkUIimage.transform.position = screenPos;
-    }
-
-    public void UnHighlight()
-    {
-        TalkUIimage.gameObject.SetActive(false);
     }
 
     public void ContinueStory(TextAsset storyTextAsset)

@@ -13,9 +13,13 @@ public class FPSCamControl : Singleton<FPSCamControl>
     protected override void Awake()
     {
         base.Awake();
-        mainCam = GetComponent<Camera>();
+        mainCam = GetComponentInChildren<Camera>();       
+        audioListener = GetComponentInChildren<AudioListener>();
+    }
+
+    private void Start()
+    {
         transform.parent = null;
-        audioListener = GetComponent<AudioListener>();
     }
 
     public void EnableAudioListener()

@@ -2,11 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 public class GameController : PersistentSingleton<GameController>
 {
+    [SerializeField] private Image TalkUIimage;
+    [SerializeField] private Image OpenStashImage;
+    private Vector3 screenPos;
     private bool isInventoryActive;
+    private bool isStashActive;
     private bool isMainMenuActive;
     private bool isDialogueActive;
     private InventoryUIHandler inventoryUI;
@@ -24,13 +29,16 @@ public class GameController : PersistentSingleton<GameController>
     private static List<InventoryItemSO> InventorySOList = new List<InventoryItemSO>();
     private static List<InventoryItemSO> WeaponInventorySOList = new List<InventoryItemSO>();
     private static List<InventoryItemSO> SpellInventorySOList = new List<InventoryItemSO>();
+    private static List<InventoryItemSO> ArmorInventorySOList = new List<InventoryItemSO>();
     private static List<WeaponSO> WeaponSOList = new List<WeaponSO>();
     private static List<AmmoSO> AmmoSOList = new List<AmmoSO>();
     private static List<ArmorSO> ArmorSOList = new List<ArmorSO>();
     private static List<SpellBaseSO> spellSOList = new List<SpellBaseSO>();
     private static List<EnemySO> EnemySOList = new List<EnemySO>();
+    public static event Action OnStashClose;
 
     public bool IsInventoryActive => isInventoryActive;
+    public bool IsStashActive => isStashActive;
     public bool IsMainMenuActive => isMainMenuActive;
     public bool IsDialogueActive => isDialogueActive;
     public bool IsCastingSpell => spellManager.IsInSpellCastMode;
@@ -47,12 +55,15 @@ public class GameController : PersistentSingleton<GameController>
         AssetLoader.LoadAnyAssets<Material>("Materials", MaterialLoadCallback);
         loadUI = GetComponentInChildren<LoadUIHandler>();
         returnButton = GetComponentInChildren<ReturnToMenuButton>();
+        OpenStashImage.gameObject.SetActive(false);
+        TalkUIimage.gameObject.SetActive(false);
     }
 
     private void OnEnable()
     {
         loadUI.Control(false);
         isInventoryActive = false;
+        isStashActive = false;
         isMainMenuActive = false;
         isDialogueActive = false;
         player = PlayerController.Instance;
@@ -86,17 +97,14 @@ public class GameController : PersistentSingleton<GameController>
         {
             if (!player.IsPlayerDead)
             {
-                ControlUI();
+                ControlUI();                
             }
             else
             {
                 returnButton.AffectReturnButton(inputs.BasicControls.MousePosition.ReadValue<Vector2>(), inputs.BasicControls.Shoot.triggered);
-            }
-            
+            }  
         }
     }
-
-    
 
     public void SetDialogueActive(bool isActive)
     {
@@ -161,14 +169,36 @@ public class GameController : PersistentSingleton<GameController>
 
     private void ControlInventory()
     {
-        if (inputs.BasicControls.Inventory.triggered && !isMainMenuActive)
+        if (!isMainMenuActive && !isStashActive)
         {
-            inventoryUI.Control(isInventoryActive);
-            if (isInventoryActive)
+            if (inputs.BasicControls.Inventory.triggered)
             {
-                isInventoryActive = false;
+                inventoryUI.ControlInv(isInventoryActive);
+                if (isInventoryActive)
+                {
+                    isInventoryActive = false;
+                }
+                else isInventoryActive = true;
             }
-            else isInventoryActive = true;
+        }      
+    }
+
+    public void OpenStash()
+    {
+        if (!isMainMenuActive && !isInventoryActive && !isStashActive)
+        {
+            inventoryUI.ControlSth(isStashActive);
+            isStashActive = true;
+        }
+    }
+
+    public void CloseStash() //Calling from UI
+    {
+        if (isStashActive)
+        {
+            inventoryUI.ControlSth(isStashActive);
+            isStashActive = false;
+            OnStashClose?.Invoke();
         }
     }
 
@@ -176,7 +206,7 @@ public class GameController : PersistentSingleton<GameController>
     {
         if (isDialogueActive)
         {
-            if (isMainMenuActive || isInventoryActive)
+            if (isMainMenuActive || isInventoryActive || isStashActive)
             {
                 dialogueManager.EndConversation();
             }
@@ -186,7 +216,7 @@ public class GameController : PersistentSingleton<GameController>
 
     private void ControlHUD()
     {
-        if (isMainMenuActive || isInventoryActive)
+        if (isMainMenuActive || isInventoryActive || isStashActive || isDialogueActive)
         {
             HUDHandler.Control(false);
         }
@@ -194,6 +224,30 @@ public class GameController : PersistentSingleton<GameController>
         {
             HUDHandler.Control(true);
         }
+    }
+
+    public void HighlightDialogue(Vector3 position)
+    {
+        TalkUIimage.gameObject.SetActive(true);
+        screenPos = Helpers.MainCam.WorldToScreenPoint(position);
+        TalkUIimage.transform.position = screenPos;
+    }
+
+    public void UnHighlightDialogue()
+    {
+        TalkUIimage.gameObject.SetActive(false);
+    }
+
+    public void HighlightStash(Vector3 position)
+    {
+        OpenStashImage.gameObject.SetActive(true);
+        screenPos = Helpers.MainCam.WorldToScreenPoint(position);
+        OpenStashImage.transform.position = screenPos;
+    }
+
+    public void UnHighlightStash()
+    {
+        OpenStashImage.gameObject.SetActive(false);
     }
 
     //~~~~~~~~~~~~~~~~~~~~~~~~ Utility Methods ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -321,6 +375,18 @@ public class GameController : PersistentSingleton<GameController>
         return null;
     }
 
+    public static InventoryItemSO GetArmorInventorySO(ArmorTypes AT)
+    {
+        foreach (var temp in ArmorInventorySOList)
+        {
+            if (temp.ArmorType == AT)
+            {
+                return temp;
+            }
+        }
+        return null;
+    }
+
     public static AudioClip GetAudioClipByWeaponType(WeaponTypes weaponType)
     {
         if (ACDictWeapon.TryGetValue(weaponType, out AudioClip AC))
@@ -349,6 +415,13 @@ public class GameController : PersistentSingleton<GameController>
                     if (itemSO.WeaponType != WeaponTypes.None && !WeaponInventorySOList.Contains(itemSO))
                     {
                         WeaponInventorySOList.Add(itemSO);
+                    }
+                }
+                else if (itemSO.ItemType == ItemTypes.Armor)
+                {
+                    if (itemSO.ArmorType != ArmorTypes.None && !ArmorInventorySOList.Contains(itemSO))
+                    {
+                        ArmorInventorySOList.Add(itemSO);
                     }
                 }
                 else
@@ -431,8 +504,10 @@ public class GameController : PersistentSingleton<GameController>
     {
         isInventoryActive = true;
         isMainMenuActive = true;
+        isStashActive = true;
         mainMenu.Control(isMainMenuActive);
-        inventoryUI.Control(isInventoryActive);
+        inventoryUI.ControlInv(isInventoryActive);
+        inventoryUI.ControlSth(isStashActive);
         HUDHandler.Control(false);
         dialogueManager.EndConversation();      
     }
@@ -445,6 +520,7 @@ public class GameController : PersistentSingleton<GameController>
         AssignCrossInstance();
         isInventoryActive = false;
         isMainMenuActive = false;
+        isStashActive = false;
     }
 
     private void AssetLoader_OnSingleSceneLoad(UnityEngine.ResourceManagement.ResourceProviders.SceneInstance obj)

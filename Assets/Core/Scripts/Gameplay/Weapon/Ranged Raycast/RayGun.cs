@@ -12,21 +12,24 @@ public class RayGun : RangedWeapon
     [SerializeField] private float RecoilResetSpeed;
     [SerializeField] private float MuzzleFlashTime;
     [SerializeField] private Transform firePoint;
-    [SerializeField] private CameraShake.ShakeProperty property;
-    [SerializeField] private List<Vector3> RecoilPattern;
+    [SerializeField] private Crosshair.CrosshairProperties crosshairProperty;
+    [SerializeField] private CameraShake.ShakeProperty shakeProperty;
+    [SerializeField] private RecoilEffect.RecoilProperty recoilProperty;
+    private WeaponManager weaponManager;
     private GameController gameController;
+    private Crosshair crosshair;
     private bool isRanged;
-    private bool isRecoiled = false;
+    private bool isStartedRecoil;
     private Weapons thisWeapon;
-    private int currentRecoilIndex = 0;
-    private int recoilRound = 0;
     private int PlayerLayer = 9;
     private int bitmask;
-    private int defaultRecoilOffset = 7;
+    private float recoilTime = 0;
     private float lastFireTime = 0;
-    private Vector3 firePointRot;
+    private float defaultOffset = 1.2f;
+    private float recoilOffset = 2f;
     private VisualEffect visualEffect;
     private CameraShake camShake;
+    private RecoilEffect recoilEffect;
     private Light lighting;
     public static event Action OnStopRayShoot;
 
@@ -61,8 +64,26 @@ public class RayGun : RangedWeapon
     protected override void Start()
     {
         base.Start();
+        isStartedRecoil = false;      
+        weaponManager = WeaponManager.Instance;
         camShake = CameraShake.Instance;
+        recoilEffect = RecoilEffect.Instance;
         gameController = GameController.Instance;
+    }
+
+    private void OnEnable()
+    {
+        if (crosshair == null)
+        {
+            crosshair = Crosshair.Instance;
+        }        
+        ChangeVFXRotation(defaultOffset);
+        StartCoroutine(crosshair.SetupCrosshair(crosshairProperty));
+    }
+
+    private void OnDisable()
+    {
+        crosshair.RemoveCrosshair();
     }
 
     private void Update()
@@ -71,35 +92,50 @@ public class RayGun : RangedWeapon
         {
             if (gameObject.activeInHierarchy && weaponBrain.IsWeaponReady())
             {
-                if (!gameController.IsInventoryActive && !gameController.IsMainMenuActive && !gameController.IsCastingSpell)
+                if (!gameController.IsInventoryActive && !gameController.IsMainMenuActive && !gameController.IsStashActive && !gameController.IsCastingSpell)
                 {
-                    if (!WeaponManager.Instance.IsAttacking && !isReloading)
+                    if (!weaponManager.IsAttacking && !isReloading)
                     {
                         if (inputs.BasicControls.Shoot.ReadValue<float>() == 1)
                         {
                             if (Time.time - lastFireTime >= 1f / BulletPerSecond)
                             {
                                 if (currentMagazineAmmo > 0)
-                                {
-                                    HandleRecoil();
+                                {                                   
                                     Shoot(() =>
                                     {
+                                        
                                         currentMagazineAmmo -= 1;
                                         currentTotalAmmo -= 1;
                                         currentMagazineAmmo = currentTotalAmmo == 1 ? 1 : currentMagazineAmmo;
                                         CallEvent(this);
-                                        WeaponManager.Instance.IsAttacking = false;
+                                        weaponManager.IsAttacking = false;                                       
                                     });
                                     lastFireTime = Time.time;
+                                    recoilTime++;
+                                    if (!isStartedRecoil && recoilTime > 5)
+                                    {
+                                        ChangeVFXRotation(recoilOffset);
+                                        isStartedRecoil = true;
+                                    }
                                 }
                                 else
                                 {
+                                    OnStopRayShoot?.Invoke();
+                                    recoilTime = 0;
+                                    isStartedRecoil = false;
+                                    crosshair.SetRisizing(false);
+                                    ChangeVFXRotation(defaultOffset);
                                     Debug.Log("RELOAD!");
                                 }
-                            }                           
+                            }
                         }
                         else
                         {
+                            recoilTime = 0;
+                            isStartedRecoil = false;
+                            crosshair.SetRisizing(false);
+                            ChangeVFXRotation(defaultOffset);
                             OnStopRayShoot?.Invoke();
                         }
                         if (inputs.BasicControls.Reload.triggered)
@@ -108,51 +144,13 @@ public class RayGun : RangedWeapon
                         }
                     }
                 }
-                if (isRecoiled && Time.time - lastFireTime >= RecoilResetTimeInSec)
-                {
-                    isRecoiled = false;
-                    SetFirePointRotation(Vector3.zero);
-                    recoilRound = 0;
-                }
             }
         }          
     }
 
-    private void HandleRecoil()
+    private void ChangeVFXRotation(float recoilXOffset)
     {
-        if (!isRecoiled)
-        {
-            SetFirePointRotation(firePoint.localEulerAngles + RecoilPattern[0]/defaultRecoilOffset);
-            currentRecoilIndex = 1;
-            isRecoiled = true;
-        }
-        else
-        {
-            SetFirePointRotation(firePoint.localEulerAngles + RecoilPattern[currentRecoilIndex]/defaultRecoilOffset);
-            if (recoilRound < 3)
-            {
-                if (currentRecoilIndex + 1 <= RecoilPattern.Count - 1)
-                {
-                    currentRecoilIndex++;
-                }
-                else
-                {
-                    currentRecoilIndex = 0;
-                    recoilRound++;
-                }
-            }
-            else
-            {
-                
-            }
-           
-        }    
-    }
-
-    private void SetFirePointRotation(Vector3 rotation)
-    {
-        firePointRot = rotation;
-        firePoint.localRotation = Quaternion.Euler(firePointRot);
+        visualEffect.transform.localEulerAngles = new Vector3(recoilXOffset, visualEffect.transform.localEulerAngles.y, visualEffect.transform.localEulerAngles.z);
     }
 
     private void Shoot(Action action)
@@ -160,10 +158,12 @@ public class RayGun : RangedWeapon
         StartCoroutine(PlayMuzzleLight());
         if (isRanged)
         {
-            WeaponManager.Instance.IsAttacking = true;
-            thisWeapon.RaiseOnPlayerAttack(thisWeapon, true, weaponBrain, weaponCategory, weaponType);           
-            camShake.ShakeOnce(property);
-            PlayBulletTrailVfx();
+            weaponManager.IsAttacking = true;
+            thisWeapon.RaiseOnPlayerAttack(thisWeapon, true, weaponBrain, weaponCategory, weaponType);
+            crosshair.SetRisizing(true);
+            visualEffect.Play();
+            camShake.ShakeOnce(shakeProperty);
+            recoilEffect.ApplyRecoil(recoilProperty);
             if (Physics.Raycast(firePoint.position, firePoint.forward, out RaycastHit hit, attackRange, bitmask, QueryTriggerInteraction.Ignore))
             {
                 if (hit.collider != null)
@@ -203,13 +203,6 @@ public class RayGun : RangedWeapon
                 lighting.gameObject.SetActive(true);
                 yield return Helpers.GetWait(MuzzleFlashTime);
                 lighting.gameObject.SetActive(false);
-            }
-        }
-        void PlayBulletTrailVfx()
-        {
-            if (visualEffect != null)
-            {
-                visualEffect.Play();
             }
         }
     }

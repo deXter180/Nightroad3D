@@ -18,18 +18,18 @@ public class CollectionGoal : Goal
     public override void Initialize()
     {
         base.Initialize();
-        InventorySystem.OnAddingInInventory += InventorySystem_OnAddingInInventory;
+        InventorySystem.OnAddingToInventory += InventorySystem_OnAddingInInventory;
         InventorySystem.OnRemovingFromInventory += InventorySystem_OnRemovingFromInventory;
     }
 
     public override void Closer()
     {
         base.Closer();
-        InventorySystem.OnAddingInInventory -= InventorySystem_OnAddingInInventory;
+        InventorySystem.OnAddingToInventory -= InventorySystem_OnAddingInInventory;
         InventorySystem.OnRemovingFromInventory -= InventorySystem_OnRemovingFromInventory;
     }
 
-    private void InventorySystem_OnRemovingFromInventory(ItemTypes obj)
+    private void InventorySystem_OnRemovingFromInventory(ItemTypes obj, PlacedObject PO)
     {
         if (ItemType == obj)
         {
@@ -38,7 +38,7 @@ public class CollectionGoal : Goal
         }
     }
 
-    private void InventorySystem_OnAddingInInventory(ItemTypes obj)
+    private void InventorySystem_OnAddingInInventory(ItemTypes obj, PlacedObject PO)
     {
         if (ItemType == obj)
         {

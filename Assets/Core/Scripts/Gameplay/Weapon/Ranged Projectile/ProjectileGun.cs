@@ -8,9 +8,14 @@ public class ProjectileGun : RangedWeapon
 {
     [SerializeField] private float MuzzleFlashTime;
     [SerializeField] private Transform FiringPoint;
-    [SerializeField] private CameraShake.ShakeProperty properties;
+    [SerializeField] private Crosshair.CrosshairProperties crosshairProperty;
+    [SerializeField] private CameraShake.ShakeProperty shakeProperties;
+    [SerializeField] private RecoilEffect.RecoilProperty recoilProperty;
     private GameController gameController;
+    private Crosshair crosshair;
     private CameraShake camShake;
+    private RecoilEffect recoilEffect;
+    private WeaponManager weaponManager;
     private Weapons thisWeapon;
     private Light lighting;
     private ObjectPooler objectPooler;
@@ -39,17 +44,29 @@ public class ProjectileGun : RangedWeapon
         }
     }
 
+    private void OnEnable()
+    {
+        if (crosshair == null)
+        {
+            crosshair = Crosshair.Instance;
+        }
+        StartCoroutine(crosshair.SetupCrosshair(crosshairProperty)); 
+    }
+
     private void OnDisable()
     {
         camShake.StopShake();
+        crosshair.RemoveCrosshair();
     }
 
     protected override void Start()
     {
         base.Start();
+        weaponManager = WeaponManager.Instance;
         objectPooler = ObjectPooler.Instance;
         camShake = CameraShake.Instance;
         gameController = GameController.Instance;
+        recoilEffect = RecoilEffect.Instance;
     }
 
     private void Update()
@@ -58,9 +75,9 @@ public class ProjectileGun : RangedWeapon
         {
             if (gameObject.activeInHierarchy && weaponBrain.IsWeaponReady())
             {
-                if (!gameController.IsInventoryActive && !gameController.IsMainMenuActive && !gameController.IsCastingSpell)
+                if (!gameController.IsInventoryActive && !gameController.IsMainMenuActive && !gameController.IsStashActive && !gameController.IsCastingSpell)
                 {
-                    if (!WeaponManager.Instance.IsAttacking)
+                    if (!weaponManager.IsAttacking)
                     {
                         if (inputs.BasicControls.Shoot.ReadValue<float>() == 1)
                         {
@@ -71,12 +88,13 @@ public class ProjectileGun : RangedWeapon
                                     currentTotalAmmo -= 1;
                                     currentMagazineAmmo = currentTotalAmmo == 1 ? 1 : currentMagazineAmmo;
                                     camShake.StopShake();
-                                    CallEvent(this);
-                                    WeaponManager.Instance.IsAttacking = false;
+                                    crosshair.SetRisizing(false);
+                                    CallEvent(this);                                   
+                                    weaponManager.IsAttacking = false;
                                 }));
                             }
                             else
-                            {
+                            {                                
                                 Debug.Log("RELOAD!");
                             }
                         }
@@ -99,8 +117,10 @@ public class ProjectileGun : RangedWeapon
         StartCoroutine(PlayMuzzleLight());
         if (objectPooler.GetPooledObject(GetProjectile(weaponType)) != null)
         {
-            WeaponManager.Instance.IsAttacking = true;
-            camShake.StartShake(properties);
+            weaponManager.IsAttacking = true;
+            crosshair.SetRisizing(true);
+            recoilEffect.ApplyRecoil(recoilProperty);
+            camShake.StartShake(shakeProperties);
             var shot = objectPooler.GetPooledObject(GetProjectile(weaponType));
             shot.transform.rotation = FiringPoint.rotation;
             shot.transform.position = FiringPoint.position;

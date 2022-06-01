@@ -6,21 +6,31 @@ using System;
 public class PlacedObject : MonoBehaviour
 {
     private bool isPlacedOnMenu;
+    private bool isPlacedOnInventory;
     private InventoryItemSO inventoryItemSO;
     private Vector2Int origin;
+    private Vector2 anchoredPos;
     private InventoryItemSO.Dir dir;
     private EquipMenuWeaponTile weaponTile;
     private EquipMenuSpellTile spellTile;
     private RectTransform rectTransform;
+    private TooltipTrigger tooltipTrigger;
     public bool IsPlacedOnMenu { get => isPlacedOnMenu; }
+    public bool IsPlaceOnInventory { get => isPlacedOnInventory; }
 
     //~~~~~~~~~~~~~~~~~ Utilities ~~~~~~~~~~~~~~~~~
 
-    #region
-    public void SetupDone()
+    private void Awake()
     {
-        rectTransform = GetComponent<RectTransform>();
+        tooltipTrigger = GetComponent<TooltipTrigger>();
     }
+
+    private void OnEnable()
+    {
+        SetupTooltip();
+    }
+
+    #region
 
     public void SetWeaponEquipTile(EquipMenuWeaponTile tile)
     {
@@ -45,6 +55,11 @@ public class PlacedObject : MonoBehaviour
     public Vector2Int GetGridPos()
     {
         return origin;
+    }
+
+    public Vector2 GetAnchoredPos()
+    {
+        return anchoredPos;
     }
 
     public void SetOrigin(Vector2Int origin)
@@ -92,22 +107,34 @@ public class PlacedObject : MonoBehaviour
         return rectTransform;
     }
 
+    public void SetupTooltip()
+    {
+        if (inventoryItemSO != null && tooltipTrigger != null)
+        {
+            tooltipTrigger.Header = inventoryItemSO.ItemName;
+            tooltipTrigger.Content = inventoryItemSO.AttributeAmount.ToString();
+        }
+    }
+
     #endregion
 
-    public static PlacedObject Create(Transform parent, Vector2 anchoredPos, Vector2Int origin, InventoryItemSO.Dir dir, InventoryItemSO inventoryItemSO)
+    public static PlacedObject Create(Transform parent, Vector2 anchoredPos, Vector2Int origin, InventoryItemSO.Dir dir, InventoryItemSO inventoryItemSO, bool isInventory)
     {
         Transform placedObjectTransform = Instantiate(inventoryItemSO.InventoryPrefab, parent);
-        placedObjectTransform.rotation = Quaternion.Euler(0, inventoryItemSO.GetRotationAngle(dir), 0);
+        placedObjectTransform.rotation = Quaternion.Euler(0, 0, -inventoryItemSO.GetRotationAngle(dir));
         RectTransform rectTransform = placedObjectTransform.GetComponent<RectTransform>();
         rectTransform.anchoredPosition = anchoredPos;
         PlacedObject placedObject = placedObjectTransform.GetComponent<PlacedObject>();
         placedObject.inventoryItemSO = inventoryItemSO;
         placedObject.dir = dir;
         placedObject.origin = origin;
-        placedObject.SetupDone();
+        placedObject.anchoredPos = anchoredPos;
+        placedObject.rectTransform = rectTransform;
         placedObject.SetWeaponEquipTile(null);
         placedObject.SetSpellEquipTile(null);
         placedObject.isPlacedOnMenu = false;
+        placedObject.isPlacedOnInventory = isInventory;
+        placedObject.SetupTooltip();
         return placedObject;
     }
 
@@ -123,9 +150,12 @@ public class PlacedObject : MonoBehaviour
         placedObject.inventoryItemSO = inventoryItemSO;
         placedObject.dir = InventoryItemSO.Dir.Down;
         placedObject.origin = origin;
-        placedObject.SetupDone();
+        placedObject.anchoredPos = anchoredPos;
+        placedObject.rectTransform = rectTransform;
         placedObject.SetWeaponEquipTile(menuTile);
         placedObject.isPlacedOnMenu = true;
+        placedObject.isPlacedOnInventory = false;
+        placedObject.SetupTooltip();
         return placedObject;
     }
 
@@ -141,9 +171,12 @@ public class PlacedObject : MonoBehaviour
         placedObject.inventoryItemSO = inventoryItemSO;
         placedObject.dir = InventoryItemSO.Dir.Down;
         placedObject.origin = origin;
-        placedObject.SetupDone();
+        placedObject.anchoredPos = anchoredPos;
+        placedObject.rectTransform = rectTransform;
         placedObject.SetSpellEquipTile(menuTile);
         placedObject.isPlacedOnMenu = true;
+        placedObject.isPlacedOnInventory = false;
+        placedObject.SetupTooltip();
         return placedObject;
     }
 }

@@ -14,9 +14,8 @@ public class InventorySystem : Singleton<InventorySystem>
     private List<PlacedObject> InventoryList;
     private InventoryUIHandler inventoryUI;
     private InventoryContainor itemContainor;
-    public static event EventHandler<PlacedObject> OnPlacedOnInventory;
-    public static event Action<ItemTypes> OnAddingInInventory;
-    public static event Action<ItemTypes> OnRemovingFromInventory;
+    public static event Action<ItemTypes, PlacedObject> OnAddingToInventory;
+    public static event Action<ItemTypes, PlacedObject> OnRemovingFromInventory;
     public static event Action<ItemTypes> OnConsumingFromInventory;
 
     protected override void Awake()
@@ -25,7 +24,7 @@ public class InventorySystem : Singleton<InventorySystem>
         itemContainor = GetComponentInChildren<InventoryContainor>();
         inventoryUI = GetComponentInParent<InventoryUIHandler>();
         cellSize = inventoryUI.GetCellSize();
-        grid = new Grid<GridObject>(gridWidth, gridHeight, cellSize, transform.position, (Grid<GridObject> g, int x, int y) => new GridObject(g, x, y));
+        grid = new Grid<GridObject>(gridWidth, gridHeight, cellSize , transform.position, (Grid<GridObject> g, int x, int y) => new GridObject(g, x, y));
         InitializeInventory();
     }
 
@@ -44,7 +43,7 @@ public class InventorySystem : Singleton<InventorySystem>
     private void Test()
     {
         TryAddingItem(GameController.GetInventoryItemSOFromList(ItemTypes.HealthPotion));
-        TryAddingItem(GameController.GetInventoryItemSOFromList(ItemTypes.Armor));
+        TryAddingItem(GameController.GetArmorInventorySO(ArmorTypes.RoyalPlate));
         TryAddingItem(GameController.GetInventoryItemSOFromList(ItemTypes.Gloves));
         TryAddingItem(GameController.GetInventoryItemSOFromList(ItemTypes.Boots));
         TryAddingItem(GameController.GetInventoryItemSOFromList(ItemTypes.Shield));
@@ -103,7 +102,7 @@ public class InventorySystem : Singleton<InventorySystem>
     public void RemoveFromInventoryList(PlacedObject placedObject)
     {
         InventoryList.Remove(placedObject);
-        OnRemovingFromInventory?.Invoke((placedObject.GetItemType()));
+        OnRemovingFromInventory?.Invoke(placedObject.GetItemType(), placedObject);
     }
 
     public void ConsumeFromInventory(PlacedObject placedObject)
@@ -153,8 +152,6 @@ public class InventorySystem : Singleton<InventorySystem>
                         Vector2Int temp = new Vector2Int(x, y);
                         if (TryPlaceItem(inventoryItemSO, temp, InventoryItemSO.Dir.Down, out PlacedObject placedObject))
                         {
-                            InventoryList.Add(placedObject);
-                            OnAddingInInventory?.Invoke(inventoryItemSO.ItemType);
                             return true;
                         }
                     }
@@ -189,25 +186,25 @@ public class InventorySystem : Singleton<InventorySystem>
             switch (dir)
             {
                 case InventoryItemSO.Dir.Down:
-                    placedObjectWorldPos = grid.GetWorldPosAtOrigin(placedObjectOrigin.x, placedObjectOrigin.y) + new Vector3(rotationOffset.x, rotationOffset.y - 0.1f) * grid.GetCellSize();
+                    placedObjectWorldPos = grid.GetWorldPosAtOrigin(placedObjectOrigin.x, placedObjectOrigin.y) + new Vector3(rotationOffset.x + 0.1f, rotationOffset.y - 0.1f) * grid.GetCellSize();
                     break;
                 case InventoryItemSO.Dir.Right:
-                    placedObjectWorldPos = grid.GetWorldPosAtOrigin(placedObjectOrigin.x, placedObjectOrigin.y) + new Vector3(rotationOffset.x - 0.2f, rotationOffset.y - 0.1f) * grid.GetCellSize();
+                    placedObjectWorldPos = grid.GetWorldPosAtOrigin(placedObjectOrigin.x, placedObjectOrigin.y) + new Vector3(rotationOffset.x - 0.2f, rotationOffset.y) * grid.GetCellSize();
                     break;
                 case InventoryItemSO.Dir.Left:
-                    placedObjectWorldPos = grid.GetWorldPosAtOrigin(placedObjectOrigin.x, placedObjectOrigin.y) + new Vector3(rotationOffset.x, rotationOffset.y - 0.2f) * grid.GetCellSize();
+                    placedObjectWorldPos = grid.GetWorldPosAtOrigin(placedObjectOrigin.x, placedObjectOrigin.y) + new Vector3(rotationOffset.x, rotationOffset.y - 0.25f) * grid.GetCellSize();
                     break;
                 case InventoryItemSO.Dir.Up:
                     placedObjectWorldPos = grid.GetWorldPosAtOrigin(placedObjectOrigin.x, placedObjectOrigin.y) + new Vector3(rotationOffset.x - 0.2f, rotationOffset.y - 0.2f) * grid.GetCellSize();
                     break;
             }
-            placedObject = PlacedObject.Create(itemContainor.ContainorRect, placedObjectWorldPos, placedObjectOrigin, dir, inventoryItemSO);
-            placedObject.transform.rotation = Quaternion.Euler(0, 0, -inventoryItemSO.GetRotationAngle(dir));
+            placedObject = PlacedObject.Create(itemContainor.ContainorRect, placedObjectWorldPos, placedObjectOrigin, dir, inventoryItemSO, true);
             foreach (Vector2Int gridPos in gridPosList)
             {
                 grid.GetGridObject(gridPos.x, gridPos.y).SetPlacedObject(placedObject);
             }
-            OnPlacedOnInventory?.Invoke(this, placedObject);
+            InventoryList.Add(placedObject);
+            OnAddingToInventory?.Invoke(placedObject.GetItemType(), placedObject);
             return true;
         }
         placedObject = null;
@@ -219,13 +216,13 @@ public class InventorySystem : Singleton<InventorySystem>
         if (grid.GetGridObject(removeGridPos.x, removeGridPos.y).GetPlacedObject() != null)
         {
             PlacedObject placedObject = grid.GetGridObject(removeGridPos.x, removeGridPos.y).GetPlacedObject();
-            RemoveFromInventoryList(placedObject);          
-            placedObject.DestroySelf();                      
+            RemoveFromInventoryList(placedObject);                                            
             List<Vector2Int> gridPosList = placedObject.GetGridPosList();
             foreach (Vector2Int gridPos in gridPosList)
             {
                 grid.GetGridObject(gridPos.x, gridPos.y).ClearPlacedObject();
             }
+            placedObject.DestroySelf();
             return true;
         }
         return false;
@@ -253,7 +250,7 @@ public class InventorySystem : Singleton<InventorySystem>
         return false;
     }
 
-    public void ClearGrid()
+    private void ClearGrid()
     {
         foreach (var obj in grid.gridArray)
         {

@@ -27,6 +27,7 @@ Transform:
   m_LocalRotation: {x: 0.017997758, y: 0.0030002526, z: -0.00005405359, w: 0.9998336}
   m_LocalPosition: {x: -0.177, y: 0.033, z: -0.135}
   m_LocalScale: {x: 0.05603791, y: 0.056037944, z: 0.05603791}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6661280495260493148}
   m_RootOrder: 2
@@ -120,6 +121,7 @@ Transform:
     w: 1}
   m_LocalPosition: {x: -0.5, y: -0, z: 1.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6661280495260493148}
   m_RootOrder: 0
@@ -133,8 +135,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6661280495260493148}
-  - component: {fileID: 6661280495613175796}
   - component: {fileID: 6661280495613175797}
+  - component: {fileID: 6661280495613175796}
   m_Layer: 10
   m_Name: RocketLauncher
   m_TagString: Untagged
@@ -152,6 +154,7 @@ Transform:
   m_LocalRotation: {x: -0.017997758, y: -0.0030002526, z: 0.00005405359, w: 0.9998336}
   m_LocalPosition: {x: 4.5, y: -3.7, z: 8.4}
   m_LocalScale: {x: 17.84506, y: 17.84505, z: 17.845062}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6661280495139615414}
   - {fileID: 6661280495798857487}
@@ -159,20 +162,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6661280495613175796
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6661280495613175798}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9912b9c081ae97b469fe0d4c7e0c8ca5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MuzzleFlashTime: 0.2
-  FiringPoint: {fileID: 6661280495139615414}
 --- !u!114 &6661280495613175797
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -187,6 +176,45 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponTypes: 3
   weaponCategories: 2
+--- !u!114 &6661280495613175796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6661280495613175798}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9912b9c081ae97b469fe0d4c7e0c8ca5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MuzzleFlashTime: 0.2
+  FiringPoint: {fileID: 6661280495139615414}
+  crosshairProperty:
+    Height: 12
+    Width: 2
+    DefaultSpread: 25
+    CrosshairColor: {r: 0, g: 1, b: 0, a: 1}
+    Resizeable: 1
+    ResizedSpread: 50
+    SpreadSpeed: 3
+    ResizeSpeed: 3
+  shakeProperties:
+    Amount: {x: 0, y: 0, z: 0}
+    Duration: 0
+    Speed: 0
+    Curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  recoilProperty:
+    RecoilX: 0
+    RecoilY: 0
+    RecoilZ: 0
+    RecoilSpeed: 0
+    ReturnSpeed: 0
 --- !u!1 &6661280495798857480
 GameObject:
   m_ObjectHideFlags: 0
@@ -215,6 +243,7 @@ Transform:
   m_LocalRotation: {x: 0.000000018626448, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0.00012208342}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6661280495260493148}
   m_RootOrder: 1
@@ -273,7 +302,7 @@ SpriteRenderer:
   m_SpriteSortPoint: 0
 --- !u!95 &6661280495798857486
 Animator:
-  serializedVersion: 3
+  serializedVersion: 4
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -286,6 +315,7 @@ Animator:
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1

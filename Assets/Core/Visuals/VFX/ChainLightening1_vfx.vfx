@@ -3962,7 +3962,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614786}
   m_ExposedName: StripSpeed
   m_Exposed: 1
-  m_Order: 16
+  m_Order: 15
   m_Category: 
   m_Min:
     m_Type:
@@ -4042,7 +4042,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614788}
   m_ExposedName: StripLifetime
   m_Exposed: 1
-  m_Order: 17
+  m_Order: 16
   m_Category: 
   m_Min:
     m_Type:
@@ -5641,7 +5641,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614835}
   m_ExposedName: NoisePower
   m_Exposed: 1
-  m_Order: 19
+  m_Order: 18
   m_Category: 
   m_Min:
     m_Type:
@@ -18741,7 +18741,7 @@ MonoBehaviour:
   - {fileID: 8926484042661615372}
   m_ExposedName: OriginStripLifetime
   m_Exposed: 1
-  m_Order: 18
+  m_Order: 17
   m_Category: 
   m_Min:
     m_Type:

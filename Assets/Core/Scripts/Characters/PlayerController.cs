@@ -8,7 +8,7 @@ using UnityEngine.InputSystem;
 public class PlayerController : PersistentSingleton<PlayerController>
 {
     //~~~~~~~~~~~~~~~~ Variables ~~~~~~~~~~~~~~~~~
-    
+
     public float GroundHeight;
     public Target PlayerTarget { get => target; }
     public PlayerInputAsset Inputs { get => inputs; }
@@ -43,6 +43,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
     private WeaponManager weaponManager;
     private SpellManager spellManager;
     private DialogueManager dialogueManager;
+    private StashHolder selectedStashHolder = null;
     private PickedObject selectedPickedObject = null;
     private NPCBrain selectedNPC = null;
     private static float globalGravity = -9.81f;
@@ -62,6 +63,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
     private int water = 1 << 4;
     private int pickableLayer = 1 << 6;
     private int npcLayer = 1 << 14;
+    private int stashLayer = 1 << 15;
     private int bitmask;
     private float camControlX = 0f;
     private float normalHeight;
@@ -73,6 +75,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
     private bool isDead;
     private bool isDeathAnimFinish;
     private bool isToggledCrouching;
+    private bool isCursorLocked;
     public static event Action OnPlayerDeath;
 
     //~~~~~~~~~~~~~~~~~ Initialization ~~~~~~~~~~~~~~~~~~~
@@ -95,7 +98,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
     private void Start()
     {
         oldRot = Quaternion.identity;
-        camTransform = Helpers.MainCam.transform;
+        camTransform = FPSCamControl.Instance.transform;//Helpers.MainCam.transform;
         ConstantDistFromPlayer = camTransform.position - transform.position;
         StartCoroutine(InputDone());
         AssignInv();
@@ -105,6 +108,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
         RB.useGravity = false;
         normalHeight = col.height;
         crouchHeight = (normalHeight * crouchHeightPrecentage) / 100;
+        //AssetLoader.OnGOCreated += AssetLoader_OnGOCreated; //Delete this
         SceneLoader.OnMainMenuSceneLoad += SceneLoader_OnMainMenuSceneLoad;
         SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
         AssetLoader.OnSingleSceneLoad += AssetLoader_OnSingleSceneLoad;
@@ -112,19 +116,23 @@ public class PlayerController : PersistentSingleton<PlayerController>
         target.Resource.OnHealthLoss += Resource_OnHealthLoss;
         target.Resource.OnManaGain += Resource_OnManaGain;
         target.Resource.OnManaLoss += Resource_OnManaLoss;
+        GameController.OnStashClose += GameController_OnStashClose;
         isJumping = false;
+        isCursorLocked = false;
         originalPlayerPos = transform.position;
-        //PickedObjectCols = new List<Collider>();
 
-        //Remove This !!!!!!!!!!!!!!!!!!!!!!!!
-        //StartCoroutine(Test());
-        //IEnumerator Test()
-        //{
-        //    yield return Helpers.GetWait(5);
-        //    target.DoDamage(maxHitPoints, 0);
-
-        //}
+        //AssetLoader.CreateGOAsset("ChainLightening2_vfx", transform); //Delete this
     }
+
+    //private void AssetLoader_OnGOCreated(GameObject obj) //Delete this
+    //{
+    //    var bounce = obj.GetComponent<LighteningBounce>();
+    //    if (bounce!= null)
+    //    {
+    //        bounce.transform.localPosition = new Vector3(-4, 2, -1);
+    //        bounce.BounceToTarget(targetTrasform.position);
+    //    }
+    //}
 
     //~~~~~~~~~~~~~~~~ Mechanics ~~~~~~~~~~~~~~~~~~~~
 
@@ -146,6 +154,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
 
     private void OnDestroy()
     {
+        //AssetLoader.OnGOCreated += AssetLoader_OnGOCreated; //Delete this
         SceneLoader.OnMainMenuSceneLoad -= SceneLoader_OnMainMenuSceneLoad;
         SceneLoader.OnNewGameStart -= SceneLoader_OnNewGameStart;
         AssetLoader.OnSingleSceneLoad -= AssetLoader_OnSingleSceneLoad;
@@ -153,6 +162,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
         target.Resource.OnHealthLoss -= Resource_OnHealthLoss;
         target.Resource.OnManaGain -= Resource_OnManaGain;
         target.Resource.OnManaLoss -= Resource_OnManaLoss;
+        GameController.OnStashClose -= GameController_OnStashClose;
     }
 
     private void Update()
@@ -177,7 +187,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
                 CameraShake.Instance.StartShake(CamShakeOnDeath);
             } 
             if (!isDeathAnimFinish)
-            {                
+            {
                 UpdateCameraPosition();
             }
         }   
@@ -197,7 +207,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
     {
         while (currentTime < Time.time)
         {
-            if (!gameController.IsInventoryActive && !gameController.IsMainMenuActive && !gameController.IsDialogueActive)
+            if (!gameController.IsInventoryActive && !gameController.IsMainMenuActive && !gameController.IsDialogueActive && !gameController.IsStashActive)
             {                                              
                 Move(MoveSpeed);
                 Rotate();
@@ -210,8 +220,6 @@ public class PlayerController : PersistentSingleton<PlayerController>
             currentTime += Time.fixedDeltaTime;
         }
     }
-
-
 
     private void AssignInv()
     {
@@ -389,7 +397,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
 
     private void InteractInWorld()
     {
-        if (!gameController.IsInventoryActive && !gameController.IsMainMenuActive)
+        if (!gameController.IsInventoryActive && !gameController.IsMainMenuActive && !gameController.IsStashActive && !gameController.IsDialogueActive)
         {
             var ray = new Ray(Helpers.MainCam.transform.position, Helpers.MainCam.transform.forward); //Camera.main.ScreenPointToRay(input.GetMousePosition());
             RaycastHit hit;
@@ -397,13 +405,10 @@ public class PlayerController : PersistentSingleton<PlayerController>
             {
                 if (hit.transform.TryGetComponent<NPCBrain>(out selectedNPC))
                 {
-                    if (!gameController.IsDialogueActive)
+                    gameController.HighlightDialogue(selectedNPC.transform.position);
+                    if (inputs.BasicControls.Interact.triggered)
                     {
-                        dialogueManager.Highlight(selectedNPC.transform.position);
-                        if (inputs.BasicControls.Interact.triggered)
-                        {
-                            selectedNPC.StartConversion();
-                        }
+                        selectedNPC.StartConversion();
                     }
                 }
             }
@@ -411,14 +416,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
             {
                 if (selectedNPC != null)
                 {
-                    dialogueManager.UnHighlight();
-                }
-            }
-            if (gameController.IsDialogueActive || gameController.IsInventoryActive || gameController.IsMainMenuActive)
-            {
-                if (selectedNPC != null)
-                {
-                    dialogueManager.UnHighlight();
+                    gameController.UnHighlightDialogue();
                 }
             }
             if (Physics.Raycast(ray, out hit, Helpers.MainCam.farClipPlane / 20, pickableLayer)) //Interact with Inventory items
@@ -447,12 +445,35 @@ public class PlayerController : PersistentSingleton<PlayerController>
                     selectedPickedObject = null;
                 }
             }
+            if (Physics.Raycast(ray, out hit, Helpers.MainCam.farClipPlane / 35, stashLayer)) //Interact with Stash
+            {
+                if (hit.transform.TryGetComponent<StashHolder>(out selectedStashHolder))
+                {
+                    gameController.HighlightStash(selectedStashHolder.transform.position);
+                    if (inputs.BasicControls.Interact.triggered)
+                    {
+                        selectedStashHolder.LoadItemToStash();
+                        gameController.OpenStash();
+                    }
+                }               
+            }
+            else
+            {
+                if (selectedStashHolder != null)
+                {
+                    gameController.UnHighlightStash();
+                }
+            }
         }
-        else if (gameController.IsDialogueActive || gameController.IsInventoryActive || gameController.IsMainMenuActive)
+        if (gameController.IsDialogueActive || gameController.IsInventoryActive || gameController.IsMainMenuActive || gameController.IsStashActive)
         {
             if (selectedNPC != null)
             {
-                dialogueManager.UnHighlight();
+                gameController.UnHighlightDialogue();
+            }
+            if (selectedStashHolder != null)
+            {
+                gameController.UnHighlightStash();
             }
         }
     }
@@ -493,6 +514,22 @@ public class PlayerController : PersistentSingleton<PlayerController>
         return Mathf.DeltaAngle(_angleA, _angleB);
     }
 
+    private void ControlCursor()
+    {
+        if (!isCursorLocked)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            isCursorLocked = true;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            isCursorLocked = false;
+        }
+    }
+
     //~~~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~~~
 
     private void SceneLoader_OnNewGameStart()
@@ -521,6 +558,15 @@ public class PlayerController : PersistentSingleton<PlayerController>
         gameObject.SetActive(false);
         weaponManager.DisableAllWeapons();
         audioListener.enabled = false;
+    }
+
+    private void GameController_OnStashClose()
+    {
+        if (selectedStashHolder != null)
+        {
+            selectedStashHolder.UnloadItemFromStash();
+            selectedStashHolder = null;
+        }
     }
 
     private void AssetLoader_OnSingleSceneLoad(UnityEngine.ResourceManagement.ResourceProviders.SceneInstance obj)

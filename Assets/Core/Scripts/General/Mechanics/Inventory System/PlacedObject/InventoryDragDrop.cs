@@ -13,6 +13,8 @@ public class InventoryDragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragH
     private InventoryDragDropSystem dragDropSystem;
     private EquipMenuControl equipMenu;
     private InventorySystem inventorySystem;
+    private ItemStash itemStash;
+    private GameController gameController;
 
     private void Awake()
     {
@@ -23,9 +25,11 @@ public class InventoryDragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragH
 
     private void OnEnable()
     {
+        gameController = GameController.Instance;
         dragDropSystem = InventoryDragDropSystem.Instance;
         equipMenu = EquipMenuControl.Instance;
         inventorySystem = InventorySystem.Instance;
+        itemStash = ItemStash.Instance;
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -35,32 +39,43 @@ public class InventoryDragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragH
             transform.SetAsLastSibling();
             canvasGroup.alpha = 0.7f;
             canvasGroup.blocksRaycasts = false;
-            
-            if (dragDropSystem.IsOnWeaponMenu(eventData.position, out EquipMenuWeaponTile weaponTile) && placedObject.GetWeaponEquipTile() != null)
+            if (gameController.IsInventoryActive)
             {
-                equipMenu.transform.SetAsLastSibling();
-                InventoryItemSO.CreateGridVisual(transform.GetChild(0), placedObject.GetInventoryItemSO(), 200 , InventoryItemSO.TileTypes.WeaponTile);
-                dragDropSystem.StartedDragging(placedObject, placedObject.GetWeaponEquipTile(), eventData.position);
+                if (dragDropSystem.IsOnWeaponMenu(eventData.position, out EquipMenuWeaponTile weaponTile) && placedObject.GetWeaponEquipTile() != null)
+                {
+                    equipMenu.transform.SetAsLastSibling();
+                    InventoryItemSO.CreateGridVisual(transform.GetChild(0), placedObject.GetInventoryItemSO(), 200, InventoryItemSO.TileTypes.WeaponTile);
+                    dragDropSystem.StartedDragging(placedObject, placedObject.GetWeaponEquipTile(), eventData.position);
 
+                }
+                else if (dragDropSystem.IsOnSpellMenu(eventData.position, out EquipMenuSpellTile spellTile) && placedObject.GetSpellEquipTile() != null)
+                {
+                    equipMenu.transform.SetAsLastSibling();
+                    InventoryItemSO.CreateGridVisual(transform.GetChild(0), placedObject.GetInventoryItemSO(), 50, InventoryItemSO.TileTypes.SpellTile);
+                    dragDropSystem.StartedDragging(placedObject, placedObject.GetSpellEquipTile(), eventData.position);
+                }
             }
-            else if (dragDropSystem.IsOnSpellMenu(eventData.position, out EquipMenuSpellTile spellTile) && placedObject.GetSpellEquipTile() != null)
+            else if (gameController.IsStashActive)
             {
-                equipMenu.transform.SetAsLastSibling();
-                InventoryItemSO.CreateGridVisual(transform.GetChild(0), placedObject.GetInventoryItemSO(), 50, InventoryItemSO.TileTypes.SpellTile);
-                dragDropSystem.StartedDragging(placedObject, placedObject.GetSpellEquipTile(), eventData.position);
-            }
-            else if (dragDropSystem.IsOnInventory(eventData.position))
+                if (dragDropSystem.IsOnStash(eventData.position))
+                {
+                    itemStash.transform.SetAsLastSibling();
+                    InventoryItemSO.CreateGridVisual(transform.GetChild(0), placedObject.GetInventoryItemSO(), cellSize, InventoryItemSO.TileTypes.InventoryTile);
+                    dragDropSystem.StartedDragging(placedObject, eventData.position, false);
+                }
+            }            
+            if (dragDropSystem.IsOnInventory(eventData.position))
             {
                 inventorySystem.transform.SetAsLastSibling();
                 InventoryItemSO.CreateGridVisual(transform.GetChild(0), placedObject.GetInventoryItemSO(), cellSize, InventoryItemSO.TileTypes.InventoryTile);
-                dragDropSystem.StartedDragging(placedObject, eventData.position);
-            }           
+                dragDropSystem.StartedDragging(placedObject, eventData.position, true);
+            }            
         }       
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-
+     
     }
 
     public void OnEndDrag(PointerEventData eventData)

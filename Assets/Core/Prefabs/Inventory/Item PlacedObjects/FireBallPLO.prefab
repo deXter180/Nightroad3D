@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3418746168295197084}
   - component: {fileID: 1776846689184319931}
   - component: {fileID: 4974820219351370853}
+  - component: {fileID: -3256342976892628740}
   m_Layer: 5
   m_Name: FireBallPLO
   m_TagString: Untagged
@@ -76,6 +77,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7476c60a3036a4f4fa3b74bd36de7dfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-3256342976892628740
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 679657527941375944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4253d01948c0eb24cada24d66e83aba3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  header: 
+  content: 
 --- !u!1 &3982151260736649587
 GameObject:
   m_ObjectHideFlags: 0

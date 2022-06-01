@@ -6,6 +6,7 @@ using UnityEngine.VFX;
 
 public class SpellManager : Singleton<SpellManager>
 {
+    
     [SerializeField] private int SpellCount;
     [SerializeField] private float selectionRange;
     [SerializeField] private Transform SelectionCircle;
@@ -45,7 +46,7 @@ public class SpellManager : Singleton<SpellManager>
     }
 
     private void Start()
-    {
+    {         
         player = PlayerController.Instance;
         StartCoroutine(InputDone());
         state = SpellCastState.Default;
@@ -74,7 +75,7 @@ public class SpellManager : Singleton<SpellManager>
     {
         if (inputs != null && !player.IsPlayerDead)
         {
-            if (!gameController.IsInventoryActive && !gameController.IsMainMenuActive)
+            if (!gameController.IsInventoryActive && !gameController.IsMainMenuActive && !gameController.IsStashActive)
             {
                 SpellSelect();
             }

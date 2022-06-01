@@ -2,11 +2,6 @@ using System.Collections;
 using UnityEditor;
 using UnityEngine;
 
-/// <summary>
-/// Shakes the camera in an organic way, based on Perlin noise.
-/// Supports any initial camera position and rotation, but camera should be steady, i.e. parented to another GameObject.
-/// </summary>
-[RequireComponent(typeof(Camera))]
 public class CameraShake : Singleton<CameraShake>
 {
     private ShakeProperty currentProperty;
@@ -22,7 +17,7 @@ public class CameraShake : Singleton<CameraShake>
     protected override void Awake()
     {
         base.Awake();
-        Camera = GetComponent<Camera>();
+        Camera = GetComponentInChildren<Camera>();
     }
 
     private void LateUpdate()
@@ -37,8 +32,7 @@ public class CameraShake : Singleton<CameraShake>
                 nextFoV = (Mathf.PerlinNoise(time * currentProperty.Speed * 2, time * currentProperty.Speed * 2) - 0.5f) * currentProperty.Amount.z * currentProperty.Curve.Evaluate(1f - time / currentProperty.Duration);
 
                 Camera.fieldOfView += (nextFoV - lastFoV);
-                Camera.transform.Translate(DeltaMovement ? (nextPos - lastPos) : nextPos);
-
+                transform.Translate(DeltaMovement ? (nextPos - lastPos) : nextPos);
                 lastPos = nextPos;
                 lastFoV = nextFoV;
             }
@@ -69,12 +63,12 @@ public class CameraShake : Singleton<CameraShake>
             nextFoView = (Mathf.PerlinNoise(Time.fixedDeltaTime * property.Speed * 2, Time.fixedDeltaTime * property.Speed * 2) - 0.5f) * property.Amount.z * property.Curve.Evaluate(1f - Time.fixedDeltaTime / property.Duration);
 
             Camera.fieldOfView += (nextFoView - lastFoView);
-            Camera.transform.Translate(nextPosition - lastPosition);
+            transform.Translate(nextPosition - lastPosition);
             lastPosition = nextPosition;
             lastFoView = nextFoView;
             currentTime += Time.fixedDeltaTime;
         }
-        Camera.transform.Translate(Vector3.zero);
+        transform.Translate(Vector3.zero);
         Camera.fieldOfView = actualFoView;
 
     }
@@ -108,7 +102,7 @@ public class CameraShake : Singleton<CameraShake>
 
     private void ResetCam()
     {
-        Camera.transform.Translate(DeltaMovement ? -lastPos : Vector3.zero);
+        transform.Translate(DeltaMovement ? -lastPos : Vector3.zero);
         Camera.fieldOfView -= lastFoV;
         lastPos = nextPos = Vector3.zero;
         lastFoV = nextFoV = 0f;

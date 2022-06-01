@@ -5,23 +5,27 @@ using System;
 
 public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
 {
+    private int XTransitionOffset = 8;
     private PlayerInputAsset inputs;
     private PlayerController playerController;
     private GameController gameController;
     private bool isDraggedFromInventory;
-    private bool isDraggedFromMenu;
+    private bool isDraggedFromStash;
     public float dragSmoothness = 80f;
     private InventoryItemSO.Dir dir;
     private PlacedObject draggingPOInventory;
+    private PlacedObject draggingPOStash;
     private PlacedObject draggingPOWeaponMenu;
     private PlacedObject draggingPOSpellMenu;
     private EquipMenuWeaponTile draggedWeaponTile;
     private EquipMenuSpellTile draggedSpellTile;
     private InventorySystem inventorySystem;
+    private ItemStash itemStash;
     private InventoryUIHandler inventoryUI;
-    private Vector2Int mouseDragGridPosOffsetInventory;
+    private Vector2Int mouseDragGridPosOffset;
     private Vector2 mouseDragGridPosOffsetMenu;
     private Vector2 mouseDragAnchoredPosOffsetInv;
+    private Vector2 mouseDragAnchoredPosOffsetSth;
     [SerializeField] private Camera UICam;
 
 
@@ -35,6 +39,7 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
         StartCoroutine(InputDone());
         gameController = GameController.Instance;
         inventorySystem = InventorySystem.Instance;
+        itemStash = ItemStash.Instance;
         inventoryUI = InventoryUIHandler.Instance;
     }
 
@@ -42,20 +47,16 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
     {        
         playerController = PlayerController.Instance;
         SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
-        InventorySystem.OnPlacedOnInventory += InventorySystem_OnObjectPlaced;
         isDraggedFromInventory = false;
-        isDraggedFromMenu = false;
+        isDraggedFromStash = false;
         foreach (var tile in EquipMenuControl.WeaponTileList)
         {
             tile.OnPlacedOnWeaponMenu += Tile_OnObjectPlacedinEquipTile;
         }
-        isDraggedFromInventory = false;
-        isDraggedFromMenu = false;
     }
 
     private void OnDisable()
     {
-        InventorySystem.OnPlacedOnInventory -= InventorySystem_OnObjectPlaced;
         SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
         foreach (var tile in EquipMenuControl.WeaponTileList)
         {
@@ -67,15 +68,19 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
     {
         if (inputs != null)
         {
-            if (inputs.UI.RotateItem.triggered)
+            if (isDraggedFromInventory || isDraggedFromStash )
             {
-                if (isDraggedFromInventory)
+                if (draggingPOInventory != null || draggingPOStash != null)
                 {
-                    dir = InventoryItemSO.GetNextDir(dir);
-                }
-                else
-                    dir = InventoryItemSO.Dir.Down;
-
+                    if (inputs.UI.RotateItem.triggered)
+                    {
+                        dir = InventoryItemSO.GetNextDir(dir);
+                    }
+                }               
+            }
+            else
+            {
+                dir = InventoryItemSO.Dir.Down;
             }
             RemoveFromInventory();
             PositionDragObject();
@@ -94,7 +99,7 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
 
     private void PositionDragObject()
     {
-        if (gameController.IsInventoryActive)
+        if (gameController.IsInventoryActive || gameController.IsStashActive)
         {
             Vector2 mousePos = inputs.BasicControls.MousePosition.ReadValue<Vector2>();
             if (draggingPOInventory != null)
@@ -109,6 +114,19 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
                 RectTransform rect = draggingPOInventory.GetComponent<RectTransform>();
                 rect.anchoredPosition = Vector2.Lerp(rect.anchoredPosition, targetPosition, Time.deltaTime * dragSmoothness);
                 draggingPOInventory.transform.rotation = Quaternion.Lerp(draggingPOInventory.transform.rotation, Quaternion.Euler(0, 0, -draggingPOInventory.GetInventoryItemSO().GetRotationAngle(dir)), Time.deltaTime * 15f);
+            }
+            if (draggingPOStash != null)
+            {
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(itemStash.GetItemContainer(), mousePos, UICam, out Vector2 targetPosition);
+                targetPosition += new Vector2(-mouseDragAnchoredPosOffsetSth.x, -mouseDragAnchoredPosOffsetSth.y);
+                Vector2Int rotationOffset = draggingPOStash.GetInventoryItemSO().GetRotationOffset(dir);
+                targetPosition += new Vector2(rotationOffset.x, rotationOffset.y) * itemStash.GetGrid().GetCellSize();
+                targetPosition /= 10f;
+                targetPosition = new Vector2(Mathf.Floor(targetPosition.x), Mathf.Floor(targetPosition.y));
+                targetPosition *= 10f;
+                RectTransform rect = draggingPOStash.GetComponent<RectTransform>();
+                rect.anchoredPosition = Vector2.Lerp(rect.anchoredPosition, targetPosition, Time.deltaTime * dragSmoothness);
+                draggingPOStash.transform.rotation = Quaternion.Lerp(draggingPOStash.transform.rotation, Quaternion.Euler(0, 0, -draggingPOStash.GetInventoryItemSO().GetRotationAngle(dir)), Time.deltaTime * 15f);
             }
             if(draggingPOWeaponMenu != null && draggedWeaponTile != null)
             {               
@@ -133,23 +151,41 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
         }              
     }
 
-    public void StartedDragging(PlacedObject placedObject, Vector2 mousePos)
+    public void StartedDragging(PlacedObject placedObject, Vector2 mousePos, bool isInventory)
     {
         if (placedObject != null)
-        {
-            draggingPOInventory = placedObject;
+        {           
             Cursor.visible = false;
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(inventorySystem.GetItemContainer(), mousePos, UICam, out Vector2 anchoredPosition))
+            if (isInventory)
             {
-                isDraggedFromInventory = true;
-                Vector2Int OriginOnInventory = inventorySystem.GetGridPos(anchoredPosition);
-                mouseDragGridPosOffsetInventory = Vector2Int.zero;
-                mouseDragGridPosOffsetInventory = OriginOnInventory - placedObject.GetGridPos();
-                mouseDragAnchoredPosOffsetInv = anchoredPosition - placedObject.GetComponent<RectTransform>().anchoredPosition;
-                dir = placedObject.GetDir();
-                Vector2Int rotationOffset = draggingPOInventory.GetInventoryItemSO().GetRotationOffset(dir);
-                mouseDragAnchoredPosOffsetInv += new Vector2(rotationOffset.x, rotationOffset.y) * inventorySystem.GetGrid().GetCellSize();
-            }                     
+                draggingPOInventory = placedObject;
+                if (RectTransformUtility.ScreenPointToLocalPointInRectangle(inventorySystem.GetItemContainer(), mousePos, UICam, out Vector2 anchoredPosition))
+                {
+                    isDraggedFromInventory = true;
+                    Vector2Int OriginOnInventory = inventorySystem.GetGridPos(anchoredPosition);
+                    mouseDragGridPosOffset = Vector2Int.zero;
+                    mouseDragGridPosOffset = OriginOnInventory - placedObject.GetGridPos();
+                    mouseDragAnchoredPosOffsetInv = anchoredPosition - placedObject.GetComponent<RectTransform>().anchoredPosition;
+                    dir = placedObject.GetDir();
+                    Vector2Int rotationOffset = draggingPOInventory.GetInventoryItemSO().GetRotationOffset(dir);
+                    mouseDragAnchoredPosOffsetInv += new Vector2(rotationOffset.x, rotationOffset.y) * inventorySystem.GetGrid().GetCellSize();
+                }
+            }
+            else
+            {
+                draggingPOStash = placedObject;
+                if (RectTransformUtility.ScreenPointToLocalPointInRectangle(itemStash.GetItemContainer(), mousePos, UICam, out Vector2 anchoredPosition))
+                {
+                    isDraggedFromStash = true;
+                    Vector2Int OriginOnInventory = itemStash.GetGridPos(anchoredPosition);
+                    mouseDragGridPosOffset = Vector2Int.zero;
+                    mouseDragGridPosOffset = OriginOnInventory - placedObject.GetGridPos();
+                    mouseDragAnchoredPosOffsetSth = anchoredPosition - placedObject.GetComponent<RectTransform>().anchoredPosition;
+                    dir = placedObject.GetDir();
+                    Vector2Int rotationOffset = draggingPOStash.GetInventoryItemSO().GetRotationOffset(dir);
+                    mouseDragAnchoredPosOffsetSth += new Vector2(rotationOffset.x, rotationOffset.y) * itemStash.GetGrid().GetCellSize();
+                }
+            }                              
         }         
     }
 
@@ -162,7 +198,7 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
             Cursor.visible = false;
             if (RectTransformUtility.ScreenPointToLocalPointInRectangle(menuTile.GetRectTransform(), mousePos, UICam, out Vector2 anchoredPosition))
             {
-                isDraggedFromMenu = true;
+                isDraggedFromStash = true;
                 Vector2Int mouseGridPos = menuTile.GetGridPos(anchoredPosition);
                 mouseDragGridPosOffsetMenu = Vector2.zero;
                 mouseDragGridPosOffsetMenu = anchoredPosition - placedObject.GetComponent<RectTransform>().anchoredPosition;
@@ -179,7 +215,7 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
             Cursor.visible = false;
             if (RectTransformUtility.ScreenPointToLocalPointInRectangle(menuTile.GetRectTransform(), mousePos, UICam, out Vector2 anchoredPosition))
             {
-                isDraggedFromMenu = true;
+                isDraggedFromStash = true;
                 Vector2Int mouseGridPos = menuTile.GetGridPos(anchoredPosition);
                 mouseDragGridPosOffsetMenu = Vector2.zero;
                 mouseDragGridPosOffsetMenu = anchoredPosition - placedObject.GetComponent<RectTransform>().anchoredPosition;
@@ -192,61 +228,112 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
         if (placedObject != null)
         {
             draggingPOInventory = null;
+            draggingPOStash = null;
             draggingPOWeaponMenu = null;
             draggedWeaponTile = null;
             draggedSpellTile = null;
-            isDraggedFromInventory = false;
-            isDraggedFromMenu = false;
             bool tryPlaceItem = false;
+            bool tryRemoveItem = false;
             Cursor.visible = true;
-            Vector2Int OriginOnInventory = new Vector2Int();                                
-            if (placedObject.GetWeaponEquipTile() != null)
+            Vector2Int Origin = new Vector2Int();    
+            if (placedObject.IsPlacedOnMenu)
             {
-                placedObject.GetWeaponEquipTile().TryRemoveItem();
-            }
-            else if (placedObject.GetSpellEquipTile() != null)
-            {
-                placedObject.GetSpellEquipTile().TryRemoveItem();
-            }
-            else
-            {
-                inventorySystem.TryRemoveItemAt(placedObject.GetGridPos());
-            }
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(inventorySystem.GetItemContainer(), mousePos, UICam, out Vector2 anchorPosMenu))
-            {
-                OriginOnInventory = inventorySystem.GetGridPos(anchorPosMenu);
-                OriginOnInventory -= mouseDragGridPosOffsetInventory;
-                if (inventorySystem.IsValidGridPos(OriginOnInventory))
-                {
-                    tryPlaceItem = inventorySystem.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO, OriginOnInventory, dir, out PlacedObject PO);
-                }
-                else if (IsOnWeaponMenu(mousePos, out EquipMenuWeaponTile weaponTile))
-                {
-                    tryPlaceItem = weaponTile.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO);
-                }
-                else if (IsOnSpellMenu(mousePos, out EquipMenuSpellTile spellTile))
-                {
-                    tryPlaceItem = spellTile.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO);
-                }
-            }
-            if (tryPlaceItem)
-            {
-                Debug.Log("Item is Placed");
-            }
-            else
-            {
-                inventorySystem.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO, placedObject.GetGridPos(), placedObject.GetDir(), out PlacedObject PO);
                 if (placedObject.GetWeaponEquipTile() != null)
                 {
-                    placedObject.GetWeaponEquipTile().TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO);
+                    tryRemoveItem = placedObject.GetWeaponEquipTile().TryRemoveItem();
+                }
+                else if (placedObject.GetSpellEquipTile() != null)
+                {
+                    tryRemoveItem = placedObject.GetSpellEquipTile().TryRemoveItem();
+                }
+            }           
+            else
+            {
+                if (placedObject.IsPlaceOnInventory)
+                {
+                    tryRemoveItem = inventorySystem.TryRemoveItemAt(placedObject.GetGridPos());
+                }
+                else
+                {
+                    tryRemoveItem = itemStash.TryRemoveItemAt(placedObject.GetGridPos());
+                }               
+            }
+            if (tryRemoveItem)
+            {
+                if (RectTransformUtility.ScreenPointToLocalPointInRectangle(inventorySystem.GetItemContainer(), mousePos, UICam, out Vector2 anchorPosMenu))
+                {
+                    Origin = inventorySystem.GetGridPos(anchorPosMenu);
+                    Origin -= mouseDragGridPosOffset;
+                    if (isDraggedFromStash)
+                    {
+                        Origin += new Vector2Int(XTransitionOffset, 0);
+                    }
+                    if (inventorySystem.IsValidGridPos(Origin))
+                    {
+                        tryPlaceItem = inventorySystem.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO, Origin, dir, out PlacedObject PO);
+                    }
+                }
+                if (itemStash.gameObject.activeSelf)
+                {
+                    if (RectTransformUtility.ScreenPointToLocalPointInRectangle(itemStash.GetItemContainer(), mousePos, UICam, out Vector2 anchorPos))
+                    {
+                        Origin = itemStash.GetGridPos(anchorPos);
+                        Origin -= mouseDragGridPosOffset;
+                        if (isDraggedFromInventory)
+                        {
+                            Origin += new Vector2Int(-XTransitionOffset, 0);
+                        }
+                        if (itemStash.IsValidGridPos(Origin))
+                        {
+                            tryPlaceItem = itemStash.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO, Origin, dir, out PlacedObject PO);
+                        }
+                    }
+                }
+                else
+                {
+                    if (IsOnWeaponMenu(mousePos, out EquipMenuWeaponTile weaponTile))
+                    {
+                        tryPlaceItem = weaponTile.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO);
+                    }
+                    if (IsOnSpellMenu(mousePos, out EquipMenuSpellTile spellTile))
+                    {
+                        tryPlaceItem = spellTile.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO);
+                    }
+                }
+                if (tryPlaceItem)
+                {
+                    Debug.Log("Item is Placed");
+                }
+                else
+                {
+                    if (!placedObject.IsPlacedOnMenu)
+                    {
+                        if (placedObject.IsPlaceOnInventory)
+                        {
+                            inventorySystem.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO, placedObject.GetGridPos(), placedObject.GetDir(), out PlacedObject PO);
+                        }
+                        else
+                        {
+                            itemStash.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO, placedObject.GetGridPos(), placedObject.GetDir(), out PlacedObject PObj);
+                        }
+                    }                   
+                    else
+                    {
+                        if (placedObject.GetWeaponEquipTile() != null)
+                        {
+                            placedObject.GetWeaponEquipTile().TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO);
+                        }
+                    }                   
                 }
             }
+            isDraggedFromInventory = false;
+            isDraggedFromStash = false;
         }        
     }
 
     private void RemoveFromInventory()
     {
-        if (gameController.IsInventoryActive)
+        if (gameController.IsInventoryActive || gameController.IsStashActive)
         {           
             if (inputs.UI.RemoveItem.triggered)
             {
@@ -408,15 +495,19 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
         {
             return true;
         }
-        else return false;
+        return false;
+    }
+
+    public bool IsOnStash(Vector2 currentPosition)
+    {
+        if (RectTransformUtility.RectangleContainsScreenPoint(itemStash.GetItemContainer(), currentPosition, UICam))
+        {
+            return true;
+        }
+        return false;
     }
 
     //~~~~~~~~~~~~~~~~~~~~ Event Callback ~~~~~~~~~~~~~~~~~~~~
-
-    private void InventorySystem_OnObjectPlaced(object sender, PlacedObject e)
-    {
-        
-    }
 
     private void Tile_OnObjectPlacedinEquipTile(object sender, PlacedObject e)
     {

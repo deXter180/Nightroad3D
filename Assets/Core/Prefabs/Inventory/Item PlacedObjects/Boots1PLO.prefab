@@ -26,6 +26,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1083687777634849967}
   m_Father: {fileID: 3087600099325537613}
@@ -64,6 +65,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3568387558686867294}
   m_RootOrder: 0
@@ -123,6 +125,7 @@ GameObject:
   - component: {fileID: 8377272774405013904}
   - component: {fileID: 8108854561592984981}
   - component: {fileID: 2751385705729619826}
+  - component: {fileID: -6330070548441944400}
   m_Layer: 5
   m_Name: Boots1PLO
   m_TagString: Untagged
@@ -140,6 +143,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.86968124, y: 1.7628896, z: 0.87145054}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3568387558686867294}
   m_Father: {fileID: 0}
@@ -186,3 +190,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 286a8aaddda8f254091860a98ab2c11a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-6330070548441944400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6411042161354694959}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4253d01948c0eb24cada24d66e83aba3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  header: 
+  content: 

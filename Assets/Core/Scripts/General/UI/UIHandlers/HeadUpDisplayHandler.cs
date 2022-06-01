@@ -8,6 +8,7 @@ public class HeadUpDisplayHandler : Singleton<HeadUpDisplayHandler>
     [SerializeField] private GameObject deathScreen;
     private BulletCounterUI bulletCounter;
     private PlayerResourceBarUI resourceBar;
+    private Crosshair crosshair;
 
     private Canvas canvas;
 
@@ -23,6 +24,7 @@ public class HeadUpDisplayHandler : Singleton<HeadUpDisplayHandler>
     private void Start()
     {        
         deathScreen.SetActive(false);
+        crosshair = Crosshair.Instance;
     }
 
     private void OnEnable()
@@ -45,6 +47,7 @@ public class HeadUpDisplayHandler : Singleton<HeadUpDisplayHandler>
     public void Control(bool isCrosshairActive)
     {
         canvas.enabled = isCrosshairActive;
+        crosshair.gameObject.SetActive(isCrosshairActive);
     }
 
     public void ExecuteOnDeath()

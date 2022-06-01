@@ -9,13 +9,18 @@ public class RayShotGun : RangedWeapon
     [SerializeField] private float MuzzleFlashTime;
     [SerializeField] private Transform firePoint;
     [SerializeField] private int PelletsCount;
-    [SerializeField] private CameraShake.ShakeProperty properties;
+    [SerializeField] private Crosshair.CrosshairProperties crosshairProperty;
+    [SerializeField] private CameraShake.ShakeProperty shakeProperties;
+    [SerializeField] private RecoilEffect.RecoilProperty recoilProperty;
     private GameController gameController;
+    private Crosshair crosshair;
     private bool isRanged;
     private Weapons thisWeapon;
     private int PlayerLayer = 9;
     private int bitmask;
+    private WeaponManager weaponManager;
     private CameraShake camShake;
+    private RecoilEffect recoilEffect;
     private VisualEffect visualEffect;
     private Light lighting;
     public static event Action OnStopSGShoot;
@@ -51,14 +56,27 @@ public class RayShotGun : RangedWeapon
     protected override void Start()
     {
         base.Start();
+        weaponManager = WeaponManager.Instance;
         camShake = CameraShake.Instance;
         gameController = GameController.Instance;
+        recoilEffect = RecoilEffect.Instance;
+    }
+
+    private void OnEnable()
+    {
+        if (crosshair == null)
+        {
+            crosshair = Crosshair.Instance;
+        }
+        StartCoroutine(crosshair.SetupCrosshair(crosshairProperty));
     }
 
     private void OnDisable()
     {
         camShake.StopShake();
+        crosshair.RemoveCrosshair();
     }
+
 
     private void Update()
     {
@@ -66,9 +84,9 @@ public class RayShotGun : RangedWeapon
         {
             if (gameObject.activeInHierarchy && weaponBrain.IsWeaponReady())
             {
-                if (!gameController.IsInventoryActive && !gameController.IsMainMenuActive && !gameController.IsCastingSpell)
+                if (!gameController.IsInventoryActive && !gameController.IsMainMenuActive && !gameController.IsStashActive && !gameController.IsCastingSpell)
                 {
-                    if (!WeaponManager.Instance.IsAttacking)
+                    if (!weaponManager.IsAttacking)
                     {
                         if (inputs.BasicControls.Shoot.ReadValue<float>() == 1)
                         {
@@ -79,12 +97,13 @@ public class RayShotGun : RangedWeapon
                                     currentTotalAmmo -= 1;
                                     currentMagazineAmmo = currentTotalAmmo == 1 ? 1 : currentMagazineAmmo;
                                     camShake.StopShake();
-                                    CallEvent(this);
-                                    WeaponManager.Instance.IsAttacking = false;
+                                    crosshair.SetRisizing(false);
+                                    CallEvent(this);                                    
+                                    weaponManager.IsAttacking = false;
                                 }));
                             }
                             else
-                            {
+                            {                                
                                 Debug.Log("RELOAD!");
                             }
                         }
@@ -108,10 +127,12 @@ public class RayShotGun : RangedWeapon
         StartCoroutine(PlayMuzzleLight());
         if (isRanged)
         {
-            WeaponManager.Instance.IsAttacking = true;
+            weaponManager.IsAttacking = true;
             thisWeapon.RaiseOnPlayerAttack(thisWeapon, true, weaponBrain, weaponCategory, weaponType);
-            PlayBulletTrailVfx();
-            camShake.StartShake(properties);
+            crosshair.SetRisizing(true);
+            visualEffect.Play();
+            recoilEffect.ApplyRecoil(recoilProperty);
+            camShake.StartShake(shakeProperties);
             for(int i = 0; i < PelletsCount; i++)
             {
                 if (Physics.Raycast(cam.transform.position, GenerateRandomRecoil(), out RaycastHit hit, attackRange, bitmask, QueryTriggerInteraction.Ignore))
@@ -155,15 +176,6 @@ public class RayShotGun : RangedWeapon
                 lighting.gameObject.SetActive(true);
                 yield return Helpers.GetWait(MuzzleFlashTime);
                 lighting.gameObject.SetActive(false);
-            }
-        }
-        void PlayBulletTrailVfx()
-        {
-            if (visualEffect != null)
-            {
-                Vector3 dir = firePoint.forward;
-                visualEffect.SetVector3("Direction", dir);
-                visualEffect.Play();
             }
         }
     }

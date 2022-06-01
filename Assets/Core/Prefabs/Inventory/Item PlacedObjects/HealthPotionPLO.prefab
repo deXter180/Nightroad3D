@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: -2924817583165529030}
   - component: {fileID: 3566488265601575165}
   - component: {fileID: 2976519889125149315}
+  - component: {fileID: -8290415585961862471}
   m_Layer: 5
   m_Name: HealthPotionPLO
   m_TagString: Untagged
@@ -29,6 +30,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.70901084, y: 0.8507313, z: 0.9179772}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5084817412494379112}
   m_Father: {fileID: 0}
@@ -75,6 +77,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 286a8aaddda8f254091860a98ab2c11a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-8290415585961862471
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 573667045035249175}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4253d01948c0eb24cada24d66e83aba3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  header: 
+  content: 
 --- !u!1 &1280839687013072940
 GameObject:
   m_ObjectHideFlags: 0
@@ -103,6 +119,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5084817412494379112}
   m_RootOrder: 0
@@ -176,6 +193,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7982947224098209824}
   m_Father: {fileID: 3701493544469824459}
