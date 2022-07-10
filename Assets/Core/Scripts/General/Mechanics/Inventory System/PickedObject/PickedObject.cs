@@ -12,6 +12,7 @@ public class PickedObject : MonoBehaviour
     private ItemTypes item;
     private WeaponTypes weapon;
     private SpellTypes spell;
+    private ArmorTypes armor;
     private InventoryItemSO itemSO;
     private static float throwDistance = 5f;
     public WeaponTypes WeaponTypes { get => weapon; }
@@ -44,24 +45,35 @@ public class PickedObject : MonoBehaviour
         return itemSO;
     }
 
-    public static PickedObject SpawnItemsWorld(ItemTypes itemType, InventoryItemSO SO, Vector3 position, WeaponTypes weaponType = WeaponTypes.None)
+    public static PickedObject SpawnItemsWorld(ItemTypes itemType, InventoryItemSO SO, Vector3 position, WeaponTypes weaponType = WeaponTypes.None, ArmorTypes armorType = ArmorTypes.None, SpellTypes spellType = SpellTypes.None)
     {
         float posX = position.x;
         float posZ = position.z;
         Vector3 groundPos = new Vector3(posX, PlayerController.Instance.GroundHeight, posZ);
-        Transform spawnedTransform;
-        if (weaponType == WeaponTypes.None)
+        Transform spawnedTransform = null;
+        if (weaponType != WeaponTypes.None && itemType == ItemTypes.Ammo)
         {
-            spawnedTransform = Instantiate(GameController.GetInventoryItemSOFromList(itemType).WorldPrefab, PlayerController.Instance.GetRandomDirWithoutY(throwDistance, -throwDistance) + groundPos, Quaternion.identity);
+            spawnedTransform = Instantiate(GameController.GetInventoryItemSOFromList(itemType, weaponType).WorldPrefab, PlayerController.Instance.GetRandomDirWithoutY(throwDistance, -throwDistance) + groundPos, Quaternion.identity);
         }
         else
         {
-            spawnedTransform = Instantiate(GameController.GetInventoryItemSOFromList(itemType, weaponType).WorldPrefab, PlayerController.Instance.GetRandomDirWithoutY(throwDistance, -throwDistance) + groundPos, Quaternion.identity);
-        }       
-        PickedObject pickedObject = spawnedTransform.GetComponent<PickedObject>();
-        pickedObject.itemSO = SO;
-        pickedObject.SetupInGameWorld(itemType);
-        return pickedObject;
+            spawnedTransform = Instantiate(GameController.GetInventoryItemSOFromList(itemType).WorldPrefab, PlayerController.Instance.GetRandomDirWithoutY(throwDistance, -throwDistance) + groundPos, Quaternion.identity);
+        }
+        if (spawnedTransform != null)
+        {
+            PickedObject pickedObject = spawnedTransform.GetComponent<PickedObject>();
+            pickedObject.itemSO = SO;
+            if (weaponType != WeaponTypes.None)
+            {
+                pickedObject.SetupInGameWorld(itemType, weaponType);
+            }
+            else
+            {
+                pickedObject.SetupInGameWorld(itemType);
+            }            
+            return pickedObject;
+        }
+        return null;
     }
 
     public static PickedObject SpawnWeaponWorld(WeaponTypes weaponType, InventoryItemSO SO, Vector3 position)
@@ -85,6 +97,18 @@ public class PickedObject : MonoBehaviour
         PickedObject pickedObject = spawnedTransform.GetComponent<PickedObject>();
         pickedObject.itemSO = SO;
         pickedObject.SetupInGameWorld(ItemTypes.Spell, spellType);
+        return pickedObject;
+    }
+
+    public static PickedObject SpawnArmorWorld(ArmorTypes armorType, InventoryItemSO SO, Vector3 position)
+    {
+        float posX = position.x;
+        float posZ = position.z;
+        Vector3 groundPos = new Vector3(posX, PlayerController.Instance.GroundHeight, posZ);
+        Transform spawnedTransform = Instantiate(GameController.GetArmorInventorySO(armorType).WorldPrefab, PlayerController.Instance.GetRandomDirWithoutY(throwDistance, -throwDistance) + groundPos, Quaternion.identity);
+        PickedObject pickedObject = spawnedTransform.GetComponent<PickedObject>();
+        pickedObject.itemSO = SO;
+        pickedObject.SetupInGameWorld(ItemTypes.Armor, armorType);
         return pickedObject;
     }
 
@@ -141,6 +165,12 @@ public class PickedObject : MonoBehaviour
     {
         this.item = item;
         this.spell = spellType;
+    }
+
+    private void SetupInGameWorld(ItemTypes item, ArmorTypes armorType)
+    {
+        this.item = item;
+        this.armor = armorType;
     }
 
     public Rigidbody GetThisRB()

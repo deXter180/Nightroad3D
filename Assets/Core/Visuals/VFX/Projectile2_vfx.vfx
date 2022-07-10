@@ -78,7 +78,7 @@ MonoBehaviour:
       x: -660
       y: 153
       width: 1837
-      height: 1556
+      height: 1630
     contents:
     - model: {fileID: 8926484042661614785}
       id: 0
@@ -905,7 +905,7 @@ MonoBehaviour:
   stripCapacity: 16
   particlePerStripCount: 16
   needsComputeBounds: 0
-  boundsSettingMode: 1
+  boundsMode: 1
   m_Space: 0
 --- !u!114 &8926484042661614618
 MonoBehaviour:
@@ -1977,7 +1977,7 @@ MonoBehaviour:
   stripCapacity: 16
   particlePerStripCount: 16
   needsComputeBounds: 0
-  boundsSettingMode: 1
+  boundsMode: 1
   m_Space: 0
 --- !u!114 &8926484042661614660
 MonoBehaviour:
@@ -4457,7 +4457,7 @@ MonoBehaviour:
   m_Parent: {fileID: 114350483966674976}
   m_Children:
   - {fileID: 8926484042661614787}
-  m_UIPosition: {x: -424, y: 212}
+  m_UIPosition: {x: -423, y: 212}
   m_UICollapsed: 0
   m_UISuperCollapsed: 0
   m_InputSlots: []
@@ -4957,7 +4957,7 @@ MonoBehaviour:
   stripCapacity: 16
   particlePerStripCount: 16
   needsComputeBounds: 0
-  boundsSettingMode: 1
+  boundsMode: 1
   m_Space: 0
 --- !u!114 &8926484042661614805
 MonoBehaviour:
@@ -6258,7 +6258,7 @@ MonoBehaviour:
   stripCapacity: 16
   particlePerStripCount: 16
   needsComputeBounds: 0
-  boundsSettingMode: 1
+  boundsMode: 1
   m_Space: 0
 --- !u!114 &8926484042661614915
 MonoBehaviour:
@@ -9722,7 +9722,7 @@ MonoBehaviour:
   stripCapacity: 16
   particlePerStripCount: 16
   needsComputeBounds: 0
-  boundsSettingMode: 1
+  boundsMode: 1
   m_Space: 1
 --- !u!114 &8926484042661615516
 MonoBehaviour:
@@ -11853,7 +11853,7 @@ MonoBehaviour:
     linkedSlots:
     - outputSlot: {fileID: 8926484042661615602}
       inputSlot: {fileID: 8926484042661614634}
-    position: {x: 467.3913, y: 1433.9131}
+    position: {x: 467, y: 1434}
     expandedSlots: []
     expanded: 0
 --- !u!114 &8926484042661615602

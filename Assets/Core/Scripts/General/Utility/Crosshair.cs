@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEditor;
+using UnityEngine.UI;
 
 [ExecuteInEditMode]
 public class Crosshair : Singleton<Crosshair>
@@ -23,12 +24,13 @@ public class Crosshair : Singleton<Crosshair>
     private float spread;
     private bool resizing = false;   
     private bool isReady = false;
-
+    private Texture2D crosshairTexture;
 
     protected override void Awake()
     {
         base.Awake();
         defaultCrosshair = crosshairProperties;
+        crosshairTexture = new Texture2D(1, 1);
     }
 
     private void Update()
@@ -61,22 +63,24 @@ public class Crosshair : Singleton<Crosshair>
     {
         if (crosshairProperties != null)
         {
-            Texture2D texture = new Texture2D(1, 1);
-            texture.SetPixel(0, 0, crosshairProperties.CrosshairColor);
-            texture.wrapMode = TextureWrapMode.Repeat;
-            texture.Apply();
-
+            crosshairTexture.SetPixel(0, 0, crosshairProperties.CrosshairColor);
+            crosshairTexture.wrapMode = TextureWrapMode.Repeat;
+            crosshairTexture.Apply();
+            Rect topRect = new Rect(Screen.width / 2 - crosshairProperties.Width / 2, (Screen.height / 2 - crosshairProperties.Height / 2) + spread / 2, crosshairProperties.Width, crosshairProperties.Height);
+            Rect bottomRect = new Rect(Screen.width / 2 - crosshairProperties.Width / 2, (Screen.height / 2 - crosshairProperties.Height / 2) - spread / 2, crosshairProperties.Width, crosshairProperties.Height);
+            Rect leftRect = new Rect((Screen.width / 2 - crosshairProperties.Height / 2) + spread / 2, Screen.height / 2 - crosshairProperties.Width / 2, crosshairProperties.Height, crosshairProperties.Width);
+            Rect rightRect = new Rect((Screen.width / 2 - crosshairProperties.Height / 2) - spread / 2, Screen.height / 2 - crosshairProperties.Width / 2, crosshairProperties.Height, crosshairProperties.Width);
             //up rect
-            GUI.DrawTexture(new Rect(Screen.width / 2 - crosshairProperties.Width / 2, (Screen.height / 2 - crosshairProperties.Height / 2) + spread / 2, crosshairProperties.Width, crosshairProperties.Height), texture);
+            GUI.DrawTexture(topRect, crosshairTexture);
 
             //down rect
-            GUI.DrawTexture(new Rect(Screen.width / 2 - crosshairProperties.Width / 2, (Screen.height / 2 - crosshairProperties.Height / 2) - spread / 2, crosshairProperties.Width, crosshairProperties.Height), texture);
+            GUI.DrawTexture(bottomRect, crosshairTexture);
 
             //left rect
-            GUI.DrawTexture(new Rect((Screen.width / 2 - crosshairProperties.Height / 2) + spread / 2, Screen.height / 2 - crosshairProperties.Width / 2, crosshairProperties.Height, crosshairProperties.Width), texture);
+            GUI.DrawTexture(leftRect, crosshairTexture);
 
             //right rect
-            GUI.DrawTexture(new Rect((Screen.width / 2 - crosshairProperties.Height / 2) - spread / 2, Screen.height / 2 - crosshairProperties.Width / 2, crosshairProperties.Height, crosshairProperties.Width), texture);
+            GUI.DrawTexture(rightRect, crosshairTexture);
         }       
     }
 

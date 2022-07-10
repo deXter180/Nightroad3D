@@ -28,4 +28,9 @@ public class SpellBaseSO : ScriptableObject
     public SpellCategories SpellCategory => spellCategory;
     public ProjectileTypes ProjectileType => projectileType;
     public SpellCastTypes CastVfxType => castVfxType;
+
+    public void DoAttack(Target enemyTarget, float enemyDodgeChance)
+    {
+        enemyTarget.DoDamage(effectAmount, enemyDodgeChance);
+    }
 }

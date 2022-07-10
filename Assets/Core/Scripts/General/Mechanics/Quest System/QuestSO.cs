@@ -11,12 +11,14 @@ public class QuestSO : ScriptableObject
 {
     private Timer _timer;
     private Story questStory;
-    [Header("QuestData")]        
+    [Header("QuestData")]
+    [SerializeField][Tooltip("ID of the Quest")] private string _id;
     [SerializeField] [Tooltip("Name of the Quest")] private string _name;
     [SerializeField] [Tooltip("Name main knot in INK story")] private string mainKnotName;
     [SerializeField] [Tooltip("Name of Completion INK variable to track status of this quest")] private string completionStateName;
     [SerializeField] [Tooltip("Name of Failure INK variable to track status of this quest")] private string failureStateName;
-    [TextArea(2, 10)] [SerializeField] private string _description;
+    [TextArea(2, 10)] [SerializeField] private string _questDescription;
+    [TextArea(2, 10)][SerializeField] private string _goalDescription;
     [TextArea(2, 4)] [SerializeField] [Tooltip("Text to show if this quest is completed")] private string questCompletionText;
     [TextArea(2, 4)] [SerializeField] [Tooltip("Text to show if this quest is failed")] private string questFailureText;  
     [SerializeField] private bool _isComplex;
@@ -30,8 +32,10 @@ public class QuestSO : ScriptableObject
     public bool IsCompleted { get; set; }
     public bool IsFailed { get; set; }
     public RewardItems RewardItem => _rewardItem;
+    public string QuestID => _id;
     public string Name => _name;
-    public string Description => _description;
+    public string QuestDescription => _questDescription;
+    public string GoalDescription => _goalDescription;
     public string QuestCompletionText => questCompletionText;
     public string QuestFailureText => questFailureText;   
     public bool IsComplex => _isComplex;

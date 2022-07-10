@@ -8,17 +8,26 @@ public class Projectile :  MonoBehaviour
     [SerializeField] private float MaxLifeTime;
     [SerializeField] private ProjectileTypes projectileType;
     private Vector3 firePositionWeapon;
-    private Vector3 firePositionSpell;
     private float LifeTime;
-    private Weapons AttackWeapon;
+    private PlayerController player;
+    private Weapons attackingWeapon;
     private WeaponBrain weaponBrain;
+    private EnemyBrain attackingEnemy;
     private SingleTargetedProjectile spell;
     private int enemyLayer = 1 << 12;
+    private Rigidbody rb;
+    private ObjectPooler objectPooler;
+
+    private void Start()
+    {
+        player = PlayerController.Instance;
+        objectPooler = ObjectPooler.Instance;
+        rb = GetComponent<Rigidbody>();
+    }
 
     private void OnEnable()
     {
         LifeTime = 0f;
-        firePositionSpell = SpellManager.Instance.FirePoint.position;
         Weapons.OnPlayerAttack += Weapons_OnAttack;
         SingleTargetedProjectile.OnProjectileSpellCast += SingleTargetedProjectile_OnProjectileSpellCast;
     }
@@ -29,28 +38,43 @@ public class Projectile :  MonoBehaviour
         SingleTargetedProjectile.OnProjectileSpellCast -= SingleTargetedProjectile_OnProjectileSpellCast;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
-        if (AttackWeapon != null)
+        if (attackingWeapon != null)
         {
-            transform.Translate(Vector3.forward * ProjectileSpeed * Time.deltaTime);
-            LifeTime += Time.deltaTime;
-            if (LifeTime > MaxLifeTime || transform.position.z >= firePositionWeapon.z + AttackWeapon.ThisWeaponSO.AttackRange)
+            transform.Translate(Vector3.forward * ProjectileSpeed * Time.fixedDeltaTime);
+            LifeTime += Time.fixedDeltaTime;
+            if (LifeTime > MaxLifeTime || transform.position.z >= firePositionWeapon.z + attackingWeapon.ThisWeaponSO.AttackRange)
             {
-                ObjectPooler.Instance.ReturnToPool(this);
-                AttackWeapon = null;
+                objectPooler.ReturnToPool(this);
+                attackingWeapon = null;
             }
         }
         else if (spell != null)
         {
-            transform.Translate(Vector3.down * ProjectileSpeed * Time.deltaTime);
-            LifeTime += Time.deltaTime;
+            transform.Translate(Vector3.down * ProjectileSpeed * Time.fixedDeltaTime);
+            LifeTime += Time.fixedDeltaTime;
             if (LifeTime > MaxLifeTime)
             {
-                ObjectPooler.Instance.ReturnToPool(this);
+                objectPooler.ReturnToPool(this);
                 spell = null;
             }            
-        }            
+        }
+        else if (attackingEnemy != null)
+        {
+            transform.Translate(GetDirToPlayer() * ProjectileSpeed * Time.fixedDeltaTime);
+            LifeTime += Time.fixedDeltaTime;
+            if (LifeTime > MaxLifeTime)
+            {
+                objectPooler.ReturnToPool(this);
+                attackingEnemy = null;
+            }
+        }
+    }
+
+    public void SetEnemy(EnemyBrain enemyBrain)
+    {
+        attackingEnemy = enemyBrain;
     }
 
     public ProjectileTypes GetProjectileType()
@@ -58,50 +82,68 @@ public class Projectile :  MonoBehaviour
         return projectileType;
     }
 
+    private Vector3 GetDirToPlayer()
+    {
+        return (player.PlayerTransform.position - attackingEnemy.EnemyTransform.position).normalized;
+    }
+
     //~~~~~~~~~~~~~~ Event Callbacks ~~~~~~~~~~~~~~~~~
 
     private void OnCollisionEnter(Collision collision)
-    {
-        ObjectPooler.Instance.ReturnToPool(this);
-           if (collision != null)
-           {
-                ContactPoint contactPoint = collision.GetContact(0);
-                if (collision.gameObject.GetComponentInParent<Target>() != null)
-                {
-                    Target target = collision.gameObject.GetComponentInParent<Target>();
-                    
-                    if (target.enemyBrain != null && target.GetEnemy() == true && target.IsDead == false)
+    {       
+        if (collision != null)
+        {
+            objectPooler.ReturnToPool(this);
+            ContactPoint contactPoint = collision.GetContact(0);
+            if (collision.gameObject.GetComponentInParent<Target>() != null)
+            {
+                Target target = collision.gameObject.GetComponentInParent<Target>();
+                if (target.IsDead == false)
+                {    
+                    if (projectileType == ProjectileTypes.EnemyFireBall)
                     {
-                        if (AttackWeapon != null)
+                        if (collision.gameObject.CompareTag("Player") && attackingEnemy != null)
                         {
-                            if (collision.gameObject.CompareTag("Enemy"))
+                            if (collision.collider.material.name == "")
                             {
-                                AttackWeapon.DoAttack(target, target.enemyBrain.GetThisEnemy().ThisEnemySO.DodgeChance);
-                                if (!target.Dodging)
+                                attackingEnemy.GetThisEnemy().DoAttack(target, player.DodgeChace);
+                                attackingEnemy = null;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (collision.gameObject.CompareTag("Enemy"))
+                        {
+                            if (target.enemyBrain != null && target.GetEnemy() == true)
+                            {
+                                if (attackingWeapon != null)
                                 {
+                                    attackingWeapon.DoAttack(target, target.enemyBrain.ThisEnemySO.DodgeChance);
+                                    if (!target.Dodging)
+                                    {
 
+                                    }
+                                }
+                                else if (spell != null)
+                                {
+                                    Explode(contactPoint.point);
                                 }
                             }
                         }
-                        else if (spell != null)
-                        {
-                            if (collision.gameObject.CompareTag("Enemy"))
-                            {
-                                Explode(contactPoint.point);
-                            }
-                        }
-                        
-                    }
-                }               
-                if (weaponBrain != null)
-                {
-                    weaponBrain.SpawnHitVfx(contactPoint.point + new Vector3(0, 0, -5f));
-                }
-                if (spell != null)
-                {
-                    spell.SpawnHitVfx(contactPoint.point);
-                }               
-           }
+                    }                                                                                
+                }                    
+                    
+            }               
+            if (weaponBrain != null)
+            {
+                weaponBrain.SpawnHitVfx(contactPoint.point + new Vector3(0, 0, -5f));
+            }
+            if (spell != null)
+            {
+                spell.SpawnHitVfx(contactPoint.point);
+            }               
+        }
     }
 
     private void Explode(Vector3 pos)
@@ -131,7 +173,7 @@ public class Projectile :  MonoBehaviour
     {
         if (e != null && e.weaponCategory == WeaponCategories.ProjectileShoot)
         {          
-            AttackWeapon = e.weapon;
+            attackingWeapon = e.weapon;
             weaponBrain = e.weaponBrain;
             firePositionWeapon = e.weaponBrain.transform.position;
         }

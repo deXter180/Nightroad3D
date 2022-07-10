@@ -11,7 +11,7 @@ public class SpellManager : Singleton<SpellManager>
     [SerializeField] private float selectionRange;
     [SerializeField] private Transform SelectionCircle;
     public Transform FirePoint;
-    [SerializeField] private List<STSpells> SelfSpellList;
+    [SerializeField] private List<STSpells> SpellVFXList;
     [SerializeField] private List<CastEffect> CastVFXList;
     private VisualEffect CastVfx;   
     private Color castColor;
@@ -126,6 +126,10 @@ public class SpellManager : Singleton<SpellManager>
             else if (category == SpellCategories.SelfTargeted)
             {
                 spell = new SelfTargeted(type, category);
+            }
+            else if (category == SpellCategories.SingleTargetedRaycast)
+            {
+                spell = new SingleTargeted(type, category);
             }
             if (spell != null)
             {
@@ -248,7 +252,7 @@ public class SpellManager : Singleton<SpellManager>
 
     public VisualEffect GetSTSpellVfx(SpellTypes spellType)
     {
-        foreach (var vfx in SelfSpellList)
+        foreach (var vfx in SpellVFXList)
         {
             if (vfx.spellType == spellType)
             {
@@ -323,6 +327,9 @@ public class SpellManager : Singleton<SpellManager>
                 break;
             case SpellTypes.FireBall:
                 castColor = Color.yellow;
+                break;
+            case SpellTypes.ChainLightening:
+                castColor = Color.HSVToRGB(201f, 0.731f, 1f, true);
                 break;
         }
     }

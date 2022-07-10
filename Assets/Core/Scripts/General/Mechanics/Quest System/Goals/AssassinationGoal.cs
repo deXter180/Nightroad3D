@@ -34,7 +34,7 @@ public class AssassinationGoal : Goal
     {
         if (EB.GetEnemyType() == EnemyType)
         {
-            if (EB.EnemyName == EnemyName)
+            if (EB.EnemyName == EnemyName && EB.EnemyID == EnemyID)
             {
                 CurrentAmount++;
                 Evaluate();

@@ -9,7 +9,10 @@ public class PlayerController : PersistentSingleton<PlayerController>
 {
     //~~~~~~~~~~~~~~~~ Variables ~~~~~~~~~~~~~~~~~
 
+    #region
     public float GroundHeight;
+    public Transform PlayerTransform { get; private set; }
+    public Transform CameraTransform { get => camTransform; }
     public Target PlayerTarget { get => target; }
     public PlayerInputAsset Inputs { get => inputs; }
     public int MaxHitPoints { get => maxHitPoints; }
@@ -24,6 +27,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
     [SerializeField] private int maxHitPoints;
     [SerializeField] private int maxMana;
     [SerializeField] private float MoveSpeed;
+    [SerializeField] private float MoveAcceleration = 14f;
     [SerializeField] private float MouseSensitivity;
     [SerializeField] private float JumpForce;
     [SerializeField] private float GravityScale;
@@ -35,6 +39,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
     [SerializeField] private float SlantingPower;
     [SerializeField] private float SlantingSpeed;
     [SerializeField] private CameraShake.ShakeProperty CamShakeOnDeath;
+    [SerializeField] private CameraShake.ShakeProperty CamShakeOnDamage;
     private Transform camTransform;
     private InventorySystem mainInventory;
     private Animator animator;
@@ -48,17 +53,18 @@ public class PlayerController : PersistentSingleton<PlayerController>
     private NPCBrain selectedNPC = null;
     private static float globalGravity = -9.81f;
     private Rigidbody RB;
-    private CapsuleCollider col;
+    private CapsuleCollider primCol;
+    private CapsuleCollider secndCol;
     private Target target;
     private AudioListener audioListener;
+    private CameraShake cameraShake;
     private Vector2 movePosition = Vector2.zero;
-    private Vector3 OldPos;
     private Vector3 gravity;
     private Vector3 dashPos;
     private Vector3 originalPlayerPos;
     private Vector3 ConstantDistFromPlayer;
+    private Vector3 playerVelocity = Vector3.zero;
     private Quaternion oldRot;
-    //private Input input;
     private int ground = 1 << 8;
     private int water = 1 << 4;
     private int pickableLayer = 1 << 6;
@@ -66,17 +72,24 @@ public class PlayerController : PersistentSingleton<PlayerController>
     private int stashLayer = 1 << 15;
     private int bitmask;
     private float camControlX = 0f;
-    private float normalHeight;
-    private float crouchHeight;  
+    private float normalHeightPrim;
+    private float normalHeightSec;
+    private float crouchHeightPrim;
+    private float crouchHeightSec;
     private float currentTime = 0;
+    private float elapseTime = 0;
     private float gravityControl;
+    private bool isReset;
+    private bool isMoving;
     private bool isJumping;
     private bool isCrouching;
     private bool isDead;
     private bool isDeathAnimFinish;
     private bool isToggledCrouching;
     private bool isCursorLocked;
+    private string fricColName = "NoFriction";
     public static event Action OnPlayerDeath;
+    #endregion
 
     //~~~~~~~~~~~~~~~~~ Initialization ~~~~~~~~~~~~~~~~~~~
 
@@ -84,19 +97,27 @@ public class PlayerController : PersistentSingleton<PlayerController>
     {
         base.Awake();
         RB = GetComponent<Rigidbody>();
-        col = GetComponent<CapsuleCollider>();       
         target = GetComponent<Target>();
         animator = GetComponent<Animator>();
+        PlayerTransform = transform;
         animator.enabled = false;
         weaponManager = GetComponentInChildren<WeaponManager>();
         spellManager = GetComponentInChildren<SpellManager>();
+        primCol = transform.Find("PrimaryCollider").GetComponent<CapsuleCollider>();
+        secndCol = transform.Find("SecondCollider").GetComponent<CapsuleCollider>();
         bitmask = ground | water;
+        isMoving = false;
         isDead = false;
         isDeathAnimFinish = false;
+        
     }
 
     private void Start()
     {
+        target.SetupMaxHP(maxHitPoints);
+        target.SetupMaxMana(maxMana);
+        CurrentHP = maxHitPoints;
+        CurrentMana = maxMana;
         oldRot = Quaternion.identity;
         camTransform = FPSCamControl.Instance.transform;//Helpers.MainCam.transform;
         ConstantDistFromPlayer = camTransform.position - transform.position;
@@ -106,8 +127,10 @@ public class PlayerController : PersistentSingleton<PlayerController>
         AssignDialogueManager();
         audioListener = Helpers.MainCam.GetComponent<AudioListener>();
         RB.useGravity = false;
-        normalHeight = col.height;
-        crouchHeight = (normalHeight * crouchHeightPrecentage) / 100;
+        normalHeightPrim = primCol.height;
+        normalHeightSec = secndCol.height;      
+        crouchHeightPrim = (normalHeightPrim * crouchHeightPrecentage) / 100;
+        crouchHeightSec = (normalHeightSec * crouchHeightPrecentage) / 100;
         //AssetLoader.OnGOCreated += AssetLoader_OnGOCreated; //Delete this
         SceneLoader.OnMainMenuSceneLoad += SceneLoader_OnMainMenuSceneLoad;
         SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
@@ -117,9 +140,11 @@ public class PlayerController : PersistentSingleton<PlayerController>
         target.Resource.OnManaGain += Resource_OnManaGain;
         target.Resource.OnManaLoss += Resource_OnManaLoss;
         GameController.OnStashClose += GameController_OnStashClose;
+        isReset = false;
         isJumping = false;
         isCursorLocked = false;
         originalPlayerPos = transform.position;
+        cameraShake = CameraShake.Instance;
 
         //AssetLoader.CreateGOAsset("ChainLightening2_vfx", transform); //Delete this
     }
@@ -184,14 +209,13 @@ public class PlayerController : PersistentSingleton<PlayerController>
                 isDead = true;
                 animator.enabled = true;
                 animator.SetBool("IsDead", true);
-                CameraShake.Instance.StartShake(CamShakeOnDeath);
+                cameraShake.StartShake(CamShakeOnDeath);
             } 
             if (!isDeathAnimFinish)
             {
                 UpdateCameraPosition();
             }
-        }   
-        
+        }
     }
 
     private IEnumerator InputDone()
@@ -209,7 +233,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
         {
             if (!gameController.IsInventoryActive && !gameController.IsMainMenuActive && !gameController.IsDialogueActive && !gameController.IsStashActive)
             {                                              
-                Move(MoveSpeed);
+                Move();
                 Rotate();
                 UpdateCameraPosition();
                 Jump();
@@ -250,17 +274,52 @@ public class PlayerController : PersistentSingleton<PlayerController>
         camTransform.position = transform.position + ConstantDistFromPlayer;
     }
 
-    private void Move(float moveSpeed)
+    private void Move()
     {
+        Vector3 wishDir;
         movePosition = inputs.BasicControls.Movement.ReadValue<Vector2>();
-        float moveX = movePosition.x;
-        float moveY = movePosition.y;
-        dashPos = transform.right * moveX + transform.forward * moveY;
-        Vector3 movePos = transform.position + (dashPos * moveSpeed * Time.fixedDeltaTime);
-        OldPos = transform.position;
-        RB.MovePosition(movePos);
+        if (movePosition != Vector2.zero)
+        {
+            float moveX = movePosition.x;
+            float moveY = movePosition.y;
+            wishDir = new Vector3(moveX, 0, moveY);
+            wishDir = transform.TransformDirection(wishDir);
+            wishDir.Normalize();
+            var wishSpeed = wishDir.magnitude;
+            wishSpeed *= MoveSpeed;
+            Accelerate(wishDir, wishSpeed, MoveAcceleration);
+            playerVelocity.y = 0;
+            dashPos = transform.right * moveX + transform.forward * moveY;
+            Vector3 movePos = transform.position + (dashPos * Time.fixedDeltaTime) + playerVelocity;
+            //Vector3 movePos = transform.position + dashPos * Time.fixedDeltaTime * MoveSpeed;        
+            RB.MovePosition(movePos);
+            isMoving = true;
+        }
+        else
+        {
+            playerVelocity = Vector3.zero;
+        }
     }
 
+    private void Accelerate(Vector3 wishdir, float wishspeed, float accel)
+    {
+        float addspeed;
+        float accelspeed;
+        float currentspeed;
+
+        playerVelocity.Normalize();
+        currentspeed = Vector3.Dot(playerVelocity, wishdir);
+        addspeed = wishspeed - currentspeed;
+        if (addspeed <= 0)
+            return;
+        accelspeed = accel * Time.deltaTime * wishspeed;
+        if (accelspeed > addspeed)
+            accelspeed = addspeed;
+        playerVelocity.x += accelspeed * wishdir.x;
+        playerVelocity.z += accelspeed * wishdir.z;
+    }
+
+    #region Clunky movement
     private void Rotate()
     {
         Vector2 mouseDeltaPos = inputs.BasicControls.MouseDelta.ReadValue<Vector2>();
@@ -268,13 +327,25 @@ public class PlayerController : PersistentSingleton<PlayerController>
         float verticalLook = mouseDeltaPos.y * MouseSensitivity * Time.fixedDeltaTime;
         camControlX -= verticalLook;
         camControlX = Mathf.Clamp(camControlX, -90f, 90f);
-        float rotY = transform.rotation.eulerAngles.y + horizontalLook;       
-        if (movePosition == Vector2.zero)
-        {
+        float rotY = transform.rotation.eulerAngles.y + horizontalLook;
+        if (!isMoving)
+        {   
             if (oldRot != Quaternion.identity)
             {
-                camTransform.rotation = Quaternion.Slerp(camTransform.rotation, oldRot, Time.fixedDeltaTime * SlantingSpeed);
-                oldRot = Quaternion.identity;
+                elapseTime += Time.fixedDeltaTime;
+                if (elapseTime > SlantingSpeed)
+                {
+                    elapseTime = SlantingSpeed;
+                    isMoving = false;
+                }
+                float perc = elapseTime / SlantingSpeed;
+                oldRot.eulerAngles = new Vector3(camControlX, camTransform.rotation.eulerAngles.y, oldRot.eulerAngles.z);
+                camTransform.rotation = Quaternion.Slerp(camTransform.rotation, oldRot, perc);
+                if (perc == 1)
+                {
+                    oldRot = Quaternion.identity;
+                    isReset = false;
+                }
             }
             else
             {
@@ -283,7 +354,11 @@ public class PlayerController : PersistentSingleton<PlayerController>
         }
         else
         {
-            oldRot = camTransform.rotation;
+            if (!isReset)
+            {
+                oldRot = camTransform.rotation;
+            }           
+            elapseTime = 0;
             float rotX;
             if (camControlX < -87 || camControlX > 87)
             {
@@ -291,15 +366,29 @@ public class PlayerController : PersistentSingleton<PlayerController>
             }
             else
             {
-                rotX = Mathf.LerpAngle(camTransform.eulerAngles.x, camControlX + (movePosition.y * SlantingPower / 2), Time.fixedDeltaTime * SlantingSpeed);
+                rotX = Mathf.LerpAngle(camTransform.eulerAngles.x, camControlX + (movePosition.y * SlantingPower / 2), Time.fixedDeltaTime / SlantingSpeed);
             }
-            float rotZ = Mathf.LerpAngle(camTransform.eulerAngles.z, -movePosition.x * SlantingPower, Time.fixedDeltaTime * SlantingSpeed);
+            float rotZ = Mathf.LerpAngle(camTransform.eulerAngles.z, -movePosition.x * SlantingPower, Time.fixedDeltaTime / SlantingSpeed);
             camTransform.eulerAngles = new Vector3(rotX, rotY, rotZ);
-        }   
+            isReset = true;            
+        }
         transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y + horizontalLook, 0);
     }
+    #endregion
 
-    
+    #region Default movement
+    //private void Rotate()
+    //{
+    //    Vector2 mouseDeltaPos = inputs.BasicControls.MouseDelta.ReadValue<Vector2>();
+    //    float horizontalLook = mouseDeltaPos.x * MouseSensitivity * Time.fixedDeltaTime;
+    //    float verticalLook = mouseDeltaPos.y * MouseSensitivity * Time.fixedDeltaTime;
+    //    camControlX -= verticalLook;
+    //    camControlX = Mathf.Clamp(camControlX, -90f, 90f);
+    //    float rotY = transform.rotation.eulerAngles.y + horizontalLook;
+    //    camTransform.eulerAngles = new Vector3(camControlX, rotY, 0f);
+    //    transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y + horizontalLook, 0);
+    //}
+    #endregion
 
     private void Jump()
     {
@@ -332,7 +421,8 @@ public class PlayerController : PersistentSingleton<PlayerController>
                 if (!isCrouching)
                 {
                     isCrouching = true;
-                    col.height = crouchHeight;
+                    primCol.height = crouchHeightPrim;
+                    secndCol.height = crouchHeightSec;                  
                 }
             }
             else
@@ -340,7 +430,8 @@ public class PlayerController : PersistentSingleton<PlayerController>
                 if (isCrouching)
                 {
                     isCrouching = false;
-                    col.height = normalHeight;
+                    primCol.height = normalHeightPrim;
+                    secndCol.height = normalHeightSec;                  
                 }
                 
             }
@@ -357,13 +448,15 @@ public class PlayerController : PersistentSingleton<PlayerController>
                 {
                     isCrouching = true;
                     isToggledCrouching = true;
-                    col.height = crouchHeight;
+                    primCol.height = crouchHeightPrim;
+                    secndCol.height = crouchHeightSec;
                 }
                 else
                 {
                     isCrouching = false;
                     isToggledCrouching = false;
-                    col.height = normalHeight;
+                    primCol.height = normalHeightPrim;
+                    secndCol.height = normalHeightSec;
                 }
             }
         }
@@ -371,22 +464,16 @@ public class PlayerController : PersistentSingleton<PlayerController>
 
     private bool GroundCheck()
     {
-        Physics.BoxCast(col.bounds.center, transform.localScale / 2, Vector3.down, out RaycastHit hit, Quaternion.identity, col.bounds.extents.y, bitmask);
-        if (hit.collider)
+        if (primCol != null)
         {
-            isJumping = false;
-            return true;
-        }
-        else return false;
-    }
-
-    public bool IsMoving(Vector3 newPos)
-    {
-        if (newPos == OldPos)
-        {
-            return false;
-        }
-        else return true;
+            Physics.BoxCast(primCol.bounds.center, transform.localScale / 2, Vector3.down, out RaycastHit hit, Quaternion.identity, primCol.bounds.extents.y, bitmask);
+            if (hit.collider)
+            {
+                isJumping = false;
+                return true;
+            }
+        }       
+        return false;
     }
 
     public void PostDeathAnim()
@@ -401,7 +488,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
         {
             var ray = new Ray(Helpers.MainCam.transform.position, Helpers.MainCam.transform.forward); //Camera.main.ScreenPointToRay(input.GetMousePosition());
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, Helpers.MainCam.farClipPlane / 35, npcLayer)) //Interact with NPC
+            if (Physics.Raycast(ray, out hit, Helpers.MainCam.farClipPlane / 20, npcLayer)) //Interact with NPC
             {
                 if (hit.transform.TryGetComponent<NPCBrain>(out selectedNPC))
                 {
@@ -419,7 +506,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
                     gameController.UnHighlightDialogue();
                 }
             }
-            if (Physics.Raycast(ray, out hit, Helpers.MainCam.farClipPlane / 20, pickableLayer)) //Interact with Inventory items
+            if (Physics.Raycast(ray, out hit, Helpers.MainCam.farClipPlane / 15, pickableLayer)) //Interact with Inventory items
             {
                 if (hit.transform.TryGetComponent<PickedObject>(out selectedPickedObject))
                 {
@@ -445,11 +532,11 @@ public class PlayerController : PersistentSingleton<PlayerController>
                     selectedPickedObject = null;
                 }
             }
-            if (Physics.Raycast(ray, out hit, Helpers.MainCam.farClipPlane / 35, stashLayer)) //Interact with Stash
+            if (Physics.Raycast(ray, out hit, Helpers.MainCam.farClipPlane / 20, stashLayer)) //Interact with Stash
             {
                 if (hit.transform.TryGetComponent<StashHolder>(out selectedStashHolder))
                 {
-                    gameController.HighlightStash(selectedStashHolder.transform.position);
+                    selectedStashHolder.Highlight(selectedStashHolder.transform.position);
                     if (inputs.BasicControls.Interact.triggered)
                     {
                         selectedStashHolder.LoadItemToStash();
@@ -461,7 +548,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
             {
                 if (selectedStashHolder != null)
                 {
-                    gameController.UnHighlightStash();
+                    selectedStashHolder.Unhighlight();
                 }
             }
         }
@@ -473,7 +560,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
             }
             if (selectedStashHolder != null)
             {
-                gameController.UnHighlightStash();
+                selectedStashHolder.Unhighlight();
             }
         }
     }
@@ -543,7 +630,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
         AssignInv();
         AssignGameControl();
         AssignDialogueManager();
-        target.SetupMaxHP(MaxHitPoints);
+        target.SetupMaxHP(maxHitPoints);
         target.SetupMaxMana(maxMana);
         isDead = target.IsDead = false;
         animator.SetBool("IsDead", false);
@@ -587,6 +674,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
     private void Resource_OnHealthLoss(object sender, ResourceManagement.DamagedEventArgs e)
     {
         CurrentHP = e.CurrentHP;
+        cameraShake.StartShake(CamShakeOnDamage);
     }
 
     private void Resource_OnHealthGain(object sender, ResourceManagement.DamagedEventArgs e)

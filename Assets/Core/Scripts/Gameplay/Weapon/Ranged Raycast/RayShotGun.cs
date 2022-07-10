@@ -84,7 +84,7 @@ public class RayShotGun : RangedWeapon
         {
             if (gameObject.activeInHierarchy && weaponBrain.IsWeaponReady())
             {
-                if (!gameController.IsInventoryActive && !gameController.IsMainMenuActive && !gameController.IsStashActive && !gameController.IsCastingSpell)
+                if (!gameController.IsInventoryActive && !gameController.IsMainMenuActive && !gameController.IsStashActive && !gameController.IsCastingSpell && !gameController.IsDialogueActive)
                 {
                     if (!weaponManager.IsAttacking)
                     {
@@ -146,7 +146,7 @@ public class RayShotGun : RangedWeapon
                             {
                                 if (hit.collider.CompareTag("Enemy"))
                                 {
-                                    thisWeapon.DoAttack(target, target.enemyBrain.GetThisEnemy().ThisEnemySO.DodgeChance);
+                                    thisWeapon.DoAttack(target, target.enemyBrain.ThisEnemySO.DodgeChance);
                                     if (!target.Dodging)
                                     {
 

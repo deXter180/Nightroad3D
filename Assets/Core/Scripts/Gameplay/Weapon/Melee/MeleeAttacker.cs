@@ -49,7 +49,7 @@ public class MeleeAttacker : MonoBehaviour
     {
         if (gameController != null && inputs != null)
         {
-            if (!gameController.IsMainMenuActive && !gameController.IsInventoryActive && !gameController.IsStashActive)
+            if (!gameController.IsMainMenuActive && !gameController.IsInventoryActive && !gameController.IsStashActive && !gameController.IsDialogueActive)
             {
                 StartAttack();
             }
@@ -96,7 +96,7 @@ public class MeleeAttacker : MonoBehaviour
                             if (collision.gameObject.CompareTag("Enemy"))
                             {
                                 weaponManager.IsAttacking = true;
-                                weaponBrain.GetThisWeapon().DoAttack(target, target.enemyBrain.GetThisEnemy().ThisEnemySO.DodgeChance);
+                                weaponBrain.GetThisWeapon().DoAttack(target, target.enemyBrain.ThisEnemySO.DodgeChance);
                                 StartCoroutine(Attacking(() => { weaponManager.IsAttacking = false; }));
                             }
                         }
@@ -122,7 +122,7 @@ public class MeleeAttacker : MonoBehaviour
                             if (collision.gameObject.CompareTag("Enemy"))
                             {
                                 weaponManager.IsAttacking = true;
-                                weaponBrain.GetThisWeapon().DoAttack(target, target.enemyBrain.GetThisEnemy().ThisEnemySO.DodgeChance);
+                                weaponBrain.GetThisWeapon().DoAttack(target, target.enemyBrain.ThisEnemySO.DodgeChance);
                                 StartCoroutine(Attacking(() => { weaponManager.IsAttacking = false; }));
                             }
                         }

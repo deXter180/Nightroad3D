@@ -5,18 +5,64 @@ using UnityEngine.VFX;
 
 public class LighteningBounce : MonoBehaviour
 {
-    [SerializeField] private float delayTime = 1;
+    [SerializeField] private float vfxduration = 0.5f;
+    private float elapseTime;
+    private bool isTagged;
     private Vector3 midPos1;
     private Vector3 midPos2;
+    private string enemyTag = "Enemy";
+    private string vfxAssetName = "ChainLightening2_vfx";
     private string startPosName = "StartPos";
     private string midPos1Name = "MidPos1";
     private string midPos2Name = "MidPos2";
     private string endPosName = "EndPos";
     private VisualEffect visualEffect;
+    private SpellBaseSO spell;
 
     private void Awake()
     {
         visualEffect = GetComponent<VisualEffect>();
+    }
+
+    private void OnEnable()
+    {
+        isTagged = false;
+        elapseTime = 0;
+        spell = GameController.GetSpellSOFromList(SpellTypes.ChainLightening);
+    }
+
+    private void Update()
+    {
+        elapseTime += Time.deltaTime;
+        if (elapseTime >= 2)
+        {
+            AssetLoader.ReleaseAssetInstance(this.gameObject);
+        }
+    }
+
+    private void OnTriggerEnter(Collider col)
+    {
+        if (!isTagged)
+        {
+            if (col.CompareTag(enemyTag))
+            {
+                var eb = col.GetComponentInParent<EnemyBrain>();
+                if (eb != null && !eb.IsHitByLightening)
+                {
+                    isTagged = true;
+                    eb.SetLighteningHit();
+                    BounceToTarget(eb.EnemyTransform.position);
+                    spell.DoAttack(eb.GetComponent<Target>(), eb.ThisEnemySO.DodgeChance);                   
+                    AssetLoader.CreateGOAsset(vfxAssetName, eb.EnemyTransform);
+                    StartCoroutine(End());
+                }
+            }
+        }
+        IEnumerator End()
+        {
+            yield return Helpers.GetWait(vfxduration);
+            AssetLoader.ReleaseAssetInstance(this.gameObject);
+        }
     }
 
     public void BounceToTarget(Vector3 targetPos)
@@ -30,12 +76,6 @@ public class LighteningBounce : MonoBehaviour
         visualEffect.SetVector3(midPos1Name, midPos1);
         visualEffect.SetVector3(midPos2Name, midPos2);
         visualEffect.SetVector3(endPosName, targetPos);
-        visualEffect.Play();
-        StartCoroutine(End());
-        IEnumerator End()
-        {
-            yield return Helpers.GetWait(delayTime);
-            AssetLoader.ReleaseAssetInstance(this.gameObject);
-        }
+        visualEffect.Play();        
     }
 }

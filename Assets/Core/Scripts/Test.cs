@@ -60,16 +60,16 @@ public class Test : MonoBehaviour
 
     private void FollowPath()
     {
-        if (_navAgent.remainingDistance <= 5f)
-        {
-            _pathIndex++;
-            if (_pathIndex >= _path.Count)
-            {
-                _pathIndex = 0;
-            }
-            _navAgent.SetDestination(_path[_pathIndex]);
-            _targetPos = new Vector3(_navAgent.destination.x, transform.position.y, _navAgent.destination.z);
-        }       
+        //if (_navAgent.remainingDistance <= 5f)
+        //{
+        //    _pathIndex++;
+        //    if (_pathIndex >= _path.Count)
+        //    {
+        //        _pathIndex = 0;
+        //    }
+        //    _navAgent.SetDestination(_path[_pathIndex]);
+        //    _targetPos = new Vector3(_navAgent.destination.x, transform.position.y, _navAgent.destination.z);
+        //}       
     }
 
 

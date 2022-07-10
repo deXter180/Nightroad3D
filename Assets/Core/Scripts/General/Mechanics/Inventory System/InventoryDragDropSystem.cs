@@ -334,57 +334,69 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
     private void RemoveFromInventory()
     {
         if (gameController.IsInventoryActive || gameController.IsStashActive)
-        {           
-            if (inputs.UI.RemoveItem.triggered)
+        {
+            if (draggingPOInventory == null)
             {
-                Vector2 mousePos = inputs.BasicControls.MousePosition.ReadValue<Vector2>();
-                if (IsOnInventory(mousePos))
+                if (inputs.UI.RemoveItem.triggered)
                 {
-                    RectTransformUtility.ScreenPointToLocalPointInRectangle(inventorySystem.GetItemContainer(), mousePos, UICam, out Vector2 anchoredPosition);
-                    Vector2Int placedObjectOrigin = inventorySystem.GetGridLocalPos(anchoredPosition);
-                    if (inventorySystem.GetGrid().GetGridObject(placedObjectOrigin.x, placedObjectOrigin.y).GetPlacedObject() != null)
+                    Vector2 mousePos = inputs.BasicControls.MousePosition.ReadValue<Vector2>();
+                    if (IsOnInventory(mousePos))
                     {
-                        PlacedObject placedObject = inventorySystem.GetGrid().GetGridObject(placedObjectOrigin.x, placedObjectOrigin.y).GetPlacedObject();
-                        InventoryItemSO item = placedObject.GetInventoryItemSO();
-                        ItemTypes IT = item.ItemType;
-                        WeaponTypes WT = item.WeaponType;
-                        SpellTypes ST = item.SpellType;
-                        placedObject.DestroySelf();
-                        inventorySystem.RemoveFromInventoryList(placedObject);
-                        List<Vector2Int> gridPosList = placedObject.GetGridPosList();
-                        foreach (Vector2Int gridPos in gridPosList)
+                        RectTransformUtility.ScreenPointToLocalPointInRectangle(inventorySystem.GetItemContainer(), mousePos, UICam, out Vector2 anchoredPosition);
+                        Vector2Int placedObjectOrigin = inventorySystem.GetGridLocalPos(anchoredPosition);
+                        if (inventorySystem.GetGrid().GetGridObject(placedObjectOrigin.x, placedObjectOrigin.y).GetPlacedObject() != null)
                         {
-                            inventorySystem.GetGrid().GetGridObject(gridPos.x, gridPos.y).ClearPlacedObject();
-                        }
-                        if (IT == ItemTypes.Spell)
-                        {
-                            if (ST != SpellTypes.None)
+                            PlacedObject placedObject = inventorySystem.GetGrid().GetGridObject(placedObjectOrigin.x, placedObjectOrigin.y).GetPlacedObject();
+                            InventoryItemSO item = placedObject.GetInventoryItemSO();
+                            ItemTypes IT = item.ItemType;
+                            WeaponTypes WT = item.WeaponType;
+                            SpellTypes ST = item.SpellType;
+                            ArmorTypes AT = item.ArmorType;
+                            placedObject.DestroySelf();
+                            TooltipSystem.Hide();
+                            inventorySystem.RemoveFromInventoryList(placedObject);
+                            List<Vector2Int> gridPosList = placedObject.GetGridPosList();
+                            foreach (Vector2Int gridPos in gridPosList)
                             {
-                                PickedObject pickedObject = PickedObject.SpawnSpellWorld(ST, item, playerController.transform.position + playerController.GetRandomPosWithoutY(15f, -15f));
+                                inventorySystem.GetGrid().GetGridObject(gridPos.x, gridPos.y).ClearPlacedObject();
                             }
-                        }
-                        else if (IT == ItemTypes.Weapon)
-                        {
-                            if (WT != WeaponTypes.None)
+                            if (IT == ItemTypes.Spell)
                             {
-                                PickedObject pickedObject = PickedObject.SpawnWeaponWorld(WT, item, playerController.transform.position + playerController.GetRandomPosWithoutY(15f, -15f));
+                                if (ST != SpellTypes.None)
+                                {
+                                    PickedObject pickedObject = PickedObject.SpawnSpellWorld(ST, item, playerController.transform.position + playerController.GetRandomPosWithoutY(15f, -15f));
+                                }
                             }
-                        }
-                        else
-                        {
-                            if (WT != WeaponTypes.None)
+                            else if (IT == ItemTypes.Weapon)
                             {
-                                PickedObject pickedObject = PickedObject.SpawnItemsWorld(placedObject.GetItemType(), item, playerController.transform.position + playerController.GetRandomPosWithoutY(15f, -15f), WT);
+                                if (WT != WeaponTypes.None)
+                                {
+                                    PickedObject pickedObject = PickedObject.SpawnWeaponWorld(WT, item, playerController.transform.position + playerController.GetRandomPosWithoutY(15f, -15f));
+                                }
+                            }
+                            else if (IT == ItemTypes.Armor)
+                            {
+                                if (AT != ArmorTypes.None)
+                                {
+                                    PickedObject pickedObject = PickedObject.SpawnArmorWorld(AT, item, playerController.transform.position + playerController.GetRandomPosWithoutY(15f, -15f));
+                                }
                             }
                             else
                             {
-                                PickedObject pickedObject = PickedObject.SpawnItemsWorld(placedObject.GetItemType(), item, playerController.transform.position + playerController.GetRandomPosWithoutY(15f, -15f));
-                            }
+                                if (WT != WeaponTypes.None)
+                                {
+                                    PickedObject pickedObject = PickedObject.SpawnItemsWorld(placedObject.GetItemType(), item, playerController.transform.position + playerController.GetRandomPosWithoutY(15f, -15f), WT);
+                                }
+                                else
+                                {
+                                    PickedObject pickedObject = PickedObject.SpawnItemsWorld(placedObject.GetItemType(), item, playerController.transform.position + playerController.GetRandomPosWithoutY(15f, -15f));
+                                }
 
+                            }
                         }
                     }
-                }               
-            }
+                }
+            }            
         }           
     }
 

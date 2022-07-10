@@ -7,15 +7,17 @@ using UnityEngine.UI;
 public class InGameMainMenuUIHandler : Singleton<InGameMainMenuUIHandler>
 {
     private float updateSpeed;
+    private TabGroup tabGroup;
     private PlayerController player;
     [SerializeField] private Canvas menuCanvas;
     [SerializeField] private Canvas loaderCanvas;
-    [SerializeField] private Image progessbar;
+    [SerializeField] private Image progessbar;   
 
     protected override void Awake()
     {
         base.Awake();
         menuCanvas.enabled = false;
+        tabGroup = GetComponentInChildren<TabGroup>();
     }
 
     private void OnEnable()
@@ -36,6 +38,7 @@ public class InGameMainMenuUIHandler : Singleton<InGameMainMenuUIHandler>
         if (!isMainMenuActive)
         {
             menuCanvas.enabled = true;
+            tabGroup.InitialEnable();
         }
         else
         {
@@ -72,7 +75,7 @@ public class InGameMainMenuUIHandler : Singleton<InGameMainMenuUIHandler>
             if (loaderCanvas != null && menuCanvas != null)
             {
                 loaderCanvas.enabled = false;
-                player.transform.position = new Vector3(0, 0.2f, 0);
+                player.PlayerTransform.position = new Vector3(0, 0.2f, 0);
                 Helpers.MainCam.transform.position = new Vector3(0, 0.2f, 0);
             }
         };

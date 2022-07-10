@@ -12,20 +12,19 @@ public class TabGroup : MonoBehaviour
     [SerializeField] private Sprite tabActive;
     [SerializeField] private List<GameObject> tabPages;
 
-    private void Start()
+    private void OnEnable()
     {
-        for (int i = 0; i < tabPages.Count; i++)
+       InitialEnable();
+    }
+
+    public void InitialEnable()
+    {
+        for (int i = 1; i < tabPages.Count; i++)
         {
-            if (i == 0)
-            {
-                tabPages[i].SetActive(true);
-            }
-            else
-            {
-                tabPages[i].SetActive(false);
-            }
-            
+            tabPages[i].SetActive(false);           
         }
+        tabPages[0].SetActive(true);
+        OnTabSelected(tabButtons[1]);
     }
 
     public void Subscribe(TabButton button)

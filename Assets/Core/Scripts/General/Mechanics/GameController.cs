@@ -92,7 +92,7 @@ public class GameController : PersistentSingleton<GameController>
     }
 
     private void Update()
-    {
+    {        
         if (inputs != null)
         {
             if (!player.IsPlayerDead)
@@ -472,7 +472,7 @@ public class GameController : PersistentSingleton<GameController>
                 QuestSO quest = (QuestSO)SO;
                 if (!QuestDict.ContainsValue(quest))
                 {
-                    QuestDict.Add(quest.name, quest);
+                    QuestDict.Add(quest.QuestID, quest);
                 }                
             }
         }
@@ -521,6 +521,7 @@ public class GameController : PersistentSingleton<GameController>
         isInventoryActive = false;
         isMainMenuActive = false;
         isStashActive = false;
+        OverlayManager.Instance.ClearAllOverlayEffects();
     }
 
     private void AssetLoader_OnSingleSceneLoad(UnityEngine.ResourceManagement.ResourceProviders.SceneInstance obj)

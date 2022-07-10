@@ -7,6 +7,7 @@ using System.Linq;
 
 public class QuestManager : Singleton<QuestManager>
 {
+    private QuestMenuManager questMenu;
     public string QuestText { get; private set; }
     public string GoalText { get; private set; }
     public static Dictionary<string, QuestSO> ActiveQuestDict = new Dictionary<string, QuestSO>();
@@ -15,6 +16,11 @@ public class QuestManager : Singleton<QuestManager>
     protected override void Awake()
     {
         base.Awake();
+    }
+
+    private void Start()
+    {
+        questMenu = QuestMenuManager.Instance;
     }
 
     private void Update()
@@ -48,6 +54,7 @@ public class QuestManager : Singleton<QuestManager>
                 g.OnGoalFailure += OnGoalFailPostCompletion;
                 g.Initialize();
             }
+            questMenu.CreateActiveQuestTab(quest);
             return true;
         }
         return false;

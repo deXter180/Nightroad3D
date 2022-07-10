@@ -92,7 +92,7 @@ public class RayGun : RangedWeapon
         {
             if (gameObject.activeInHierarchy && weaponBrain.IsWeaponReady())
             {
-                if (!gameController.IsInventoryActive && !gameController.IsMainMenuActive && !gameController.IsStashActive && !gameController.IsCastingSpell)
+                if (!gameController.IsInventoryActive && !gameController.IsMainMenuActive && !gameController.IsStashActive && !gameController.IsCastingSpell && !gameController.IsDialogueActive)
                 {
                     if (!weaponManager.IsAttacking && !isReloading)
                     {
@@ -168,21 +168,22 @@ public class RayGun : RangedWeapon
             {
                 if (hit.collider != null)
                 {
-                    if (hit.collider.GetComponentInParent<Target>() != null)
+                    if (hit.collider.CompareTag("Enemy"))
                     {
-                        Target target = hit.collider.GetComponentInParent<Target>();
-                        if (target.enemyBrain != null && target.GetEnemy() == true && target.IsDead == false)
-                        {                           
-                            if (hit.collider.CompareTag("Enemy"))
+                        if (hit.collider.GetComponentInParent<Target>() != null)
+                        {
+                            Target target = hit.collider.GetComponentInParent<Target>();
+                            
+                            if (target.enemyBrain != null && target.GetEnemy() == true && target.IsDead == false)
                             {
-                                thisWeapon.DoAttack(target, target.enemyBrain.GetThisEnemy().ThisEnemySO.DodgeChance);
+                                thisWeapon.DoAttack(target, target.enemyBrain.ThisEnemySO.DodgeChance);
                                 if (!target.Dodging)
                                 {
 
                                 }
                             }
-                        }                      
-                    }                    
+                        }
+                    }                                  
                     else
                     {
 

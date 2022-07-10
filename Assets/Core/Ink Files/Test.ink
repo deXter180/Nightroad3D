@@ -15,7 +15,7 @@ Remain silent.
 
 == Help
 I will be honored to help you my friend.
-~ StartQuest("QTest1")
+~ StartQuest("QTest2")
 ->DONE
 
 == NoHelp

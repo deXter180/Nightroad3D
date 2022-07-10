@@ -9,7 +9,8 @@ public class ObjectPooler : Singleton<ObjectPooler>
 {
     [SerializeField] private int PoolSize;
     [SerializeField] private List<AssetPackages> AssetRefList = new List<AssetPackages>();
-    private List<Projectile> projectiles;     
+    private List<Projectile> projectiles;
+    private bool isInitialized;
 
     protected override void Awake()
     {
@@ -19,6 +20,14 @@ public class ObjectPooler : Singleton<ObjectPooler>
 
     private void Start()
     {
+        if (!isInitialized)
+        {
+            projectiles = new List<Projectile>();
+            InitializePool(ProjectileTypes.FireBall);
+            InitializePool(ProjectileTypes.FireBallSpell);
+            InitializePool(ProjectileTypes.EnemyFireBall);
+            isInitialized = true;
+        }
         AssetLoader.OnGOCreatedWithAssetRef += AssetRefLoader_OnGOCreated;
         SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
     }
@@ -109,9 +118,14 @@ public class ObjectPooler : Singleton<ObjectPooler>
 
     private void SceneLoader_OnNewGameStart()
     {
-        projectiles = new List<Projectile>();
-        InitializePool(ProjectileTypes.FireBall);
-        InitializePool(ProjectileTypes.FireBallSpell);
+        if (!isInitialized)
+        {
+            projectiles = new List<Projectile>();
+            InitializePool(ProjectileTypes.FireBall);
+            InitializePool(ProjectileTypes.FireBallSpell);
+            InitializePool(ProjectileTypes.EnemyFireBall);
+            isInitialized = true;
+        }        
     }
 
     private void AssetRefLoader_OnGOCreated(GameObject GO, AssetReference reference)

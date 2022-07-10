@@ -143,7 +143,10 @@ public static class AssetLoader
         {
             AsyncHandleDict.Remove(gameObject);
         }
-        Addressables.ReleaseInstance(gameObject);
+        if (!Addressables.ReleaseInstance(gameObject))
+        {
+            MonoBehaviour.Destroy(gameObject);
+        }            
     }
 
     //~~~~~~~~~~~~~~~~~~~~~ Load Scene ~~~~~~~~~~~~~~~~~~~~
@@ -237,7 +240,7 @@ public enum SpellTypes
     None,
     FireBlast,
     FreezeBlast,
-    ElectricBlast,
+    ChainLightening,
     Dash,
     FireBall,
     IceSpike,
@@ -263,7 +266,10 @@ public enum EnemyTypes
 {
     None,
     Giant,
-    Fighter
+    Fighter,
+    Bat,
+    Shooter,
+    ShootingBat
 }
 
 public enum ProjectileTypes
@@ -272,7 +278,8 @@ public enum ProjectileTypes
     Bullet,
     FireBall,
     FireBallSpell,
-    IceSpike
+    IceSpike,
+    EnemyFireBall
 }
 
 public enum ImpactTypes
@@ -314,6 +321,14 @@ public enum GoalTypes
     MassKillAny,
     Collect,
     Delivery
+}
+
+public enum OverlayTypes
+{
+    Damage,
+    Shield,
+    Fire,
+    Poison
 }
 
 #endregion

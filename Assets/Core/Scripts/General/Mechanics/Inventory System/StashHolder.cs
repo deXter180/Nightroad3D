@@ -5,15 +5,22 @@ using UnityEngine;
 public class StashHolder : MonoBehaviour
 {
     private ItemStash itemStash;
+    private string hightlightMaterial = "Outline_SpriteLit";
     [SerializeField] private List<StashItems> StashItemList;
     private bool isOpened;
     private List<SavedStashItems> savedStashItemList;
+    private SpriteRenderer SR;
+    private GameController gameController;
+    private Material defaultMat;
 
     private void Start()
     {
+        SR = GetComponent<SpriteRenderer>();
+        gameController = GameController.Instance;
         itemStash = ItemStash.Instance;
-        savedStashItemList = new List<SavedStashItems>();
+        savedStashItemList = new List<SavedStashItems>();        
         isOpened = false;
+        defaultMat = SR.material;
     }
 
     public void LoadItemToStash()
@@ -40,4 +47,17 @@ public class StashHolder : MonoBehaviour
         savedStashItemList = new List<SavedStashItems>();
         itemStash.ClearStash(savedStashItemList);
     }
+
+    public void Highlight(Vector3 position)
+    {
+        SR.material = GameController.GetMaterail(hightlightMaterial);
+        gameController.HighlightStash(position);
+    }
+
+    public void Unhighlight()
+    {
+        SR.material = defaultMat;
+        gameController.UnHighlightStash();
+    }
+
 }

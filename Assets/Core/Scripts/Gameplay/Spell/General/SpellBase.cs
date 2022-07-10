@@ -6,6 +6,7 @@ using UnityEngine.VFX;
 
 public abstract class Spells
 {
+    protected string spellSizeText = "Size";
     protected SpellManager spellManager;
     protected SpellTypes spellType;
     protected SpellCategories spellCategory;
@@ -68,6 +69,41 @@ public class SingleTargetedProjectile : Spells
     {
         AssetLoader.CreateAndReleaseAsset("Explosion_vfx", HitPointPos, 0.3f);
     }
+}
+
+public class SingleTargeted : Spells
+{
+    protected float radius = 4f;
+    protected int enemyLayer = 1 << 12;
+    protected string vfxAssetName = "ChainLightening2_vfx";
+    private PlayerController player;
+    public SingleTargeted(SpellTypes spellType, SpellCategories category) : base(spellType, category)
+    {
+        player = PlayerController.Instance;
+    }
+
+
+    public override void CastSpell(Action action)
+    {
+        if (spellManager.GetSTSpellVfx(spellType) != null)
+        {
+            VisualEffect vfx = spellManager.GetSTSpellVfx(spellType);
+            vfx.Play();
+        }
+        if (Physics.SphereCast(player.PlayerTransform.position, radius, player.CameraTransform.forward, out RaycastHit hit, spellSO.Range, enemyLayer))
+        {
+            var eb = hit.collider.GetComponentInParent<EnemyBrain>();
+            if (eb != null && !eb.IsHitByLightening)
+            {
+                eb.SetLighteningHit();
+                spellSO.DoAttack(eb.GetComponent<Target>(), eb.ThisEnemySO.DodgeChance);
+                AssetLoader.CreateGOAsset(vfxAssetName, eb.EnemyTransform);
+            }
+        }
+        action.Invoke();
+    }
+
+    
 }
 
 public class AOETargeted : Spells
@@ -150,7 +186,7 @@ public class SelfTargeted : Spells
                     {
                         direction = player.DashPos;
                     }
-                    Vector3 dir = player.transform.position + direction * 20f;
+                    Vector3 dir = player.transform.position + direction * spellSO.Range;
                     player.PlayerRB.MovePosition(dir);
                     PlayDashVFX(spellType, direction);
                 }
@@ -164,7 +200,7 @@ public class SelfTargeted : Spells
         {
             VisualEffect vfx = spellManager.GetSTSpellVfx(spellType);
             vfx.transform.localRotation = Quaternion.Euler(0, 0, 0);
-            vfx.SetFloat("Size", 0.04f);
+            vfx.SetFloat(spellSizeText, 0.04f);
             vfx.transform.localPosition = new Vector3(0, vfx.transform.localPosition.y, vfx.transform.localPosition.z);
             float temp1 = Vector3.Dot(direction, player.transform.forward);
             if (temp1 <= -0.5f || temp1 >= 0.5f)
@@ -175,7 +211,7 @@ public class SelfTargeted : Spells
             {
                 float temp2 = Vector3.Dot(direction, player.transform.right);
                 vfx.transform.localRotation = Quaternion.Euler(0, 90, 0);
-                vfx.SetFloat("Size", 0.1f);
+                vfx.SetFloat(spellSizeText, 0.1f);
                 if (temp2 >= 0.5f)
                 {
                     vfx.transform.localPosition = new Vector3(0.4f, vfx.transform.localPosition.y, vfx.transform.localPosition.z);
