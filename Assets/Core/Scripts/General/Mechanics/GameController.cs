@@ -4,11 +4,14 @@ using UnityEngine;
 using System;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using TMPro;
 
 public class GameController : PersistentSingleton<GameController>
 {
     [SerializeField] private Image TalkUIimage;
     [SerializeField] private Image OpenStashImage;
+    [SerializeField] private RectTransform NPCSpeechBubble;
+    [SerializeField] private Canvas speechBubbleCanvas;
     private Vector3 screenPos;
     private bool isInventoryActive;
     private bool isStashActive;
@@ -20,6 +23,7 @@ public class GameController : PersistentSingleton<GameController>
     private LoadUIHandler loadUI;
     private DialogueManager dialogueManager;
     private ReturnToMenuButton returnButton;
+    private TextMeshProUGUI npcSpeechText;
     private SpellManager spellManager;
     private PlayerInputAsset inputs;
     private PlayerController player;
@@ -55,6 +59,8 @@ public class GameController : PersistentSingleton<GameController>
         AssetLoader.LoadAnyAssets<Material>("Materials", MaterialLoadCallback);
         loadUI = GetComponentInChildren<LoadUIHandler>();
         returnButton = GetComponentInChildren<ReturnToMenuButton>();
+        npcSpeechText = NPCSpeechBubble.GetComponentInChildren<TextMeshProUGUI>();
+        NPCSpeechBubble.gameObject.SetActive(false);
         OpenStashImage.gameObject.SetActive(false);
         TalkUIimage.gameObject.SetActive(false);
     }
@@ -224,6 +230,18 @@ public class GameController : PersistentSingleton<GameController>
         {
             HUDHandler.Control(true);
         }
+    }
+
+    public IEnumerator HighlightNPCSpeech(Vector3 position, string textToShow)
+    {
+        if (!NPCSpeechBubble.gameObject.activeSelf)
+        {
+            speechBubbleCanvas.transform.position = position;
+            npcSpeechText.text = textToShow;
+            NPCSpeechBubble.gameObject.SetActive(true);           
+            yield return Helpers.GetWait(3f);
+            NPCSpeechBubble.gameObject.SetActive(false);
+        }       
     }
 
     public void HighlightDialogue(Vector3 position)

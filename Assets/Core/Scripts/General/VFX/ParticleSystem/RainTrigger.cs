@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RainEntryTrigger : MonoBehaviour
+public class RainTrigger : MonoBehaviour
 {
     private RainParticleSystem rainParticleSystem;
 
@@ -15,7 +15,7 @@ public class RainEntryTrigger : MonoBehaviour
     {
         if (col.gameObject.CompareTag("Player"))
         {
-            rainParticleSystem.EnableRain();
+            rainParticleSystem.ControlRain();
         }
     }
 }

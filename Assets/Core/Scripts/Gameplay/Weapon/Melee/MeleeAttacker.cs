@@ -12,6 +12,8 @@ public class MeleeAttacker : MonoBehaviour
     private PlayerInputAsset inputs;
     private GameController gameController;
     private bool isHitting;
+    private string enemyName = "Enemy";
+    private string npcName = "NPC";
     public static event Action OnStopMeleeAttack;
 
     private void Awake()
@@ -88,12 +90,12 @@ public class MeleeAttacker : MonoBehaviour
             {
                 if (!weaponManager.IsAttacking && collision != null)
                 {
-                    if (collision.gameObject.GetComponentInParent<Target>() != null)
+                    if (collision.gameObject.CompareTag(enemyName))
                     {
-                        Target target = collision.gameObject.GetComponentInParent<Target>();
-                        if (target.enemyBrain != null && target.GetEnemy() == true && target.IsDead == false)
+                        if (collision.gameObject.GetComponentInParent<Target>() != null)
                         {
-                            if (collision.gameObject.CompareTag("Enemy"))
+                            Target target = collision.gameObject.GetComponentInParent<Target>();
+                            if (target.enemyBrain != null && target.GetEnemy() == true && target.IsDead == false)
                             {
                                 weaponManager.IsAttacking = true;
                                 weaponBrain.GetThisWeapon().DoAttack(target, target.enemyBrain.ThisEnemySO.DodgeChance);
@@ -101,6 +103,15 @@ public class MeleeAttacker : MonoBehaviour
                             }
                         }
                     }
+                    else if (collision.gameObject.CompareTag(npcName))
+                    {
+                        if (collision.gameObject.GetComponent<NPCBrain>() != null)
+                        {
+                            NPCBrain npc = collision.gameObject.GetComponent<NPCBrain>();
+                            StartCoroutine(gameController.HighlightNPCSpeech(npc.SpeechBubblePos, npc.GetDialogueText()));
+                        }                        
+                    }
+                    
                 }
             }
         }      
@@ -114,17 +125,25 @@ public class MeleeAttacker : MonoBehaviour
             {
                 if (!weaponManager.IsAttacking && collision != null)
                 {
-                    if (collision.gameObject.GetComponentInParent<Target>() != null)
+                    if (collision.gameObject.CompareTag(enemyName))
                     {
-                        Target target = collision.gameObject.GetComponentInParent<Target>();
-                        if (target.enemyBrain != null && target.GetEnemy() == true && target.IsDead == false)
+                        if (collision.gameObject.GetComponentInParent<Target>() != null)
                         {
-                            if (collision.gameObject.CompareTag("Enemy"))
+                            Target target = collision.gameObject.GetComponentInParent<Target>();
+                            if (target.enemyBrain != null && target.GetEnemy() == true && target.IsDead == false)
                             {
                                 weaponManager.IsAttacking = true;
                                 weaponBrain.GetThisWeapon().DoAttack(target, target.enemyBrain.ThisEnemySO.DodgeChance);
                                 StartCoroutine(Attacking(() => { weaponManager.IsAttacking = false; }));
                             }
+                        }
+                    }
+                    else if (collision.gameObject.CompareTag(npcName))
+                    {
+                        if (collision.gameObject.GetComponent<NPCBrain>() != null)
+                        {
+                            NPCBrain npc = collision.gameObject.GetComponent<NPCBrain>();
+                            StartCoroutine(gameController.HighlightNPCSpeech(npc.SpeechBubblePos, npc.GetDialogueText()));
                         }
                     }
                 }

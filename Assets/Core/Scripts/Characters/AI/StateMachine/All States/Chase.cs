@@ -43,13 +43,15 @@ public class Chase : State
     public override void OnEnter()
     {
         enemyBrain.navMeshAgent.enabled = true;
-        enemyBrain.navMeshAgent.isStopped = false;
+        if (enemyBrain.navMeshAgent.isOnNavMesh)
+            enemyBrain.navMeshAgent.isStopped = false;
     }
 
     public override void OnExit()
     {
         enemyBrain.navMeshAgent.speed = enemySO.MoveSpeed;
-        enemyBrain.navMeshAgent.isStopped = true;
+        if (enemyBrain.navMeshAgent.isOnNavMesh)
+            enemyBrain.navMeshAgent.isStopped = true;
     }
 
 }

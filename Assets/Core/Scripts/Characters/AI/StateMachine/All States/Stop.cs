@@ -35,12 +35,14 @@ public class Stop : State
 
     public override void OnEnter()
     {
-        enemyBrain.navMeshAgent.isStopped = true;
+        if (enemyBrain.navMeshAgent.isOnNavMesh)
+            enemyBrain.navMeshAgent.isStopped = true;
     }
 
     public override void OnExit()
     {
-        enemyBrain.navMeshAgent.isStopped = false;
+        if (enemyBrain.navMeshAgent.isOnNavMesh)
+            enemyBrain.navMeshAgent.isStopped = false;
     }
 
     

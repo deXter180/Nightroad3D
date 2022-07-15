@@ -119,9 +119,11 @@ public class Enemy
             navAgent.speed *= enemySO.SpeedMultiplier;
             if (!navAgent.SetDestination(player.PlayerTransform.position))
             {
-                navAgent.ResetPath();
-                Vector3 dest = transform.position + -Vector3.forward * enemySO.PostAttackMoveRange;
-                navAgent.SetDestination(dest);
+                navAgent.isStopped = true;
+            }
+            else
+            {
+                navAgent.isStopped = false;
             }
         }         
     }

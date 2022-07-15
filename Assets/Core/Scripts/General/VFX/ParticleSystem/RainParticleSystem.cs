@@ -4,55 +4,29 @@ using UnityEngine;
 
 public class RainParticleSystem : MonoBehaviour
 {
-    [SerializeField] private float OwnYPosition;
-    [SerializeField] private float RainYLocalPos;
-    [SerializeField] private float CloudYLocalPos;
-    private string rainVfxName = "Rain_pfx";
-    private string cloudVfxName = "Clouds_pfx";
-    private GameObject rainGO;
-    private GameObject cloudGO;
+    [SerializeField] private ParticleSystem rainPS;
+    [SerializeField] private ParticleSystem cloudPS;
+    private bool IsRainActive; 
 
-    private void Awake()
+    private void Start()
     {
-        transform.position = new Vector3(transform.position.x, OwnYPosition, transform.position.z);
+        IsRainActive = false;
     }
 
-    private void OnEnable()
+    public void ControlRain()
     {
-        AssetLoader.OnGOCreated += AssetRefLoader_OnGOCreated;
-    }
-
-    private void OnDisable()
-    {
-        AssetLoader.OnGOCreated -= AssetRefLoader_OnGOCreated;
-    }
-
-    public void EnableRain()
-    {
-        AssetLoader.CreateGOAsset(rainVfxName, this.transform);
-        AssetLoader.CreateGOAsset(cloudVfxName, this.transform);
-    }
-
-    public void DisableRain()
-    {
-        AssetLoader.ReleaseAssetInstance(rainGO);
-        AssetLoader.ReleaseAssetInstance(cloudGO);
-    }
-
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    private void AssetRefLoader_OnGOCreated(GameObject obj)
-    {
-        obj.transform.rotation = Quaternion.identity;
-        if (obj.name == rainVfxName)
+        if (!IsRainActive)
         {
-            rainGO = obj;
-            obj.transform.localPosition = new Vector3(0, RainYLocalPos, 0);
+            cloudPS.Play();
+            rainPS.Play();
+            IsRainActive = true;
         }
-        else if (obj.name == cloudVfxName)
+        else
         {
-            cloudGO = obj;
-            obj.transform.localPosition = new Vector3(0, CloudYLocalPos, 0);
-        }
-    }
+            cloudPS.Stop();
+            rainPS.Stop();
+            IsRainActive = false;
+        }       
+    } 
+   
 }

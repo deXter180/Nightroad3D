@@ -18,6 +18,8 @@ public class RayShotGun : RangedWeapon
     private Weapons thisWeapon;
     private int PlayerLayer = 9;
     private int bitmask;
+    private string enemyName = "Enemy";
+    private string npcName = "NPC";
     private WeaponManager weaponManager;
     private CameraShake camShake;
     private RecoilEffect recoilEffect;
@@ -139,12 +141,12 @@ public class RayShotGun : RangedWeapon
                 {
                     if (hit.collider != null)
                     {
-                        if(hit.collider.GetComponentInParent<Target>() != null)
+                        if (hit.collider.CompareTag(enemyName))
                         {
-                            Target target = hit.collider.GetComponentInParent<Target>();
-                            if (target.enemyBrain != null && target.GetEnemy() == true && target.IsDead == false)
+                            if (hit.collider.GetComponentInParent<Target>() != null)
                             {
-                                if (hit.collider.CompareTag("Enemy"))
+                                Target target = hit.collider.GetComponentInParent<Target>();
+                                if (target.enemyBrain != null && target.GetEnemy() == true && target.IsDead == false)
                                 {
                                     thisWeapon.DoAttack(target, target.enemyBrain.ThisEnemySO.DodgeChance);
                                     if (!target.Dodging)
@@ -152,6 +154,14 @@ public class RayShotGun : RangedWeapon
 
                                     }
                                 }
+                            }
+                        }                        
+                        else if (hit.collider.CompareTag(npcName))
+                        {
+                            if (hit.collider.GetComponent<NPCBrain>() != null)
+                            {
+                                NPCBrain npc = hit.collider.GetComponent<NPCBrain>();
+                                StartCoroutine(gameController.HighlightNPCSpeech(npc.SpeechBubblePos, npc.GetDialogueText()));
                             }
                         }
                         else

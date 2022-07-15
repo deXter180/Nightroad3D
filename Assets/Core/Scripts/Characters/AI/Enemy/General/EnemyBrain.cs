@@ -323,7 +323,10 @@ public class EnemyBrain : MonoBehaviour
         if (e != null)
         {
             bloodOnDeath.PlayBloodOnDeath();
-            navAgent.isStopped = true;
+            if (navAgent.isOnNavMesh)
+            {
+                navAgent.isStopped = true;
+            }           
             isDying = true;
             isMoving = false;
             StartCoroutine(AfterKilled());

@@ -48,13 +48,15 @@ public class Prepare : State
         enemy.IsPrepDone = false;
         enemyBrain.navMeshAgent.enabled = true;
         enemyBrain.navMeshAgent.speed = enemyBrain.navMeshAgent.speed * enemySO.SpeedMultiplier;
-        enemyBrain.navMeshAgent.isStopped = false;
+        if (enemyBrain.navMeshAgent.isOnNavMesh)
+            enemyBrain.navMeshAgent.isStopped = false;
     }
 
     public override void OnExit()
     {
         enemy.IsPrepDone = false;
-        enemyBrain.navMeshAgent.isStopped = true;
+        if (enemyBrain.navMeshAgent.isOnNavMesh)
+            enemyBrain.navMeshAgent.isStopped = true;
         enemyBrain.navMeshAgent.speed = enemySO.MoveSpeed;
     }
 

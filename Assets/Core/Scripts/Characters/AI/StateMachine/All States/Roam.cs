@@ -46,20 +46,22 @@ public class Roam : State
             path.Add(GetRandomPosition());
         }
         enemy.SetupRoam(path);
-        enemyBrain.navMeshAgent.isStopped = false;          
+        if (enemyBrain.navMeshAgent.isOnNavMesh)
+            enemyBrain.navMeshAgent.isStopped = false;          
         isLoaded = true;
     }
 
     public override void OnExit()
     {
         path.Clear();
-        enemyBrain.navMeshAgent.isStopped = true;
+        if (enemyBrain.navMeshAgent.isOnNavMesh)
+            enemyBrain.navMeshAgent.isStopped = true;
     }
 
     private Vector3 GetRandomPosition()
     {
         Vector3 randomDir = new Vector3(UnityEngine.Random.Range(-1f, 1f), 0, UnityEngine.Random.Range(-1f, 1f)).normalized;
-        return enemyBrain.StartPos + randomDir * UnityEngine.Random.Range(50f, 80f);
+        return enemyBrain.EnemyTransform.position + randomDir * UnityEngine.Random.Range(50f, 80f);
     }
 
 }

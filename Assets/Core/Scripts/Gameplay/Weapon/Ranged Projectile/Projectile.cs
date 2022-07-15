@@ -10,6 +10,7 @@ public class Projectile :  MonoBehaviour
     private Vector3 firePositionWeapon;
     private float LifeTime;
     private PlayerController player;
+    private GameController gameController;
     private Weapons attackingWeapon;
     private WeaponBrain weaponBrain;
     private EnemyBrain attackingEnemy;
@@ -21,6 +22,7 @@ public class Projectile :  MonoBehaviour
     private void Start()
     {
         player = PlayerController.Instance;
+        gameController = GameController.Instance;
         objectPooler = ObjectPooler.Instance;
         rb = GetComponent<Rigidbody>();
     }
@@ -134,7 +136,12 @@ public class Projectile :  MonoBehaviour
                     }                                                                                
                 }                    
                     
-            }               
+            }  
+            else if (collision.gameObject.GetComponent<NPCBrain>() != null)
+            {
+                NPCBrain npc = collision.gameObject.GetComponent<NPCBrain>();
+                StartCoroutine(gameController.HighlightNPCSpeech(npc.SpeechBubblePos, npc.GetDialogueText()));
+            }
             if (weaponBrain != null)
             {
                 weaponBrain.SpawnHitVfx(contactPoint.point + new Vector3(0, 0, -5f));

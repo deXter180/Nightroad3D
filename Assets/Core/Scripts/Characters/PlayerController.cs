@@ -26,7 +26,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
     public Rigidbody PlayerRB { get => RB; }
     [SerializeField] private int maxHitPoints;
     [SerializeField] private int maxMana;
-    [SerializeField] private float MoveSpeed;
+    [SerializeField] private float MoveSpeed = 20;
     [SerializeField] private float MoveAcceleration = 14f;
     [SerializeField] private float MouseSensitivity;
     [SerializeField] private float JumpForce;
@@ -79,6 +79,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
     private float currentTime = 0;
     private float elapseTime = 0;
     private float gravityControl;
+    private bool isOnWater;
     private bool isReset;
     private bool isMoving;
     private bool isJumping;
@@ -87,6 +88,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
     private bool isDeathAnimFinish;
     private bool isToggledCrouching;
     private bool isCursorLocked;
+    private string waterLayer = "Water";
     private string fricColName = "NoFriction";
     public static event Action OnPlayerDeath;
     #endregion
@@ -106,6 +108,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
         primCol = transform.Find("PrimaryCollider").GetComponent<CapsuleCollider>();
         secndCol = transform.Find("SecondCollider").GetComponent<CapsuleCollider>();
         bitmask = ground | water;
+        isOnWater = false;
         isMoving = false;
         isDead = false;
         isDeathAnimFinish = false;
@@ -286,12 +289,20 @@ public class PlayerController : PersistentSingleton<PlayerController>
             wishDir = transform.TransformDirection(wishDir);
             wishDir.Normalize();
             var wishSpeed = wishDir.magnitude;
+           
             wishSpeed *= MoveSpeed;
             Accelerate(wishDir, wishSpeed, MoveAcceleration);
             playerVelocity.y = 0;
             dashPos = transform.right * moveX + transform.forward * moveY;
-            Vector3 movePos = transform.position + (dashPos * Time.fixedDeltaTime) + playerVelocity;
-            //Vector3 movePos = transform.position + dashPos * Time.fixedDeltaTime * MoveSpeed;        
+            Vector3 movePos = Vector3.zero;
+            if (isOnWater)
+            {
+                movePos = transform.position + dashPos * Time.fixedDeltaTime * MoveSpeed * 2;
+            }
+            else
+            {
+                movePos = transform.position + (dashPos * Time.fixedDeltaTime) + playerVelocity;
+            }
             RB.MovePosition(movePos);
             isMoving = true;
         }
@@ -469,6 +480,14 @@ public class PlayerController : PersistentSingleton<PlayerController>
             Physics.BoxCast(primCol.bounds.center, transform.localScale / 2, Vector3.down, out RaycastHit hit, Quaternion.identity, primCol.bounds.extents.y, bitmask);
             if (hit.collider)
             {
+                if (hit.collider.CompareTag(waterLayer))
+                {
+                    isOnWater = true;
+                }
+                else
+                {
+                    isOnWater = false;
+                }
                 isJumping = false;
                 return true;
             }

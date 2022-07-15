@@ -27,6 +27,8 @@ public class RayGun : RangedWeapon
     private float lastFireTime = 0;
     private float defaultOffset = 1.2f;
     private float recoilOffset = 2f;
+    private string enemyName = "Enemy";
+    private string npcName = "NPC";
     private VisualEffect visualEffect;
     private CameraShake camShake;
     private RecoilEffect recoilEffect;
@@ -168,7 +170,7 @@ public class RayGun : RangedWeapon
             {
                 if (hit.collider != null)
                 {
-                    if (hit.collider.CompareTag("Enemy"))
+                    if (hit.collider.CompareTag(enemyName))
                     {
                         if (hit.collider.GetComponentInParent<Target>() != null)
                         {
@@ -183,7 +185,15 @@ public class RayGun : RangedWeapon
                                 }
                             }
                         }
-                    }                                  
+                    }  
+                    else if (hit.collider.CompareTag(npcName))
+                    {
+                        if (hit.collider.GetComponent<NPCBrain>() != null)
+                        {
+                            NPCBrain npc = hit.collider.GetComponent<NPCBrain>();
+                            StartCoroutine(gameController.HighlightNPCSpeech(npc.SpeechBubblePos, npc.GetDialogueText()));
+                        }
+                    }
                     else
                     {
 

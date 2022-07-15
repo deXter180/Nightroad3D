@@ -48,7 +48,10 @@ public class Attack : State
 
     public override void OnEnter()
     {
-        enemyBrain.navMeshAgent.isStopped = true;
+        if (enemyBrain.navMeshAgent.isOnNavMesh)
+        {
+            enemyBrain.navMeshAgent.isStopped = true;
+        }       
         enemy.PreAttack();
         attackIndex = UnityEngine.Random.Range(1, 5);
         currentAttackIndex = 0;

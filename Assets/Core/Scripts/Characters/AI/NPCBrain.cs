@@ -5,13 +5,18 @@ using UnityEngine.UI;
 
 public class NPCBrain : MonoBehaviour
 {
+    [SerializeField] private float speechOffsetX = 1f;
+    [SerializeField] private float speechOffsetY = 10f;
     [SerializeField] private TextAsset storyText;
+    [SerializeField][TextArea(2, 6)] private List<string> npcDialogueList;
     private bool storySetupDone;
     private DialogueManager dialogueManager;
+    public Vector3 SpeechBubblePos { get; private set; }
 
     private void OnEnable()
     {
         storySetupDone = false;
+        SpeechBubblePos = new Vector3(transform.position.x + speechOffsetX, transform.position.y + speechOffsetY, transform.position.z);
     }
 
     public void StartConversion()
@@ -30,4 +35,8 @@ public class NPCBrain : MonoBehaviour
         
     }
 
+    public string GetDialogueText()
+    {
+        return npcDialogueList[Random.Range(0, npcDialogueList.Count - 1)];
+    }
 }
