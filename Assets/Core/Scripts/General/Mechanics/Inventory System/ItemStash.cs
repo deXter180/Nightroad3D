@@ -211,7 +211,7 @@ public class ItemStash : Singleton<ItemStash>
             switch (dir)
             {
                 case InventoryItemSO.Dir.Down:
-                    placedObjectWorldPos = grid.GetWorldPosAtOrigin(placedObjectOrigin.x, placedObjectOrigin.y) + new Vector3(rotationOffset.x + 0.07f, rotationOffset.y - 0.1f) * grid.GetCellSize();
+                    placedObjectWorldPos = grid.GetWorldPosAtOrigin(placedObjectOrigin.x, placedObjectOrigin.y) + new Vector3(rotationOffset.x + 0.03f, rotationOffset.y - 0.1f) * grid.GetCellSize();
                     break;
                 case InventoryItemSO.Dir.Right:
                     placedObjectWorldPos = grid.GetWorldPosAtOrigin(placedObjectOrigin.x, placedObjectOrigin.y) + new Vector3(rotationOffset.x - 0.2f, rotationOffset.y) * grid.GetCellSize();

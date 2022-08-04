@@ -28,8 +28,8 @@ public class GameController : PersistentSingleton<GameController>
     private PlayerInputAsset inputs;
     private PlayerController player;
     private static Dictionary<string, QuestSO> QuestDict = new Dictionary<string, QuestSO>();
-    private static Dictionary<WeaponTypes, AudioClip> ACDictWeapon = new Dictionary<WeaponTypes, AudioClip>();
     private static Dictionary<string, Material> MaterailDict = new Dictionary<string, Material>();
+    private static Dictionary<AudioTypes, AudioSO> AudioSODict = new Dictionary<AudioTypes, AudioSO>();
     private static List<InventoryItemSO> InventorySOList = new List<InventoryItemSO>();
     private static List<InventoryItemSO> WeaponInventorySOList = new List<InventoryItemSO>();
     private static List<InventoryItemSO> SpellInventorySOList = new List<InventoryItemSO>();
@@ -55,7 +55,6 @@ public class GameController : PersistentSingleton<GameController>
         SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
         SceneLoader.OnMainMenuSceneLoad += SceneLoader_OnMainMenuSceneLoad;
         AssetLoader.LoadSOAssets("ScriptableObject", SOLoadCallback);
-        AssetLoader.LoadAnyAssets<AudioClip>("AudioFiles", ACLoadCallback);
         AssetLoader.LoadAnyAssets<Material>("Materials", MaterialLoadCallback);
         loadUI = GetComponentInChildren<LoadUIHandler>();
         returnButton = GetComponentInChildren<ReturnToMenuButton>();
@@ -270,6 +269,111 @@ public class GameController : PersistentSingleton<GameController>
 
     //~~~~~~~~~~~~~~~~~~~~~~~~ Utility Methods ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+    public static AudioClip GetAudioClip(AudioTypes audioType, MusicTypes musicType, int index = 0, bool randomize = false)
+    {
+        List<AudioClip> clipList = new List<AudioClip>();
+        if (AudioSODict.TryGetValue(audioType, out AudioSO audioSO))
+        {
+            clipList = audioSO.GetMusicAudio(musicType);
+            if (clipList != null)
+            {
+                if (index >= 0 && index < clipList.Count)
+                {
+                    if (randomize)
+                    {
+                        index = UnityEngine.Random.Range(0, clipList.Count - 1);
+                    }
+                    return clipList[index];
+                }
+            }
+        }
+        return null;
+    }
+
+    public static AudioClip GetAudioClip(AudioTypes audioType, EnvironmentTypes environmentType, int index = 0, bool randomize = false)
+    {
+        List<AudioClip> clipList = new List<AudioClip>();
+        if (AudioSODict.TryGetValue(audioType, out AudioSO audioSO))
+        {
+            clipList = audioSO.GetEnvironmentAudio(environmentType);
+            if (clipList != null)
+            {
+                if (index >= 0 && index < clipList.Count)
+                {
+                    if (randomize)
+                    {
+                        index = UnityEngine.Random.Range(0, clipList.Count - 1);
+                    }
+                    return clipList[index];
+                }
+            }
+        }
+        return null;
+    }
+
+    public static AudioClip GetAudioClip(AudioTypes audioType, WeaponTypes weaponType, int index = 0, bool randomize = false)
+    {
+        List<AudioClip> clipList = new List<AudioClip>();
+        if (AudioSODict.TryGetValue(audioType, out AudioSO audioSO))
+        {
+            clipList = audioSO.GetWeaponAudio(weaponType);
+            if (clipList != null)
+            {
+                if (index >= 0 && index < clipList.Count)
+                {
+                    if (randomize)
+                    {
+                        index = UnityEngine.Random.Range(0, clipList.Count - 1);
+                    }
+                    return clipList[index];
+                }
+            }
+        }
+        return null;
+    }
+
+    public static AudioClip GetAudioClip(AudioTypes audioType, SpellTypes spellType, int index = 0, bool randomize = false)
+    {
+        List<AudioClip> clipList = new List<AudioClip>();
+        if (AudioSODict.TryGetValue(audioType, out AudioSO audioSO))
+        {
+            clipList = audioSO.GetSpellAudio(spellType);
+            if (clipList != null)
+            {
+                if (index >= 0 && index < clipList.Count)
+                {
+                    if (randomize)
+                    {
+                        index = UnityEngine.Random.Range(0, clipList.Count - 1);
+                    }
+                    return clipList[index];
+                }
+            }
+        }
+        return null;
+    }
+
+    public static AudioClip GetAudioClip(AudioTypes audioType, EnemyTypes enemyType, int index = 0, bool randomize = false)
+    {
+        List<AudioClip> clipList = new List<AudioClip>();
+        if (AudioSODict.TryGetValue(audioType, out AudioSO audioSO))
+        {
+            clipList = audioSO.GetEnemyAudio(enemyType);
+            if (clipList != null)
+            {
+                if (index >= 0 && index < clipList.Count)
+                {
+                    if (randomize)
+                    {
+                        index = UnityEngine.Random.Range(0, clipList.Count - 1);
+                    }
+                    return clipList[index];
+                }
+            }
+        }
+        return null;
+    }
+
     public static Material GetMaterail(string name)
     {
         if (MaterailDict.TryGetValue(name, out Material material))
@@ -405,13 +509,6 @@ public class GameController : PersistentSingleton<GameController>
         return null;
     }
 
-    public static AudioClip GetAudioClipByWeaponType(WeaponTypes weaponType)
-    {
-        if (ACDictWeapon.TryGetValue(weaponType, out AudioClip AC))
-            return AC;
-        else return null;
-    }
-
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     private void AssetLoader_OnSOsLoaded(IList<ScriptableObject> obj)
@@ -493,6 +590,14 @@ public class GameController : PersistentSingleton<GameController>
                     QuestDict.Add(quest.QuestID, quest);
                 }                
             }
+            else if (SO.GetType() == typeof(AudioSO))
+            {
+                AudioSO audio = (AudioSO)SO;
+                if (!AudioSODict.ContainsKey(audio.AudioType))
+                {
+                    AudioSODict.Add(audio.AudioType, audio);
+                }
+            }
         }
     }
 
@@ -508,14 +613,6 @@ public class GameController : PersistentSingleton<GameController>
             MaterailDict.Add(obj.name, obj);
         }
         
-    }
-
-    private void ACLoadCallback(AudioClip obj)
-    {
-        if (obj.name == "RifleAttackAudio" && !ACDictWeapon.ContainsValue(obj))
-        {
-            ACDictWeapon.Add(WeaponTypes.Rifle, obj);
-        }
     }
 
     private void SceneLoader_OnMainMenuSceneLoad()

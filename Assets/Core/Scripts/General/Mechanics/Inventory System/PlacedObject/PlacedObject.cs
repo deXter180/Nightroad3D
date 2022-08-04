@@ -8,7 +8,7 @@ public class PlacedObject : MonoBehaviour
     private bool isPlacedOnMenu;
     private bool isPlacedOnInventory;
     private InventoryItemSO inventoryItemSO;
-    private Vector2Int origin;
+    private Vector2Int origin;   
     private Vector2 anchoredPos;
     private InventoryItemSO.Dir dir;
     private EquipMenuWeaponTile weaponTile;

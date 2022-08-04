@@ -95,10 +95,10 @@ public class MeleeAttacker : MonoBehaviour
                         if (collision.gameObject.GetComponentInParent<Target>() != null)
                         {
                             Target target = collision.gameObject.GetComponentInParent<Target>();
-                            if (target.enemyBrain != null && target.GetEnemy() == true && target.IsDead == false)
+                            if (target.enemyCore != null && target.GetEnemy() == true && target.IsDead == false)
                             {
                                 weaponManager.IsAttacking = true;
-                                weaponBrain.GetThisWeapon().DoAttack(target, target.enemyBrain.ThisEnemySO.DodgeChance);
+                                weaponBrain.GetThisWeapon().DoAttack(target, target.enemyCore.EnemyDodgeChance);
                                 StartCoroutine(Attacking(() => { weaponManager.IsAttacking = false; }));
                             }
                         }
@@ -130,10 +130,10 @@ public class MeleeAttacker : MonoBehaviour
                         if (collision.gameObject.GetComponentInParent<Target>() != null)
                         {
                             Target target = collision.gameObject.GetComponentInParent<Target>();
-                            if (target.enemyBrain != null && target.GetEnemy() == true && target.IsDead == false)
+                            if (target.enemyCore != null && target.GetEnemy() == true && target.IsDead == false)
                             {
                                 weaponManager.IsAttacking = true;
-                                weaponBrain.GetThisWeapon().DoAttack(target, target.enemyBrain.ThisEnemySO.DodgeChance);
+                                weaponBrain.GetThisWeapon().DoAttack(target, target.enemyCore.EnemyDodgeChance);
                                 StartCoroutine(Attacking(() => { weaponManager.IsAttacking = false; }));
                             }
                         }

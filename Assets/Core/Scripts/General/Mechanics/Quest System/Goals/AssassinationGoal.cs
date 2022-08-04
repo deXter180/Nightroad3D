@@ -6,12 +6,12 @@ public class AssassinationGoal : Goal
 {
     public string EnemyID { get; private set; }
     public string EnemyName { get; private set; }
-    public EnemyTypes EnemyType { get; private set; }
+    public EnemyTypes ET { get; private set; }
 
     public AssassinationGoal(string enemyID, string enemyName, EnemyTypes enemyType)
     {
         EnemyID = enemyID;
-        EnemyType = enemyType;
+        ET = enemyType;
         RequiredAmount = 1;
         CurrentAmount = 0;
         IsCompleted = false;
@@ -30,11 +30,11 @@ public class AssassinationGoal : Goal
         Target.OnEnemyDead -= Target_OnEnemyDead;
     }
 
-    private void Target_OnEnemyDead(EnemyBrain EB)
+    private void Target_OnEnemyDead(EnemyCore EC)
     {
-        if (EB.GetEnemyType() == EnemyType)
+        if (EC.EnemyType == ET)
         {
-            if (EB.EnemyName == EnemyName && EB.EnemyID == EnemyID)
+            if (EC.EnemyName == EnemyName && EC.EnemyID == EnemyID)
             {
                 CurrentAmount++;
                 Evaluate();

@@ -43,6 +43,15 @@ public static class Helpers
         return result;
     }
 
+    public static Vector3 DirFromAngle(Transform trans, float angleIndegree, bool angleIsGlobal)
+    {
+        if (!angleIsGlobal)
+        {
+            angleIndegree += trans.eulerAngles.y;
+        }
+        return new Vector3(Mathf.Sin(angleIndegree * Mathf.Deg2Rad), 0, Mathf.Cos(angleIndegree * Mathf.Deg2Rad));
+    }
+
     public static void DeleteChildren(this Transform t)
     {
         foreach (Transform child in t) Object.Destroy(child.gameObject);

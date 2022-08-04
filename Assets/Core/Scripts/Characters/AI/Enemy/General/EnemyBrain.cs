@@ -1,14 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 using UnityEngine.VFX;
 using System;
 
-public class EnemyBrain : MonoBehaviour
+public class EnemyBrain : EnemyCore
 {   
-    private string enemyID;   
-    private string enemyName;
     private int layer = 1 << 0;
     private bool isDying;
     private bool isSpellAffected;
@@ -33,25 +30,9 @@ public class EnemyBrain : MonoBehaviour
     private AOETargeted spellCasted;
     private SpellTypes spellType;
     private StateMachine stateMachine;
-    private EnemyTrigger enemyTrigger;
-    private NavMeshAgent navAgent;    
-    private BloodEffectOnHit bloodOnHit;
-    private BloodEffectOnDeath bloodOnDeath;
-    private Target enemyTarget;
-    private Animator animator;
-    private Rigidbody RB;
-    private TempShieldTrigger tempShield;
-    public string EnemyID => enemyID; 
-    public string EnemyName => enemyName;
     public Vector3 StartPos => startPos;
-    public Transform EnemyTransform { get; private set; }
     public EnemySO ThisEnemySO => enemySO;
-    public Target EnemyTarget => enemyTarget;
-    public Animator EnemyAnimator => animator;
-    public Rigidbody EnemyRigidbody => RB;
     public EquipMenuControl MenuControl => menuControl;
-    public NavMeshAgent navMeshAgent => navAgent;
-    public EnemyTrigger Trigger => enemyTrigger;
     public SpellTypes SpellType => spellType; 
     public bool IsHitByLightening { get; private set; }
     public bool IsSpellAffected => isSpellAffected; 
@@ -62,7 +43,7 @@ public class EnemyBrain : MonoBehaviour
     private int attackHash = Animator.StringToHash("IsAttacking");
     private int deathHash = Animator.StringToHash("IsDead");    
 
-    private void OnEnable()
+    private void Start()
     {
         StartCoroutine(SetEnemy());
     }
@@ -158,23 +139,10 @@ public class EnemyBrain : MonoBehaviour
         return enemy;
     }
 
-    public EnemyTypes GetEnemyType()
-    {
-        return enemyType;
-    }
-
     private IEnumerator SetEnemy()
     {
-        EnemyTransform = transform;
-        RB = GetComponent<Rigidbody>();
-        navAgent = GetComponent<NavMeshAgent>();
-        bloodOnHit = GetComponentInChildren<BloodEffectOnHit>();
-        bloodOnDeath = GetComponentInChildren<BloodEffectOnDeath>();
-        animator = GetComponentInChildren<Animator>();
-        tempShield = GetComponentInChildren<TempShieldTrigger>();
-        enemyTarget = GetComponent<Target>();
-        enemyTrigger = GetComponentInChildren<EnemyTrigger>();
-        yield return Helpers.GetWait(1);
+        EnemyType = enemyType;
+        yield return Helpers.GetWait(0.5f);
         enemySO = GameController.GetEnemySOFromList(enemyType);
         if (enemySO.IsRanged)
         {
@@ -201,7 +169,6 @@ public class EnemyBrain : MonoBehaviour
         enemy.OnEnemyAttack += Enemy_OnEnemyAttack;
         Weapons.OnPlayerDamage += Weapons_OnPlayerDamage;
         AOETargeted.OnAOESpellCast += AOETargeted_OnAOESpellCast;
-        enemyName = enemySO.EnemyName;
         enemyTrigger.TriggerSetup();        
         tempShield.SetShield(enemySO.ShieldSize, enemySO.ShieldDuration);
         menuControl = EquipMenuControl.Instance;
@@ -222,7 +189,9 @@ public class EnemyBrain : MonoBehaviour
         enemyTarget.Resource.OnKilled += Resource_OnKilled;
         enemyTarget.OnCritShot += EnemyTarget_OnCritShot;
         readyForAnim = true;
-        SetupEnemyID();
+        enemyName = enemySO.EnemyName;
+        EnemyDodgeChance = enemySO.DodgeChance;
+        SetupEnemyID(uniqueID);     
         IsSetupDone = true;
     }
 
@@ -231,12 +200,7 @@ public class EnemyBrain : MonoBehaviour
         IsHitByLightening = true;
     }
 
-    //!!!!!!!!!!!!Call this where instantiating enemies!!!!!!!!!!!!!!!!
-
-    public void SetupEnemyID()
-    {
-        enemyID = $"{enemyType}{uniqueID}";
-    }
+    
 
     //~~~~~~~~~~~~~~~~~~~ Animation ~~~~~~~~~~~~~~~~~~~
 

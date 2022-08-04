@@ -39,7 +39,7 @@ public class Enemy
         this.transform = EB.transform;
         this.target = EB.EnemyTarget;
         this.animator = EB.EnemyAnimator;
-        this.enemyType = EB.GetEnemyType();
+        this.enemyType = EB.EnemyType;
         player = PlayerController.Instance;
         IsPreping = false;
         IsTargetInRange = false;

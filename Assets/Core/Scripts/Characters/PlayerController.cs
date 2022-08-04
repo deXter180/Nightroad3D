@@ -65,6 +65,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
     private Vector3 ConstantDistFromPlayer;
     private Vector3 playerVelocity = Vector3.zero;
     private Quaternion oldRot;
+    private int DOTAmount = 0;
     private int ground = 1 << 8;
     private int water = 1 << 4;
     private int pickableLayer = 1 << 6;
@@ -78,7 +79,11 @@ public class PlayerController : PersistentSingleton<PlayerController>
     private float crouchHeightSec;
     private float currentTime = 0;
     private float elapseTime = 0;
+    private float DOTelapsedTime = 0;
+    private float DOTDuration = 0;
     private float gravityControl;
+    private bool isHitByDOT;
+    private bool isDOTActive;
     private bool isOnWater;
     private bool isReset;
     private bool isMoving;
@@ -112,7 +117,8 @@ public class PlayerController : PersistentSingleton<PlayerController>
         isMoving = false;
         isDead = false;
         isDeathAnimFinish = false;
-        
+        isHitByDOT = false;
+        isDOTActive = false;
     }
 
     private void Start()
@@ -217,6 +223,24 @@ public class PlayerController : PersistentSingleton<PlayerController>
             if (!isDeathAnimFinish)
             {
                 UpdateCameraPosition();
+            }
+        }
+        if (isHitByDOT)
+        {
+            DOTelapsedTime += Time.deltaTime;
+            if (DOTelapsedTime <= DOTDuration)
+            {
+                if (!isDOTActive)
+                {
+                    StartCoroutine(TakeDamegeOverTime());
+                }               
+            }
+            else
+            {
+                isHitByDOT = false;
+                DOTelapsedTime = 0;
+                DOTDuration = 0;
+                DOTAmount = 0;
             }
         }
     }
@@ -499,6 +523,21 @@ public class PlayerController : PersistentSingleton<PlayerController>
     {
         HeadUpDisplayHandler.Instance.ExecuteOnDeath();
         isDeathAnimFinish = true;
+    }
+
+    public void TriggerDOT(int damageAmount, float duration)
+    {
+        isHitByDOT = true;
+        DOTAmount = damageAmount;
+        DOTDuration = duration;
+    }
+
+    private IEnumerator TakeDamegeOverTime()
+    {
+        isDOTActive = true; 
+        yield return Helpers.GetWait(1);
+        target.DoDamage(DOTAmount, 0);
+        isDOTActive = false;
     }
 
     private void InteractInWorld()

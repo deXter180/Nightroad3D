@@ -10,6 +10,7 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
     private PlayerController playerController;
     private GameController gameController;
     private bool isDraggedFromInventory;
+    private bool isDraggedFromEquipMenu;
     private bool isDraggedFromStash;
     public float dragSmoothness = 80f;
     private InventoryItemSO.Dir dir;
@@ -23,6 +24,7 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
     private ItemStash itemStash;
     private InventoryUIHandler inventoryUI;
     private Vector2Int mouseDragGridPosOffset;
+    private Vector2Int mouseStashDragGridPosOffset;
     private Vector2 mouseDragGridPosOffsetMenu;
     private Vector2 mouseDragAnchoredPosOffsetInv;
     private Vector2 mouseDragAnchoredPosOffsetSth;
@@ -48,6 +50,7 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
         playerController = PlayerController.Instance;
         SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
         isDraggedFromInventory = false;
+        isDraggedFromEquipMenu = false;
         isDraggedFromStash = false;
         foreach (var tile in EquipMenuControl.WeaponTileList)
         {
@@ -178,8 +181,8 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
                 {
                     isDraggedFromStash = true;
                     Vector2Int OriginOnInventory = itemStash.GetGridPos(anchoredPosition);
-                    mouseDragGridPosOffset = Vector2Int.zero;
-                    mouseDragGridPosOffset = OriginOnInventory - placedObject.GetGridPos();
+                    mouseStashDragGridPosOffset = Vector2Int.zero;
+                    mouseStashDragGridPosOffset = OriginOnInventory - placedObject.GetGridPos();
                     mouseDragAnchoredPosOffsetSth = anchoredPosition - placedObject.GetComponent<RectTransform>().anchoredPosition;
                     dir = placedObject.GetDir();
                     Vector2Int rotationOffset = draggingPOStash.GetInventoryItemSO().GetRotationOffset(dir);
@@ -192,14 +195,17 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
     public void StartedDragging(PlacedObject placedObject, EquipMenuWeaponTile menuTile, Vector2 mousePos)
     {
         if (placedObject != null && menuTile != null)
-        {           
+        {              
             draggingPOWeaponMenu = placedObject;
             draggedWeaponTile = menuTile;
             Cursor.visible = false;
             if (RectTransformUtility.ScreenPointToLocalPointInRectangle(menuTile.GetRectTransform(), mousePos, UICam, out Vector2 anchoredPosition))
             {
-                isDraggedFromStash = true;
-                Vector2Int mouseGridPos = menuTile.GetGridPos(anchoredPosition);
+                isDraggedFromEquipMenu = true;
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(inventorySystem.GetItemContainer(), mousePos, UICam, out Vector2 tp);              
+                Vector2Int OriginOnInventory = inventorySystem.GetGridPos(tp);
+                mouseDragGridPosOffset = Vector2Int.zero;
+                mouseDragGridPosOffset = OriginOnInventory - placedObject.GetGridPos();
                 mouseDragGridPosOffsetMenu = Vector2.zero;
                 mouseDragGridPosOffsetMenu = anchoredPosition - placedObject.GetComponent<RectTransform>().anchoredPosition;
             }
@@ -215,8 +221,11 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
             Cursor.visible = false;
             if (RectTransformUtility.ScreenPointToLocalPointInRectangle(menuTile.GetRectTransform(), mousePos, UICam, out Vector2 anchoredPosition))
             {
-                isDraggedFromStash = true;
-                Vector2Int mouseGridPos = menuTile.GetGridPos(anchoredPosition);
+                isDraggedFromEquipMenu = true;
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(inventorySystem.GetItemContainer(), mousePos, UICam, out Vector2 tp);
+                Vector2Int OriginOnInventory = inventorySystem.GetGridPos(tp);
+                mouseDragGridPosOffset = Vector2Int.zero;
+                mouseDragGridPosOffset = OriginOnInventory - placedObject.GetGridPos();
                 mouseDragGridPosOffsetMenu = Vector2.zero;
                 mouseDragGridPosOffsetMenu = anchoredPosition - placedObject.GetComponent<RectTransform>().anchoredPosition;
             }
@@ -263,25 +272,37 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
                 if (RectTransformUtility.ScreenPointToLocalPointInRectangle(inventorySystem.GetItemContainer(), mousePos, UICam, out Vector2 anchorPosMenu))
                 {
                     Origin = inventorySystem.GetGridPos(anchorPosMenu);
-                    Origin -= mouseDragGridPosOffset;
+                    if (isDraggedFromInventory)
+                    {
+                        Origin -= mouseDragGridPosOffset;
+                    }
+                    if (isDraggedFromEquipMenu)
+                    {
+                        Origin -= mouseDragGridPosOffset;             
+                    }
                     if (isDraggedFromStash)
                     {
-                        Origin += new Vector2Int(XTransitionOffset, 0);
+                        Origin -= mouseStashDragGridPosOffset;
+                        Origin += new Vector2Int(XTransitionOffset, 0);                       
                     }
                     if (inventorySystem.IsValidGridPos(Origin))
-                    {
-                        tryPlaceItem = inventorySystem.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO, Origin, dir, out PlacedObject PO);
+                    {                        
+                        tryPlaceItem = inventorySystem.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO, Origin, dir, out PlacedObject PO);                       
                     }
                 }
                 if (itemStash.gameObject.activeSelf)
-                {
+                {                    
                     if (RectTransformUtility.ScreenPointToLocalPointInRectangle(itemStash.GetItemContainer(), mousePos, UICam, out Vector2 anchorPos))
                     {
-                        Origin = itemStash.GetGridPos(anchorPos);
-                        Origin -= mouseDragGridPosOffset;
+                        Origin = itemStash.GetGridPos(anchorPos);                        
                         if (isDraggedFromInventory)
                         {
+                            Origin -= mouseDragGridPosOffset;
                             Origin += new Vector2Int(-XTransitionOffset, 0);
+                        }
+                        else
+                        {
+                            Origin -= mouseStashDragGridPosOffset;
                         }
                         if (itemStash.IsValidGridPos(Origin))
                         {
@@ -293,11 +314,11 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
                 {
                     if (IsOnWeaponMenu(mousePos, out EquipMenuWeaponTile weaponTile))
                     {
-                        tryPlaceItem = weaponTile.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO);
+                        tryPlaceItem = weaponTile.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO, Origin);
                     }
                     if (IsOnSpellMenu(mousePos, out EquipMenuSpellTile spellTile))
                     {
-                        tryPlaceItem = spellTile.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO);
+                        tryPlaceItem = spellTile.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO, Origin);
                     }
                 }
                 if (tryPlaceItem)
@@ -321,12 +342,17 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
                     {
                         if (placedObject.GetWeaponEquipTile() != null)
                         {
-                            placedObject.GetWeaponEquipTile().TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO);
+                            placedObject.GetWeaponEquipTile().TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO, placedObject.GetGridPos());
+                        }
+                        if (placedObject.GetSpellEquipTile() != null)
+                        {
+                            placedObject.GetSpellEquipTile().TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO, placedObject.GetGridPos());
                         }
                     }                   
                 }
             }
             isDraggedFromInventory = false;
+            isDraggedFromEquipMenu = false;
             isDraggedFromStash = false;
         }        
     }

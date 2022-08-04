@@ -176,9 +176,9 @@ public class RayGun : RangedWeapon
                         {
                             Target target = hit.collider.GetComponentInParent<Target>();
                             
-                            if (target.enemyBrain != null && target.GetEnemy() == true && target.IsDead == false)
+                            if (target.enemyCore != null && target.GetEnemy() == true && target.IsDead == false)
                             {
-                                thisWeapon.DoAttack(target, target.enemyBrain.ThisEnemySO.DodgeChance);
+                                thisWeapon.DoAttack(target, target.enemyCore.EnemyDodgeChance);
                                 if (!target.Dodging)
                                 {
 

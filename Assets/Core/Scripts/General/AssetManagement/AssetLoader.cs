@@ -331,4 +331,32 @@ public enum OverlayTypes
     Poison
 }
 
+public enum AudioTypes
+{
+    Music,
+    Environment,
+    Weapon,
+    Spell,
+    Enemy
+}
+
+public enum MusicTypes
+{
+    None,
+    Intro,
+    Normal,
+    Action,
+}
+
+public enum EnvironmentTypes
+{
+    None,
+    Insect,
+    Bird,
+    Wind,
+    Water,
+    Thunder,
+    Rain
+}
+
 #endregion

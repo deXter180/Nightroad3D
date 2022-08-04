@@ -117,11 +117,11 @@ public class Projectile :  MonoBehaviour
                     {
                         if (collision.gameObject.CompareTag("Enemy"))
                         {
-                            if (target.enemyBrain != null && target.GetEnemy() == true)
+                            if (target.enemyCore != null && target.GetEnemy() == true)
                             {
                                 if (attackingWeapon != null)
                                 {
-                                    attackingWeapon.DoAttack(target, target.enemyBrain.ThisEnemySO.DodgeChance);
+                                    attackingWeapon.DoAttack(target, target.enemyCore.EnemyDodgeChance);
                                     if (!target.Dodging)
                                     {
 

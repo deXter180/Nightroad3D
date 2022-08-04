@@ -8,17 +8,17 @@ public class Target : MonoBehaviour
     private int currentHP;
     private int currentMana;
     private int maxMana;
-    private EnemyBrain EB;
+    private EnemyCore EC;
     [SerializeField] private bool IsEnemy;
     [HideInInspector] public int MaxHP { get; set; }
     [HideInInspector] public bool IsDead { get; set; }
     public ResourceManagement Resource = new ResourceManagement();
     public int CurrentHP => currentHP;
-    public EnemyBrain enemyBrain => EB;
+    public EnemyCore enemyCore => EC;
     public bool Dodging => dodging;
     public bool Blocking { get; set; }
     public event Action OnDodge;
-    public static event Action<EnemyBrain> OnEnemyDead;
+    public static event Action<EnemyCore> OnEnemyDead;
     public event Action OnCritShot;
     
 
@@ -58,9 +58,9 @@ public class Target : MonoBehaviour
         currentMana = maxMana;
     }
 
-    public void SetEB(EnemyBrain enemyBrain)
+    public void SetEB(EnemyCore enemyCore)
     {
-        EB = enemyBrain;
+        EC = enemyCore;
     }
 
     //~~~~~~~~~~~~~~~~~~~~~~~~ Get Position & Verify for Enemy ~~~~~~~~~~~~~~~~~~~~~
@@ -155,7 +155,7 @@ public class Target : MonoBehaviour
                 currentHP = 0;
                 if (IsEnemy)
                 {
-                    OnEnemyDead?.Invoke(EB);
+                    OnEnemyDead?.Invoke(EC);
                 }
                 Debug.Log("Dead !!");               
             }

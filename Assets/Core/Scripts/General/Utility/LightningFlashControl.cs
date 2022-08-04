@@ -49,7 +49,7 @@ public class LightningFlashControl : MonoBehaviour
                 lightningLight.enabled = true;
                 isLightningActive = true;
                 elaplsedTimeOn = 0;
-                //StartCoroutine(PlaySoundFX());
+                StartCoroutine(PlaySoundFX());
             }
         }
         else
@@ -64,11 +64,11 @@ public class LightningFlashControl : MonoBehaviour
         }           
     }
 
-    //private IEnumerator PlaySoundFX()
-    //{
-    //    yield return Helpers.GetWait(Random.Range(soundOffMin, soundOffMax));
-
-    //}
+    private IEnumerator PlaySoundFX()
+    {
+        yield return Helpers.GetWait(Random.Range(soundOffMin, soundOffMax));
+        AudioManager.PlayEnvironmentSoundOnce(EnvironmentTypes.Thunder, 0, true);
+    }
 
     private float EvaluateWave()
     {

@@ -49,20 +49,20 @@ public class Weapons
 
     public virtual void DoAttack(Target enemyTarget, float enemyDodgeChance)
     {
-        if (enemyTarget.enemyBrain != null)
+        if (enemyTarget.enemyCore != null)
         {
             if (UnityEngine.Random.value <= weaponSO.CritChance) //&& CurrentEnergy >= EnergyCosts[0])
             {
                 enemyTarget.DoCritDamage(weaponSO.CritBonus, weaponSO.DamageAmount, enemyDodgeChance);
                 if (!enemyTarget.Dodging)
-                    OnPlayerDamage?.Invoke(this, new OnPlayerDamageEventArg(true, enemyTarget.enemyBrain));
+                    OnPlayerDamage?.Invoke(this, new OnPlayerDamageEventArg(true, enemyTarget.enemyCore));
                 //target.Resource.EnergyExpense(EnergyCosts[0]);
             }
             else
             {
                 enemyTarget.DoDamage(weaponSO.DamageAmount, enemyDodgeChance);
                 if (!enemyTarget.Dodging)
-                    OnPlayerDamage?.Invoke(this, new OnPlayerDamageEventArg(false, enemyTarget.enemyBrain));
+                    OnPlayerDamage?.Invoke(this, new OnPlayerDamageEventArg(false, enemyTarget.enemyCore));
                 //target.Resource.EnergyExpense(EnergyCosts[1]);
             }
         }        
@@ -72,12 +72,12 @@ public class Weapons
 public class OnPlayerDamageEventArg : EventArgs
 {
     public bool IsCrit;
-    public EnemyBrain enemyBrain;
+    public EnemyCore enemyCore;
 
-    public OnPlayerDamageEventArg(bool crit, EnemyBrain EB)
+    public OnPlayerDamageEventArg(bool crit, EnemyCore EC)
     {
         IsCrit = crit;
-        enemyBrain = EB;
+        enemyCore = EC;
     }
 }
 

@@ -76,13 +76,12 @@ public class EquipMenuWeaponTile : MonoBehaviour
 
     #endregion
 
-    public bool TryPlaceItem(InventoryItemSO inventoryItemSO)
+    public bool TryPlaceItem(InventoryItemSO inventoryItemSO, Vector2Int placedObjectOrigin)
     {
         //bool isValidPos = grid.IsValidGridPos(placedObjectOrigin);
         bool isValidType = inventoryItemSO.ItemType == itemType;
         if (isValidType && transform.childCount < 1 && !isFilled) 
         {
-            Vector2Int placedObjectOrigin = new Vector2Int(0, 0);
             PlacedObject placedObject = PlacedObject.Create(transform, this, rectTransform.anchoredPosition, placedObjectOrigin, inventoryItemSO);
             transform.SetAsLastSibling();
             if (currentPlacedObject == null)

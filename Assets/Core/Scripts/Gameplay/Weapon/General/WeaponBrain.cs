@@ -67,7 +67,6 @@ public class WeaponBrain : MonoBehaviour
     private void Update()
     {
         PlayAnim();
-        AudioManager.Instance.PlayWeaponSound(IsAttacking, weaponTypes);
     }
 
     private void SetWeapon()
@@ -188,6 +187,11 @@ public class WeaponBrain : MonoBehaviour
     private void Weapons_OnAttack(object sender, OnPlayerAttackEventArg e)
     {
         IsAttacking = true;
+        if (weaponTypes == WeaponTypes.Rifle)
+        {
+            AudioManager.PlayWeaponSound(weaponTypes);
+        }
+        
         if (animType != AnimType.Attack)
         {
             animType = AnimType.Attack;
@@ -204,7 +208,7 @@ public class WeaponBrain : MonoBehaviour
 
     private void RayGun_OnStopShoot()
     {
-        IsAttacking = false;       
+        IsAttacking = false;
         if (animType != AnimType.Walk)
             animType = AnimType.Walk;
     }
