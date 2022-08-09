@@ -61,13 +61,7 @@ public class AudioManager : Singleton<AudioManager>
         }
     }
 
-    private void Update()
-    {
-        PlayRainAudio();
-        PlayWindAudio();
-    }
-
-    private void PlayRainAudio()
+    public void PlayRainAudio()
     {
         if (!rainAudioSource.isPlaying)
         {
@@ -81,7 +75,7 @@ public class AudioManager : Singleton<AudioManager>
         }
     }
 
-    private void PlayWindAudio()
+    public void PlayWindAudio()
     {
         if (!windAudioSource.isPlaying)
         {
@@ -167,6 +161,16 @@ public class AudioManager : Singleton<AudioManager>
             EnvironmentAudioSource.pitch = UnityEngine.Random.Range(0.5f, 2);
             EnvironmentAudioSource.Play();
         }
+    }
+
+    public void StopRainAudio()
+    {
+        rainAudioSource.Stop();
+    }
+
+    public void StopWindAudio()
+    {
+        windAudioSource.Stop();
     }
 
     public static void StopMusicSound()
