@@ -12,18 +12,19 @@ public class PlayerController : PersistentSingleton<PlayerController>
     #region
     public float GroundHeight;
     public Transform PlayerTransform { get; private set; }
-    public Transform CameraTransform { get => camTransform; }
-    public Target PlayerTarget { get => target; }
-    public PlayerInputAsset Inputs { get => inputs; }
-    public int MaxHitPoints { get => maxHitPoints; }
-    public int MaxMana { get => maxMana; }
+    public Transform CameraTransform => camTransform; 
+    public Target PlayerTarget => target; 
+    public PlayerInputAsset Inputs => inputs; 
+    public int MaxHitPoints => maxHitPoints; 
+    public int MaxMana => maxMana; 
     public int CurrentHP { get; private set; }
     public int CurrentMana { get; private set; }
-    public float DodgeChace { get => dodgeChance; }  
-    public bool IsCrouching { get => isCrouching; }
-    public bool IsPlayerDead { get => isDead; }
-    public Vector3 DashPos { get => dashPos; }
-    public Rigidbody PlayerRB { get => RB; }
+    public float DodgeChace => dodgeChance; 
+    public bool IsCrouching => isCrouching;
+    public bool IsJumping => isJumping;
+    public bool IsPlayerDead => isDead; 
+    public Vector3 DashPos => dashPos; 
+    public Rigidbody PlayerRB => RB; 
     [SerializeField] private int maxHitPoints;
     [SerializeField] private int maxMana;
     [SerializeField] private float MoveSpeed = 20;

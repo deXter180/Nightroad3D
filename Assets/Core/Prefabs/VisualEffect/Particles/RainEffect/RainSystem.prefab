@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8439945264250465444}
-  - component: {fileID: 6362995928062577230}
   - component: {fileID: 3550357900452742317}
   m_Layer: 0
   m_Name: RainSystem
@@ -35,20 +34,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6362995928062577230
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6444216477035119962}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c80186995dd40a44aa2784917e370a67, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Xoffset: 0
-  Zoffset: -10
 --- !u!114 &3550357900452742317
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -63,6 +48,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rainPS: {fileID: 4729274395361644309}
   lightningFlash: {fileID: 5734703258661039670}
+  Xoffset: 0
+  Zoffset: -10
+  rainYOffset: 0
 --- !u!1001 &1664198703624005098
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -167,8 +155,33 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6249212763962157823, guid: dc60172ab22b6454a8cadef7e511aeb2,
         type: 3}
+      propertyPath: InitialModule.startSizeZ.scalar
+      value: 0.015
+      objectReference: {fileID: 0}
+    - target: {fileID: 6249212763962157823, guid: dc60172ab22b6454a8cadef7e511aeb2,
+        type: 3}
+      propertyPath: InitialModule.startSize.minScalar
+      value: 0.045
+      objectReference: {fileID: 0}
+    - target: {fileID: 6249212763962157823, guid: dc60172ab22b6454a8cadef7e511aeb2,
+        type: 3}
       propertyPath: EmissionModule.rateOverTime.scalar
-      value: 5000
+      value: 2000
+      objectReference: {fileID: 0}
+    - target: {fileID: 6249212763962157823, guid: dc60172ab22b6454a8cadef7e511aeb2,
+        type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6249212763962157823, guid: dc60172ab22b6454a8cadef7e511aeb2,
+        type: 3}
+      propertyPath: InitialModule.startSizeY.minScalar
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6249212763962157823, guid: dc60172ab22b6454a8cadef7e511aeb2,
+        type: 3}
+      propertyPath: InitialModule.startSizeZ.minScalar
+      value: 0.045
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dc60172ab22b6454a8cadef7e511aeb2, type: 3}

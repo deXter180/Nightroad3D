@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Test : MonoBehaviour
+public class TripleClawTest : MonoBehaviour
 {
     [SerializeField] private Transform slashPrefab;
     [SerializeField] [Range(0, 360)] [Tooltip("In Degrees")] private float spreadAngle = 0;
