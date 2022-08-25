@@ -17,10 +17,12 @@ public class WeaponManager : Singleton<WeaponManager>
     private InventorySystem inventorySystem;
     public static Dictionary<WeaponTypes, WeaponBrain> weaponInventory;
     private Dictionary<WeaponBrain, RangedWeapon> rangedWeaponDict = new Dictionary<WeaponBrain, RangedWeapon>();
-    private GameController gameController;
+    private GameController gameController;   
     public static event Action<RangedWeapon> OnRangeWeaponEquip;
     public static event Action OnMeleeWeaponEquip;
-    public static event Action OnWeaponEmpty;
+    public static event Action<WeaponTypes, int> OnAddingWeapon;
+    public static event Action<WeaponTypes, int> OnRemovingWeapon;
+    public static event Action OnEmptyWeapon;
     
     protected override void Awake()
     {
@@ -117,7 +119,7 @@ public class WeaponManager : Singleton<WeaponManager>
         else return null;
     }
 
-    private void AddWeapon(WeaponTypes weaponType)
+    private void AddWeapon(WeaponTypes weaponType, int num)
     {
         InitializeInventory();
         if (weaponInventory.Count < WeaponCount && !weaponInventory.ContainsKey(weaponType))
@@ -133,20 +135,22 @@ public class WeaponManager : Singleton<WeaponManager>
                         VerifyIfRanged(weaponBrains[i].GetThisWeapon().ThisWeaponSO, weaponBrains[i]);
                         SelectedWeapon = 0;
                     }
+                    OnAddingWeapon?.Invoke(weaponType, num);
                 }
             }
         }
     }
 
-    public void RemoveWeapon(WeaponTypes weaponType)
+    public void RemoveWeapon(WeaponTypes weaponType, int num)
     {
         if (IsInitialized)
         {
             if (weaponInventory.Count > 0 && weaponInventory.ContainsKey(weaponType))
             {
                 weaponInventory.TryGetValue(weaponType, out WeaponBrain weaponBrain);
-                weaponBrain.gameObject.SetActive(false);
+                weaponBrain.gameObject.SetActive(false);               
                 weaponInventory.Remove(weaponType);
+                OnRemovingWeapon?.Invoke(weaponType, num);
             }
         }
     }
@@ -267,31 +271,31 @@ public class WeaponManager : Singleton<WeaponManager>
         }
     }
 
-    private void MenuTile_OnPlacedOnMenu(object sender, PlacedObject e)
+    private void MenuTile_OnPlacedOnMenu(PlacedObject e, int num)
     {
         InventoryItemSO itemSO = e.GetInventoryItemSO();
         if (itemSO.ItemType == ItemTypes.Weapon && itemSO.WeaponType != WeaponTypes.None)
         {
-            AddWeapon(itemSO.WeaponType);
+            AddWeapon(itemSO.WeaponType, num);
         }       
     }
 
-    private void MenuTile_OnRemovedFromMenu(object sender, PlacedObject e)
+    private void MenuTile_OnRemovedFromMenu(PlacedObject e, int num)
     {
         InventoryItemSO itemSO = e.GetInventoryItemSO();
         if (itemSO.ItemType == ItemTypes.Weapon && itemSO.WeaponType != WeaponTypes.None)
         {
-            RemoveWeapon(itemSO.WeaponType);
+            RemoveWeapon(itemSO.WeaponType, num);
             isRemoved = true;
             if (weaponInventory.Count < 1)
             {
-                OnWeaponEmpty?.Invoke();
+                OnEmptyWeapon?.Invoke();
             }
         }
     }
 
     private void SceneLoader_OnNewGameStart()
     {
-        weaponInventory = new Dictionary<WeaponTypes, WeaponBrain>();
+        weaponInventory.Clear();
     }
 }

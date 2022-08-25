@@ -24,16 +24,6 @@ public class ItemStash : Singleton<ItemStash>
         StashList = new List<PlacedObject>();
     }
 
-    private void OnEnable()
-    {
-        SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
-    }
-
-    private void OnDisable()
-    {
-        SceneLoader.OnNewGameStart -= SceneLoader_OnNewGameStart;
-    }
-
     #region
 
     public Grid<GridObject> GetGrid()
@@ -82,17 +72,17 @@ public class ItemStash : Singleton<ItemStash>
             SavedStashItems SI = new SavedStashItems(PO.GetInventoryItemSO(), PO.GetGridPos(), PO.GetDir());
             savedItems.Add(SI);
         }
-        ClearStash();
+        ResetStash();
     }
 
-    private void ClearStash()
+    public void ResetStash()
     {
         foreach (var obj in grid.gridArray)
         {
             obj.ClearPlacedObject();
         }
         itemContainor.ContainorRect.DeleteChildren();
-        StashList = new List<PlacedObject>();
+        StashList.Clear();
     }
 
     public bool IsStashFull()
@@ -254,10 +244,6 @@ public class ItemStash : Singleton<ItemStash>
 
     //~~~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~~~
 
-    private void SceneLoader_OnNewGameStart()
-    {
-        ClearStash();
-    }
 }
 
 [System.Serializable]

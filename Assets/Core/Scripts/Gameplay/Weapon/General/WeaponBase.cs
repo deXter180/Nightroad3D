@@ -4,9 +4,10 @@ using System;
 using UnityEngine;
 
 
-public class Weapons
+public class Weapons : IModifiedStat
 {
     private WeaponBrain weaponBrain;
+    private AttributeManager attributeManager;
     private WeaponSO weaponSO;
     public WeaponSO ThisWeaponSO => weaponSO;
     public static event EventHandler<OnPlayerAttackEventArg> OnPlayerAttack; //Indirectly Raising this event
@@ -16,6 +17,7 @@ public class Weapons
     public Weapons(WeaponBrain wb, WeaponTypes weaponTypes)
     {
         this.weaponBrain = wb;
+        attributeManager = AttributeManager.Instance;
         weaponSO = GameController.GetWeaponSOFromList(weaponTypes);
     }
 
@@ -47,20 +49,35 @@ public class Weapons
         }
     }
 
+    public int GetModifiedStat()
+    {
+        float modifiedDamageAmount = 0;
+        if (weaponSO.IsRanged)
+        {
+            modifiedDamageAmount = weaponSO.DamageAmount + (attributeManager.DexterityStat * weaponSO.StatMultiplier);
+        }
+        else
+        {
+            modifiedDamageAmount = weaponSO.DamageAmount + (attributeManager.StrengthStat * weaponSO.StatMultiplier);
+        }
+        return Mathf.RoundToInt(modifiedDamageAmount);
+    }
+
     public virtual void DoAttack(Target enemyTarget, float enemyDodgeChance)
     {
         if (enemyTarget.enemyCore != null)
         {
+            int modifiedDamageAmount = GetModifiedStat();                     
             if (UnityEngine.Random.value <= weaponSO.CritChance) //&& CurrentEnergy >= EnergyCosts[0])
             {
-                enemyTarget.DoCritDamage(weaponSO.CritBonus, weaponSO.DamageAmount, enemyDodgeChance);
+                enemyTarget.DoCritDamage(weaponSO.CritBonus, modifiedDamageAmount, enemyDodgeChance);
                 if (!enemyTarget.Dodging)
                     OnPlayerDamage?.Invoke(this, new OnPlayerDamageEventArg(true, enemyTarget.enemyCore));
                 //target.Resource.EnergyExpense(EnergyCosts[0]);
             }
             else
             {
-                enemyTarget.DoDamage(weaponSO.DamageAmount, enemyDodgeChance);
+                enemyTarget.DoDamage(modifiedDamageAmount, enemyDodgeChance);
                 if (!enemyTarget.Dodging)
                     OnPlayerDamage?.Invoke(this, new OnPlayerDamageEventArg(false, enemyTarget.enemyCore));
                 //target.Resource.EnergyExpense(EnergyCosts[1]);

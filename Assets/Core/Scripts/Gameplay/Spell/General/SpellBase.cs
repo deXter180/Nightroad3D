@@ -8,9 +8,11 @@ public abstract class Spells
 {
     protected string spellSizeText = "Size";
     protected SpellManager spellManager;
+    protected AttributeManager attributeManager;
     protected SpellTypes spellType;
     protected SpellCategories spellCategory;
     protected SpellBaseSO spellSO;
+    protected float modifiedValue = 0;
     public SpellBaseSO ThisSpellSO => spellSO;
     public SpellTypes SpellType { get => spellType; }
     public SpellCategories SpellCategory { get => spellCategory; }
@@ -21,10 +23,11 @@ public abstract class Spells
         spellCategory = category;
         spellSO = GameController.GetSpellSOFromList(spellType);
         spellManager = SpellManager.Instance;
+        attributeManager = AttributeManager.Instance;
     }
 
     public abstract void CastSpell(Action action);
-
+    public abstract float GetModifiedStats();
 }
 
 public class SingleTargetedProjectile : Spells
@@ -69,6 +72,12 @@ public class SingleTargetedProjectile : Spells
     {
         AssetLoader.CreateAndReleaseAsset("Explosion_vfx", HitPointPos, 0.3f);
     }
+
+    public override float GetModifiedStats()
+    {
+        modifiedValue = Mathf.RoundToInt(attributeManager.IntelligenceStat * spellSO.StatMultiplier);
+        return spellSO.EffectAmount + modifiedValue;
+    }
 }
 
 public class SingleTargeted : Spells
@@ -84,7 +93,7 @@ public class SingleTargeted : Spells
 
 
     public override void CastSpell(Action action)
-    {
+    {    
         if (spellManager.GetSTSpellVfx(spellType) != null)
         {
             VisualEffect vfx = spellManager.GetSTSpellVfx(spellType);
@@ -96,6 +105,7 @@ public class SingleTargeted : Spells
             if (eb != null && !eb.IsHitByLightening)
             {
                 eb.SetLighteningHit();
+                spellSO.UpdateModifiedValue(GetModifiedStats());
                 spellSO.DoAttack(eb.GetComponent<Target>(), eb.ThisEnemySO.DodgeChance);
                 AssetLoader.CreateGOAsset(vfxAssetName, eb.EnemyTransform);
             }
@@ -103,18 +113,21 @@ public class SingleTargeted : Spells
         action.Invoke();
     }
 
-    
+    public override float GetModifiedStats()
+    {
+        modifiedValue = (float)Math.Round(attributeManager.IntelligenceStat * spellSO.StatMultiplier, 2);
+        return spellSO.EffectAmount + Mathf.RoundToInt(modifiedValue);
+    }
 }
 
 public class AOETargeted : Spells
 {
     private Vector3 spellPosition;
-    private WaitForSeconds waiter;
     public static event EventHandler<OnAOESpellCastEventArg> OnAOESpellCast;
 
     public AOETargeted(SpellTypes spellType, SpellCategories category) : base(spellType, category)
     {
-        waiter = new WaitForSeconds(spellSO.Duration);
+        
     }
 
     public void SetSpellPos(Vector3 position)
@@ -125,8 +138,8 @@ public class AOETargeted : Spells
     public override void CastSpell(Action action)
     {
         if (GetAssetName() != null)
-        {
-            AssetLoader.CreateAndReleaseAsset(GetAssetName(), spellPosition, 2f);
+        {        
+            AssetLoader.CreateAndReleaseAsset(GetAssetName(), spellPosition, GetModifiedStats());
             OnAOESpellCast?.Invoke(this, new OnAOESpellCastEventArg(this, spellType, spellCategory));
             action.Invoke();
         }       
@@ -138,7 +151,7 @@ public class AOETargeted : Spells
         {
             case SpellTypes.FreezeBlast:
                 {
-                    yield return waiter;
+                    yield return Helpers.GetWait(GetModifiedStats());
                 }
                 break;
         }
@@ -156,6 +169,12 @@ public class AOETargeted : Spells
         }
         return assetName;
     }
+
+    public override float GetModifiedStats()
+    {
+        modifiedValue = (float)Math.Round(attributeManager.IntelligenceStat * spellSO.StatMultiplier, 2);
+        return spellSO.Duration + modifiedValue;
+    }
 }
 
 public class SelfTargeted : Spells
@@ -172,6 +191,12 @@ public class SelfTargeted : Spells
         action.Invoke();
     }
 
+    public override float GetModifiedStats()
+    {
+        modifiedValue = (float)Math.Round(attributeManager.IntelligenceStat * spellSO.StatMultiplier, 2);
+        return spellSO.Range + modifiedValue;
+    }
+
     private void AddSpellEffect()
     {
         switch (spellType)
@@ -186,7 +211,7 @@ public class SelfTargeted : Spells
                     {
                         direction = player.DashPos;
                     }
-                    Vector3 dir = player.transform.position + direction * spellSO.Range;
+                    Vector3 dir = player.transform.position + direction * GetModifiedStats();
                     player.PlayerRB.MovePosition(dir);
                     PlayDashVFX(spellType, direction);
                 }

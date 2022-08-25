@@ -14,6 +14,7 @@ public class Projectile :  MonoBehaviour
     private Weapons attackingWeapon;
     private WeaponBrain weaponBrain;
     private EnemyBrain attackingEnemy;
+    private AttributeManager attributeManager;
     private SingleTargetedProjectile spell;
     private int enemyLayer = 1 << 12;
     private Rigidbody rb;
@@ -24,6 +25,7 @@ public class Projectile :  MonoBehaviour
         player = PlayerController.Instance;
         gameController = GameController.Instance;
         objectPooler = ObjectPooler.Instance;
+        attributeManager = AttributeManager.Instance;
         rb = GetComponent<Rigidbody>();
     }
 
@@ -167,7 +169,8 @@ public class Projectile :  MonoBehaviour
                 {
                     rb.isKinematic = false;
                     rb.AddExplosionForce(10f, pos, radius, 1f, ForceMode.Impulse);
-                    target.DoDamage(spell.ThisSpellSO.EffectAmount, 0);
+                    int modifiedValue = Mathf.FloorToInt(spell.GetModifiedStats());
+                    target.DoDamage(modifiedValue, 0);
                     rb.isKinematic = true;
                 }
             }          

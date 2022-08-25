@@ -30,7 +30,7 @@ public class HeadUpDisplayHandler : Singleton<HeadUpDisplayHandler>
     private void OnEnable()
     {
         SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
-        WeaponManager.OnWeaponEmpty += WeaponManager_OnWeaponEmpty;
+        WeaponManager.OnEmptyWeapon += WeaponManager_OnWeaponEmpty;
         WeaponManager.OnMeleeWeaponEquip += WeaponManager_OnMeleeWeaponEquip;
         WeaponManager.OnRangeWeaponEquip += WeaponManager_OnRangeWeaponEquip;
     }
@@ -38,7 +38,7 @@ public class HeadUpDisplayHandler : Singleton<HeadUpDisplayHandler>
     private void OnDisable()
     {
         SceneLoader.OnNewGameStart -= SceneLoader_OnNewGameStart;
-        WeaponManager.OnWeaponEmpty -= WeaponManager_OnWeaponEmpty;
+        WeaponManager.OnEmptyWeapon -= WeaponManager_OnWeaponEmpty;
         WeaponManager.OnMeleeWeaponEquip -= WeaponManager_OnMeleeWeaponEquip;
         WeaponManager.OnRangeWeaponEquip -= WeaponManager_OnRangeWeaponEquip;
 

@@ -29,8 +29,11 @@ public class SpellManager : Singleton<SpellManager>
     public bool IsCastingSpell { get; set; }
     private PlayerInputAsset inputs;
     private bool IsInitialized => spellDict != null;
-    private Dictionary<SpellTypes, Spells> spellDict;
+    public static Dictionary<SpellTypes, Spells> spellDict;
     private SpellCastState state;
+    public static event Action<SpellTypes, int> OnAddingSpell;
+    public static event Action<SpellTypes, int> OnRemovingSpell;
+
     private enum SpellCastState
     {
         Default,
@@ -109,7 +112,7 @@ public class SpellManager : Singleton<SpellManager>
         }        
     }
 
-    private void AddSpell(SpellTypes type, SpellCategories category)
+    private void AddSpell(SpellTypes type, SpellCategories category, int num)
     {
         Initialize();
         if (spellDict.Count < SpellCount)
@@ -134,15 +137,17 @@ public class SpellManager : Singleton<SpellManager>
             if (spell != null)
             {
                 spellDict.Add(type, spell);
+                OnAddingSpell?.Invoke(type, num);
             }
         }
     }
 
-    private void RemoveSpell(SpellTypes type)
+    private void RemoveSpell(SpellTypes type, int num)
     {
         if (spellDict.Count > 0 && spellDict.ContainsKey(type))
         {
             spellDict.Remove(type);
+            OnRemovingSpell?.Invoke(type, num);
         }
     }
 
@@ -336,28 +341,28 @@ public class SpellManager : Singleton<SpellManager>
 
     //~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~
 
-    private void Tile_OnPlacedOnSpellMenu(object sender, PlacedObject e)
+    private void Tile_OnPlacedOnSpellMenu(PlacedObject e, int num)
     {
         InventoryItemSO inventoryItem = e.GetInventoryItemSO();
         if (inventoryItem.ItemType == ItemTypes.Spell && inventoryItem.SpellType != SpellTypes.None && inventoryItem.SpellCategory != SpellCategories.None)
         {
-            AddSpell(inventoryItem.SpellType, inventoryItem.SpellCategory);
+            AddSpell(inventoryItem.SpellType, inventoryItem.SpellCategory, num);
         }
     }
 
-    private void Tile_OnRemovedFromSpellMenu(object sender, PlacedObject e)
+    private void Tile_OnRemovedFromSpellMenu(PlacedObject e, int num)
     {
         InventoryItemSO inventoryItem = e.GetInventoryItemSO();
         if (inventoryItem.ItemType == ItemTypes.Spell && inventoryItem.SpellType != SpellTypes.None && inventoryItem.SpellCategory != SpellCategories.None)
         {
-            RemoveSpell(inventoryItem.SpellType);
+            RemoveSpell(inventoryItem.SpellType, num);
             isRemoved = true;
         }
     }
 
     private void SceneLoader_OnNewGameStart()
     {
-        spellDict = new Dictionary<SpellTypes, Spells>();
+        spellDict.Clear();
     }
 }
 

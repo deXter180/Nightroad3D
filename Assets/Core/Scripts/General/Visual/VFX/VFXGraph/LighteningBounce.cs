@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 using UnityEngine.VFX;
 
 public class LighteningBounce : MonoBehaviour
@@ -18,6 +19,7 @@ public class LighteningBounce : MonoBehaviour
     private string endPosName = "EndPos";
     private VisualEffect visualEffect;
     private SpellBaseSO spell;
+    private AttributeManager attributeManager;
 
     private void Awake()
     {
@@ -29,6 +31,7 @@ public class LighteningBounce : MonoBehaviour
         isTagged = false;
         elapseTime = 0;
         spell = GameController.GetSpellSOFromList(SpellTypes.ChainLightening);
+        attributeManager = AttributeManager.Instance;
     }
 
     private void Update()
@@ -52,6 +55,7 @@ public class LighteningBounce : MonoBehaviour
                     isTagged = true;
                     eb.SetLighteningHit();
                     BounceToTarget(eb.EnemyTransform.position);
+                    spell.UpdateModifiedValue((float)Math.Round(attributeManager.IntelligenceStat * spell.StatMultiplier, 2));
                     spell.DoAttack(eb.GetComponent<Target>(), eb.ThisEnemySO.DodgeChance);                   
                     AssetLoader.CreateGOAsset(vfxAssetName, eb.EnemyTransform);
                     StartCoroutine(End());

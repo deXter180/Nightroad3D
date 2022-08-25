@@ -12,24 +12,40 @@ public class InventoryItemSO : ScriptableObject
         WeaponTile,
         InventoryTile
     }
-    public string ItemID;  
-    public string ItemName;
-    public string ItemDescription;
-    public bool Usable;
-    public int Width;
-    public int Height;
-    public ItemTypes ItemType;
-    public WeaponTypes WeaponType;
-    public ArmorTypes ArmorType;
-    public SpellTypes SpellType;
-    public SpellCategories SpellCategory;
-    public ItemRarity Rarity;
-    [SerializeField] public int AttributeAmount;
-    [SerializeField] public Texture2D AttributeIcon;
+    [SerializeField] private string itemID;  
+    [SerializeField] private string itemName;
+    [SerializeField] private string itemDescription;
+    [SerializeField] private bool usable;
+    [SerializeField] private int width;
+    [SerializeField] private int height;
+    [SerializeField] private ItemTypes itemType;
+    [SerializeField] private WeaponTypes weaponType;
+    [SerializeField] private ArmorTypes armorType;
+    [SerializeField] private SpellTypes spellType;
+    [SerializeField] private SpellCategories spellCategory;
+    [SerializeField] private ItemRarity rarity;
+    [SerializeField] private int attributeAmount;
+    [SerializeField] private Texture2D attributeIcon;
     [SerializeField] private Transform inventoryPrefab;
     [SerializeField] private Transform worldPrefab;
+    [SerializeField] private List<RequiredStatForEquip> requirementList;
+    public string ItemID => itemID;
+    public string ItemName => itemName;
+    public string ItemDescription => itemDescription;
+    public bool Usable => usable;
+    public int Width => width;
+    public int Height => height;
+    public ItemTypes ItemType => itemType;
+    public WeaponTypes WeaponType => weaponType;
+    public ArmorTypes ArmorType => armorType;
+    public SpellTypes SpellType => spellType;
+    public SpellCategories SpellCategory => spellCategory;
+    public ItemRarity Rarity => rarity;
+    public int AttributeAmount => attributeAmount;
+    public Texture2D AttributeIcon => attributeIcon;
     public Transform InventoryPrefab { get => inventoryPrefab; }
     public Transform WorldPrefab { get => worldPrefab; }
+    public List<RequiredStatForEquip> RequirementList => requirementList;
 
     #region
     public enum Dir
@@ -38,17 +54,6 @@ public class InventoryItemSO : ScriptableObject
         Left,
         Up,
         Right,
-    }
-
-    public int GetAttributeAmount()
-    {
-        return AttributeAmount;
-
-    }
-
-    public Texture2D GetAttributeIcon()
-    {
-        return AttributeIcon;
     }
 
     public virtual void UseItem()
@@ -161,6 +166,16 @@ public class InventoryItemSO : ScriptableObject
         visualTransform.gameObject.SetActive(true);
     }
 
+
+    public string GetRequirementText()
+    {
+        string text = "";
+        for (int i = 0; i < requirementList.Count; i++)
+        {
+            text = $"{text}  {requirementList[i].attributeType} : {requirementList[i].attributeValue} ";
+        }
+        return text;
+    }
 }
 
 

@@ -1,14 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
 public class FPSCamControl : Singleton<FPSCamControl>
 {
+    [SerializeField] private UniversalRenderPipelineAsset pilelineAsset;
     private Camera mainCam;
-    private Camera UICam;
+    private Camera UICam;    
     private UniversalAdditionalCameraData cameraData;
     private AudioListener audioListener; 
+    public static event Action OnFPSCameraEneable;
+    public static event Action OnFPSCameraDisable;
 
     protected override void Awake()
     {
@@ -17,23 +22,9 @@ public class FPSCamControl : Singleton<FPSCamControl>
         audioListener = GetComponentInChildren<AudioListener>();
     }
 
-    private void Start()
-    {
-        transform.parent = null;
-    }
-
-    public void EnableAudioListener()
-    {
-        audioListener.enabled = true;
-    }
-
-    public void DisableAudioListener()
-    {
-        audioListener.enabled = false;
-    }
-
     private void OnEnable()
     {
+        UpdatePipeline();
         cameraData = mainCam.GetUniversalAdditionalCameraData();
         if (UICam == null)
         {
@@ -44,8 +35,31 @@ public class FPSCamControl : Singleton<FPSCamControl>
             if (!cameraData.cameraStack.Contains(UICam))
             {
                 cameraData.cameraStack.Add(UICam);
-            }           
+            }
+        }
+        transform.parent = null;
+    }
+
+    public void EnableFPSCamera()
+    {
+        gameObject.SetActive(true);
+        OnFPSCameraEneable?.Invoke();
+    }
+
+    public void DisableFPSCamera()
+    {
+        OnFPSCameraDisable?.Invoke();
+        gameObject.SetActive(false);
+    }
+
+    private void UpdatePipeline()
+    {
+        if (pilelineAsset)
+        {
+            GraphicsSettings.renderPipelineAsset = pilelineAsset;
         }
     }
+
+    
 }
 

@@ -213,6 +213,13 @@ public class AssetPackages
     public ImpactTypes impactTypes;
 }
 
+[Serializable]
+public class RequiredStatForEquip
+{
+    public AttributeTypes attributeType;
+    public int attributeValue;
+}
+
 public enum WeaponTypes
 {
     None,
@@ -325,6 +332,7 @@ public enum GoalTypes
 
 public enum OverlayTypes
 {
+    Posterize,
     Damage,
     Shield,
     Fire,
@@ -357,6 +365,15 @@ public enum EnvironmentTypes
     Water,
     Thunder,
     Rain
+}
+
+public enum AttributeTypes
+{
+    Strength,
+    Dexterity,
+    Vitality,
+    Spirit,
+    Intelligence
 }
 
 #endregion

@@ -9,14 +9,15 @@ public class EquipMenuWeaponTile : MonoBehaviour
     [SerializeField] private int gridHeight;
     [SerializeField] private float cellSize;
     [SerializeField] private ItemTypes itemType;
+    [SerializeField] private int serialNo;
     private bool isFilled;
     private Grid<GridObject> grid;
     private RectTransform rectTransform;
     private PlacedObject currentPlacedObject;
     public PlacedObject MenuPlacedObject { get => currentPlacedObject; }
     public bool IsFilled { get => isFilled; }
-    public event EventHandler<PlacedObject> OnPlacedOnWeaponMenu;
-    public event EventHandler<PlacedObject> OnRemovedFromWeaponMenu;
+    public event Action<PlacedObject, int> OnPlacedOnWeaponMenu;
+    public event Action<PlacedObject, int> OnRemovedFromWeaponMenu;
 
     private void Awake()
     {
@@ -89,7 +90,7 @@ public class EquipMenuWeaponTile : MonoBehaviour
                 currentPlacedObject = placedObject;
                 grid.GetGridObject(0, 0).SetPlacedObject(placedObject);
                 isFilled = true;
-                OnPlacedOnWeaponMenu?.Invoke(this, placedObject);
+                OnPlacedOnWeaponMenu?.Invoke(placedObject, serialNo);
                 return true;
             }
         }
@@ -104,7 +105,7 @@ public class EquipMenuWeaponTile : MonoBehaviour
             {
                 currentPlacedObject.DestroySelf();
                 grid.GetGridObject(0, 0).ClearPlacedObject();
-                OnRemovedFromWeaponMenu?.Invoke(this, currentPlacedObject);
+                OnRemovedFromWeaponMenu?.Invoke(currentPlacedObject, serialNo);
                 isFilled = false;
                 currentPlacedObject = null;
                 transform.DetachChildren();
@@ -115,9 +116,13 @@ public class EquipMenuWeaponTile : MonoBehaviour
     }
 
     public void ResetTile()
-    {
+    {        
         transform.DeleteChildren();
-        currentPlacedObject = null;
+        if (currentPlacedObject != null)
+        {
+            OnRemovedFromWeaponMenu?.Invoke(currentPlacedObject, serialNo); 
+            currentPlacedObject = null;
+        }       
         isFilled = false;
     }
 }

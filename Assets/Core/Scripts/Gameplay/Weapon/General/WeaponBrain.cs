@@ -14,7 +14,7 @@ public class WeaponBrain : MonoBehaviour
     private bool playingAnim;
     private bool IsAttacking;
     private bool IsReady = false;
-    private float animDelay;    
+    private float animDelay;
     public float AnimDelay { get => animDelay; }
     public event Action OnStopPlayingReload;
     private enum AnimType

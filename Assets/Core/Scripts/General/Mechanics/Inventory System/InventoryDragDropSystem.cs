@@ -9,6 +9,7 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
     private PlayerInputAsset inputs;
     private PlayerController playerController;
     private GameController gameController;
+    private AttributeManager attributeManager;
     private bool isDraggedFromInventory;
     private bool isDraggedFromEquipMenu;
     private bool isDraggedFromStash;
@@ -40,15 +41,15 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
     {
         StartCoroutine(InputDone());
         gameController = GameController.Instance;
+        playerController = PlayerController.Instance;
         inventorySystem = InventorySystem.Instance;
         itemStash = ItemStash.Instance;
         inventoryUI = InventoryUIHandler.Instance;
+        attributeManager = AttributeManager.Instance;
     }
 
     private void OnEnable()
-    {        
-        playerController = PlayerController.Instance;
-        SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
+    {                
         isDraggedFromInventory = false;
         isDraggedFromEquipMenu = false;
         isDraggedFromStash = false;
@@ -60,7 +61,6 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
 
     private void OnDisable()
     {
-        SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
         foreach (var tile in EquipMenuControl.WeaponTileList)
         {
             tile.OnPlacedOnWeaponMenu -= Tile_OnObjectPlacedinEquipTile;
@@ -314,11 +314,17 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
                 {
                     if (IsOnWeaponMenu(mousePos, out EquipMenuWeaponTile weaponTile))
                     {
-                        tryPlaceItem = weaponTile.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO, Origin);
+                        if (CheckStatRequirement(placedObject.GetInventoryItemSO()))
+                        {
+                            tryPlaceItem = weaponTile.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO, Origin);
+                        }                        
                     }
                     if (IsOnSpellMenu(mousePos, out EquipMenuSpellTile spellTile))
                     {
-                        tryPlaceItem = spellTile.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO, Origin);
+                        if (CheckStatRequirement(placedObject.GetInventoryItemSO()))
+                        {
+                            tryPlaceItem = spellTile.TryPlaceItem(placedObject.GetInventoryItemSO() as InventoryItemSO, Origin);
+                        }                           
                     }
                 }
                 if (tryPlaceItem)
@@ -476,6 +482,20 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
         }
     }
 
+    private bool CheckStatRequirement(InventoryItemSO itemSO)
+    {
+        bool isCompleted = false;
+        for (int i = 0; i < itemSO.RequirementList.Count; i++)
+        {
+            isCompleted = attributeManager.IsStatRequirementCompleted(itemSO.RequirementList[i].attributeType, itemSO.RequirementList[i].attributeValue);
+            if (!isCompleted)
+            {
+                return false;
+            }
+        }
+        return isCompleted;
+    }
+
     public Vector2 GetPosOffset(Vector2 mousePos)
     {
         Vector2 mouseOffset = new Vector2();
@@ -547,18 +567,9 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
 
     //~~~~~~~~~~~~~~~~~~~~ Event Callback ~~~~~~~~~~~~~~~~~~~~
 
-    private void Tile_OnObjectPlacedinEquipTile(object sender, PlacedObject e)
+    private void Tile_OnObjectPlacedinEquipTile(PlacedObject e, int num)
     {
         
     }
 
-    private void SceneLoader_OnNewGameStart()
-    {
-        StartCoroutine(SetPlayer());
-        IEnumerator SetPlayer()
-        {
-            yield return Helpers.GetWait(1f);
-            playerController = PlayerController.Instance;
-        }
-    }
 }

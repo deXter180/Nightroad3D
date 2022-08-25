@@ -27,6 +27,10 @@ public class GameController : PersistentSingleton<GameController>
     private SpellManager spellManager;
     private PlayerInputAsset inputs;
     private PlayerController player;
+    private FPSCamControl FPSCam;
+    private EquipMenuControl equipMenu;
+    private InventorySystem inventorySystem;
+    private ItemStash itemStash;
     private static Dictionary<string, QuestSO> QuestDict = new Dictionary<string, QuestSO>();
     private static Dictionary<string, Material> MaterailDict = new Dictionary<string, Material>();
     private static Dictionary<AudioTypes, AudioSO> AudioSODict = new Dictionary<AudioTypes, AudioSO>();
@@ -79,11 +83,7 @@ public class GameController : PersistentSingleton<GameController>
             {
                 yield return new WaitUntil(() => InputManager.InputReady);
                 inputs = InputManager.InputActions;
-                AssignMenuInstance();
-                AssignInvInstance();
-                AssignDialogueInstance();
-                AssignCrossInstance();
-                spellManager = SpellManager.Instance;
+                AssignInstances();
             }
         }
     }
@@ -103,7 +103,7 @@ public class GameController : PersistentSingleton<GameController>
 
     private void Update()
     {        
-        if (inputs != null)
+        if (inputs != null && player != null)
         {
             if (!player.IsPlayerDead)
             {
@@ -129,35 +129,39 @@ public class GameController : PersistentSingleton<GameController>
         ControlHUD();
     }
 
-    private void AssignMenuInstance()
+    private void AssignInstances()
     {
         if (mainMenu == null)
         {
             mainMenu = InGameMainMenuUIHandler.Instance;
         }
-    }
-
-    private void AssignInvInstance()
-    {
         if (inventoryUI == null)
         {
             inventoryUI = InventoryUIHandler.Instance;
         }
-    }
-
-    private void AssignCrossInstance()
-    {
         if (HUDHandler == null)
         {
             HUDHandler = HeadUpDisplayHandler.Instance;
         }
-    }
-
-    private void AssignDialogueInstance()
-    {
         if (dialogueManager == null)
         {
             dialogueManager = DialogueManager.Instance;
+        }
+        if (equipMenu == null)
+        {
+            equipMenu = EquipMenuControl.Instance;
+        }
+        if (spellManager == null)
+        {
+            spellManager = SpellManager.Instance;
+        }
+        if (inventorySystem == null)
+        {
+            inventorySystem = InventorySystem.Instance;
+        }
+        if (itemStash == null)
+        {
+            itemStash = ItemStash.Instance;
         }
     }
 
@@ -629,19 +633,27 @@ public class GameController : PersistentSingleton<GameController>
         inventoryUI.ControlInv(isInventoryActive);
         inventoryUI.ControlSth(isStashActive);
         HUDHandler.Control(false);
-        dialogueManager.EndConversation();      
+        dialogueManager.EndConversation();
     }
 
     private void SceneLoader_OnNewGameStart()
     {
-        AssignMenuInstance();
-        AssignInvInstance();
-        AssignDialogueInstance();
-        AssignCrossInstance();
+        AssignInstances();
         isInventoryActive = false;
         isMainMenuActive = false;
         isStashActive = false;
-        OverlayManager.Instance.ClearAllOverlayEffects();
+        dialogueManager.ResetDialogues();
+        inventorySystem.ResetInventory();
+        equipMenu.ResetEquipMenu();
+        itemStash.ResetStash();
+        if (FPSCam == null)
+        {
+            FPSCam = FPSCamControl.Instance;
+        }
+        if (FPSCam != null && !FPSCam.gameObject.activeInHierarchy)
+        {
+            FPSCam.EnableFPSCamera();
+        }
     }
 
     private void AssetLoader_OnSingleSceneLoad(UnityEngine.ResourceManagement.ResourceProviders.SceneInstance obj)

@@ -18,21 +18,29 @@ public class DamageOverlay : MonoBehaviour
         player = PlayerController.Instance;
         overlayManager = OverlayManager.Instance;
         maxHealth = player.MaxHitPoints;
+        CharacterAttribute.OnVITorSPRChanged += CharacterAttribute_OnVITorSPRChanged;
         player.PlayerTarget.Resource.OnHealthLoss += Resource_OnHealthLoss;
         player.PlayerTarget.Resource.OnHealthGain += Resource_OnHealthGain;
+        player.onResettingHP += Player_onResettingHP;
         intensity = 0;
     }
 
     private void OnDisable()
     {
+        CharacterAttribute.OnVITorSPRChanged -= CharacterAttribute_OnVITorSPRChanged;
         player.PlayerTarget.Resource.OnHealthLoss -= Resource_OnHealthLoss;
         player.PlayerTarget.Resource.OnHealthGain -= Resource_OnHealthGain;
+        player.onResettingHP -= Player_onResettingHP;
     }
+
 
 
     void Update()
     {
-        FadeDamageEffect();
+        if (maxHealth > 0)
+        {
+            FadeDamageEffect();
+        }        
     }
 
     private void FadeDamageEffect()
@@ -76,5 +84,18 @@ public class DamageOverlay : MonoBehaviour
         durationTimer = 0;
         intensity = 1f;
         overlayManager.AddOverlayEffect(OverlayTypes.Damage);
+    }
+
+    private void CharacterAttribute_OnVITorSPRChanged(AttributeTypes type)
+    {
+        if (type == AttributeTypes.Vitality)
+        {
+            maxHealth = player.MaxHitPoints;
+        }
+    }
+
+    private void Player_onResettingHP()
+    {
+        maxHealth = player.MaxHitPoints;
     }
 }

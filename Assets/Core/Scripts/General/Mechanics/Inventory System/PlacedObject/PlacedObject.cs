@@ -112,7 +112,17 @@ public class PlacedObject : MonoBehaviour
         if (inventoryItemSO != null && tooltipTrigger != null)
         {
             tooltipTrigger.Header = inventoryItemSO.ItemName;
-            tooltipTrigger.Content = inventoryItemSO.AttributeAmount.ToString();
+            if (inventoryItemSO.AttributeAmount != 0)
+            {
+                tooltipTrigger.Content = inventoryItemSO.AttributeAmount.ToString();
+            }
+            else
+            {
+                if (inventoryItemSO.RequirementList.Count > 0)
+                {
+                    tooltipTrigger.Content = inventoryItemSO.GetRequirementText();
+                }                
+            }
         }
     }
 

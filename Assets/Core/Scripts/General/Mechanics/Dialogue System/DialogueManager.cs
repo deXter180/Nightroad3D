@@ -37,13 +37,11 @@ public class DialogueManager : Singleton<DialogueManager>
     private void OnEnable()
     {
         endButton.onClick.AddListener(() => EndConversation());
-        SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
     }
 
     private void OnDisable()
     {
         endButton.onClick.RemoveAllListeners();
-        SceneLoader.OnNewGameStart -= SceneLoader_OnNewGameStart;
     }
 
     public void SetupStory(TextAsset storyTextAsset)
@@ -175,9 +173,7 @@ public class DialogueManager : Singleton<DialogueManager>
         }
     }
 
-    //~~~~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~~~~~~
-
-    private void SceneLoader_OnNewGameStart()
+    public void ResetDialogues()
     {
         activeStory = null;
         foreach (var s in ActiveStoryDict.Values)
@@ -192,4 +188,5 @@ public class DialogueManager : Singleton<DialogueManager>
         ActiveStoryDict.Clear();
         lastTextFromStoryDict.Clear();
     }
+
 }

@@ -9,14 +9,15 @@ public class EquipMenuSpellTile : MonoBehaviour
     [SerializeField] private int gridHeight;
     [SerializeField] private float cellSize;
     [SerializeField] private ItemTypes itemType;
+    [SerializeField] private int serialNo;
     private bool isFilled;
     private Grid<GridObject> grid;
     private RectTransform rectTransform;
     private PlacedObject currentPlacedObject;
     public PlacedObject MenuPlacedObject { get => currentPlacedObject; }
     public bool IsFilled { get => isFilled; }
-    public event EventHandler<PlacedObject> OnPlacedOnSpellMenu;
-    public event EventHandler<PlacedObject> OnRemovedFromSpellMenu;
+    public event Action<PlacedObject, int> OnPlacedOnSpellMenu;
+    public event Action<PlacedObject, int> OnRemovedFromSpellMenu;
 
     private void Awake()
     {
@@ -88,7 +89,7 @@ public class EquipMenuSpellTile : MonoBehaviour
                 currentPlacedObject = placedObject;
                 grid.GetGridObject(0, 0).SetPlacedObject(placedObject);
                 isFilled = true;
-                OnPlacedOnSpellMenu?.Invoke(this, placedObject);
+                OnPlacedOnSpellMenu?.Invoke(placedObject, serialNo);
                 return true;
             }           
         }
@@ -103,7 +104,7 @@ public class EquipMenuSpellTile : MonoBehaviour
             {
                 currentPlacedObject.DestroySelf();
                 grid.GetGridObject(0, 0).ClearPlacedObject();
-                OnRemovedFromSpellMenu?.Invoke(this, currentPlacedObject);
+                OnRemovedFromSpellMenu?.Invoke(currentPlacedObject, serialNo);
                 isFilled = false;
                 currentPlacedObject = null;
                 transform.DetachChildren();
@@ -116,7 +117,11 @@ public class EquipMenuSpellTile : MonoBehaviour
     public void ResetTile()
     {
         transform.DeleteChildren();
-        currentPlacedObject = null;
+        if (currentPlacedObject != null)
+        {
+            OnRemovedFromSpellMenu?.Invoke(currentPlacedObject, serialNo);
+            currentPlacedObject = null;
+        }       
         isFilled = false;
     }
 }

@@ -28,16 +28,6 @@ public class InventorySystem : Singleton<InventorySystem>
         InitializeInventory();
     }
 
-    private void OnEnable()
-    {
-        SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
-    }
-
-    private void OnDisable()
-    {
-        SceneLoader.OnNewGameStart -= SceneLoader_OnNewGameStart;
-    }
-
     //~~~~~~~~~~~~~~~~~~ Utilities ~~~~~~~~~~~~~~~~~~
 
     private void Test()
@@ -289,15 +279,17 @@ public class InventorySystem : Singleton<InventorySystem>
         return null;
     }
 
-    //~~~~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~~~~
-
-    private void SceneLoader_OnNewGameStart()
+    public void ResetInventory()
     {
         ClearGrid();
         itemContainor.ContainorRect.DeleteChildren();
-        InventoryList = new List<PlacedObject>();        
+        InventoryList.Clear();
         Test(); // Remove this
     }
+
+    //~~~~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~~~~
+
+
 
     //~~~~~~~~~~~~~~~~~ Save & Load ~~~~~~~~~~~~~~~~~~~~
 

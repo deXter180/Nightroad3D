@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
+[ExecuteAlways]
 public class OverlayManager : Singleton<OverlayManager>
 {
+    private ScriptableRendererFeature PosterizeEffect;
     [SerializeField] private UniversalRendererData rendererData;
     private Dictionary<OverlayTypes, Blit> blitRendererFeatures = new Dictionary<OverlayTypes, Blit>();
 
@@ -25,10 +27,24 @@ public class OverlayManager : Singleton<OverlayManager>
                     case "Shield":
                         blitRendererFeatures.Add(OverlayTypes.Shield, feature as Blit);
                         break;
+                    case "Posterize":
+                        PosterizeEffect = feature;
+                        break;
                 }
-                feature.SetActive(false);
             }
         }
+    }
+
+    private void OnEnable()
+    {
+        FPSCamControl.OnFPSCameraEneable += FPSCamControl_OnFPSCameraEneable;
+        FPSCamControl.OnFPSCameraDisable += FPSCamControl_OnFPSCameraDisable;
+    }
+
+    private void OnDisable()
+    {
+        FPSCamControl.OnFPSCameraEneable -= FPSCamControl_OnFPSCameraEneable;
+        FPSCamControl.OnFPSCameraDisable -= FPSCamControl_OnFPSCameraDisable;
     }
 
     private void Start()
@@ -75,6 +91,19 @@ public class OverlayManager : Singleton<OverlayManager>
     public void MadeChange()
     {
         rendererData.SetDirty();
+    }
+
+    //~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~
+
+    private void FPSCamControl_OnFPSCameraDisable()
+    {
+        ClearAllOverlayEffects();
+        PosterizeEffect.SetActive(false);
+    }
+
+    private void FPSCamControl_OnFPSCameraEneable()
+    {
+        PosterizeEffect.SetActive(true);
     }
 }
 

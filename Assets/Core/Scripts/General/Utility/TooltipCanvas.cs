@@ -5,9 +5,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class TooltipCanvas : MonoBehaviour {
-
-    public static TooltipCanvas Instance { get; private set; }
+public class TooltipCanvas : Singleton<TooltipCanvas> 
+{
     private PlayerInputAsset inputs;
 
     [SerializeField]
@@ -17,8 +16,9 @@ public class TooltipCanvas : MonoBehaviour {
     private RectTransform backgroundRectTransform;
     private Func<string> getTooltipStringFunc;
 
-    private void Awake() {
-        Instance = this;
+    protected override void Awake() 
+    {
+        base.Awake();
         backgroundRectTransform = transform.Find("background").GetComponent<RectTransform>();
         textMeshPro = transform.Find("text").GetComponent<TextMeshProUGUI>();
         if (canvasRectTransform == null) 

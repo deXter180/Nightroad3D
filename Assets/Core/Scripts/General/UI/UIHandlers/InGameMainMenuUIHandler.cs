@@ -11,7 +11,9 @@ public class InGameMainMenuUIHandler : Singleton<InGameMainMenuUIHandler>
     private PlayerController player;
     [SerializeField] private Canvas menuCanvas;
     [SerializeField] private Canvas loaderCanvas;
-    [SerializeField] private Image progessbar;   
+    [SerializeField] private Image progessbar;
+    public static event Action OnMainMenuOpen;
+    public static event Action OnMainMenuClose;
 
     protected override void Awake()
     {
@@ -39,10 +41,12 @@ public class InGameMainMenuUIHandler : Singleton<InGameMainMenuUIHandler>
         {
             menuCanvas.enabled = true;
             tabGroup.InitialEnable();
+            OnMainMenuOpen?.Invoke();
         }
         else
         {
             menuCanvas.enabled = false;
+            OnMainMenuClose?.Invoke();
         }
     }
 

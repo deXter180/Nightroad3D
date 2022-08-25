@@ -17,6 +17,8 @@ public class SpellBaseSO : ScriptableObject
     [SerializeField] private bool isQuickCast;
     [SerializeField] private int effectAmount;
     [SerializeField] private int manaCost;
+    [SerializeField] private float statMultiplier;
+    private float modifiedValue = 0;
 
     public int ManaCost => manaCost;
     public int EffectAmount => effectAmount;
@@ -24,6 +26,7 @@ public class SpellBaseSO : ScriptableObject
     public float Range => range;
     public float CastDelay => castDelay;
     public bool IsQuickCast => isQuickCast;
+    public float StatMultiplier => statMultiplier;
     public SpellTypes SpellType => spellType;
     public SpellCategories SpellCategory => spellCategory;
     public ProjectileTypes ProjectileType => projectileType;
@@ -31,6 +34,11 @@ public class SpellBaseSO : ScriptableObject
 
     public void DoAttack(Target enemyTarget, float enemyDodgeChance)
     {
-        enemyTarget.DoDamage(effectAmount, enemyDodgeChance);
+        enemyTarget.DoDamage(Mathf.FloorToInt(modifiedValue), enemyDodgeChance);
+    }
+
+    public void UpdateModifiedValue(float value)
+    {
+        modifiedValue = value;
     }
 }

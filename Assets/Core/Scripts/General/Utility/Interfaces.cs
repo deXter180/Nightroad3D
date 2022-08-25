@@ -13,6 +13,12 @@ public interface IAttack
     float CritBonus { get; }
 }
 
+public interface IModifiedStat
+{
+    int GetModifiedStat();
+}
+
+
 public interface IHeapItem<HeapObject> : IComparable<HeapObject>
 {
     int HeapIndex { get; set; }

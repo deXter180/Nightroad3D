@@ -18,13 +18,11 @@ public class EquipMenuControl : Singleton<EquipMenuControl>
 
     private void OnEnable()
     {
-        SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
         isArmorAdded = false;
     }
 
     private void OnDisable()
     {
-        SceneLoader.OnNewGameStart -= SceneLoader_OnNewGameStart;
         foreach (var tile in WeaponTileList)
         {
             tile.OnPlacedOnWeaponMenu -= Tile_OnPlacedOnWeaponMenu;
@@ -57,13 +55,11 @@ public class EquipMenuControl : Singleton<EquipMenuControl>
         }
     }
     
-    private void ResetEquipMenu()
+    public void ResetEquipMenu()
     {
+        
         if (WeaponTileList != null && SpellTileList != null)
-        {
-            WeaponTileList.Clear();
-            SpellTileList.Clear();
-            InitializeEquipMenu();
+        {            
             foreach(var tile in WeaponTileList)
             {
                 if (tile != null)
@@ -92,12 +88,7 @@ public class EquipMenuControl : Singleton<EquipMenuControl>
 
     //~~~~~~~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~~~~~~
 
-    private void SceneLoader_OnNewGameStart()
-    {
-        ResetEquipMenu();
-    }
-
-    private void Tile_OnPlacedOnWeaponMenu(object sender, PlacedObject e)
+    private void Tile_OnPlacedOnWeaponMenu(PlacedObject e, int num)
     {
         if (e.GetItemType() == ItemTypes.Armor)
         {
@@ -106,7 +97,7 @@ public class EquipMenuControl : Singleton<EquipMenuControl>
         }
     }
 
-    private void Tile_OnRemovedFromWeaponMenu(object sender, PlacedObject e)
+    private void Tile_OnRemovedFromWeaponMenu(PlacedObject e, int num)
     {
         if (e.GetItemType() == ItemTypes.Armor)
         {
@@ -115,12 +106,12 @@ public class EquipMenuControl : Singleton<EquipMenuControl>
         }
     }
 
-    private void Tile_OnPlacedOnSpellMenu(object sender, PlacedObject e)
+    private void Tile_OnPlacedOnSpellMenu(PlacedObject e, int num)
     {
 
     }
 
-    private void Tile_OnRemovedFromSpellMenu(object sender, PlacedObject e)
+    private void Tile_OnRemovedFromSpellMenu(PlacedObject e, int num)
     {
 
     }
