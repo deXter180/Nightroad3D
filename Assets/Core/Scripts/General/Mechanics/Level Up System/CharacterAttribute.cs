@@ -7,26 +7,16 @@ using UnityEngine;
 public class CharacterAttribute
 {
     private float baseValue = 0;
-    private float oldBaseValue;
     private AttributeTypes attributeType;
     public virtual float ModifiedValue 
     { 
         get 
-        { 
-            if (baseValue != lastBaseValue)
+        {
+            if (baseValue != lastBaseValue || isDirty)
             {
-                if (isDirty)
-                {
-                    lastBaseValue = baseValue;
-                    modifiedValue = CalculateFinalValue();
-                    isDirty = false;
-                }
-                else
-                {
-                    lastBaseValue = baseValue;
-                    modifiedValue = baseValue;
-                }
-                TriggerForHPorManaChange();
+                lastBaseValue = baseValue;
+                modifiedValue = CalculateFinalValue();                             
+                isDirty = false;
             }
             return modifiedValue;       
         }
@@ -34,9 +24,10 @@ public class CharacterAttribute
     protected bool isDirty = false;
     protected float modifiedValue;
     protected float lastBaseValue = float.MinValue;
+    protected float baseValueBeforeReset = 0;
     protected readonly List<AttributeModifier> statModifiers;
     public readonly ReadOnlyCollection<AttributeModifier> StatModifiers;
-    public static event Action<AttributeTypes> OnVITorSPRChanged;
+    public event Action<AttributeTypes> OnStatChanged;
     public float BaseValue => baseValue;
     public AttributeTypes AttributeType => attributeType;
 
@@ -50,15 +41,7 @@ public class CharacterAttribute
     public CharacterAttribute(float baseValue, AttributeTypes AT) : this(AT)
     {
         this.baseValue = baseValue;
-        oldBaseValue = baseValue;
-    }
-
-    private void TriggerForHPorManaChange()
-    {
-        if (attributeType == AttributeTypes.Vitality || attributeType == AttributeTypes.Spirit)
-        {
-            OnVITorSPRChanged?.Invoke(attributeType);
-        }
+        baseValueBeforeReset = baseValue;
     }
 
     public virtual void IncrementBaseValue(float val, AttributeModType modType)
@@ -72,17 +55,18 @@ public class CharacterAttribute
         {
             modValue = modValue * (1 + val);
         }
-        baseValue = (float)Math.Round(modValue, 2);
+        baseValue = (float)Math.Round(modValue, 2);   
+        OnStatChanged?.Invoke(attributeType);
     }
 
     public virtual void ResetValue()
     {
-        baseValue = oldBaseValue;
+        baseValue = baseValueBeforeReset;
     }
 
     public virtual void ApplyValue()
     {
-        oldBaseValue = baseValue;
+        baseValueBeforeReset = baseValue;
     }
 
     public virtual void AddModifier(AttributeModifier mod)
@@ -153,6 +137,7 @@ public class CharacterAttribute
                 finalValue *= 1 + mod.Value;
             }
         }
+        OnStatChanged?.Invoke(attributeType);
         return (float)Math.Round(finalValue, 2);
     }
 }

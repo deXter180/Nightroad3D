@@ -64,6 +64,8 @@ public class PlayerController : PersistentSingleton<PlayerController>
     private Target target;
     private AudioListener audioListener;
     private CameraShake cameraShake;
+    private CharacterAttribute VitalityAttribute;
+    private CharacterAttribute SpiritAttribute;
     private Vector2 movePosition = Vector2.zero;
     private Vector3 gravity;
     private Vector3 dashPos;
@@ -160,7 +162,6 @@ public class PlayerController : PersistentSingleton<PlayerController>
         target.Resource.OnManaGain += Resource_OnManaGain;
         target.Resource.OnManaLoss += Resource_OnManaLoss;
         GameController.OnStashClose += GameController_OnStashClose;
-        CharacterAttribute.OnVITorSPRChanged += CharacterAttribute_OnVITorSPRChanged;
         isReset = false;
         isJumping = false;
         isCursorLocked = false;
@@ -209,7 +210,6 @@ public class PlayerController : PersistentSingleton<PlayerController>
         target.Resource.OnManaGain -= Resource_OnManaGain;
         target.Resource.OnManaLoss -= Resource_OnManaLoss;
         GameController.OnStashClose -= GameController_OnStashClose;
-        CharacterAttribute.OnVITorSPRChanged -= CharacterAttribute_OnVITorSPRChanged;
     }
 
     private void Update()
@@ -312,6 +312,18 @@ public class PlayerController : PersistentSingleton<PlayerController>
     private void UpdateCameraPosition()
     {
         camTransform.position = transform.position + ConstantDistFromPlayer;
+    }
+
+    public void UpdateResouce(AttributeTypes type)
+    {
+        if (type == AttributeTypes.Vitality)
+        {
+            target.SetupMaxHP(GetModifiedHP());
+        }
+        else if (type == AttributeTypes.Spirit)
+        {
+            target.SetupMaxMana(GetModifiedMP());
+        }
     }
 
     private void Move()
@@ -689,13 +701,13 @@ public class PlayerController : PersistentSingleton<PlayerController>
     }
 
     public int GetModifiedHP()
-    {
-        modifiedMaxHp = modifiedMaxHp + Mathf.RoundToInt(attributeManager.VitalityStat * statToHPModifier);
+    {       
+        modifiedMaxHp += Mathf.RoundToInt(attributeManager.VitalityStat * statToHPModifier);
         return modifiedMaxHp;
     }
 
     public int GetModifiedMP()
-    {
+    {        
         modifiedMaxMp += Mathf.RoundToInt(attributeManager.SpiritStat * statToMPModifier);
         return modifiedMaxMp;
     }
@@ -783,17 +795,5 @@ public class PlayerController : PersistentSingleton<PlayerController>
     private void Resource_OnHealthGain(object sender, ResourceManagement.DamagedEventArgs e)
     {
         CurrentHP = e.CurrentHP;
-    }
-
-    private void CharacterAttribute_OnVITorSPRChanged(AttributeTypes type)
-    {
-        if (type == AttributeTypes.Vitality)
-        {           
-            target.SetupMaxHP(GetModifiedHP());
-        }
-        else
-        {
-            target.SetupMaxMana(GetModifiedMP());
-        }
     }
 }

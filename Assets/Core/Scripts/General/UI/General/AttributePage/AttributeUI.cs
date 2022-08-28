@@ -60,7 +60,7 @@ public class AttributeUI : MonoBehaviour
         resetText = resetButton.GetComponentInChildren<TextMeshProUGUI>();
         LevelSystemManager.OnLevelUp += LevelSystemManager_OnLevelUp;
         levelSystemManager.OnXPChanged += LevelSystemManager_OnXPChanged;
-        attributeManager.OnAttributeChanged += AttributeManager_OnAttributeChanged;
+        AttributeManager.OnAttributeStatChanged += AttributeManager_OnAttributeStatChanged;
         pctXP = 0;
         sliderValue = 0;
         isXPChanged = false;
@@ -96,7 +96,7 @@ public class AttributeUI : MonoBehaviour
     {
         LevelSystemManager.OnLevelUp -= LevelSystemManager_OnLevelUp;
         levelSystemManager.OnXPChanged -= LevelSystemManager_OnXPChanged;
-        attributeManager.OnAttributeChanged -= AttributeManager_OnAttributeChanged;
+        AttributeManager.OnAttributeStatChanged -= AttributeManager_OnAttributeStatChanged;
     }
 
     private void Update()
@@ -374,7 +374,7 @@ public class AttributeUI : MonoBehaviour
         UpdateLevelNumText(level);
     }
 
-    private void AttributeManager_OnAttributeChanged(AttributeTypes type)
+    private void AttributeManager_OnAttributeStatChanged(AttributeTypes type)
     {
         if (type == AttributeTypes.Strength || type == AttributeTypes.Dexterity)
         {

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Collections.ObjectModel;
 
 public class AttributeManager : Singleton<AttributeManager>
 {
@@ -94,11 +95,11 @@ public class AttributeManager : Singleton<AttributeManager>
     public float modSpell2Stat { get; private set; }
     public int modHPStat { get; private set; }
     public int modMPStat { get; private set; }
-    public float StrengthStat => Strength.ModifiedValue;
-    public float DexterityStat => Dexterity.ModifiedValue;
-    public float VitalityStat => Vitality.ModifiedValue;
-    public float SpiritStat => Spirit.ModifiedValue;
-    public float IntelligenceStat => Intelligence.ModifiedValue;
+    public float StrengthStat => strength.ModifiedValue;
+    public float DexterityStat => dexterity.ModifiedValue;
+    public float VitalityStat => vitality.ModifiedValue;
+    public float SpiritStat => spirit.ModifiedValue;
+    public float IntelligenceStat => intelligence.ModifiedValue;
     #endregion
 
     private float elapsedTime = 0;
@@ -117,15 +118,16 @@ public class AttributeManager : Singleton<AttributeManager>
     private AttributeUI attributeUI;
     private PlayerController playerController;
     private LevelSystemManager levelmanager;
-    private CharacterAttribute Strength;
-    private CharacterAttribute Dexterity;
-    private CharacterAttribute Vitality;
-    private CharacterAttribute Spirit;
-    private CharacterAttribute Intelligence;
+    private CharacterAttribute strength;
+    private CharacterAttribute dexterity;
+    private CharacterAttribute vitality;
+    private CharacterAttribute spirit;
+    private CharacterAttribute intelligence;
     private List<CharacterAttribute> characterAttributes;
     private Dictionary<int, Weapons> availableWeapons;
     private Dictionary<int, Spells> availableSpell;
-    public event Action<AttributeTypes> OnAttributeChanged;
+    //public event Action<AttributeTypes> OnAttributeChanged;
+    public static event Action<AttributeTypes> OnAttributeStatChanged;
 
     protected override void Awake()
     {
@@ -174,19 +176,30 @@ public class AttributeManager : Singleton<AttributeManager>
 
     public void SetupStats()
     {
+        if (characterAttributes != null)
+        {
+            foreach (var attribute in characterAttributes)
+            {
+                attribute.OnStatChanged -= Attribute_OnStatChanged;
+            }
+        }
         availableWeapons = new Dictionary<int, Weapons>();
         availableSpell = new Dictionary<int, Spells>();
         characterAttributes = new List<CharacterAttribute>();
-        Strength = new CharacterAttribute(StrengthInfo.BaseValue, AttributeTypes.Strength);
-        Dexterity = new CharacterAttribute(DexterityInfo.BaseValue, AttributeTypes.Dexterity);
-        Vitality = new CharacterAttribute(VitalityInfo.BaseValue, AttributeTypes.Vitality);
-        Spirit = new CharacterAttribute(SpiritInfo.BaseValue, AttributeTypes.Spirit);
-        Intelligence = new CharacterAttribute(IntelligenceInfo.BaseValue, AttributeTypes.Intelligence);
-        characterAttributes.Add(Strength);
-        characterAttributes.Add(Dexterity);
-        characterAttributes.Add(Vitality);
-        characterAttributes.Add(Spirit);
-        characterAttributes.Add(Intelligence);
+        strength = new CharacterAttribute(StrengthInfo.BaseValue, AttributeTypes.Strength);
+        dexterity = new CharacterAttribute(DexterityInfo.BaseValue, AttributeTypes.Dexterity);
+        vitality = new CharacterAttribute(VitalityInfo.BaseValue, AttributeTypes.Vitality);
+        spirit = new CharacterAttribute(SpiritInfo.BaseValue, AttributeTypes.Spirit);
+        intelligence = new CharacterAttribute(IntelligenceInfo.BaseValue, AttributeTypes.Intelligence);
+        characterAttributes.Add(strength);
+        characterAttributes.Add(dexterity);
+        characterAttributes.Add(vitality);
+        characterAttributes.Add(spirit);
+        characterAttributes.Add(intelligence);
+        foreach (var attribute in characterAttributes)
+        {
+            attribute.OnStatChanged += Attribute_OnStatChanged;
+        }
         availablePoints = 0;
     }
 
@@ -201,45 +214,45 @@ public class AttributeManager : Singleton<AttributeManager>
                     {
                         modStrengthPoint++;
                         point = GetSTRPoint();                       
-                        Strength.IncrementBaseValue(point, STRModType);
-                        UpdateWeaponStats();
-                        OnAttributeChanged?.Invoke(attributeType);
+                        strength.IncrementBaseValue(point, STRModType);
+                        //UpdateWeaponStats();
+                        //OnAttributeChanged?.Invoke(attributeType);
                     }
                     break;
                 case AttributeTypes.Dexterity:
                     {
                         modDexterityPoint++;
                         point = GetDEXPoint();                                               
-                        Dexterity.IncrementBaseValue(point, DEXModType);
-                        UpdateWeaponStats();
-                        OnAttributeChanged?.Invoke(attributeType);
+                        dexterity.IncrementBaseValue(point, DEXModType);
+                        //UpdateWeaponStats();
+                        //OnAttributeChanged?.Invoke(attributeType);
                     }
                     break;
                 case AttributeTypes.Vitality:
                     {
                         modVitalityPoint++;
                         point = GetVITPoint();                                            
-                        Vitality.IncrementBaseValue(point, VITModType);
-                        UpdateHPStat();
-                        OnAttributeChanged?.Invoke(attributeType);
+                        vitality.IncrementBaseValue(point, VITModType);
+                        //UpdateHPStat();
+                       //OnAttributeChanged?.Invoke(attributeType);
                     }
                     break;
                 case AttributeTypes.Spirit:
                     {
                         modSpiritPoint++;
                         point = GetSPRPoint();                                              
-                        Spirit.IncrementBaseValue(point, SPRModType);
-                        UpdateMPStat();
-                        OnAttributeChanged?.Invoke(attributeType);
+                        spirit.IncrementBaseValue(point, SPRModType);
+                        //UpdateMPStat();
+                        //OnAttributeChanged?.Invoke(attributeType);
                     }
                     break;
                 case AttributeTypes.Intelligence:
                     {
                         modIntelligencePoint++;
                         point = GetINTPoint();                                              
-                        Intelligence.IncrementBaseValue(point, INTModType);
-                        UpdateSpellStat();
-                        OnAttributeChanged?.Invoke(attributeType);
+                        intelligence.IncrementBaseValue(point, INTModType);
+                        //UpdateSpellStat();
+                        //OnAttributeChanged?.Invoke(attributeType);
                     }
                     break;
             }  
@@ -247,7 +260,7 @@ public class AttributeManager : Singleton<AttributeManager>
     }
 
     public void ApplyChanges()
-    {
+    {        
         attributes.strength = modStrengthPoint;
         attributes.dexterity = modDexterityPoint;
         attributes.vitality = modVitalityPoint;
@@ -262,7 +275,7 @@ public class AttributeManager : Singleton<AttributeManager>
         originalSpell2Stat = modSpell2Stat;
         originalHPStat = modHPStat;
         originalMPStat = modMPStat;
-        foreach(var attribute in characterAttributes)
+        foreach (var attribute in characterAttributes)
         {
             attribute.ApplyValue();
         }
@@ -290,6 +303,10 @@ public class AttributeManager : Singleton<AttributeManager>
         modMPStat = originalMPStat;
         if (!isInitialSetup)
         {
+            foreach (var attribute in characterAttributes)
+            {
+                attribute.ResetValue();
+            }
             playerController.ResetHP(modHPStat);
             playerController.ResetMP(modMPStat);
         }        
@@ -304,29 +321,25 @@ public class AttributeManager : Singleton<AttributeManager>
         modWeapon3Stat = originalWeapon3Stat;
         modWeapon4Stat = originalWeapon4Stat;
         modSpell1Stat = originalSpell1Stat;
-        modSpell2Stat = originalSpell2Stat;
-        foreach (var attribute in characterAttributes)
-        {
-            attribute.ResetValue();
-        }
+        modSpell2Stat = originalSpell2Stat;        
     }
 
     private float GetSTRPoint()
     {
         float point = 0;
-        if (Strength.BaseValue < STR1stThreshold)
+        if (strength.BaseValue < STR1stThreshold)
         {
             point = STR1stMultiplier;
         }
-        else if (Strength.BaseValue < STR2ndThreshold)
+        else if (strength.BaseValue < STR2ndThreshold)
         {
             point = STR2ndMultiplier;
         }
-        else if (Strength.BaseValue < STR3rdThreshold)
+        else if (strength.BaseValue < STR3rdThreshold)
         {
             point = STR3rdMultiplier;
         }
-        else if (Strength.BaseValue < STR4thThreshold)
+        else if (strength.BaseValue < STR4thThreshold)
         {
             point = STR4thMultiplier;
         }
@@ -340,19 +353,19 @@ public class AttributeManager : Singleton<AttributeManager>
     private float GetDEXPoint()
     {
         float point = 0;
-        if (Dexterity.BaseValue < DEX1stThreshold)
+        if (dexterity.BaseValue < DEX1stThreshold)
         {
             point = DEX1stMultiplier;
         }
-        else if (Dexterity.BaseValue < DEX2ndThreshold)
+        else if (dexterity.BaseValue < DEX2ndThreshold)
         {
             point = DEX2ndMultiplier;
         }
-        else if (Dexterity.BaseValue < DEX3rdThreshold)
+        else if (dexterity.BaseValue < DEX3rdThreshold)
         {
             point = DEX3rdMultiplier;
         }
-        else if (Dexterity.BaseValue < DEX4thThreshold)
+        else if (dexterity.BaseValue < DEX4thThreshold)
         {
             point = DEX4thMultiplier;
         }
@@ -366,19 +379,19 @@ public class AttributeManager : Singleton<AttributeManager>
     private float GetVITPoint()
     {
         float point = 0;
-        if (Vitality.BaseValue < VIT1stThreshold)
+        if (vitality.BaseValue < VIT1stThreshold)
         {
             point = VIT1stMultiplier;
         }
-        else if (Vitality.BaseValue < VIT2ndThreshold)
+        else if (vitality.BaseValue < VIT2ndThreshold)
         {
             point = VIT2ndMultiplier;
         }
-        else if (Vitality.BaseValue < VIT3rdThreshold)
+        else if (vitality.BaseValue < VIT3rdThreshold)
         {
             point = VIT3rdMultiplier;
         }
-        else if (Vitality.BaseValue < VIT4thThreshold)
+        else if (vitality.BaseValue < VIT4thThreshold)
         {
             point = VIT4thMultiplier;
         }
@@ -392,19 +405,19 @@ public class AttributeManager : Singleton<AttributeManager>
     private float GetSPRPoint()
     {
         float point = 0;
-        if (Spirit.BaseValue < SPR1stThreshold)
+        if (spirit.BaseValue < SPR1stThreshold)
         {
             point = SPR1stMultiplier;
         }
-        else if (Spirit.BaseValue < SPR2ndThreshold)
+        else if (spirit.BaseValue < SPR2ndThreshold)
         {
             point = SPR2ndMultiplier;
         }
-        else if (Spirit.BaseValue < SPR3rdThreshold)
+        else if (spirit.BaseValue < SPR3rdThreshold)
         {
             point = SPR3rdMultiplier;
         }
-        else if (Spirit.BaseValue < SPR4thThreshold)
+        else if (spirit.BaseValue < SPR4thThreshold)
         {
             point = SPR4thMultiplier;
         }
@@ -418,19 +431,19 @@ public class AttributeManager : Singleton<AttributeManager>
     private float GetINTPoint()
     {
         float point = 0;
-        if (Intelligence.BaseValue < INT1stThreshold)
+        if (intelligence.BaseValue < INT1stThreshold)
         {
             point = INT1stMultiplier;
         }
-        else if (Intelligence.BaseValue < INT2ndThreshold)
+        else if (intelligence.BaseValue < INT2ndThreshold)
         {
             point = INT2ndMultiplier;
         }
-        else if (Intelligence.BaseValue < INT3rdThreshold)
+        else if (intelligence.BaseValue < INT3rdThreshold)
         {
             point = INT3rdMultiplier;
         }
-        else if (Intelligence.BaseValue < INT4thThreshold)
+        else if (intelligence.BaseValue < INT4thThreshold)
         {
             point = INT4thMultiplier;
         }
@@ -534,12 +547,12 @@ public class AttributeManager : Singleton<AttributeManager>
 
     private void UpdateHPStat()
     {
-        modHPStat = playerController.GetModifiedHP();
+        modHPStat = playerController.MaxHitPoints;
     }
 
     private void UpdateMPStat()
     {
-        modMPStat = playerController.GetModifiedMP();
+        modMPStat = playerController.MaxMana;
     }
 
     private void InitialUpdateWeaponStats(WeaponTypes weaponType, int num)
@@ -661,6 +674,32 @@ public class AttributeManager : Singleton<AttributeManager>
             IncreasePoint(15);
             availablePoints = AvailablePoints;
         }
+    }
+
+    private void Attribute_OnStatChanged(AttributeTypes type)
+    {
+
+        if (type == AttributeTypes.Strength || type == AttributeTypes.Dexterity)
+        {
+            UpdateWeaponStats();
+        }
+        else if (type == AttributeTypes.Intelligence)
+        {
+            UpdateSpellStat();
+        }
+        else if (type == AttributeTypes.Vitality || type == AttributeTypes.Spirit)
+        {
+            playerController.UpdateResouce(type);
+            if (type == AttributeTypes.Vitality)
+            {
+                UpdateHPStat();
+            }
+            else
+            {
+                UpdateMPStat();
+            }
+        }
+        OnAttributeStatChanged?.Invoke(type);
     }
 
     private void AttributeUI_OnAddingAttributePoint(AttributeTypes type)

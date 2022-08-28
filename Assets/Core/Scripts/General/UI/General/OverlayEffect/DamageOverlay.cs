@@ -18,7 +18,7 @@ public class DamageOverlay : MonoBehaviour
         player = PlayerController.Instance;
         overlayManager = OverlayManager.Instance;
         maxHealth = player.MaxHitPoints;
-        CharacterAttribute.OnVITorSPRChanged += CharacterAttribute_OnVITorSPRChanged;
+        AttributeManager.OnAttributeStatChanged += AttributeManager_OnAttributeStatChanged;
         player.PlayerTarget.Resource.OnHealthLoss += Resource_OnHealthLoss;
         player.PlayerTarget.Resource.OnHealthGain += Resource_OnHealthGain;
         player.onResettingHP += Player_onResettingHP;
@@ -27,7 +27,7 @@ public class DamageOverlay : MonoBehaviour
 
     private void OnDisable()
     {
-        CharacterAttribute.OnVITorSPRChanged -= CharacterAttribute_OnVITorSPRChanged;
+        AttributeManager.OnAttributeStatChanged -= AttributeManager_OnAttributeStatChanged;
         player.PlayerTarget.Resource.OnHealthLoss -= Resource_OnHealthLoss;
         player.PlayerTarget.Resource.OnHealthGain -= Resource_OnHealthGain;
         player.onResettingHP -= Player_onResettingHP;
@@ -86,12 +86,9 @@ public class DamageOverlay : MonoBehaviour
         overlayManager.AddOverlayEffect(OverlayTypes.Damage);
     }
 
-    private void CharacterAttribute_OnVITorSPRChanged(AttributeTypes type)
+    private void AttributeManager_OnAttributeStatChanged(AttributeTypes type)
     {
-        if (type == AttributeTypes.Vitality)
-        {
-            maxHealth = player.MaxHitPoints;
-        }
+        maxHealth = player.MaxHitPoints;
     }
 
     private void Player_onResettingHP()
