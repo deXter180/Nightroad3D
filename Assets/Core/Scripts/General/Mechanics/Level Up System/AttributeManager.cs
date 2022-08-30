@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 public class AttributeManager : Singleton<AttributeManager>
 {
     #region SerializedProperties
+
     //Strength
     [SerializeField] private AttributeModType STRModType;
     [SerializeField] private float STR1stMultiplier;
@@ -76,6 +77,7 @@ public class AttributeManager : Singleton<AttributeManager>
     #endregion
 
     #region Properties
+
     public int AvailablePoints { get; private set; }
     public int modStrengthPoint { get; private set; }
     public int modDexterityPoint { get; private set; }
@@ -100,7 +102,10 @@ public class AttributeManager : Singleton<AttributeManager>
     public float VitalityStat => vitality.ModifiedValue;
     public float SpiritStat => spirit.ModifiedValue;
     public float IntelligenceStat => intelligence.ModifiedValue;
+
     #endregion
+
+    #region Variables
 
     private float elapsedTime = 0;
     private int pointsToAdd = 1;
@@ -126,9 +131,11 @@ public class AttributeManager : Singleton<AttributeManager>
     private List<CharacterAttribute> characterAttributes;
     private Dictionary<int, Weapons> availableWeapons;
     private Dictionary<int, Spells> availableSpell;
-    //public event Action<AttributeTypes> OnAttributeChanged;
     public static event Action<AttributeTypes> OnAttributeStatChanged;
 
+    #endregion
+
+    #region Functions
     protected override void Awake()
     {
         base.Awake();   
@@ -215,8 +222,6 @@ public class AttributeManager : Singleton<AttributeManager>
                         modStrengthPoint++;
                         point = GetSTRPoint();                       
                         strength.IncrementBaseValue(point, STRModType);
-                        //UpdateWeaponStats();
-                        //OnAttributeChanged?.Invoke(attributeType);
                     }
                     break;
                 case AttributeTypes.Dexterity:
@@ -224,8 +229,6 @@ public class AttributeManager : Singleton<AttributeManager>
                         modDexterityPoint++;
                         point = GetDEXPoint();                                               
                         dexterity.IncrementBaseValue(point, DEXModType);
-                        //UpdateWeaponStats();
-                        //OnAttributeChanged?.Invoke(attributeType);
                     }
                     break;
                 case AttributeTypes.Vitality:
@@ -233,8 +236,6 @@ public class AttributeManager : Singleton<AttributeManager>
                         modVitalityPoint++;
                         point = GetVITPoint();                                            
                         vitality.IncrementBaseValue(point, VITModType);
-                        //UpdateHPStat();
-                       //OnAttributeChanged?.Invoke(attributeType);
                     }
                     break;
                 case AttributeTypes.Spirit:
@@ -242,8 +243,6 @@ public class AttributeManager : Singleton<AttributeManager>
                         modSpiritPoint++;
                         point = GetSPRPoint();                                              
                         spirit.IncrementBaseValue(point, SPRModType);
-                        //UpdateMPStat();
-                        //OnAttributeChanged?.Invoke(attributeType);
                     }
                     break;
                 case AttributeTypes.Intelligence:
@@ -251,8 +250,6 @@ public class AttributeManager : Singleton<AttributeManager>
                         modIntelligencePoint++;
                         point = GetINTPoint();                                              
                         intelligence.IncrementBaseValue(point, INTModType);
-                        //UpdateSpellStat();
-                        //OnAttributeChanged?.Invoke(attributeType);
                     }
                     break;
             }  
@@ -646,9 +643,11 @@ public class AttributeManager : Singleton<AttributeManager>
         }
         availableSpell.Remove(num);
     }
-
+    #endregion
 
     //~~~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~~~~
+
+    #region Callback
 
     private void SceneLoader_OnMainMenuSceneLoad()
     {
@@ -749,6 +748,8 @@ public class AttributeManager : Singleton<AttributeManager>
         attributeUI.UpdateSpellOGStatText(num);
         attributeUI.UpdateSpellModStatText(num);
     }
+
+    #endregion
 }
 
 [System.Serializable]

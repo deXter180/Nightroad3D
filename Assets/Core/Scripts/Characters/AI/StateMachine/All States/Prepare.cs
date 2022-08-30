@@ -14,7 +14,7 @@ public class Prepare : State
         enemy.CheckDistance();
         if (enemyBrain.IsFrozen)
         {
-            stateMachine.SetState(States.Stop);
+            stateMachine.SetState(AIStates.Stop);
         }
         else
         {
@@ -26,17 +26,17 @@ public class Prepare : State
             {
                 if (enemy.IsTargetInRange)
                 {
-                    stateMachine.SetState(States.Attack);
+                    stateMachine.SetState(AIStates.Attack);
                 }
                 else
                 {
                     if (enemyTrigger.IsTargetFleed)
                     {
-                        stateMachine.SetState(States.Roam);                      
+                        stateMachine.SetState(AIStates.Roam);                      
                     }
                     else
                     {
-                        stateMachine.SetState(States.Chase);
+                        stateMachine.SetState(AIStates.Chase);
                     }
                 }
             }            

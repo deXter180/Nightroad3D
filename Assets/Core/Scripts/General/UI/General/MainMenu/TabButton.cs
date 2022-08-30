@@ -8,10 +8,16 @@ using UnityEngine.EventSystems;
 [RequireComponent(typeof(Image))]
 public class TabButton : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, IPointerExitHandler
 {
+    #region Variables
+
     private TabGroup tabGroup;
     private Image image;
     public static event Action<TabButton> OnTabSelected;
     public static event Action<TabButton> OnTabDeselected;
+
+    #endregion
+
+    #region General
 
     private void Awake()
     {
@@ -35,7 +41,11 @@ public class TabButton : MonoBehaviour, IPointerEnterHandler, IPointerClickHandl
         OnTabDeselected?.Invoke(this);
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    #region Callbacks
 
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -51,4 +61,6 @@ public class TabButton : MonoBehaviour, IPointerEnterHandler, IPointerClickHandl
     {
         tabGroup.OnTabExit(this);
     }
+
+    #endregion
 }

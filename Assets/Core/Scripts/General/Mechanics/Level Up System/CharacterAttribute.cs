@@ -6,6 +6,8 @@ using UnityEngine;
 [Serializable]
 public class CharacterAttribute
 {
+    #region Variables
+
     private float baseValue = 0;
     private AttributeTypes attributeType;
     public virtual float ModifiedValue 
@@ -30,6 +32,10 @@ public class CharacterAttribute
     public event Action<AttributeTypes> OnStatChanged;
     public float BaseValue => baseValue;
     public AttributeTypes AttributeType => attributeType;
+
+    #endregion
+
+    #region General
 
     public CharacterAttribute(AttributeTypes AT)
     {
@@ -140,4 +146,6 @@ public class CharacterAttribute
         OnStatChanged?.Invoke(attributeType);
         return (float)Math.Round(finalValue, 2);
     }
+
+    #endregion
 }

@@ -17,7 +17,7 @@ public class Attack : State
         enemy.CheckDistance();
         if (enemyBrain.IsFrozen)
         {
-            stateMachine.SetState(States.Stop);
+            stateMachine.SetState(AIStates.Stop);
         }
         else
         {
@@ -29,18 +29,18 @@ public class Attack : State
                 }
                 else
                 {
-                    stateMachine.SetState(States.Prepare);
+                    stateMachine.SetState(AIStates.Prepare);
                 }
             }
             else
             {
                 if (enemyTrigger.IsTargetFleed)
                 {
-                    stateMachine.SetState(States.Roam);                                      
+                    stateMachine.SetState(AIStates.Roam);                                      
                 }
                 else
                 {
-                    stateMachine.SetState(States.Chase);
+                    stateMachine.SetState(AIStates.Chase);
                 }
             }
         }       

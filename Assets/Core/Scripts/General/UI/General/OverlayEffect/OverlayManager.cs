@@ -6,9 +6,15 @@ using UnityEngine.Rendering.Universal;
 [ExecuteAlways]
 public class OverlayManager : Singleton<OverlayManager>
 {
+    #region Variables
+
     private ScriptableRendererFeature PosterizeEffect;
     [SerializeField] private UniversalRendererData rendererData;
     private Dictionary<OverlayTypes, Blit> blitRendererFeatures = new Dictionary<OverlayTypes, Blit>();
+
+    #endregion
+
+    #region General
 
     protected override void Awake()
     {
@@ -93,7 +99,11 @@ public class OverlayManager : Singleton<OverlayManager>
         rendererData.SetDirty();
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~
+
+    #region Callbacks
 
     private void FPSCamControl_OnFPSCameraDisable()
     {
@@ -105,5 +115,7 @@ public class OverlayManager : Singleton<OverlayManager>
     {
         PosterizeEffect.SetActive(true);
     }
+
+    #endregion
 }
 

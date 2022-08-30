@@ -7,6 +7,8 @@ public class Grid<GridObject>
 {
     //~~~~~~~~~~~~~~~~~~~~~~~~ Event Definition ~~~~~~~~~~~~~~~~~~
 
+    #region Events
+
     public event EventHandler<OnGridValueChangedEventArgs> OnGridValueChanged;
     public class OnGridValueChangedEventArgs : EventArgs
     {
@@ -20,7 +22,11 @@ public class Grid<GridObject>
         }
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~~~~~ Variables ~~~~~~~~~~~~~~~~~~~~~
+
+    #region Variables
 
     private int width;
     private int height;
@@ -65,9 +71,11 @@ public class Grid<GridObject>
         }
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~~~~ Public Utility Methods ~~~~~~~~~~~~~~~~~~~~
 
-    #region
+    #region Utilities
 
     public int GetWidth()
     {
@@ -201,11 +209,9 @@ public class Grid<GridObject>
     #endregion
 }
 
-
-
 //~~~~~~~~~~~~~~~ Grid Object Class ~~~~~~~~~~~~~~~~
 
-#region
+#region GridObject
 
 public class GridObject
 {

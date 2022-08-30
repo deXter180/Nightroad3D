@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class CollectionGoal : Goal
 {
+    #region General
+
     public ItemTypes ItemType { get; private set; }
 
     public CollectionGoal (ItemTypes itemType, int requiredAmount)
@@ -29,6 +31,10 @@ public class CollectionGoal : Goal
         InventorySystem.OnRemovingFromInventory -= InventorySystem_OnRemovingFromInventory;
     }
 
+    #endregion
+
+    #region Callbacks
+
     private void InventorySystem_OnRemovingFromInventory(ItemTypes obj, PlacedObject PO)
     {
         if (ItemType == obj)
@@ -46,4 +52,6 @@ public class CollectionGoal : Goal
             Evaluate();
         }
     }
+
+    #endregion
 }

@@ -18,13 +18,13 @@ public class Chase : State
         enemy.CheckDistance();
         if (enemyBrain.IsFrozen)
         {
-            stateMachine.SetState(States.Stop);
+            stateMachine.SetState(AIStates.Stop);
         }
         else
         {
             if (enemy.IsTargetInRange)
             {
-                stateMachine.SetState(States.Attack);
+                stateMachine.SetState(AIStates.Attack);
             }
             else
             {
@@ -34,7 +34,7 @@ public class Chase : State
                 }
                 else
                 {
-                    stateMachine.SetState(States.Roam);
+                    stateMachine.SetState(AIStates.Roam);
                 }
             }                      
         }        

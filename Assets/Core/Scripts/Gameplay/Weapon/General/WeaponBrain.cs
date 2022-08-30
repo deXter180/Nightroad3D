@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class WeaponBrain : MonoBehaviour
 {
+    #region Variables
+
     [SerializeField] private WeaponTypes weaponTypes;
     [SerializeField] private WeaponCategories weaponCategories;
     private Animator animator;
@@ -30,6 +32,10 @@ public class WeaponBrain : MonoBehaviour
     private int AttackHash = Animator.StringToHash("Attack");
     private int IdleHash = Animator.StringToHash("Idle");
     private int ReloadHash = Animator.StringToHash("Reload");
+
+    #endregion
+
+    #region General
 
     private void Awake()
     {
@@ -120,7 +126,11 @@ public class WeaponBrain : MonoBehaviour
         AssetLoader.CreateAndReleaseAsset(GetWeaponName(), HitPointPos, 0.3f);
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~ Weaapon Animation ~~~~~~~~~~~~~~~~~~
+
+    #region AnimationControl
 
     private void PlayAnim()
     {
@@ -180,9 +190,13 @@ public class WeaponBrain : MonoBehaviour
             animType = AnimType.Walk;
             OnStopPlayingReload?.Invoke();
         }
-    }   
+    }
+
+    #endregion
 
     //~~~~~~~~~~~~~~~~~~~~~ Event Callback ~~~~~~~~~~~~~~~~~~~~~
+
+    #region Callbacks
 
     private void Weapons_OnAttack(object sender, OnPlayerAttackEventArg e)
     {
@@ -228,4 +242,5 @@ public class WeaponBrain : MonoBehaviour
         
     }
 
+    #endregion
 }

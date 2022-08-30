@@ -7,6 +7,8 @@ using UnityEngine.VFX;
 [CreateAssetMenu(fileName = "Spell", menuName = "Spells/New")]
 public class SpellBaseSO : ScriptableObject
 {
+    #region SerializedVariables
+
     [SerializeField] private SpellTypes spellType;
     [SerializeField] private SpellCategories spellCategory;
     [SerializeField] private ProjectileTypes projectileType;
@@ -18,7 +20,16 @@ public class SpellBaseSO : ScriptableObject
     [SerializeField] private int effectAmount;
     [SerializeField] private int manaCost;
     [SerializeField] private float statMultiplier;
+
+    #endregion
+
+    #region Variables
+
     private float modifiedValue = 0;
+
+    #endregion
+
+    #region Properties
 
     public int ManaCost => manaCost;
     public int EffectAmount => effectAmount;
@@ -32,6 +43,10 @@ public class SpellBaseSO : ScriptableObject
     public ProjectileTypes ProjectileType => projectileType;
     public SpellCastTypes CastVfxType => castVfxType;
 
+    #endregion
+
+    #region Mechanics
+
     public void DoAttack(Target enemyTarget, float enemyDodgeChance)
     {
         enemyTarget.DoDamage(Mathf.FloorToInt(modifiedValue), enemyDodgeChance);
@@ -41,4 +56,6 @@ public class SpellBaseSO : ScriptableObject
     {
         modifiedValue = value;
     }
+
+    #endregion
 }

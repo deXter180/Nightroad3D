@@ -9,10 +9,16 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 public class SceneLoader : PersistentSingleton<SceneLoader>
 {
+    #region Variables
+
     public static bool clearPreviousScene = false;
     public static SceneInstance previousLoadedScene;
     public static event Action OnNewGameStart;
     public static event Action OnMainMenuSceneLoad;
+
+    #endregion
+
+    #region GeneralFunctions
 
     protected override void Awake()
     {
@@ -32,6 +38,10 @@ public class SceneLoader : PersistentSingleton<SceneLoader>
         AssetLoader.OnSingleSceneLoad -= AssetLoader_OnSingleSceneLoad;
         AssetLoader.OnAdditiveSceneLoad -= AssetLoader_OnAdditiveSceneLoad;
     }
+
+    #endregion
+
+    #region MechanicsFunctions
 
     public static void LoadMainScene()
     {
@@ -62,7 +72,11 @@ public class SceneLoader : PersistentSingleton<SceneLoader>
         AssetLoader.LoadAddressableLevelAdditive(nameKey, previousLoadedScene, clearPreviousScene);
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    #region Callbacks
 
     private void AssetLoader_OnLoadingNewGameInstance(SceneInstance obj)
     {
@@ -87,4 +101,6 @@ public class SceneLoader : PersistentSingleton<SceneLoader>
         previousLoadedScene = obj;
         clearPreviousScene = true;
     }
+
+    #endregion
 }

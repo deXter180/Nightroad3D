@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PickedObject : MonoBehaviour
 {
+    #region Variables
+
     private string hightlightMaterial = "Outline_SpriteLit";
     private BoxCollider col;
     private Rigidbody RB;
@@ -15,9 +17,18 @@ public class PickedObject : MonoBehaviour
     private ArmorTypes armor;
     private InventoryItemSO itemSO;
     private static float throwDistance = 5f;
+
+    #endregion
+
+    #region Properties
+
     public WeaponTypes WeaponTypes { get => weapon; }
     public SpellTypes SpellType { get => spell; }
     public ItemTypes ItemType { get => item; }
+
+    #endregion
+
+    #region General
 
     private void Awake()
     {
@@ -39,6 +50,10 @@ public class PickedObject : MonoBehaviour
         col.isTrigger = true;
         RB.isKinematic = true;
     }
+
+    #endregion
+
+    #region Mechanics
 
     public InventoryItemSO GetItemSO()
     {
@@ -200,5 +215,6 @@ public class PickedObject : MonoBehaviour
         }        
     }
 
-    
+    #endregion
+
 }

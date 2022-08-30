@@ -18,7 +18,7 @@ public class Roam : State
     {
         if (enemyBrain.IsFrozen)
         {
-            stateMachine.SetState(States.Stop);
+            stateMachine.SetState(AIStates.Stop);
         }
         else
         {
@@ -28,7 +28,7 @@ public class Roam : State
             }
             else
             {
-                stateMachine.SetState(States.Chase);
+                stateMachine.SetState(AIStates.Chase);
             }
         }       
     }

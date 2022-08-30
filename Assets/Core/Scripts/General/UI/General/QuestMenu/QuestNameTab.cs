@@ -6,12 +6,18 @@ using UnityEngine.UI;
 
 public class QuestNameTab : MonoBehaviour
 {
+    #region Variables
+
     [SerializeField] private TextMeshProUGUI questText;
     private Color defaultColor;
     public QuestSO quest { get; private set; }
     private bool isSelected;
     private bool isFinished;
     private QuestMenuManager questManager;
+
+    #endregion
+
+    #region General
 
     private void OnEnable()
     {       
@@ -20,6 +26,10 @@ public class QuestNameTab : MonoBehaviour
         isSelected = false;
         isFinished = false;
     }
+
+    #endregion
+
+    #region Mechanics
 
     public void SetQuest(QuestSO questSO)
     {
@@ -57,5 +67,6 @@ public class QuestNameTab : MonoBehaviour
         questText.color = Color.gray;
         isFinished = true;
     }
-   
+
+    #endregion
 }

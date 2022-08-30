@@ -4,9 +4,16 @@ using UnityEngine;
 
 public class MeleeFly : MeleeEnemy
 {
+    #region Variables
+
     private Vector3 defaultPos;
     private float travelTime = 5f;
     private float attackHeight = 120f;
+
+    #endregion
+
+    #region General
+
     public MeleeFly(EnemyBrain EB) : base(EB)
     {
 
@@ -43,19 +50,5 @@ public class MeleeFly : MeleeEnemy
         base.HandleAttack(target, dodgeChance);
     }
 
-    //protected override void Prepare()
-    //{
-    //    targetPosition = GetRandomPosition(enemySO.AttackRange);
-    //    navAgent.SetDestination(targetPosition);
-    //    base.Prepare();
-    //}
-
-    //protected override void CheckPrep()
-    //{
-    //    if (transform.position == targetPosition)
-    //    {
-    //        IsPreping = false;
-    //    }
-    //    base.CheckPrep();
-    //}
+    #endregion
 }

@@ -5,6 +5,8 @@ using System;
 
 public abstract class State
 {
+    #region Variables
+
     protected GameObject gameObject;
     protected Transform enemyTransform;
     protected Animator animator;
@@ -14,6 +16,10 @@ public abstract class State
     protected Enemy enemy;
     protected EnemySO enemySO;
     protected EnemyTrigger enemyTrigger;
+
+    #endregion
+
+    #region General
 
     public State(GameObject gameObject, StateMachine SM)
     {
@@ -31,7 +37,8 @@ public abstract class State
     public abstract void Tick();
     public abstract void OnEnter();
     public abstract void OnExit();
-    
+
+    #endregion
 }
 
 

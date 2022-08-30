@@ -5,6 +5,8 @@ using System;
 
 public class RangedWeapon : MonoBehaviour
 {
+    #region Variables
+
     protected float bloom;
     private int recoilIndex = 0;
     protected WeaponTypes weaponType;
@@ -22,6 +24,20 @@ public class RangedWeapon : MonoBehaviour
     protected bool isReloading;
     protected bool isReady = false;
     public static event Action<RangedWeapon> OnAmmoAffected;
+
+    #endregion
+
+    #region Properties
+
+    public int CurrentMagazineAmmo => currentMagazineAmmo;
+    public int CurrentTotalAmmo => currentTotalAmmo;
+    public int MaxMagazineAmmo => maxMagazineAmmo;
+    public int MaxTotalAmmo => maxTotalAmmo;
+    public bool IsReady => isReady;
+
+    #endregion
+
+    #region General
 
     protected virtual void Awake()
     {
@@ -48,16 +64,14 @@ public class RangedWeapon : MonoBehaviour
         weaponBrain.OnStopPlayingReload -= WeaponBrain_OnStopPlayingReload;
     }
 
+    #endregion
+
+    #region Mechanics
+
     protected static void CallEvent(RangedWeapon RG)
     {
         OnAmmoAffected?.Invoke(RG);
-    }
-
-    public int CurrentMagazineAmmo => currentMagazineAmmo;
-    public int CurrentTotalAmmo => currentTotalAmmo;
-    public int MaxMagazineAmmo => maxMagazineAmmo;
-    public int MaxTotalAmmo => maxTotalAmmo;
-    public bool IsReady => isReady;
+    } 
 
     public bool AddAmmo(int ammoAmount)
     {
@@ -117,10 +131,16 @@ public class RangedWeapon : MonoBehaviour
         return false;
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~~~~~
+
+    #region Callbacks
 
     private void WeaponBrain_OnStopPlayingReload()
     {
         isReloading = false;
     }
+
+    #endregion
 }

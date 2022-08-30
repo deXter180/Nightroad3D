@@ -9,8 +9,8 @@ using Ink.Runtime;
 [CreateAssetMenu(fileName = "NewQuest", menuName = "Quests/New")]
 public class QuestSO : ScriptableObject
 {
-    private Timer _timer;
-    private Story questStory;
+    #region SerializedVariables
+
     [Header("QuestData")]
     [SerializeField][Tooltip("ID of the Quest")] private string _id;
     [SerializeField] [Tooltip("Name of the Quest")] private string _name;
@@ -26,6 +26,18 @@ public class QuestSO : ScriptableObject
     [SerializeField] private int _durationInMinutes;
     [SerializeField] private List<GoalItem> _goalItems;
     [SerializeField] private RewardItems _rewardItem;
+
+    #endregion
+
+    #region Variables
+
+    private Timer _timer;
+    private Story questStory;
+
+    #endregion
+
+    #region Properties
+
     public List<Goal> Goals { get; private set; } = new List<Goal>();
     public string TimeLeft { get; private set; }
     public bool AllGoalsSatisfied { get; private set; }
@@ -43,8 +55,17 @@ public class QuestSO : ScriptableObject
     public int DurationInMinutes => _durationInMinutes;
     public Timer QuestTimer => _timer;
     public Story QuestStory => questStory;
+
+    #endregion
+
+    #region Events
+
     public event Action<string, QuestSO> OnQuestCompleted;
     public event Action<string, QuestSO> OnQuestFailed;
+
+    #endregion
+
+    #region Mechanics
 
     public void StartQuest()
     {
@@ -217,7 +238,11 @@ public class QuestSO : ScriptableObject
         Goals.Clear();
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~~~
+
+    #region Callbacks
 
     private void Story_onChoosePathString(string arg1, object[] arg2)
     {
@@ -245,7 +270,11 @@ public class QuestSO : ScriptableObject
     {
         Debug.Log(message);
     }
+
+    #endregion
 }
+
+#region Containers
 
 [Serializable]
 public class GoalItem
@@ -286,3 +315,5 @@ public class InventoryItems
     public ItemTypes Item;
     public int Amount;
 }
+
+#endregion

@@ -5,10 +5,21 @@ using UnityEngine.UI;
 
 public class PlayerResourceBarUI : MonoBehaviour
 {
+    #region SerializedVariables
+
     [SerializeField] private float updateSpeedInSec = 0.5f;
     [SerializeField] private Image healthBarImage;
     [SerializeField] private Image manaBarImage;
+
+    #endregion
+
+    #region Variables
+
     private PlayerController player;
+
+    #endregion
+
+    #region General
 
     private void Start()
     {
@@ -22,6 +33,10 @@ public class PlayerResourceBarUI : MonoBehaviour
         SceneLoader.OnNewGameStart -= SceneLoader_OnNewGameStart;
         UnSunbscribeEvent(player);
     }
+
+    #endregion
+
+    #region Mechanics
 
     public void RunOnPlayerDeath()
     {
@@ -69,8 +84,11 @@ public class PlayerResourceBarUI : MonoBehaviour
         manaBarImage.fillAmount = 1;
     }
 
+    #endregion
 
     //~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~
+
+    #region Callbacks
 
     private void SceneLoader_OnNewGameStart()
     {
@@ -104,4 +122,6 @@ public class PlayerResourceBarUI : MonoBehaviour
     {
         UnSunbscribeEvent(player);
     }
+
+    #endregion
 }

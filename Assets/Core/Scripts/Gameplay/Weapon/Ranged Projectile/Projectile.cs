@@ -4,9 +4,16 @@ using UnityEngine;
 
 public class Projectile :  MonoBehaviour
 {
+    #region SerializedVariables
+
     [SerializeField] private float ProjectileSpeed;
     [SerializeField] private float MaxLifeTime;
     [SerializeField] private ProjectileTypes projectileType;
+
+    #endregion
+
+    #region Variables
+
     private Vector3 firePositionWeapon;
     private float LifeTime;
     private PlayerController player;
@@ -19,6 +26,10 @@ public class Projectile :  MonoBehaviour
     private int enemyLayer = 1 << 12;
     private Rigidbody rb;
     private ObjectPooler objectPooler;
+
+    #endregion
+
+    #region General
 
     private void Start()
     {
@@ -90,8 +101,6 @@ public class Projectile :  MonoBehaviour
     {
         return (player.PlayerTransform.position - attackingEnemy.EnemyTransform.position).normalized;
     }
-
-    //~~~~~~~~~~~~~~ Event Callbacks ~~~~~~~~~~~~~~~~~
 
     private void OnCollisionEnter(Collision collision)
     {       
@@ -177,7 +186,11 @@ public class Projectile :  MonoBehaviour
         }
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~~ Event Callback ~~~~~~~~~~~~~~~~~~~
+
+    #region Callbacks
 
     private void Weapons_OnAttack(object sender, OnPlayerAttackEventArg e)
     {
@@ -197,11 +210,5 @@ public class Projectile :  MonoBehaviour
         }
     }
 
+    #endregion
 }
-
-
-
-
-
-
-    

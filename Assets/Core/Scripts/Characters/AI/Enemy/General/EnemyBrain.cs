@@ -5,7 +5,9 @@ using UnityEngine.VFX;
 using System;
 
 public class EnemyBrain : EnemyCore
-{   
+{
+    #region Variables
+
     private int layer = 1 << 0;
     private bool isDying;
     private bool isSpellAffected;
@@ -29,19 +31,28 @@ public class EnemyBrain : EnemyCore
     private EquipMenuControl menuControl;
     private AOETargeted spellCasted;
     private SpellTypes spellType;
-    private StateMachine stateMachine;
-    public Vector3 StartPos => startPos;
-    public EnemySO ThisEnemySO => enemySO;
-    public EquipMenuControl MenuControl => menuControl;
-    public SpellTypes SpellType => spellType; 
-    public bool IsHitByLightening { get; private set; }
-    public bool IsSpellAffected => isSpellAffected; 
-    public bool IsFrozen  => isFrozen; 
+    private StateMachine stateMachine;    
     [HideInInspector] public bool IsSetupDone = false;
     private int angleHash = Animator.StringToHash("Angle");
     private int moveHash = Animator.StringToHash("IsMoving");
     private int attackHash = Animator.StringToHash("IsAttacking");
-    private int deathHash = Animator.StringToHash("IsDead");    
+    private int deathHash = Animator.StringToHash("IsDead");
+
+    #endregion
+
+    #region Properties
+
+    public Vector3 StartPos => startPos;
+    public EnemySO ThisEnemySO => enemySO;
+    public EquipMenuControl MenuControl => menuControl;
+    public SpellTypes SpellType => spellType;
+    public bool IsHitByLightening { get; private set; }
+    public bool IsSpellAffected => isSpellAffected;
+    public bool IsFrozen => isFrozen;
+
+    #endregion
+
+    #region General
 
     private void Start()
     {
@@ -102,16 +113,6 @@ public class EnemyBrain : EnemyCore
             }              
         }         
     }
-
-//#if UNITY_EDITOR
-
-//    private void OnDrawGizmos()
-//    {
-//        Gizmos.color = Color.cyan;
-//        Gizmos.DrawSphere(transform.position, enemySO.AttackRange);
-//    }
-
-//#endif
 
     private void OnTriggerEnter(Collider other)
     {
@@ -200,9 +201,11 @@ public class EnemyBrain : EnemyCore
         IsHitByLightening = true;
     }
 
-    
+    #endregion
 
     //~~~~~~~~~~~~~~~~~~~ Animation ~~~~~~~~~~~~~~~~~~~
+
+    #region AnimationControl
 
     public void SetAnimIndex(int index)
     {
@@ -264,7 +267,11 @@ public class EnemyBrain : EnemyCore
         }       
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~
+
+    #region Callbacks
 
     private void EnemyTarget_OnDodge()
     {
@@ -323,4 +330,6 @@ public class EnemyBrain : EnemyCore
         spellCasted = e.spell;
         spellType = e.spellType;
     }
+
+    #endregion
 }

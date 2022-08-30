@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class AudioManager : Singleton<AudioManager>
 {
+    #region Variables
+
     [SerializeField] private AudioMixer audioMixer;
     [SerializeField] private AudioSource musicAudioSource;
     [SerializeField] private AudioSource weaponAudioSource;
@@ -22,6 +24,10 @@ public class AudioManager : Singleton<AudioManager>
     private static AudioSource MusicAudioSource { get; set; }
     private static AudioSource WeaponAudioSource { get; set; }
     private static AudioSource EnvironmentAudioSource { get; set; }
+
+    #endregion
+
+    #region General
 
     protected override void Awake()
     {
@@ -60,6 +66,10 @@ public class AudioManager : Singleton<AudioManager>
             PlayMusicSound(MusicTypes.Normal, 0, false, true);            
         }
     }
+
+    #endregion
+
+    #region Controls
 
     public void PlayRainAudio()
     {
@@ -188,6 +198,10 @@ public class AudioManager : Singleton<AudioManager>
         EnvironmentAudioSource.Stop();
     }
 
+    #endregion
+
+    #region VolumeControl
+
     private void SetMasterVolume(float value)
     {
         audioMixer.SetFloat(MIXER_MASTER, Mathf.Log10(value) * 20);
@@ -218,4 +232,6 @@ public class AudioManager : Singleton<AudioManager>
             SetSFXVolume(sfxVol);
         }        
     }
+
+    #endregion
 }

@@ -8,13 +8,24 @@ using TMPro;
 
 public class InputManager : MonoBehaviour
 {
-    public static event Action RebindComplete;
-    public static event Action RebindCancelled;
-    public static event Action<InputAction, int> RebindStarted;    
-    public static PlayerInputAsset InputActions;  
+    #region Variables
+
+    public static PlayerInputAsset InputActions;
     public static bool InputReady { get => inputReady; }
     private static bool inputReady = false;
     public static List<InputMenuTab> MenuTabsList = new List<InputMenuTab>();
+
+    #endregion
+
+    #region Events
+
+    public static event Action RebindComplete;
+    public static event Action RebindCancelled;
+    public static event Action<InputAction, int> RebindStarted;
+
+    #endregion
+
+    #region General
 
     private void Awake()
     {
@@ -36,6 +47,10 @@ public class InputManager : MonoBehaviour
         InputActions.Disable();
         InputActions.Dispose();
     }
+
+    #endregion
+
+    #region Mechanics
 
     public static void StartRebind(string actionName, int bindingIndex, TMP_Text statusText)
     {
@@ -185,4 +200,6 @@ public class InputManager : MonoBehaviour
         }
         SaveBindingOverride(action);
     }
+
+    #endregion
 }

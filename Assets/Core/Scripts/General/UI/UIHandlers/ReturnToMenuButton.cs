@@ -4,12 +4,18 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class ReturnToMenuButton : MonoBehaviour
-{  
+{
+    #region Variables
+
     [SerializeField] private Sprite tabHoverImage;
     private RectTransform rectTransform;
     private Image image;
     private Sprite tabIdleImage;
     private Color defaultColor;
+
+    #endregion
+
+    #region General
 
     private void Awake()
     {
@@ -41,4 +47,5 @@ public class ReturnToMenuButton : MonoBehaviour
         }
     }
 
+    #endregion
 }

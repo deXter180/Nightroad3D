@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class AssassinationGoal : Goal
 {
+    #region General
+
     public string EnemyID { get; private set; }
     public string EnemyName { get; private set; }
     public EnemyTypes ET { get; private set; }
@@ -30,6 +32,10 @@ public class AssassinationGoal : Goal
         Target.OnEnemyDead -= Target_OnEnemyDead;
     }
 
+    #endregion
+
+    #region Callbacks
+
     private void Target_OnEnemyDead(EnemyCore EC)
     {
         if (EC.EnemyType == ET)
@@ -41,4 +47,6 @@ public class AssassinationGoal : Goal
             }
         }
     }
+
+    #endregion
 }

@@ -10,6 +10,8 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 public static class AssetLoader
 {
+    #region Events
+
     public static event Action<GameObject> OnGOCreated;
     public static event Action<GameObject, AssetReference> OnGOCreatedWithAssetRef;
     public static event Action<IList<ScriptableObject>> OnSOsLoaded;
@@ -20,7 +22,11 @@ public static class AssetLoader
     public static event Action<SceneInstance> OnAdditiveSceneLoad;
     public static Dictionary<GameObject, AsyncOperationHandle> AsyncHandleDict = new Dictionary<GameObject, AsyncOperationHandle>();
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~~~~~~~ Load Assets ~~~~~~~~~~~~~~~~~~
+
+    #region Functions
 
     public static void LoadSOAssets(string nameKey, Action<ScriptableObject> callback)
     {
@@ -199,11 +205,13 @@ public static class AssetLoader
             previousScene = new SceneInstance();
         };
     }
+
+    #endregion
 }
 
 //~~~~~~~~~~~~~~~~~~~ Essential Enums ~~~~~~~~~~~~~~~~~~~~~~
 
-#region
+#region Enums
 
 [Serializable]
 public class AssetPackages
@@ -218,6 +226,15 @@ public class RequiredStatForEquip
 {
     public AttributeTypes attributeType;
     public int attributeValue;
+}
+
+public enum AIStates
+{
+    Stop,
+    Roam,
+    Chase,
+    Prepare,
+    Attack
 }
 
 public enum WeaponTypes
@@ -374,6 +391,13 @@ public enum AttributeTypes
     Vitality,
     Spirit,
     Intelligence
+}
+
+public enum AttributeModType
+{
+    Flat = 100,
+    PercentAdd = 200,
+    PercentMult = 300,
 }
 
 #endregion

@@ -8,18 +8,29 @@ using System;
 
 public class DialogueManager : Singleton<DialogueManager>
 {
-    private Story activeStory;   
-    private GameController gameController;
-    private QuestManager questManager;
-    private WaitForSeconds endDelay = new WaitForSeconds(10f);
+    #region SerializedVariables
+
     [SerializeField] private Transform dialoguePanel;
-    [SerializeField] private Transform choicePanel;  
+    [SerializeField] private Transform choicePanel;
     [SerializeField] private Transform dialoguePrefab;
     [SerializeField] private Transform choicePrefab;
     [SerializeField] private Button endButton;
     [SerializeField] private Image dialoguebox;
+
+    #endregion
+
+    #region Variables 
+
+    private Story activeStory;   
+    private GameController gameController;
+    private QuestManager questManager;
+    private WaitForSeconds endDelay = new WaitForSeconds(10f);
     public static Dictionary<string, Story> ActiveStoryDict = new Dictionary<string, Story>();
     private Dictionary<Story, string> lastTextFromStoryDict = new Dictionary<Story, string>();
+
+    #endregion
+
+    #region General
 
     protected override void Awake()
     {
@@ -43,6 +54,10 @@ public class DialogueManager : Singleton<DialogueManager>
     {
         endButton.onClick.RemoveAllListeners();
     }
+
+    #endregion
+
+    #region Mechanics
 
     public void SetupStory(TextAsset storyTextAsset)
     {
@@ -188,5 +203,7 @@ public class DialogueManager : Singleton<DialogueManager>
         ActiveStoryDict.Clear();
         lastTextFromStoryDict.Clear();
     }
+
+    #endregion
 
 }

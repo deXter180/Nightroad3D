@@ -5,6 +5,8 @@ using System;
 
 public class Goal
 {
+    #region Properties
+
     public GoalTypes GoalType{ get; set; }
     public string Description { get; set; }
     public string GoalCompleteText { get; set; }
@@ -13,8 +15,16 @@ public class Goal
     public int RequiredAmount { get; set; }
     public int CurrentAmount { get; set; }
 
+    #endregion
+
+    #region Events
+
     public event Action<string, Goal> OnGoalCompletion;
     public event Action<string, Goal> OnGoalFailure;
+
+    #endregion
+
+    #region General
 
     public virtual void Initialize()
     {
@@ -44,4 +54,6 @@ public class Goal
         IsCompleted = true;
         OnGoalCompletion?.Invoke(GoalCompleteText, this);
     }
+
+    #endregion
 }

@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class InputMenuControl : MonoBehaviour
 {
+    #region General
+
     [SerializeField] private Button resetButton;
 
     private void OnEnable()
@@ -17,13 +19,19 @@ public class InputMenuControl : MonoBehaviour
         resetButton.onClick.RemoveListener(() => DoReset());
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~
+
+    #region Callbacks
 
     private void DoReset()
     {
         foreach (var tab in InputManager.MenuTabsList)
         {
-            tab.Reset();
+            tab.ResetTab();
         }
     }
+
+    #endregion
 }

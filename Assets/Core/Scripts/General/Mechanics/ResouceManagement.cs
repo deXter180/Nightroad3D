@@ -4,12 +4,25 @@ using UnityEngine;
 
 public sealed class ResourceManagement
 {
+    #region Variables
+
     private int MaxMana;
     private int MaxHealth;
+
+    #endregion
+
+    #region Properties
+
     public int CurrentHealth { get; private set; }
     public int CurrentMana { get; private set; }
 
+    public bool IsDead { get { return CurrentHealth < 1; } }
+
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Declaring eventhandler for ondamage event ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    #region Events
 
     public class DamagedEventArgs : EventArgs
     {
@@ -44,11 +57,11 @@ public sealed class ResourceManagement
     public event EventHandler<ManaEventArgs> OnManaLoss;
     public event EventHandler<ManaEventArgs> OnManaGain;
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~ Checking for Death ~~~~~~~~~~~~~~~~~~~~~~~
-
-    public bool IsDead { get { return CurrentHealth < 1; } }
+    #endregion
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~ Setting Max Resources ~~~~~~~~~~~~~~~~~~~~~~~
+
+    #region General
 
     public void SetHealth(int MaxHP)
     {
@@ -61,7 +74,11 @@ public sealed class ResourceManagement
         CurrentMana = MaxMana;
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~~~~~~~~ Raising Events ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    #region Mechanics
 
     public void Damage(int pAmount)
     {
@@ -114,17 +131,8 @@ public sealed class ResourceManagement
         }
         return false;
     }
-    //public void EnergyGain(int pAmount)
-    //{
-    //    if (pAmount + CurrentMana <= MaxMana)
-    //    {
-    //        CurrentMana += pAmount;
-    //        OnManaGain?.Invoke(this, new ManaEventArgs(CurrentMana));
-    //    }
-    //}
 
-    
+    #endregion
 
-   
 }
 

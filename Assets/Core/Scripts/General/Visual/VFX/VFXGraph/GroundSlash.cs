@@ -5,6 +5,8 @@ using UnityEngine.VFX;
 
 public class GroundSlash : MonoBehaviour
 {
+    #region Variables
+
     [SerializeField] private float speed;
     [SerializeField] private GameObject trail;
     private VisualEffect visualEffect;
@@ -12,6 +14,10 @@ public class GroundSlash : MonoBehaviour
     private float duration;
     private string lifeTImeProperty = "SlashLifetime";
     private PlayerController playerController;
+
+    #endregion
+
+    #region general
 
     private void Awake()
     {
@@ -51,4 +57,6 @@ public class GroundSlash : MonoBehaviour
             Debug.Log("Damaged !");
         }
     }
+
+    #endregion
 }

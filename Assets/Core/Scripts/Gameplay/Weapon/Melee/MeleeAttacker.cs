@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class MeleeAttacker : MonoBehaviour
 {
+    #region Variables
+
     private Collider col;
     private Vector3 ColRange;
     private WeaponBrain weaponBrain;
@@ -15,6 +17,10 @@ public class MeleeAttacker : MonoBehaviour
     private string enemyName = "Enemy";
     private string npcName = "NPC";
     public static event Action OnStopMeleeAttack;
+
+    #endregion
+
+    #region General 
 
     private void Awake()
     {
@@ -56,31 +62,7 @@ public class MeleeAttacker : MonoBehaviour
                 StartAttack();
             }
         }                    
-    } 
-
-    private void StartAttack()
-    {
-        if (gameObject.activeInHierarchy && weaponBrain.IsWeaponReady())
-        {
-            if (inputs.BasicControls.Shoot.ReadValue<float>() == 1)
-            {
-                if (!weaponManager.IsAttacking)
-                {
-                    weaponBrain.GetThisWeapon().RaiseOnPlayerAttack(weaponBrain.GetThisWeapon(), false, weaponBrain, weaponBrain.GetWeaponCategories(), weaponBrain.GetWeaponTypes());              
-                    isHitting = true;
-                }
-                else
-                {
-                    isHitting = false;
-                }
-            }
-            else
-            {
-                OnStopMeleeAttack?.Invoke();
-                isHitting = false;
-            }
-        }
-    }
+    }    
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -152,6 +134,34 @@ public class MeleeAttacker : MonoBehaviour
        
     }
 
+    #endregion
+
+    #region Mechanics
+
+    private void StartAttack()
+    {
+        if (gameObject.activeInHierarchy && weaponBrain.IsWeaponReady())
+        {
+            if (inputs.BasicControls.Shoot.ReadValue<float>() == 1)
+            {
+                if (!weaponManager.IsAttacking)
+                {
+                    weaponBrain.GetThisWeapon().RaiseOnPlayerAttack(weaponBrain.GetThisWeapon(), false, weaponBrain, weaponBrain.GetWeaponCategories(), weaponBrain.GetWeaponTypes());
+                    isHitting = true;
+                }
+                else
+                {
+                    isHitting = false;
+                }
+            }
+            else
+            {
+                OnStopMeleeAttack?.Invoke();
+                isHitting = false;
+            }
+        }
+    }
+
     private IEnumerator Attacking(Action action)
     {
         if (weaponManager.IsAttacking == true)
@@ -161,10 +171,7 @@ public class MeleeAttacker : MonoBehaviour
         }
     }
 
-    private IEnumerator PlayVfx()
-    {
-        yield return Helpers.GetWait(weaponBrain.AnimDelay);
-    }
+    #endregion
 
 }
 

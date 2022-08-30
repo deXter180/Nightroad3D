@@ -5,6 +5,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Weapon", menuName = "Weapons/New")]
 public class WeaponSO : ScriptableObject, IAttack
 {
+    #region SerializedVariables
+
     [SerializeField] private int damageAmount;
     [SerializeField] private int ammoPerMagazine;
     [SerializeField] private int totalAmmo;   
@@ -20,6 +22,9 @@ public class WeaponSO : ScriptableObject, IAttack
     [SerializeField] private bool isRanged;
     [SerializeField] private Transform worldPrefab;
 
+    #endregion
+
+    #region Properties
 
     public int DamageAmount => damageAmount;
     public int AmmoPerMagazine => ammoPerMagazine;
@@ -35,4 +40,6 @@ public class WeaponSO : ScriptableObject, IAttack
     public WeaponTypes WeaponType => weaponType;
     public ImpactTypes ImpactType => impactType;
     public Transform WorldPrefab => worldPrefab;
+
+    #endregion
 }

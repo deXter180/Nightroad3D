@@ -5,6 +5,8 @@ using System;
 
 public class EquipMenuWeaponTile : MonoBehaviour
 {
+    #region Variables
+
     [SerializeField] private int gridWidth;
     [SerializeField] private int gridHeight;
     [SerializeField] private float cellSize;
@@ -19,15 +21,9 @@ public class EquipMenuWeaponTile : MonoBehaviour
     public event Action<PlacedObject, int> OnPlacedOnWeaponMenu;
     public event Action<PlacedObject, int> OnRemovedFromWeaponMenu;
 
-    private void Awake()
-    {
-        rectTransform = GetComponent<RectTransform>();
-        grid = new Grid<GridObject>(gridWidth, gridHeight, cellSize, transform.position, (Grid<GridObject> g, int x, int y) => new GridObject(g, x, y));
-        isFilled = false;
-    }
+    #endregion
 
-
-    #region 
+    #region Utilities
     public Grid<GridObject> GetGrid()
     {
         return grid;
@@ -77,6 +73,15 @@ public class EquipMenuWeaponTile : MonoBehaviour
 
     #endregion
 
+    #region General
+
+    private void Awake()
+    {
+        rectTransform = GetComponent<RectTransform>();
+        grid = new Grid<GridObject>(gridWidth, gridHeight, cellSize, transform.position, (Grid<GridObject> g, int x, int y) => new GridObject(g, x, y));
+        isFilled = false;
+    }
+
     public bool TryPlaceItem(InventoryItemSO inventoryItemSO, Vector2Int placedObjectOrigin)
     {
         //bool isValidPos = grid.IsValidGridPos(placedObjectOrigin);
@@ -125,4 +130,6 @@ public class EquipMenuWeaponTile : MonoBehaviour
         }       
         isFilled = false;
     }
+
+    #endregion
 }

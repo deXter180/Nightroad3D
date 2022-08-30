@@ -6,12 +6,19 @@ using UnityEngine.VFX;
 
 public class RayShotGun : RangedWeapon
 {
+    #region SerializedVariables
+
     [SerializeField] private float MuzzleFlashTime;
     [SerializeField] private Transform firePoint;
     [SerializeField] private int PelletsCount;
     [SerializeField] private Crosshair.CrosshairProperties crosshairProperty;
     [SerializeField] private CameraShake.ShakeProperty shakeProperties;
     [SerializeField] private RecoilEffect.RecoilProperty recoilProperty;
+
+    #endregion
+
+    #region Variables
+
     private GameController gameController;
     private Crosshair crosshair;
     private bool isRanged;
@@ -26,6 +33,10 @@ public class RayShotGun : RangedWeapon
     private VisualEffect visualEffect;
     private Light lighting;
     public static event Action OnStopSGShoot;
+
+    #endregion
+
+    #region General
 
     protected override void Awake()
     {
@@ -79,7 +90,6 @@ public class RayShotGun : RangedWeapon
         crosshair.RemoveCrosshair();
     }
 
-
     private void Update()
     {
         if (gameController != null && inputs != null)
@@ -123,6 +133,10 @@ public class RayShotGun : RangedWeapon
         }
        
     }
+
+    #endregion
+
+    #region Mechanics
 
     public IEnumerator Shoot(Action action)
     {
@@ -189,4 +203,6 @@ public class RayShotGun : RangedWeapon
             }
         }
     }
+
+    #endregion
 }

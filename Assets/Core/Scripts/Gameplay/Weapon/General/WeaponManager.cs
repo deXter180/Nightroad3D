@@ -6,6 +6,8 @@ using System.Linq;
 
 public class WeaponManager : Singleton<WeaponManager>
 {
+    #region Variables
+
     [HideInInspector] public bool IsAttacking = false;
     [SerializeField] private int WeaponCount = 4;
     private int SelectedWeapon = 0;
@@ -23,7 +25,11 @@ public class WeaponManager : Singleton<WeaponManager>
     public static event Action<WeaponTypes, int> OnAddingWeapon;
     public static event Action<WeaponTypes, int> OnRemovingWeapon;
     public static event Action OnEmptyWeapon;
-    
+
+    #endregion
+
+    #region General
+
     protected override void Awake()
     {
         base.Awake();
@@ -70,11 +76,6 @@ public class WeaponManager : Singleton<WeaponManager>
             {
                 WeaponSelect();
             }
-            //if (!SpellManager.Instance.IsCastingSpell && !MainMenuUIHandler.Instance.IsMainMenuActive)
-            //{
-            //    ControlInventory();
-            //    WeaponSelect();
-            //}
         }           
     }
 
@@ -118,6 +119,10 @@ public class WeaponManager : Singleton<WeaponManager>
         }
         else return null;
     }
+
+    #endregion
+
+    #region Mechanics
 
     private void AddWeapon(WeaponTypes weaponType, int num)
     {
@@ -252,7 +257,11 @@ public class WeaponManager : Singleton<WeaponManager>
         }
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~~~
+
+    #region Callbacks
 
     private void Weapons_OnPlayerReload(object sender, OnPlayerReloadEventArg e)
     {
@@ -298,4 +307,6 @@ public class WeaponManager : Singleton<WeaponManager>
     {
         weaponInventory.Clear();
     }
+
+    #endregion
 }

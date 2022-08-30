@@ -7,6 +7,8 @@ using UnityEngine.AI;
 
 public class Enemy
 {
+    #region Variables
+
     protected Transform transform;
     private Animator animator;
     private Target target;
@@ -29,6 +31,10 @@ public class Enemy
     public bool IsPrepDone { get; set; }
     public event EventHandler<OnEnemyAttackEventArg> OnEnemyAttack;
     public event EventHandler<OnEnemyDamageEventArg> OnEnemyDamage;
+
+    #endregion
+
+    #region Controls
 
     public Enemy(EnemyBrain EB)
     {
@@ -134,6 +140,41 @@ public class Enemy
         path = newPath;
     }
 
+    public void DoPreparation()
+    {
+        if (navAgent.isActiveAndEnabled && navAgent.isOnNavMesh)
+        {
+            if (!IsPreping)
+            {
+                Prepare();
+            }
+            else
+            {
+                CheckPrep();
+            }
+        }
+    }
+
+    protected virtual void Prepare()
+    {
+        if (Vector3.Distance(transform.position, targetPosition) > navAgent.stoppingDistance)
+        {
+            if (navAgent.SetDestination(targetPosition))
+            {
+                IsPreping = true;
+            }
+        }
+    }
+
+    protected virtual void CheckPrep()
+    {
+        if (navAgent.remainingDistance <= navAgent.stoppingDistance)
+        {
+            IsPreping = false;
+            IsPrepDone = true;
+        }
+    }
+
     public void InitializeAttack(Action action)
     {
         if (player.PlayerTarget != null && !player.PlayerTarget.IsDead && !player.PlayerTarget.GetEnemy())
@@ -178,6 +219,10 @@ public class Enemy
         }
     }
 
+    #endregion
+
+    #region Utilities
+
     protected Vector3 GetRandomPosition1(float range)
     {      
         Vector3 randomDir = new Vector3(UnityEngine.Random.Range(-1, 1), 0, UnityEngine.Random.Range(-1, 1)).normalized;
@@ -205,41 +250,10 @@ public class Enemy
         return transform.position + dir * UnityEngine.Random.Range(range, 2f * range);
     }
 
-    public void DoPreparation()
-    {
-        if (navAgent.isActiveAndEnabled && navAgent.isOnNavMesh)
-        {
-            if (!IsPreping)
-            {                                
-                Prepare();
-            }
-            else
-            {               
-                CheckPrep();
-            }
-        }
-    }
-
-    protected virtual void Prepare()
-    {
-        if (Vector3.Distance(transform.position, targetPosition) > navAgent.stoppingDistance)
-        {
-            if (navAgent.SetDestination(targetPosition))
-            {
-                IsPreping = true;
-            }           
-        }           
-    }
-
-    protected virtual void CheckPrep()
-    {
-        if (navAgent.remainingDistance <= navAgent.stoppingDistance)
-        {
-            IsPreping = false;
-            IsPrepDone = true;
-        }
-    }
+    #endregion 
 }
+
+#region EventArgs
 
 public class OnEnemyDamageEventArg : EventArgs
 {
@@ -260,5 +274,7 @@ public class OnEnemyAttackEventArg : EventArgs
         enemyType = ET;
     }
 }
+
+#endregion
 
 

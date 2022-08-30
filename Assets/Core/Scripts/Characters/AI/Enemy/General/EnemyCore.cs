@@ -5,6 +5,8 @@ using UnityEngine.AI;
 
 public class EnemyCore : MonoBehaviour
 {
+    #region Variables
+
     protected string enemyID;
     protected string enemyName;
     protected EnemyTrigger enemyTrigger;
@@ -16,6 +18,10 @@ public class EnemyCore : MonoBehaviour
     protected Rigidbody RB;
     protected TempShieldTrigger tempShield;
 
+    #endregion
+
+    #region Properties
+
     public string EnemyID => enemyID;
     public string EnemyName => enemyName;
     public Target EnemyTarget => enemyTarget;
@@ -26,6 +32,10 @@ public class EnemyCore : MonoBehaviour
     public EnemyTypes EnemyType { get; protected set; } //Need to Assign
     public Transform EnemyTransform { get; private set; }
     public float EnemyDodgeChance { get; protected set; } //Need to Assign
+
+    #endregion
+
+    #region General
 
     protected virtual void Awake()
     {
@@ -50,4 +60,6 @@ public class EnemyCore : MonoBehaviour
         enemyTarget = GetComponent<Target>();
         enemyTrigger = GetComponentInChildren<EnemyTrigger>();
     }
+
+    #endregion
 }

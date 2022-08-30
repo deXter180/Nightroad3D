@@ -5,12 +5,18 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewAudioSO", menuName = "Audios/New")]
 public class AudioSO : ScriptableObject
 {
+    #region Variables
+
     public AudioTypes AudioType;
     [SerializeField] private List<MusicAudio> musicAudioList;
     [SerializeField] private List<EnvironmentAudio> environmentAudioList;
     [SerializeField] private List<WeaponAudio> weaponAudioList;
     [SerializeField] private List<SpellAudio> spellAudioList;
     [SerializeField] private List<EnemyAudio> enemyAudioList;
+
+    #endregion
+
+    #region General
 
     public List<AudioClip> GetMusicAudio(MusicTypes musicType)
     {
@@ -71,7 +77,11 @@ public class AudioSO : ScriptableObject
         }
         return null;
     }
+
+    #endregion
 }
+
+#region AudioContainers
 
 [System.Serializable]
 public class MusicAudio
@@ -107,3 +117,5 @@ public class EnemyAudio
     public EnemyTypes EnemyType;
     public List<AudioClip> ClipList;
 }
+
+#endregion

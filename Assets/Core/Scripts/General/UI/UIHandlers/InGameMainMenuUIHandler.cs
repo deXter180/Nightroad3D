@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class InGameMainMenuUIHandler : Singleton<InGameMainMenuUIHandler>
 {
+    #region Variables
+
     private float updateSpeed;
     private TabGroup tabGroup;
     private PlayerController player;
@@ -14,6 +16,10 @@ public class InGameMainMenuUIHandler : Singleton<InGameMainMenuUIHandler>
     [SerializeField] private Image progessbar;
     public static event Action OnMainMenuOpen;
     public static event Action OnMainMenuClose;
+
+    #endregion
+
+    #region General
 
     protected override void Awake()
     {
@@ -60,7 +66,11 @@ public class InGameMainMenuUIHandler : Singleton<InGameMainMenuUIHandler>
         SceneLoader.LoadNewSingleScene("Test1");
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    #region Callbacks
 
     private void AssetLoader_OnSingleSceneLoad(UnityEngine.ResourceManagement.ResourceProviders.SceneInstance obj)
     {
@@ -89,4 +99,6 @@ public class InGameMainMenuUIHandler : Singleton<InGameMainMenuUIHandler>
     {
 
     }
+
+    #endregion
 }

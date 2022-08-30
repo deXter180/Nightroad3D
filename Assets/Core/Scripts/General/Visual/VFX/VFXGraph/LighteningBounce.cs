@@ -6,6 +6,8 @@ using UnityEngine.VFX;
 
 public class LighteningBounce : MonoBehaviour
 {
+    #region Variables
+
     [SerializeField] private float vfxduration = 0.5f;
     private float elapseTime;
     private bool isTagged;
@@ -20,6 +22,10 @@ public class LighteningBounce : MonoBehaviour
     private VisualEffect visualEffect;
     private SpellBaseSO spell;
     private AttributeManager attributeManager;
+
+    #endregion
+
+    #region General
 
     private void Awake()
     {
@@ -69,6 +75,10 @@ public class LighteningBounce : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Mechanics
+
     public void BounceToTarget(Vector3 targetPos)
     {
         Vector3 direction = (targetPos - transform.position).normalized;
@@ -82,4 +92,6 @@ public class LighteningBounce : MonoBehaviour
         visualEffect.SetVector3(endPosName, targetPos);
         visualEffect.Play();        
     }
+
+    #endregion
 }

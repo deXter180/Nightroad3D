@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class Weapons : IModifiedStat
 {
+    #region Variables
+
     private WeaponBrain weaponBrain;
     private AttributeManager attributeManager;
     private WeaponSO weaponSO;
@@ -13,6 +15,10 @@ public class Weapons : IModifiedStat
     public static event EventHandler<OnPlayerAttackEventArg> OnPlayerAttack; //Indirectly Raising this event
     public static event EventHandler<OnPlayerDamageEventArg> OnPlayerDamage;
     public static event EventHandler<OnPlayerReloadEventArg> OnPlayerReload; //Indirectly Raising this event
+
+    #endregion
+
+    #region MechanicsFunctions
 
     public Weapons(WeaponBrain wb, WeaponTypes weaponTypes)
     {
@@ -84,7 +90,11 @@ public class Weapons : IModifiedStat
             }
         }        
     }
+
+    #endregion
 }
+
+#region EventArgs
 
 public class OnPlayerDamageEventArg : EventArgs
 {
@@ -129,3 +139,5 @@ public class OnPlayerReloadEventArg : EventArgs
         weaponType = WT; 
     }
 }
+
+#endregion

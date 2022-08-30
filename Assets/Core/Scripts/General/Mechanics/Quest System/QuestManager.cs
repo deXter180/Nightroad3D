@@ -7,11 +7,17 @@ using System.Linq;
 
 public class QuestManager : Singleton<QuestManager>
 {
+    #region Variables
+
     private QuestMenuManager questMenu;
     public string QuestText { get; private set; }
     public string GoalText { get; private set; }
     public static Dictionary<string, QuestSO> ActiveQuestDict = new Dictionary<string, QuestSO>();
     public static Dictionary<Story, List<QuestSO>> AllQuestInStoryDict = new Dictionary<Story, List<QuestSO>>();
+
+    #endregion
+
+    #region General
 
     protected override void Awake()
     {
@@ -27,6 +33,10 @@ public class QuestManager : Singleton<QuestManager>
     {
         CheckForQuestCompletion();
     }
+
+    #endregion
+
+    #region Mechanics
 
     public bool StartNewQuest(string questName, Story story)
     {
@@ -78,7 +88,11 @@ public class QuestManager : Singleton<QuestManager>
         AllQuestInStoryDict.Clear();
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~~~~~~~~ 
+
+    #region Callbacks
 
     private void OnQuestGoalsCompleted(string obj, QuestSO quest)
     {
@@ -103,4 +117,6 @@ public class QuestManager : Singleton<QuestManager>
         GoalText = obj;
         Debug.Log(GoalText);
     }
+
+    #endregion
 }

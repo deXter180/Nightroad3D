@@ -5,12 +5,23 @@ using UnityEngine.UI;
 
 public class TabGroup : MonoBehaviour
 {
-    private List<TabButton> tabButtons;
-    private TabButton selectedTab;
+    #region SerialisezVariables
+
     [SerializeField] private Sprite tabIdle;
     [SerializeField] private Sprite tabHover;
     [SerializeField] private Sprite tabActive;
     [SerializeField] private List<GameObject> tabPages;
+
+    #endregion
+
+    #region Variables
+
+    private List<TabButton> tabButtons;
+    private TabButton selectedTab;
+
+    #endregion
+
+    #region General
 
     private void OnEnable()
     {
@@ -82,4 +93,6 @@ public class TabGroup : MonoBehaviour
             button.ChangeTabImage(tabIdle);
         }
     }
+
+    #endregion
 }

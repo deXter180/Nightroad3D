@@ -3,15 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class DamageOverlay : MonoBehaviour
-{    
+{
+    #region SerializedVariables
+
     [SerializeField] private float duration = 0.5f;
     [SerializeField] private float fadeSpeed = 5f;
+
+    #endregion
+
+    #region Variables
+
     private PlayerController player;
     private OverlayManager overlayManager;
     private float durationTimer;
     private int currentHealth;
     private int maxHealth;
     private float intensity;
+
+    #endregion
+
+    #region General
 
     void Start()
     {
@@ -33,8 +44,6 @@ public class DamageOverlay : MonoBehaviour
         player.onResettingHP -= Player_onResettingHP;
     }
 
-
-
     void Update()
     {
         if (maxHealth > 0)
@@ -42,6 +51,10 @@ public class DamageOverlay : MonoBehaviour
             FadeDamageEffect();
         }        
     }
+
+    #endregion
+
+    #region Mechanics
 
     private void FadeDamageEffect()
     {
@@ -69,9 +82,11 @@ public class DamageOverlay : MonoBehaviour
         }
     }
 
-   
+    #endregion
 
     //~~~~~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~~~~~~
+
+    #region Callbacks
 
     private void Resource_OnHealthGain(object sender, ResourceManagement.DamagedEventArgs e)
     {
@@ -95,4 +110,6 @@ public class DamageOverlay : MonoBehaviour
     {
         maxHealth = player.MaxHitPoints;
     }
+
+    #endregion
 }

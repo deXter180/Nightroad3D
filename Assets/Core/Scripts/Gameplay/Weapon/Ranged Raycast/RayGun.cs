@@ -6,6 +6,8 @@ using UnityEngine.VFX;
 
 public class RayGun : RangedWeapon
 {
+    #region SerializedVariables
+
     [SerializeField] private int BulletPerSecond;
     [SerializeField] private float RecoilRange = 0.002f;
     [SerializeField] private float RecoilResetTimeInSec;
@@ -15,6 +17,11 @@ public class RayGun : RangedWeapon
     [SerializeField] private Crosshair.CrosshairProperties crosshairProperty;
     [SerializeField] private CameraShake.ShakeProperty shakeProperty;
     [SerializeField] private RecoilEffect.RecoilProperty recoilProperty;
+
+    #endregion
+
+    #region Variables
+
     private WeaponManager weaponManager;
     private GameController gameController;
     private Crosshair crosshair;
@@ -34,6 +41,10 @@ public class RayGun : RangedWeapon
     private RecoilEffect recoilEffect;
     private Light lighting;
     public static event Action OnStopRayShoot;
+
+    #endregion
+
+    #region General
 
     protected override void Awake()
     {
@@ -150,6 +161,10 @@ public class RayGun : RangedWeapon
         }          
     }
 
+    #endregion
+
+    #region Mechanics
+
     private void ChangeVFXRotation(float recoilXOffset)
     {
         visualEffect.transform.localEulerAngles = new Vector3(recoilXOffset, visualEffect.transform.localEulerAngles.y, visualEffect.transform.localEulerAngles.z);
@@ -217,5 +232,7 @@ public class RayGun : RangedWeapon
             }
         }
     }
+
+    #endregion
 
 }

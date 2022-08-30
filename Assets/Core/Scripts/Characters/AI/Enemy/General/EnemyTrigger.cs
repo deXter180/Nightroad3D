@@ -4,9 +4,15 @@ using UnityEngine;
 
 public class EnemyTrigger : MonoBehaviour
 {
+    #region Variables
+
     private SphereCollider sphereCollider;
     public bool IsTargetFleed { get; private set; }
     private bool isMarked;
+
+    #endregion
+
+    #region General
 
     public void TriggerSetup()
     {
@@ -52,4 +58,6 @@ public class EnemyTrigger : MonoBehaviour
             }
         }       
     }
+
+    #endregion
 }

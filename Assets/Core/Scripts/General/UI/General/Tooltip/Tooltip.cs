@@ -6,12 +6,23 @@ using UnityEngine.UI;
 
 public class Tooltip : MonoBehaviour
 {
-    private PlayerInputAsset inputs;
-    private RectTransform rectTransform;
+    #region SerializedVariables
+
     [SerializeField] private int characterWrapLimit;
     [SerializeField] private TextMeshProUGUI headerField;
     [SerializeField] private TextMeshProUGUI contentField;
     [SerializeField] private LayoutElement layoutElement;
+
+    #endregion
+
+    #region Variables
+
+    private PlayerInputAsset inputs;
+    private RectTransform rectTransform;
+
+    #endregion
+
+    #region General
 
     private void Awake()
     {
@@ -44,6 +55,10 @@ public class Tooltip : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Mechanics
+
     public void SetText(string content, string header = "")
     {
         if (string.IsNullOrEmpty(header))
@@ -60,4 +75,6 @@ public class Tooltip : MonoBehaviour
         int contentLength = contentField.text.Length;
         layoutElement.enabled = (headerLength > characterWrapLimit || contentLength > characterWrapLimit) ? true : false;       
     }
+
+    #endregion
 }

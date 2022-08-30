@@ -2,9 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteInEditMode()]
+[ExecuteAlways]
 public class LOSSensor : MonoBehaviour
 {
+    #region Variables
+
     public float Distance = 10f;
     public float Angle = 30;
     public float Height = 1.0f;
@@ -14,31 +16,14 @@ public class LOSSensor : MonoBehaviour
     private Mesh mesh;
     private PlayerController player;
 
+    #endregion
+
+    #region General
+
     private void Start()
     {
         player = PlayerController.Instance;
-    }
-
-    private void OnValidate()
-    {
-        if (Application.isEditor)
-        {
-            mesh = CreateWedgeMesh();
-        }
-        
-    }
-
-    private void OnDrawGizmos()
-    {
-        if (Application.isEditor)
-        {
-            if (mesh)
-            {
-                Gizmos.color = MeshColor;
-                Gizmos.DrawMesh(mesh, transform.position, transform.rotation);
-            }
-        }       
-    }
+    }   
 
     private void LateUpdate()
     {
@@ -67,6 +52,31 @@ public class LOSSensor : MonoBehaviour
             return false;
         }
         return true;
+    }
+
+    #endregion
+
+    #region EditorFunctions
+
+    private void OnValidate()
+    {
+        if (Application.isEditor)
+        {
+            mesh = CreateWedgeMesh();
+        }
+
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (Application.isEditor)
+        {
+            if (mesh)
+            {
+                Gizmos.color = MeshColor;
+                Gizmos.DrawMesh(mesh, transform.position, transform.rotation);
+            }
+        }
     }
 
     private Mesh CreateWedgeMesh()
@@ -150,4 +160,6 @@ public class LOSSensor : MonoBehaviour
         mesh.RecalculateNormals();
         return mesh;
     }
+
+    #endregion
 }

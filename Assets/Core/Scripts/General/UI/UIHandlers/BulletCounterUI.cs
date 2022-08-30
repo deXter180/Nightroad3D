@@ -6,8 +6,14 @@ using System;
 
 public class BulletCounterUI : MonoBehaviour
 {
+    #region SerializedVariables
+
     [SerializeField] private TextMeshProUGUI AmmoInMagCounter;
     [SerializeField] private TextMeshProUGUI TotalAmmoCounter;
+
+    #endregion
+
+    #region General
 
     private void Start()
     {
@@ -41,13 +47,17 @@ public class BulletCounterUI : MonoBehaviour
         }
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~~~~~
+
+    #region Callbacks
 
     private void RangedWeapon_OnAmmoAffected(RangedWeapon rangedWeapon)
     {
         UpdateDisplay(rangedWeapon);
     }
 
-
+    #endregion
 
 }

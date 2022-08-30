@@ -7,13 +7,25 @@ using UnityEngine.UI;
 
 public class PrimaryMainMenuUIHandler : MonoBehaviour
 {
-    private float updateSpeed;
-    private bool clearPreviousScene = false;
-    private SceneInstance previousLoadedScene;
+
+    #region SerializedVariables
+
     [SerializeField] private GameObject mainMenu;
     [SerializeField] private Canvas loaderCanvas;
     [SerializeField] private Image progessbar;
     [SerializeField] private float progressMultiplyer = 3;
+
+    #endregion
+
+    #region Variables
+
+    private float updateSpeed;
+    private bool clearPreviousScene = false;
+    private SceneInstance previousLoadedScene;
+
+    #endregion
+
+    #region General
 
     private void Awake()
     {
@@ -34,8 +46,12 @@ public class PrimaryMainMenuUIHandler : MonoBehaviour
     {
         progessbar.fillAmount = Mathf.MoveTowards(progessbar.fillAmount, updateSpeed, progressMultiplyer * Time.deltaTime);
     }
-   
+
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~~~ MainMenu Scene ~~~~~~~~~~~~~~~~~~~~~~
+
+    #region Mechanics
 
     public void StartNewGame()
     {
@@ -57,7 +73,11 @@ public class PrimaryMainMenuUIHandler : MonoBehaviour
         Application.Quit();
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~~~~~
+
+    #region Callbacks
 
     private void AssetLoader_OnLoadingNewGameInstance(SceneInstance obj)
     {
@@ -80,4 +100,6 @@ public class PrimaryMainMenuUIHandler : MonoBehaviour
             }           
         };
     }
+
+    #endregion
 }

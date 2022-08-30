@@ -5,6 +5,8 @@ using System;
 
 public class PlacedObject : MonoBehaviour
 {
+    #region Variables
+
     private bool isPlacedOnMenu;
     private bool isPlacedOnInventory;
     private InventoryItemSO inventoryItemSO;
@@ -18,7 +20,11 @@ public class PlacedObject : MonoBehaviour
     public bool IsPlacedOnMenu { get => isPlacedOnMenu; }
     public bool IsPlaceOnInventory { get => isPlacedOnInventory; }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~ Utilities ~~~~~~~~~~~~~~~~~
+
+    #region General
 
     private void Awake()
     {
@@ -30,7 +36,9 @@ public class PlacedObject : MonoBehaviour
         SetupTooltip();
     }
 
-    #region
+    #endregion
+
+    #region Utilities
 
     public void SetWeaponEquipTile(EquipMenuWeaponTile tile)
     {
@@ -128,6 +136,8 @@ public class PlacedObject : MonoBehaviour
 
     #endregion
 
+    #region Mechanics
+
     public static PlacedObject Create(Transform parent, Vector2 anchoredPos, Vector2Int origin, InventoryItemSO.Dir dir, InventoryItemSO inventoryItemSO, bool isInventory)
     {
         Transform placedObjectTransform = Instantiate(inventoryItemSO.InventoryPrefab, parent);
@@ -189,4 +199,6 @@ public class PlacedObject : MonoBehaviour
         placedObject.SetupTooltip();
         return placedObject;
     }
+
+    #endregion
 }

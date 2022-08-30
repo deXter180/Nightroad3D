@@ -5,11 +5,17 @@ using System;
 
 public class StateMachine
 {
+    #region Variables
+
     public State currentState;
     private EnemyBrain enemyBrain;
-    private Dictionary<States, State> StateDict;
+    private Dictionary<AIStates, State> StateDict;
     private bool IsInitialized => StateDict != null;
     public event Action<State> OnStateChange;
+
+    #endregion
+
+    #region General
 
     public StateMachine(EnemyBrain enemyBrain)
     {
@@ -20,14 +26,14 @@ public class StateMachine
     {
         if (IsInitialized)
             return;
-        StateDict = new Dictionary<States, State>();
-        StateDict.Add(States.Roam, new Roam(enemyBrain, this));
-        StateDict.Add(States.Chase, new Chase(enemyBrain, this));
-        StateDict.Add(States.Prepare, new Prepare(enemyBrain, this));
-        StateDict.Add(States.Attack, new Attack(enemyBrain, this));
-        StateDict.Add(States.Stop, new Stop(enemyBrain, this));
+        StateDict = new Dictionary<AIStates, State>();
+        StateDict.Add(AIStates.Roam, new Roam(enemyBrain, this));
+        StateDict.Add(AIStates.Chase, new Chase(enemyBrain, this));
+        StateDict.Add(AIStates.Prepare, new Prepare(enemyBrain, this));
+        StateDict.Add(AIStates.Attack, new Attack(enemyBrain, this));
+        StateDict.Add(AIStates.Stop, new Stop(enemyBrain, this));
     }
-    public void SetState(States states)
+    public void SetState(AIStates states)
     {
         InitializeDict();
         if (StateDict.TryGetValue(states, out State state))
@@ -41,7 +47,7 @@ public class StateMachine
             currentState.OnEnter();
         }
     } 
-    public State GetState(States states)
+    public State GetState(AIStates states)
     {
         InitializeDict();
         if (StateDict.TryGetValue(states, out State state))
@@ -61,17 +67,10 @@ public class StateMachine
         InitializeDict();
         if (currentState == null)
         {
-            SetState(States.Roam);
+            SetState(AIStates.Roam);
         }
         currentState.Tick();
     }
-}
 
-public enum States
-{
-    Stop,
-    Roam,
-    Chase,
-    Prepare,
-    Attack
+    #endregion
 }

@@ -4,10 +4,16 @@ using UnityEngine;
 
 public class RecoilEffect : Singleton<RecoilEffect>
 {
+    #region Variables
+
     private Vector3 currentRotation;
     private Vector3 targetRotation;
     private float returnSpeed = 0;
     private float recoilSpeed = 0;
+
+    #endregion
+
+    #region General
 
     [System.Serializable]
     public struct RecoilProperty
@@ -37,4 +43,6 @@ public class RecoilEffect : Singleton<RecoilEffect>
         returnSpeed = recoilProperty.ReturnSpeed;
         recoilSpeed = recoilProperty.RecoilSpeed;
     }
+
+    #endregion
 }

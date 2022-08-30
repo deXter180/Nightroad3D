@@ -10,6 +10,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
     //~~~~~~~~~~~~~~~~ Variables ~~~~~~~~~~~~~~~~~
 
     #region Properties
+
     public float GroundHeight;
     public Transform PlayerTransform { get; private set; }
     public Transform CameraTransform => camTransform;
@@ -27,6 +28,11 @@ public class PlayerController : PersistentSingleton<PlayerController>
     public bool IsPlayerDead => isDead;
     public Vector3 DashPos => dashPos;
     public Rigidbody PlayerRB => RB;
+
+    #endregion
+
+    #region Variables
+
     [SerializeField] private int maxHitPoints;
     [SerializeField] private int maxMana;
     [SerializeField] private float statToHPModifier;
@@ -113,6 +119,8 @@ public class PlayerController : PersistentSingleton<PlayerController>
 
     //~~~~~~~~~~~~~~~~~ Initialization ~~~~~~~~~~~~~~~~~~~
 
+    #region GeneralFunctions
+
     protected override void Awake()
     {
         base.Awake();
@@ -153,7 +161,6 @@ public class PlayerController : PersistentSingleton<PlayerController>
         normalHeightSec = secndCol.height;
         crouchHeightPrim = (normalHeightPrim * crouchHeightPrecentage) / 100;
         crouchHeightSec = (normalHeightSec * crouchHeightPrecentage) / 100;
-        //AssetLoader.OnGOCreated += AssetLoader_OnGOCreated; //Delete this
         SceneLoader.OnMainMenuSceneLoad += SceneLoader_OnMainMenuSceneLoad;
         SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
         AssetLoader.OnSingleSceneLoad += AssetLoader_OnSingleSceneLoad;
@@ -167,21 +174,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
         isCursorLocked = false;
         originalPlayerPos = transform.position;
         cameraShake = CameraShake.Instance;
-
-        //AssetLoader.CreateGOAsset("ChainLightening2_vfx", transform); //Delete this
     }
-
-    //private void AssetLoader_OnGOCreated(GameObject obj) //Delete this
-    //{
-    //    var bounce = obj.GetComponent<LighteningBounce>();
-    //    if (bounce!= null)
-    //    {
-    //        bounce.transform.localPosition = new Vector3(-4, 2, -1);
-    //        bounce.BounceToTarget(targetTrasform.position);
-    //    }
-    //}
-
-    //~~~~~~~~~~~~~~~~ Mechanics ~~~~~~~~~~~~~~~~~~~~
 
     private void FixedUpdate()
     {
@@ -303,6 +296,12 @@ public class PlayerController : PersistentSingleton<PlayerController>
             dialogueManager = DialogueManager.Instance;
     }
 
+    #endregion
+
+    //~~~~~~~~~~~~~~~~ Mechanics ~~~~~~~~~~~~~~~~~~~~
+
+    #region MechanicsFunctions
+
     private void SetGravity()
     {
         gravity = globalGravity * gravityControl * Vector3.up;
@@ -324,6 +323,31 @@ public class PlayerController : PersistentSingleton<PlayerController>
         {
             target.SetupMaxMana(GetModifiedMP());
         }
+    }
+
+    public int GetModifiedHP()
+    {
+        modifiedMaxHp += Mathf.RoundToInt(attributeManager.VitalityStat * statToHPModifier);
+        return modifiedMaxHp;
+    }
+
+    public int GetModifiedMP()
+    {
+        modifiedMaxMp += Mathf.RoundToInt(attributeManager.SpiritStat * statToMPModifier);
+        return modifiedMaxMp;
+    }
+
+    public void ResetHP(int value)
+    {
+        modifiedMaxHp = value;
+        target.SetupMaxHP(modifiedMaxHp);
+        onResettingHP?.Invoke();
+    }
+
+    public void ResetMP(int value)
+    {
+        modifiedMaxMp = value;
+        target.SetupMaxHP(modifiedMaxMp);
     }
 
     private void Move()
@@ -379,7 +403,6 @@ public class PlayerController : PersistentSingleton<PlayerController>
         playerVelocity.z += accelspeed * wishdir.z;
     }
 
-    #region Clunky movement
     private void Rotate()
     {
         Vector2 mouseDeltaPos = inputs.BasicControls.MouseDelta.ReadValue<Vector2>();
@@ -434,21 +457,6 @@ public class PlayerController : PersistentSingleton<PlayerController>
         }
         transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y + horizontalLook, 0);
     }
-    #endregion
-
-    #region Default movement
-    //private void Rotate()
-    //{
-    //    Vector2 mouseDeltaPos = inputs.BasicControls.MouseDelta.ReadValue<Vector2>();
-    //    float horizontalLook = mouseDeltaPos.x * MouseSensitivity * Time.fixedDeltaTime;
-    //    float verticalLook = mouseDeltaPos.y * MouseSensitivity * Time.fixedDeltaTime;
-    //    camControlX -= verticalLook;
-    //    camControlX = Mathf.Clamp(camControlX, -90f, 90f);
-    //    float rotY = transform.rotation.eulerAngles.y + horizontalLook;
-    //    camTransform.eulerAngles = new Vector3(camControlX, rotY, 0f);
-    //    transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y + horizontalLook, 0);
-    //}
-    #endregion
 
     private void Jump()
     {
@@ -648,6 +656,10 @@ public class PlayerController : PersistentSingleton<PlayerController>
         }
     }
 
+    #endregion
+
+    #region UtilityFunctions
+
     public Vector3 GetRandomDirWithoutY(float minRange, float maxRange)
     {
         return new Vector3(UnityEngine.Random.Range(minRange, maxRange), 0, UnityEngine.Random.Range(minRange, maxRange)).normalized;
@@ -700,32 +712,11 @@ public class PlayerController : PersistentSingleton<PlayerController>
         }
     }
 
-    public int GetModifiedHP()
-    {       
-        modifiedMaxHp += Mathf.RoundToInt(attributeManager.VitalityStat * statToHPModifier);
-        return modifiedMaxHp;
-    }
-
-    public int GetModifiedMP()
-    {        
-        modifiedMaxMp += Mathf.RoundToInt(attributeManager.SpiritStat * statToMPModifier);
-        return modifiedMaxMp;
-    }
-
-    public void ResetHP(int value)
-    {
-        modifiedMaxHp = value;
-        target.SetupMaxHP(modifiedMaxHp);
-        onResettingHP?.Invoke();
-    }
-
-    public void ResetMP(int value)
-    {
-        modifiedMaxMp = value;
-        target.SetupMaxHP(modifiedMaxMp);
-    }
+    #endregion
 
     //~~~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~~~
+
+    #region Callbacks
 
     private void SceneLoader_OnNewGameStart()
     {
@@ -796,4 +787,5 @@ public class PlayerController : PersistentSingleton<PlayerController>
     {
         CurrentHP = e.CurrentHP;
     }
+    #endregion
 }

@@ -6,12 +6,8 @@ using UnityEngine.UI;
 [CreateAssetMenu(fileName = "New Item", menuName = "Inventory/Item")]
 public class InventoryItemSO : ScriptableObject
 {
-    public enum TileTypes
-    {
-        SpellTile,
-        WeaponTile,
-        InventoryTile
-    }
+    #region SerializedVariables
+
     [SerializeField] private string itemID;  
     [SerializeField] private string itemName;
     [SerializeField] private string itemDescription;
@@ -29,6 +25,11 @@ public class InventoryItemSO : ScriptableObject
     [SerializeField] private Transform inventoryPrefab;
     [SerializeField] private Transform worldPrefab;
     [SerializeField] private List<RequiredStatForEquip> requirementList;
+
+    #endregion
+
+    #region Properties
+
     public string ItemID => itemID;
     public string ItemName => itemName;
     public string ItemDescription => itemDescription;
@@ -47,13 +48,23 @@ public class InventoryItemSO : ScriptableObject
     public Transform WorldPrefab { get => worldPrefab; }
     public List<RequiredStatForEquip> RequirementList => requirementList;
 
-    #region
+    #endregion
+
+    #region Utilities
+
     public enum Dir
     {
         Down,
         Left,
         Up,
         Right,
+    }
+
+    public enum TileTypes
+    {
+        SpellTile,
+        WeaponTile,
+        InventoryTile
     }
 
     public virtual void UseItem()
@@ -126,7 +137,10 @@ public class InventoryItemSO : ScriptableObject
         }
         return gridPositionList;
     }
+
     #endregion
+
+    #region Mechanics
 
     public static void CreateGridVisual(Transform visualParentTransform, InventoryItemSO inventoryItemSO, float cellSize, TileTypes tileType)
     {
@@ -166,7 +180,6 @@ public class InventoryItemSO : ScriptableObject
         visualTransform.gameObject.SetActive(true);
     }
 
-
     public string GetRequirementText()
     {
         string text = "";
@@ -176,6 +189,8 @@ public class InventoryItemSO : ScriptableObject
         }
         return text;
     }
+
+    #endregion
 }
 
 

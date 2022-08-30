@@ -4,32 +4,48 @@ using UnityEngine;
 
 public class Target : MonoBehaviour
 {
+    #region Variables
+
     private bool dodging;
     private int currentHP;
     private int currentMana;
     private int maxMana;
     private EnemyCore EC;
+    private ResourceManagement resource = new ResourceManagement();
     [SerializeField] private bool IsEnemy;
+
+    #endregion
+
+    #region Properties
+
     [HideInInspector] public int MaxHP { get; set; }
     [HideInInspector] public bool IsDead { get; set; }
-    public ResourceManagement Resource = new ResourceManagement();
+    public ResourceManagement Resource => resource;
     public int CurrentHP => currentHP;
     public EnemyCore enemyCore => EC;
     public bool Dodging => dodging;
     public bool Blocking { get; set; }
+
+    #endregion
+
+    #region Events
+
     public event Action OnDodge;
     public static event Action<EnemyCore> OnEnemyDead;
     public event Action OnCritShot;
-    
+
+    #endregion
 
     //~~~~~~~~~~~~~~~~~~~~~~~~ Initialization ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+    #region General
+
     private void OnEnable()
     {
-        if (Resource != null)                              // HealthSystem Event subscription
+        if (resource != null)                              // HealthSystem Event subscription
         {
-            Resource.OnHealthLoss += OnDamage;
-            Resource.OnKilled += OnKilled;
+            resource.OnHealthLoss += OnDamage;
+            resource.OnKilled += OnKilled;
         }
         dodging = false;
         Blocking = false;
@@ -37,24 +53,24 @@ public class Target : MonoBehaviour
 
     private void OnDisable()
     {
-        if (Resource != null)                              // HealthSystem Event desubscription
+        if (resource != null)                              // HealthSystem Event desubscription
         {
-            Resource.OnHealthLoss -= OnDamage;
-            Resource.OnKilled -= OnKilled;
+            resource.OnHealthLoss -= OnDamage;
+            resource.OnKilled -= OnKilled;
         }
     }
 
     public void SetupMaxHP(int maxHP)
     {
         MaxHP = maxHP;
-        Resource.SetHealth(maxHP);
+        resource.SetHealth(maxHP);
         currentHP = maxHP;
     }
 
     public void SetupMaxMana(int maxMana)
     {
         this.maxMana = maxMana;
-        Resource.SetMana(maxMana);
+        resource.SetMana(maxMana);
         currentMana = maxMana;
     }
 
@@ -73,8 +89,12 @@ public class Target : MonoBehaviour
     {
         return IsEnemy;
     }
-  
+
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~~~~~~~ Damage function ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    #region Mechanics
 
     public void DoDamage(int dmg, float dodgeChance)
     {
@@ -87,7 +107,7 @@ public class Target : MonoBehaviour
                 {
                     OnCritShot?.Invoke();
                 }
-                Resource.Damage(dmg);
+                resource.Damage(dmg);
             }
             else
             {
@@ -106,7 +126,7 @@ public class Target : MonoBehaviour
             {
                 dmg += (int)(dmg * critBonus);
                 OnCritShot?.Invoke();
-                Resource.Damage(dmg);
+                resource.Damage(dmg);
             }
             else
             {
@@ -132,10 +152,14 @@ public class Target : MonoBehaviour
 
     public void UseMana(int manaCost)
     {
-        Resource.ManaLoss(manaCost);
+        resource.ManaLoss(manaCost);
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~~~~~~
+
+    #region Callbacks
 
     private void OnDamage(object sender, ResourceManagement.DamagedEventArgs e)
     {
@@ -145,13 +169,14 @@ public class Target : MonoBehaviour
             currentHP = e.CurrentHP;
         }
     }
+
     private void OnKilled(object sender, EventArgs e)
     {
         if (e != null)
         {
-            if (Resource.IsDead == true)
+            if (resource.IsDead == true)
             {
-                IsDead = Resource.IsDead;
+                IsDead = resource.IsDead;
                 currentHP = 0;
                 if (IsEnemy)
                 {
@@ -161,4 +186,6 @@ public class Target : MonoBehaviour
             }
         }
     }
+
+    #endregion
 }

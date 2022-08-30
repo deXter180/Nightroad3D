@@ -5,6 +5,8 @@ using System;
 
 public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
 {
+    #region Variables
+
     private int XTransitionOffset = 8;
     private PlayerInputAsset inputs;
     private PlayerController playerController;
@@ -31,6 +33,9 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
     private Vector2 mouseDragAnchoredPosOffsetSth;
     [SerializeField] private Camera UICam;
 
+    #endregion
+
+    #region GeneralFunctions
 
     protected override void Awake()
     {
@@ -99,6 +104,10 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
             inputs = InputManager.InputActions;
         }       
     }
+
+    #endregion
+
+    #region MechanicsFunctions
 
     private void PositionDragObject()
     {
@@ -482,6 +491,10 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
         }
     }
 
+    #endregion
+
+    #region UtilityFunctions
+
     private bool CheckStatRequirement(InventoryItemSO itemSO)
     {
         bool isCompleted = false;
@@ -565,11 +578,17 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
         return false;
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~~~ Event Callback ~~~~~~~~~~~~~~~~~~~~
+
+    #region Callbacks
 
     private void Tile_OnObjectPlacedinEquipTile(PlacedObject e, int num)
     {
         
     }
+
+    #endregion
 
 }

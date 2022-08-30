@@ -6,9 +6,17 @@ using UnityEngine.UI;
 
 public class InventoryUIHandler : Singleton<InventoryUIHandler>
 {
+    #region SerializedVariables
+
+    [SerializeField] private float CellSize;
     [SerializeField] private Transform BackgroundImage;
     [SerializeField] private GridLayoutGroup inventoryLayout;
     [SerializeField] private GridLayoutGroup stashLayout;
+
+    #endregion
+
+    #region Variables
+
     private Vector3 screenPos;
     private StashClose stashClose;
     private InventorySystem inventorySystem;
@@ -18,8 +26,10 @@ public class InventoryUIHandler : Singleton<InventoryUIHandler>
     private RectTransform UIRect;
     public Transform gridVisual;
     private RectTransform canvasRect;
-    [SerializeField] private float CellSize;
-    
+
+    #endregion
+
+    #region General
 
     protected override void Awake()
     {
@@ -60,6 +70,10 @@ public class InventoryUIHandler : Singleton<InventoryUIHandler>
     {
         return CellSize;
     }
+
+    #endregion
+
+    #region Mechanics
 
     public void ControlInv(bool isInventoryActive)
     {
@@ -152,4 +166,6 @@ public class InventoryUIHandler : Singleton<InventoryUIHandler>
 
         }
     }
+
+    #endregion
 }

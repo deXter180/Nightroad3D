@@ -6,7 +6,8 @@ using UnityEngine.VFX;
 
 public class SpellManager : Singleton<SpellManager>
 {
-    
+    #region Variables
+
     [SerializeField] private int SpellCount;
     [SerializeField] private float selectionRange;
     [SerializeField] private Transform SelectionCircle;
@@ -33,6 +34,10 @@ public class SpellManager : Singleton<SpellManager>
     private SpellCastState state;
     public static event Action<SpellTypes, int> OnAddingSpell;
     public static event Action<SpellTypes, int> OnRemovingSpell;
+
+    #endregion
+
+    #region General
 
     private enum SpellCastState
     {
@@ -237,9 +242,7 @@ public class SpellManager : Singleton<SpellManager>
             IsCastingSpell = false;
             isInSpellCastMode = false;
         }
-    }
-
-    
+    }   
 
     private Spells GetSpell()
     {
@@ -339,7 +342,11 @@ public class SpellManager : Singleton<SpellManager>
         }
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~
+
+    #region Callbacks
 
     private void Tile_OnPlacedOnSpellMenu(PlacedObject e, int num)
     {
@@ -364,6 +371,8 @@ public class SpellManager : Singleton<SpellManager>
     {
         spellDict.Clear();
     }
+
+    #endregion
 }
 
 

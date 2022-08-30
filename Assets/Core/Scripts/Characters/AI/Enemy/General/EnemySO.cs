@@ -6,6 +6,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Enemy", menuName = "Enemies/New")]
 public class EnemySO : ScriptableObject, IAttack
 {
+    #region SerializedVariables
+
     [SerializeField] private string enemyName;
     [SerializeField] private int maxHP;
     [SerializeField] private int damageAmount;
@@ -26,6 +28,10 @@ public class EnemySO : ScriptableObject, IAttack
     [SerializeField] private float shieldDuration;
     [SerializeField] private Transform worldPrefab;
 
+    #endregion
+
+    #region Properties
+
     public string EnemyName => enemyName;
     public int MaxHP => maxHP;
     public int DamageAmount => damageAmount;
@@ -45,5 +51,7 @@ public class EnemySO : ScriptableObject, IAttack
     public float ShieldSize => shieldSize;
     public float ShieldDuration => shieldDuration;
     public Transform WorldPrefab => worldPrefab;
+
+    #endregion
 }
 

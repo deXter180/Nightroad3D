@@ -5,12 +5,17 @@ using UnityEngine.UI;
 
 public class HeadUpDisplayHandler : Singleton<HeadUpDisplayHandler>
 {
+    #region Variables
+
     [SerializeField] private GameObject deathScreen;
     private BulletCounterUI bulletCounter;
     private PlayerResourceBarUI resourceBar;
     private Crosshair crosshair;
-
     private Canvas canvas;
+
+    #endregion
+
+    #region General
 
     protected override void Awake()
     {
@@ -44,6 +49,10 @@ public class HeadUpDisplayHandler : Singleton<HeadUpDisplayHandler>
 
     }
 
+    #endregion
+
+    #region Mechanics
+
     public void Control(bool isCrosshairActive)
     {
         canvas.enabled = isCrosshairActive;
@@ -63,7 +72,11 @@ public class HeadUpDisplayHandler : Singleton<HeadUpDisplayHandler>
         deathScreen.SetActive(false);
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~~~~~
+
+    #region Callbacks
 
     private void SceneLoader_OnNewGameStart()
     {
@@ -101,4 +114,6 @@ public class HeadUpDisplayHandler : Singleton<HeadUpDisplayHandler>
     {
         bulletCounter.gameObject.SetActive(false);
     }
+
+    #endregion
 }

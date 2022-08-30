@@ -6,6 +6,8 @@ using TMPro;
 
 public class QuestMenuManager : Singleton<QuestMenuManager>
 {
+    #region SerializedVariables
+
     [SerializeField] private TextMeshProUGUI titleText;
     [SerializeField] private TextMeshProUGUI descriptionText;
     [SerializeField] private TextMeshProUGUI goalText;
@@ -18,10 +20,19 @@ public class QuestMenuManager : Singleton<QuestMenuManager>
     [SerializeField] private List<GameObject> panelGOList; 
     [SerializeField] private List<RectTransform> questListPanels;
     [SerializeField] private List<TextMeshProUGUI> buttonTexts;
+
+    #endregion
+
+    #region Variables
+
     private int panelIndex;
     private Dictionary<QuestSO, QuestNameTab> activeQuestDict;
     private List<QuestNameTab> completedQuestList;
     private List<QuestNameTab> failedQuestList;
+
+    #endregion
+
+    #region General
 
     protected override void Awake()
     {
@@ -40,6 +51,10 @@ public class QuestMenuManager : Singleton<QuestMenuManager>
         EnablePanel();
         Highlight();
     }
+
+    #endregion
+
+    #region Mechanics
 
     public void CreateActiveQuestTab(QuestSO quest)
     {
@@ -133,7 +148,11 @@ public class QuestMenuManager : Singleton<QuestMenuManager>
         buttonTexts[panelIndex].color = Color.red;
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~ Calling from UI ~~~~~~~~~~~~~~~~
+
+    #region UITriggeredFunctions
 
     public void OnPressActiveTab()
     {
@@ -171,7 +190,11 @@ public class QuestMenuManager : Singleton<QuestMenuManager>
         }        
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~~~~~
+
+    #region Callbacks
 
     private void Quest_OnQuestFailed(string arg1, QuestSO quest)
     {
@@ -188,4 +211,6 @@ public class QuestMenuManager : Singleton<QuestMenuManager>
         quest.OnQuestCompleted -= Quest_OnQuestCompleted;
         quest.OnQuestFailed -= Quest_OnQuestFailed;
     }
+
+    #endregion
 }

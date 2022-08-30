@@ -4,11 +4,17 @@ using UnityEngine;
 
 public class EquipMenuControl : Singleton<EquipMenuControl>
 {
+    #region Variables
+
     private bool isArmorAdded;
     private ArmorTypes equippedArmorType;
     public bool IsArmorAdded => isArmorAdded;
     public static List<EquipMenuWeaponTile> WeaponTileList = new List<EquipMenuWeaponTile>();
     public static List<EquipMenuSpellTile> SpellTileList = new List<EquipMenuSpellTile>();
+
+    #endregion
+
+    #region General
 
     protected override void Awake()
     {
@@ -86,7 +92,11 @@ public class EquipMenuControl : Singleton<EquipMenuControl>
         else return 0;
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~~~~~~
+
+    #region Callbacks
 
     private void Tile_OnPlacedOnWeaponMenu(PlacedObject e, int num)
     {
@@ -115,4 +125,6 @@ public class EquipMenuControl : Singleton<EquipMenuControl>
     {
 
     }
+
+    #endregion
 }

@@ -2,15 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-//using UnityEngine.PlayerLoop;
 
 public class ProjectileGun : RangedWeapon
 {
+    #region SerializedVariables
+
     [SerializeField] private float MuzzleFlashTime;
     [SerializeField] private Transform FiringPoint;
     [SerializeField] private Crosshair.CrosshairProperties crosshairProperty;
     [SerializeField] private CameraShake.ShakeProperty shakeProperties;
     [SerializeField] private RecoilEffect.RecoilProperty recoilProperty;
+
+    #endregion
+
+    #region Variables
+
     private GameController gameController;
     private Crosshair crosshair;
     private CameraShake camShake;
@@ -19,7 +25,11 @@ public class ProjectileGun : RangedWeapon
     private Weapons thisWeapon;
     private Light lighting;
     private ObjectPooler objectPooler;
-    public static event Action OnStopProjectileShoot;  
+    public static event Action OnStopProjectileShoot;
+
+    #endregion
+
+    #region General
 
     protected override void Awake()
     {
@@ -112,6 +122,10 @@ public class ProjectileGun : RangedWeapon
         }            
     }
 
+    #endregion
+
+    #region Mechanics
+
     private IEnumerator Shoot(Action action) //Used in PlayerControl
     {
         StartCoroutine(PlayMuzzleLight());
@@ -150,4 +164,6 @@ public class ProjectileGun : RangedWeapon
             }
         }
     }
+
+    #endregion
 }

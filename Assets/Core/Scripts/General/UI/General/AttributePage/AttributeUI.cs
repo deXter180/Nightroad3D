@@ -7,17 +7,9 @@ using TMPro;
 
 public class AttributeUI : MonoBehaviour
 {
-    private float pctXP;
-    private bool isXPChanged;
-    private bool resettingSlider;
-    private float sliderValue;
-    private AttributeManager attributeManager;
-    private LevelSystemManager levelSystemManager;
-    private TextMeshProUGUI applyText;
-    private TextMeshProUGUI resetText;
-    public static event Action<AttributeTypes> OnAddingAttributePoint;
 
-    #region Serialized Properties
+    #region SerializedVariables
+
     [SerializeField] private float fadeSpeed = 0.3f;
     [SerializeField] private Image xpSliderImage;
     [SerializeField] private TextMeshProUGUI levelNum;
@@ -50,7 +42,24 @@ public class AttributeUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI modifiedSpell1Dmg;
     [SerializeField] private TextMeshProUGUI originalSpell2Dmg;
     [SerializeField] private TextMeshProUGUI modifiedSpell2Dmg;
+
     #endregion
+
+    #region Variables
+
+    private float pctXP;
+    private bool isXPChanged;
+    private bool resettingSlider;
+    private float sliderValue;
+    private AttributeManager attributeManager;
+    private LevelSystemManager levelSystemManager;
+    private TextMeshProUGUI applyText;
+    private TextMeshProUGUI resetText;
+    public static event Action<AttributeTypes> OnAddingAttributePoint;
+
+    #endregion
+
+    #region General
 
     private void Awake()
     {
@@ -122,6 +131,10 @@ public class AttributeUI : MonoBehaviour
             }
         }        
     }
+
+    #endregion
+
+    #region Mechanics
 
     public void UpdateLevelNumText(int num)
     {
@@ -331,7 +344,11 @@ public class AttributeUI : MonoBehaviour
         UpdateAllMPStatText();
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~
+
+    #region Callbacks
 
     public void ClickedApplyButton()
     {
@@ -392,7 +409,7 @@ public class AttributeUI : MonoBehaviour
         {
             UpdateMPModStatText();
         }
-    } 
+    }
 
     private void STRClick()
     {       
@@ -428,4 +445,6 @@ public class AttributeUI : MonoBehaviour
         OnAddingAttributePoint?.Invoke(AttributeTypes.Intelligence);
         intButton.image.CrossFadeAlpha(1f, fadeSpeed, false);
     }
+
+    #endregion
 }

@@ -5,6 +5,8 @@ using System;
 
 public class LevelSystemManager : Singleton<LevelSystemManager>
 {
+    #region Variables
+
     private AttributeUI attributeUI;
     [SerializeField] private List<int> RequiredXP;
     private List<LevelSystem> levelSystems;
@@ -14,6 +16,10 @@ public class LevelSystemManager : Singleton<LevelSystemManager>
     public int CurrentXP => xp;
     public static event Action<int> OnLevelUp;
     public event Action OnXPChanged;
+
+    #endregion
+
+    #region Mechanics
 
     protected override void Awake()
     {
@@ -101,4 +107,6 @@ public class LevelSystemManager : Singleton<LevelSystemManager>
         float pct = (float) xp / currentLevel.XPToNextLevel;
         return (float)Math.Round(pct, 2);
     }
+
+    #endregion
 }

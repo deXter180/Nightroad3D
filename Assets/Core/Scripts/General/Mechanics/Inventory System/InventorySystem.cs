@@ -5,6 +5,9 @@ using System;
 
 public class InventorySystem : Singleton<InventorySystem>
 {
+
+    #region Variables
+
     [SerializeField] private int gridWidth;
     [SerializeField] private int gridHeight;
     private float throwDistance = 20f;
@@ -17,6 +20,8 @@ public class InventorySystem : Singleton<InventorySystem>
     public static event Action<ItemTypes, PlacedObject> OnAddingToInventory;
     public static event Action<ItemTypes, PlacedObject> OnRemovingFromInventory;
     public static event Action<ItemTypes> OnConsumingFromInventory;
+
+    #endregion
 
     protected override void Awake()
     {
@@ -52,7 +57,7 @@ public class InventorySystem : Singleton<InventorySystem>
         PickedObject.SpawnItemsWorld(ItemTypes.Ammo, GameController.GetInventoryItemSOFromList(ItemTypes.Ammo, WeaponTypes.Shotgun), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance), WeaponTypes.Shotgun);
     }
 
-    #region
+    #region UtilityFunctions
     public Grid<GridObject> GetGrid()
     {
         return grid;
@@ -105,6 +110,8 @@ public class InventorySystem : Singleton<InventorySystem>
     #endregion
 
     //~~~~~~~~~~~~~~~~~~ Main Functions ~~~~~~~~~~~~~~~~~~~
+
+    #region MechanicsFunctions
 
     public void InitializeInventory()
     {
@@ -287,13 +294,16 @@ public class InventorySystem : Singleton<InventorySystem>
         Test(); // Remove this
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~~~~
 
 
 
     //~~~~~~~~~~~~~~~~~ Save & Load ~~~~~~~~~~~~~~~~~~~~
 
-    #region
+    #region SaveLoad
+
     [Serializable]
     public struct AddedItem
     {
@@ -346,5 +356,6 @@ public class InventorySystem : Singleton<InventorySystem>
             TryPlaceItem(GameController.GetInventoryItemSOFromList(addedItem.itemType), addedItem.gridPos, addedItem.dir, out PlacedObject placedObject);
         }
     }
+
     #endregion
 }

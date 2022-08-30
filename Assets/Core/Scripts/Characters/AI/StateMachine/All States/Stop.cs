@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Stop : State
 {
-
     public Stop(EnemyBrain EB, StateMachine SM) : base(EB.gameObject, SM)
     {
         
@@ -17,17 +16,17 @@ public class Stop : State
         {
             if (enemy.IsTargetInRange)
             {
-                stateMachine.SetState(States.Attack);
+                stateMachine.SetState(AIStates.Attack);
             }
             else
             {
                 if (enemyTrigger.IsTargetFleed)
                 {
-                    stateMachine.SetState(States.Roam);
+                    stateMachine.SetState(AIStates.Roam);
                 }
                 else
                 {
-                    stateMachine.SetState(States.Chase);
+                    stateMachine.SetState(AIStates.Chase);
                 }
             }            
         }      
@@ -43,7 +42,5 @@ public class Stop : State
     {
         if (enemyBrain.navMeshAgent.isOnNavMesh)
             enemyBrain.navMeshAgent.isStopped = false;
-    }
-
-    
+    }   
 }

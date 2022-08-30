@@ -8,10 +8,18 @@ using TMPro;
 
 public class GameController : PersistentSingleton<GameController>
 {
+
+    #region SerializedVariables
+
     [SerializeField] private Image TalkUIimage;
     [SerializeField] private Image OpenStashImage;
     [SerializeField] private RectTransform NPCSpeechBubble;
     [SerializeField] private Canvas speechBubbleCanvas;
+
+    #endregion
+
+    #region Variables
+
     private Vector3 screenPos;
     private bool isInventoryActive;
     private bool isStashActive;
@@ -45,11 +53,19 @@ public class GameController : PersistentSingleton<GameController>
     private static List<EnemySO> EnemySOList = new List<EnemySO>();
     public static event Action OnStashClose;
 
+    #endregion
+
+    #region Properties
+
     public bool IsInventoryActive => isInventoryActive;
     public bool IsStashActive => isStashActive;
     public bool IsMainMenuActive => isMainMenuActive;
     public bool IsDialogueActive => isDialogueActive;
     public bool IsCastingSpell => spellManager.IsInSpellCastMode;
+
+    #endregion
+
+    #region GeneralFuctions
 
     protected override void Awake()
     {
@@ -115,6 +131,10 @@ public class GameController : PersistentSingleton<GameController>
             }  
         }
     }
+
+    #endregion
+
+    #region MechanicsFunctions
 
     public void SetDialogueActive(bool isActive)
     {
@@ -276,7 +296,11 @@ public class GameController : PersistentSingleton<GameController>
         OpenStashImage.gameObject.SetActive(false);
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~~~~~~~ Utility Methods ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    #region UtilityFunctions
 
     public static AudioClip GetAudioClip(AudioTypes audioType, MusicTypes musicType, int index = 0, bool randomize = false)
     {
@@ -518,7 +542,11 @@ public class GameController : PersistentSingleton<GameController>
         return null;
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    #region Callbacks
 
     private void AssetLoader_OnSOsLoaded(IList<ScriptableObject> obj)
     {
@@ -661,4 +689,6 @@ public class GameController : PersistentSingleton<GameController>
         isInventoryActive = false;
         isMainMenuActive = false;
     }
+
+    #endregion
 }

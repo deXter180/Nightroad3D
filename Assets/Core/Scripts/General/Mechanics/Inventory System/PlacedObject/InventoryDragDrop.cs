@@ -7,6 +7,8 @@ using UnityEngine.EventSystems;
 [RequireComponent(typeof(CanvasGroup))]
 public class InventoryDragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler, IPointerEnterHandler, IPointerExitHandler
 {
+    #region Variables
+
     private CanvasGroup canvasGroup;
     private PlacedObject placedObject;
     private float cellSize;
@@ -15,6 +17,10 @@ public class InventoryDragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragH
     private InventorySystem inventorySystem;
     private ItemStash itemStash;
     private GameController gameController;
+
+    #endregion
+
+    #region General
 
     private void Awake()
     {
@@ -102,4 +108,6 @@ public class InventoryDragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragH
     {
         
     }
+
+    #endregion
 }

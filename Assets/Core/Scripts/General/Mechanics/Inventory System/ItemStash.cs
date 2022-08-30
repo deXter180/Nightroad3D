@@ -5,6 +5,8 @@ using System;
 
 public class ItemStash : Singleton<ItemStash>
 {
+    #region Variables
+
     [SerializeField] private int gridWidth;
     [SerializeField] private int gridHeight;
     private float cellSize;
@@ -13,6 +15,10 @@ public class ItemStash : Singleton<ItemStash>
     private List<PlacedObject> StashList;
     private InventoryUIHandler inventoryUI;
     private InventoryContainor itemContainor;
+
+    #endregion
+
+    #region General
 
     protected override void Awake()
     {
@@ -24,7 +30,9 @@ public class ItemStash : Singleton<ItemStash>
         StashList = new List<PlacedObject>();
     }
 
-    #region
+    #endregion
+
+    #region Utilities
 
     public Grid<GridObject> GetGrid()
     {
@@ -64,6 +72,8 @@ public class ItemStash : Singleton<ItemStash>
     }
 
     #endregion
+
+    #region Mechanics
 
     public void ClearStash(List<SavedStashItems> savedItems)
     {
@@ -241,6 +251,8 @@ public class ItemStash : Singleton<ItemStash>
         }
         return false;
     }
+
+    #endregion
 
     //~~~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~~~
 

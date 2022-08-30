@@ -6,6 +6,8 @@ using UnityEngine.VFX;
 
 public abstract class Spells
 {
+    #region Variables
+
     protected string spellSizeText = "Size";
     protected SpellManager spellManager;
     protected AttributeManager attributeManager;
@@ -16,6 +18,10 @@ public abstract class Spells
     public SpellBaseSO ThisSpellSO => spellSO;
     public SpellTypes SpellType { get => spellType; }
     public SpellCategories SpellCategory { get => spellCategory; }
+
+    #endregion
+
+    #region General
 
     public Spells(SpellTypes spellType, SpellCategories category)
     {
@@ -28,7 +34,11 @@ public abstract class Spells
 
     public abstract void CastSpell(Action action);
     public abstract float GetModifiedStats();
+
+    #endregion
 }
+
+#region SpellMechanics
 
 public class SingleTargetedProjectile : Spells
 {
@@ -254,6 +264,10 @@ public class SelfTargeted : Spells
 
 }
 
+#endregion
+
+#region EventArgs
+
 public class OnSTSpellCastEventArg : EventArgs
 {
     public SingleTargetedProjectile spell;
@@ -281,3 +295,5 @@ public class OnAOESpellCastEventArg : EventArgs
         spellCategory = SC;
     }
 }
+
+#endregion

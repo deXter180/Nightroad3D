@@ -4,7 +4,13 @@ using UnityEngine;
 
 public class TooltipSystem : Singleton<TooltipSystem>
 {
+    #region Variables
+
     private Tooltip tooltip;
+
+    #endregion
+
+    #region General
 
     protected override void Awake()
     {
@@ -23,4 +29,6 @@ public class TooltipSystem : Singleton<TooltipSystem>
     {
         Instance.tooltip.gameObject.SetActive(false);
     }
+
+    #endregion
 }

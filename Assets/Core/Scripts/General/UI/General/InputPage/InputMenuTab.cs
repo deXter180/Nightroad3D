@@ -8,6 +8,8 @@ using System;
 
 public class InputMenuTab : MonoBehaviour
 {
+    #region SerializedVariables
+
     [SerializeField] private InputActionReference inputReference;
     [Range(0,10)][SerializeField] private int selectedBinding;
     [SerializeField] private InputBinding.DisplayStringOptions displayStringOptions;
@@ -17,12 +19,26 @@ public class InputMenuTab : MonoBehaviour
     [SerializeField] private TMP_Text actionText;
     [SerializeField] private TMP_Text bindText;
     [SerializeField] private Button rebindButton;
+
+    #endregion
+
+    #region Variables
+
     private int bindingIndex;
     private string actionName;
     private InputAction defaultAction;
+
+    #endregion
+
+    #region Properties
+
     public TMP_Text ActionText { get => actionText; }
     public TMP_Text BindText{ get => bindText; }
     public Button RebindButton { get => rebindButton; }
+
+    #endregion
+
+    #region General 
 
     private void OnEnable()
     {
@@ -52,6 +68,10 @@ public class InputMenuTab : MonoBehaviour
         GetBindingInfo();
         UpdateUI();
     }
+
+    #endregion
+
+    #region Mechanics
 
     private void GetBindingInfo()
     {
@@ -85,16 +105,22 @@ public class InputMenuTab : MonoBehaviour
         }
     }
 
-    public void Reset()
+    public void ResetTab()
     {
         InputManager.ResetBinding(actionName, bindingIndex);
         UpdateUI();
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~
+
+    #region Callbacks
 
     private void DoRebind()
     {
         InputManager.StartRebind(actionName, bindingIndex, bindText);
     }
+
+    #endregion
 }

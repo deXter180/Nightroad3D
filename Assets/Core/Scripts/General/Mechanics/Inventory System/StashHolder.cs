@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class StashHolder : MonoBehaviour
 {
+    #region Variables
+
     private ItemStash itemStash;
     private string hightlightMaterial = "Outline_SpriteLit";
     [SerializeField] private List<StashItems> StashItemList;
@@ -12,6 +14,10 @@ public class StashHolder : MonoBehaviour
     private SpriteRenderer SR;
     private GameController gameController;
     private Material defaultMat;
+
+    #endregion
+
+    #region General
 
     private void Start()
     {
@@ -60,4 +66,5 @@ public class StashHolder : MonoBehaviour
         gameController.UnHighlightStash();
     }
 
+    #endregion
 }

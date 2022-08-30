@@ -5,13 +5,24 @@ using UnityEngine.UI;
 
 public class NPCBrain : MonoBehaviour
 {
+    #region SerializedVariables
+
     [SerializeField] private float speechOffsetX = 1f;
     [SerializeField] private float speechOffsetY = 10f;
     [SerializeField] private TextAsset storyText;
     [SerializeField][TextArea(2, 6)] private List<string> npcDialogueList;
+
+    #endregion
+
+    #region Variables
+
     private bool storySetupDone;
     private DialogueManager dialogueManager;
     public Vector3 SpeechBubblePos { get; private set; }
+
+    #endregion
+
+    #region General
 
     private void OnEnable()
     {
@@ -39,4 +50,6 @@ public class NPCBrain : MonoBehaviour
     {
         return npcDialogueList[Random.Range(0, npcDialogueList.Count - 1)];
     }
+
+    #endregion
 }

@@ -7,10 +7,16 @@ using UnityEngine.AddressableAssets;
 
 public class ObjectPooler : Singleton<ObjectPooler>
 {
+    #region Variables
+
     [SerializeField] private int PoolSize;
     [SerializeField] private List<AssetPackages> AssetRefList = new List<AssetPackages>();
     private List<Projectile> projectiles;
     private bool isInitialized;
+
+    #endregion
+
+    #region General
 
     protected override void Awake()
     {
@@ -37,6 +43,10 @@ public class ObjectPooler : Singleton<ObjectPooler>
         AssetLoader.OnGOCreatedWithAssetRef -= AssetRefLoader_OnGOCreated;
         SceneLoader.OnNewGameStart -= SceneLoader_OnNewGameStart;
     }
+
+    #endregion
+
+    #region Mechanics
 
     private AssetReference GetProjectileAssetRef(ProjectileTypes projectileType)
     {
@@ -114,7 +124,11 @@ public class ObjectPooler : Singleton<ObjectPooler>
         return null;
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~~~~
+
+    #region Callbacks
 
     private void SceneLoader_OnNewGameStart()
     {
@@ -154,4 +168,5 @@ public class ObjectPooler : Singleton<ObjectPooler>
         AssetLoader.ReleaseAssetInstance(notify.gameObject);
     }
 
+    #endregion
 }
