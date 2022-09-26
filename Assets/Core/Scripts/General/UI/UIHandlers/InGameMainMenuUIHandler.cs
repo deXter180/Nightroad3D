@@ -61,11 +61,6 @@ public class InGameMainMenuUIHandler : Singleton<InGameMainMenuUIHandler>
         SceneLoader.LoadMainScene();
     }
 
-    public void LoadTestScene()
-    {
-        SceneLoader.LoadNewSingleScene("Test1");
-    }
-
     #endregion
 
     //~~~~~~~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~~~~~~~

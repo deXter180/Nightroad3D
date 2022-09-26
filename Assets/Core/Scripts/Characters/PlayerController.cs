@@ -712,6 +712,16 @@ public class PlayerController : PersistentSingleton<PlayerController>
         }
     }
 
+    public void ParentPlayerCam()
+    {
+        camTransform.parent = transform;
+    }
+
+    public void UnParentPlayerCam()
+    {
+        camTransform.parent = null;
+    }
+
     #endregion
 
     //~~~~~~~~~~~~~~~~~~~~ Callbacks ~~~~~~~~~~~~~~~~~~~~~
@@ -765,6 +775,18 @@ public class PlayerController : PersistentSingleton<PlayerController>
     private void AssetLoader_OnSingleSceneLoad(UnityEngine.ResourceManagement.ResourceProviders.SceneInstance obj)
     {
         gameObject.SetActive(true);
+        StartCoroutine(Delay());
+
+        IEnumerator Delay()
+        {
+            yield return Helpers.GetWait(0.1f);
+            var portalMarker = FindObjectOfType<TestToMainLevel>();
+            if (portalMarker != null)
+            {
+                transform.position = portalMarker.transform.position + new Vector3(0, 5, 0);
+                UnParentPlayerCam();
+            }
+        }
     }
 
     private void Resource_OnManaLoss(object sender, ResourceManagement.ManaEventArgs e)

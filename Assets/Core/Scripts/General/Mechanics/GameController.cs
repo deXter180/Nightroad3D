@@ -112,11 +112,6 @@ public class GameController : PersistentSingleton<GameController>
         SceneLoader.OnMainMenuSceneLoad -= SceneLoader_OnMainMenuSceneLoad;
     }
 
-    private void Start()
-    {
-        RainSystem.Instance.ControlRain();
-    }
-
     private void Update()
     {        
         if (inputs != null && player != null)

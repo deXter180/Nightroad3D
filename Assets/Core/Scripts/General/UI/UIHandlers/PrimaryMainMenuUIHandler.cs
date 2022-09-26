@@ -55,7 +55,7 @@ public class PrimaryMainMenuUIHandler : MonoBehaviour
 
     public void StartNewGame()
     {
-        SceneLoader.LoadNewGame("PSLevel1");
+        SceneLoader.LoadNewGame("Test");
     }
 
     public void ContinueGame()
