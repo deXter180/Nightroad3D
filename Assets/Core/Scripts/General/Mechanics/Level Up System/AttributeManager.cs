@@ -670,7 +670,7 @@ public class AttributeManager : Singleton<AttributeManager>
         IEnumerator Delay()
         {
             yield return Helpers.GetWait(1);
-            IncreasePoint(15);
+            IncreasePoint(80);
             availablePoints = AvailablePoints;
         }
     }

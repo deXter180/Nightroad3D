@@ -310,7 +310,15 @@ public class PlayerController : PersistentSingleton<PlayerController>
 
     private void UpdateCameraPosition()
     {
-        camTransform.position = transform.position + ConstantDistFromPlayer;
+        if (!isCrouching)
+        {
+            camTransform.position = transform.position + ConstantDistFromPlayer;
+        }
+        else
+        {
+            var pos = transform.position + ConstantDistFromPlayer;
+            camTransform.position = pos + new Vector3 (0, -2f, 0);
+        }
     }
 
     public void UpdateResouce(AttributeTypes type)
