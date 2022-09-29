@@ -38,7 +38,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
     [SerializeField] private float statToHPModifier;
     [SerializeField] private float statToMPModifier;
     [SerializeField] private float MoveSpeed = 20;
-    [SerializeField] private float MoveAcceleration = 14f;
+    //[SerializeField] private float MoveAcceleration = 14f;
     [SerializeField] private float MouseSensitivity;
     [SerializeField] private float JumpForce;
     [SerializeField] private float GravityScale;
@@ -77,7 +77,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
     private Vector3 dashPos;
     private Vector3 originalPlayerPos;
     private Vector3 ConstantDistFromPlayer;
-    private Vector3 playerVelocity = Vector3.zero;
+    //private Vector3 playerVelocity = Vector3.zero;
     private Quaternion oldRot;
     private int modifiedMaxHp = 0;
     private int modifiedMaxMp = 0;
@@ -98,6 +98,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
     private float DOTelapsedTime = 0;
     private float DOTDuration = 0;
     private float gravityControl;
+    private float moveSpeedOnWater;
     private bool isInitiated;
     private bool isHitByDOT;
     private bool isDOTActive;
@@ -134,6 +135,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
         primCol = transform.Find("PrimaryCollider").GetComponent<CapsuleCollider>();
         secndCol = transform.Find("SecondCollider").GetComponent<CapsuleCollider>();
         bitmask = ground | water;
+        moveSpeedOnWater = (float)Math.Round(MoveSpeed / 3, 2);
         isOnWater = false;
         isMoving = false;
         isDead = false;
@@ -372,44 +374,45 @@ public class PlayerController : PersistentSingleton<PlayerController>
             var wishSpeed = wishDir.magnitude;
 
             wishSpeed *= MoveSpeed;
-            Accelerate(wishDir, wishSpeed, MoveAcceleration);
-            playerVelocity.y = 0;
+            //Accelerate(wishDir, wishSpeed, MoveAcceleration);
+            //playerVelocity.y = 0;          
             dashPos = transform.right * moveX + transform.forward * moveY;
             Vector3 movePos = Vector3.zero;
             if (isOnWater)
             {
-                movePos = transform.position + dashPos * Time.fixedDeltaTime * MoveSpeed * 2;
+                movePos = transform.position + dashPos * Time.fixedDeltaTime * moveSpeedOnWater;
             }
             else
             {
-                movePos = transform.position + (dashPos * Time.fixedDeltaTime) + playerVelocity;
+                //movePos = transform.position + (dashPos * Time.fixedDeltaTime) + playerVelocity;
+                movePos = transform.position + dashPos * Time.fixedDeltaTime * MoveSpeed;
             }
             RB.MovePosition(movePos);
             isMoving = true;
         }
-        else
-        {
-            playerVelocity = Vector3.zero;
-        }
+        //else
+        //{
+        //    playerVelocity = Vector3.zero;
+        //}
     }
 
-    private void Accelerate(Vector3 wishdir, float wishspeed, float accel)
-    {
-        float addspeed;
-        float accelspeed;
-        float currentspeed;
+    //private void Accelerate(Vector3 wishdir, float wishspeed, float accel)
+    //{
+    //    float addspeed;
+    //    float accelspeed;
+    //    float currentspeed;
 
-        playerVelocity.Normalize();
-        currentspeed = Vector3.Dot(playerVelocity, wishdir);
-        addspeed = wishspeed - currentspeed;
-        if (addspeed <= 0)
-            return;
-        accelspeed = accel * Time.deltaTime * wishspeed;
-        if (accelspeed > addspeed)
-            accelspeed = addspeed;
-        playerVelocity.x += accelspeed * wishdir.x;
-        playerVelocity.z += accelspeed * wishdir.z;
-    }
+    //    playerVelocity.Normalize();
+    //    currentspeed = Vector3.Dot(playerVelocity, wishdir);
+    //    addspeed = wishspeed - currentspeed;
+    //    if (addspeed <= 0)
+    //        return;
+    //    accelspeed = accel * Time.deltaTime * wishspeed;
+    //    if (accelspeed > addspeed)
+    //        accelspeed = addspeed;
+    //    playerVelocity.x += accelspeed * wishdir.x;
+    //    playerVelocity.z += accelspeed * wishdir.z;
+    //}
 
     private void Rotate()
     {
@@ -787,7 +790,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
 
         IEnumerator Delay()
         {
-            yield return Helpers.GetWait(0.1f);
+            yield return Helpers.GetWait(0.15f);
             var portalMarker = FindObjectOfType<TestToMainLevel>();
             if (portalMarker != null)
             {

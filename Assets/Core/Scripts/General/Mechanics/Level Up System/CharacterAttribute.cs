@@ -16,8 +16,15 @@ public class CharacterAttribute
         {
             if (baseValue != lastBaseValue || isDirty)
             {
-                lastBaseValue = baseValue;
-                modifiedValue = CalculateFinalValue();                             
+                if (isDirty)
+                {
+                    modifiedValue = CalculateFinalValue();
+                }
+                else
+                {
+                    modifiedValue = baseValue;
+                }                            
+                lastBaseValue = baseValue;                                     
                 isDirty = false;
             }
             return modifiedValue;       
@@ -61,7 +68,7 @@ public class CharacterAttribute
         {
             modValue = modValue * (1 + val);
         }
-        baseValue = (float)Math.Round(modValue, 2);   
+        baseValue = (float)Math.Round(modValue, 2);
         OnStatChanged?.Invoke(attributeType);
     }
 

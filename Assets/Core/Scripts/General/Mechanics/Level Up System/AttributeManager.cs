@@ -336,13 +336,9 @@ public class AttributeManager : Singleton<AttributeManager>
         {
             point = STR3rdMultiplier;
         }
-        else if (strength.BaseValue < STR4thThreshold)
-        {
-            point = STR4thMultiplier;
-        }
         else
         {
-            point = 1;
+            point = STR4thMultiplier;
         }
         return point;        
     }
@@ -362,13 +358,9 @@ public class AttributeManager : Singleton<AttributeManager>
         {
             point = DEX3rdMultiplier;
         }
-        else if (dexterity.BaseValue < DEX4thThreshold)
-        {
-            point = DEX4thMultiplier;
-        }
         else
         {
-            point = 1;
+            point = DEX4thMultiplier;
         }
         return point;
     }
@@ -388,13 +380,9 @@ public class AttributeManager : Singleton<AttributeManager>
         {
             point = VIT3rdMultiplier;
         }
-        else if (vitality.BaseValue < VIT4thThreshold)
-        {
-            point = VIT4thMultiplier;
-        }
         else
         {
-            point = 1;
+            point = VIT4thMultiplier;
         }
         return point;
     }
@@ -414,13 +402,9 @@ public class AttributeManager : Singleton<AttributeManager>
         {
             point = SPR3rdMultiplier;
         }
-        else if (spirit.BaseValue < SPR4thThreshold)
-        {
-            point = SPR4thMultiplier;
-        }
         else
         {
-            point = 1;
+            point = SPR4thMultiplier;
         }
         return point;
     }
@@ -440,13 +424,9 @@ public class AttributeManager : Singleton<AttributeManager>
         {
             point = INT3rdMultiplier;
         }
-        else if (intelligence.BaseValue < INT4thThreshold)
-        {
-            point = INT4thMultiplier;
-        }
         else
         {
-            point = 1;
+            point = INT4thMultiplier;
         }
         return point;
     }
