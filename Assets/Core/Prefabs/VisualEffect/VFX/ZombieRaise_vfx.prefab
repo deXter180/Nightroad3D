@@ -180,7 +180,7 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 50
+      - m_Value: 20
         m_Name: PortalSpawnRate
         m_Overridden: 1
       - m_Value: 20
@@ -203,6 +203,9 @@ VisualEffect:
         m_Overridden: 1
       - m_Value: 0.85
         m_Name: StartDelay
+        m_Overridden: 1
+      - m_Value: 16
+        m_Name: BitSize
         m_Overridden: 1
     m_Vector2f:
       m_Array: []

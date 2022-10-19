@@ -11,6 +11,8 @@ public class InventoryItemSOEditor : Editor
     SerializedProperty itemNameProp;
     SerializedProperty itemDescriptionProp;
     SerializedProperty usableProp;
+    SerializedProperty craftableProp;
+    SerializedProperty stackableProp;
     SerializedProperty widthProp;
     SerializedProperty heightProp;
     SerializedProperty itemTypeProp;
@@ -35,6 +37,8 @@ public class InventoryItemSOEditor : Editor
         itemNameProp = serializedObject.FindProperty("itemName");
         itemDescriptionProp = serializedObject.FindProperty("itemDescription");
         usableProp = serializedObject.FindProperty("usable");
+        craftableProp = serializedObject.FindProperty("craftable");
+        stackableProp = serializedObject.FindProperty("stackable");
         widthProp = serializedObject.FindProperty("width");
         heightProp = serializedObject.FindProperty("height");
         itemTypeProp = serializedObject.FindProperty("itemType");
@@ -61,6 +65,8 @@ public class InventoryItemSOEditor : Editor
             EditorGUILayout.PropertyField(itemNameProp);
             EditorGUILayout.PropertyField(itemDescriptionProp);
             EditorGUILayout.PropertyField(usableProp);
+            EditorGUILayout.PropertyField(craftableProp);
+            EditorGUILayout.PropertyField(stackableProp);
             EditorGUILayout.PropertyField(widthProp);
             EditorGUILayout.PropertyField(heightProp);
             EditorGUILayout.PropertyField(attributeAmountProp);

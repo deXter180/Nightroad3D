@@ -99,6 +99,9 @@ VisualEffect:
       - m_Value: 3
         m_Name: DecalSize
         m_Overridden: 1
+      - m_Value: 16
+        m_Name: BitSize
+        m_Overridden: 1
     m_Vector2f:
       m_Array:
       - m_Value: {x: 12, y: 14}

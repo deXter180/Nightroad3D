@@ -65,6 +65,9 @@ VisualEffect:
       - m_Value: 50
         m_Name: DecalZPosition
         m_Overridden: 1
+      - m_Value: 16
+        m_Name: BitSize
+        m_Overridden: 1
     m_Vector2f:
       m_Array:
       - m_Value: {x: 0.3, y: 0.3}

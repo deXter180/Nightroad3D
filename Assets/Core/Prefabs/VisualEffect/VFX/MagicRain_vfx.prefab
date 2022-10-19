@@ -95,6 +95,9 @@ VisualEffect:
       - m_Value: -3.3
         m_Name: CollisionSurfaceYPos
         m_Overridden: 1
+      - m_Value: 16
+        m_Name: BitSize
+        m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
@@ -308,18 +311,18 @@ VisualEffect:
         m_Overridden: 1
       - m_Value:
           serializedVersion: 2
-          key0: {r: 0, g: 0, b: 0, a: 0}
-          key1: {r: 0.18867922, g: 0, b: 0, a: 1}
-          key2: {r: 0.83743626, g: 0.12755652, b: 0, a: 1}
+          key0: {r: 0.05660379, g: 0.0050729797, b: 0.0050729797, a: 1}
+          key1: {r: 0, g: 0, b: 0, a: 1}
+          key2: {r: 0.59402275, g: 0.08876202, b: 0, a: 1}
           key3: {r: 0.03773582, g: 0.004449978, b: 0.004449978, a: 0}
           key4: {r: 0.01886791, g: 0.01886791, b: 0.01886791, a: 0}
           key5: {r: 0.14150941, g: 0.14150941, b: 0.14150941, a: 0}
           key6: {r: 0, g: 0, b: 0, a: 0}
           key7: {r: 0, g: 0, b: 0, a: 0}
           ctime0: 0
-          ctime1: 10409
-          ctime2: 21395
-          ctime3: 35081
+          ctime1: 10794
+          ctime2: 16962
+          ctime3: 27563
           ctime4: 58403
           ctime5: 65535
           ctime6: 0

@@ -28,6 +28,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 736.8, y: 51, z: 698}
   m_LocalScale: {x: 57.878445, y: 57.878445, z: 57.878445}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -51,6 +52,9 @@ VisualEffect:
       m_Array:
       - m_Value: 0.05
         m_Name: DecalSize
+        m_Overridden: 1
+      - m_Value: 16
+        m_Name: BitSize
         m_Overridden: 1
     m_Vector2f:
       m_Array:
@@ -126,6 +130,7 @@ VisualEffect:
       m_Array: []
 --- !u!73398921 &2408207100841647815
 VFXRenderer:
+  serializedVersion: 1
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -143,9 +148,6 @@ VFXRenderer:
   m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 0}
-  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

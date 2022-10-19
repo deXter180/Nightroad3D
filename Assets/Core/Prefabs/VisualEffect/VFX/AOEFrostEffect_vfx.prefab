@@ -116,6 +116,9 @@ VisualEffect:
       - m_Value: 4
         m_Name: GroundLifetime
         m_Overridden: 1
+      - m_Value: 16
+        m_Name: BitSize
+        m_Overridden: 1
     m_Vector2f:
       m_Array:
       - m_Value: {x: 2.5, y: 4}

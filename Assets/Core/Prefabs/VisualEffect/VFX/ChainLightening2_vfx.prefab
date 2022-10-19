@@ -141,6 +141,9 @@ VisualEffect:
       - m_Value: 2
         m_Name: NoiseFrequency
         m_Overridden: 1
+      - m_Value: 16
+        m_Name: BitSize
+        m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
@@ -200,4 +203,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a47a3bbd886a4f4897a095d9a7e39bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  delayTime: 5
+  vfxduration: 0.5
