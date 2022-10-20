@@ -21,7 +21,7 @@ public class CraftMenuTile : MenuTile
         base.Awake();
         gridWidth = 1;
         gridHeight = 1;
-        cellSize = 105;
+        cellSize = 125;
         grid = new Grid<GridObject>(gridWidth, gridHeight, cellSize, transform.position, (Grid<GridObject> g, int x, int y) => new GridObject(g, x, y), true);
     }
 

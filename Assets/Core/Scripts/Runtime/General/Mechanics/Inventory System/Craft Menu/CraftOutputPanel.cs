@@ -31,7 +31,7 @@ public class CraftOutputPanel : MonoBehaviour
         if (!LeanTween.isTweening(gameObject))
         {
             LeanTween.scale(rectTransform, newScale, 0.5f);
-            var temp = LeanTween.moveY(rectTransform, 30, 0.5f);
+            var temp = LeanTween.moveY(rectTransform, 500f, 0.5f);
             temp.setOnComplete(() => { gameObject.SetActive(false); });
         }
     }
