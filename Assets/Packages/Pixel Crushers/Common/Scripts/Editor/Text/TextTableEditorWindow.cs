@@ -1,5 +1,7 @@
 ﻿// Copyright (c) Pixel Crushers. All rights reserved.
 
+#if UNITY_EDITOR
+
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -1030,3 +1032,5 @@ namespace PixelCrushers
 
     }
 }
+
+#endif

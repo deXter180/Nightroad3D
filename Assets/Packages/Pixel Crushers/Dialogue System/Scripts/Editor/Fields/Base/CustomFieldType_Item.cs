@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿
+#if UNITY_EDITOR
+
+using UnityEngine;
 using System.Collections;
 using UnityEditor;
 using PixelCrushers.DialogueSystem;
@@ -31,3 +34,5 @@ namespace PixelCrushers.DialogueSystem
 
     }
 }
+
+#endif

@@ -15,6 +15,11 @@ public class Billboard : MonoBehaviour
 
     private bool IsVisibleToCamera()
     {
+        if (camTransform == null)
+        {
+            mainCam = Helpers.MainCam;
+            camTransform = mainCam.transform;
+        }
         float distanceFromCam = Vector3.Distance(camTransform.position, transform.position);
         if (distanceFromCam <= mainCam.farClipPlane)
         {

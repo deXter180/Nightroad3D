@@ -118,23 +118,23 @@ public class ItemStash : Singleton<ItemStash>
             InventoryItemSO itemSO = null ;
             if (item.ItemType == ItemTypes.Weapon && item.WeaponType != WeaponTypes.None)
             {
-                itemSO = GameController.GetWeaponInventorySO(item.WeaponType);
+                itemSO = AssetLoader.GetWeaponInventorySO(item.WeaponType);
             }
             else if (item.ItemType == ItemTypes.Armor && item.ArmorType != ArmorTypes.None)
             {
-                itemSO = GameController.GetArmorInventorySO(item.ArmorType);
+                itemSO = AssetLoader.GetArmorInventorySO(item.ArmorType);
             }
             else if (item.ItemType == ItemTypes.Spell && item.SpellType != SpellTypes.None)
             {
-                itemSO = GameController.GetSpellInventorySO(item.SpellType);
+                itemSO = AssetLoader.GetSpellInventorySO(item.SpellType);
             }
             else if (item.ItemType == ItemTypes.Ammo && item.WeaponType != WeaponTypes.None)
             {
-                itemSO = GameController.GetInventoryItemSOFromList(item.ItemType, item.WeaponType);
+                itemSO = AssetLoader.GetInventoryItemSOFromList(item.ItemType, item.WeaponType);
             }
             else
             {
-                itemSO = GameController.GetInventoryItemSOFromList(item.ItemType);
+                itemSO = AssetLoader.GetInventoryItemSOFromList(item.ItemType);
             }
 
             if (itemSO != null)

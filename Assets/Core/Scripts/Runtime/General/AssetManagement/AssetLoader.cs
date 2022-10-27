@@ -10,6 +10,24 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 public static class AssetLoader
 {
+    #region Variables
+
+    private static Dictionary<string, QuestSO> QuestDict = new Dictionary<string, QuestSO>();
+    private static Dictionary<string, Material> MaterailDict = new Dictionary<string, Material>();
+    private static Dictionary<AudioTypes, AudioSO> AudioSODict = new Dictionary<AudioTypes, AudioSO>();
+    private static List<InventoryItemSO> InventorySOList = new List<InventoryItemSO>();
+    private static List<InventoryItemSO> WeaponInventorySOList = new List<InventoryItemSO>();
+    private static List<InventoryItemSO> SpellInventorySOList = new List<InventoryItemSO>();
+    private static List<InventoryItemSO> ArmorInventorySOList = new List<InventoryItemSO>();
+    private static List<WeaponSO> WeaponSOList = new List<WeaponSO>();
+    private static List<AmmoSO> AmmoSOList = new List<AmmoSO>();
+    private static List<ArmorSO> ArmorSOList = new List<ArmorSO>();
+    private static List<SpellBaseSO> spellSOList = new List<SpellBaseSO>();
+    private static List<EnemySO> EnemySOList = new List<EnemySO>();
+    private static List<RecipeSO> RecipeSOList = new List<RecipeSO>();
+
+    #endregion
+
     #region Events
 
     public static event Action<GameObject> OnGOCreated;
@@ -24,9 +42,7 @@ public static class AssetLoader
 
     #endregion
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~ Load Assets ~~~~~~~~~~~~~~~~~~
-
-    #region Functions
+    #region MechanicsFunctions
 
     public static void LoadSOAssets(string nameKey, Action<ScriptableObject> callback)
     {
@@ -105,7 +121,7 @@ public static class AssetLoader
         };
     }
 
-    public static bool CreateGOAsset(string nameKey, Transform parent)
+    public static bool CreateGOAsset(string nameKey, Transform parent = null)
     {
         bool isCompleted = false;
         Addressables.InstantiateAsync(nameKey, parent).Completed += (handle) =>
@@ -204,6 +220,377 @@ public static class AssetLoader
             clearPreviousScene = false;
             previousScene = new SceneInstance();
         };
+    }
+
+    #endregion
+
+    #region AssetLoadFunctions
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    private static void LoadDependencies()
+    {
+        LoadSOAssets("ScriptableObject", SOLoadCallback);
+        LoadAnyAssets<Material>("Materials", MaterialLoadCallback);
+    }
+
+    public static AudioClip GetAudioClip(AudioTypes audioType, MusicTypes musicType, int index = 0, bool randomize = false)
+    {
+        List<AudioClip> clipList = new List<AudioClip>();
+        if (AudioSODict.TryGetValue(audioType, out AudioSO audioSO))
+        {
+            clipList = audioSO.GetMusicAudio(musicType);
+            if (clipList != null)
+            {
+                if (index >= 0 && index < clipList.Count)
+                {
+                    if (randomize)
+                    {
+                        index = UnityEngine.Random.Range(0, clipList.Count - 1);
+                    }
+                    return clipList[index];
+                }
+            }
+        }
+        return null;
+    }
+
+    public static AudioClip GetAudioClip(AudioTypes audioType, EnvironmentTypes environmentType, int index = 0, bool randomize = false)
+    {
+        List<AudioClip> clipList = new List<AudioClip>();
+        if (AudioSODict.TryGetValue(audioType, out AudioSO audioSO))
+        {
+            clipList = audioSO.GetEnvironmentAudio(environmentType);
+            if (clipList != null)
+            {
+                if (index >= 0 && index < clipList.Count)
+                {
+                    if (randomize)
+                    {
+                        index = UnityEngine.Random.Range(0, clipList.Count - 1);
+                    }
+                    return clipList[index];
+                }
+            }
+        }
+        return null;
+    }
+
+    public static AudioClip GetAudioClip(AudioTypes audioType, WeaponTypes weaponType, int index = 0, bool randomize = false)
+    {
+        List<AudioClip> clipList = new List<AudioClip>();
+        if (AudioSODict.TryGetValue(audioType, out AudioSO audioSO))
+        {
+            clipList = audioSO.GetWeaponAudio(weaponType);
+            if (clipList != null)
+            {
+                if (index >= 0 && index < clipList.Count)
+                {
+                    if (randomize)
+                    {
+                        index = UnityEngine.Random.Range(0, clipList.Count - 1);
+                    }
+                    return clipList[index];
+                }
+            }
+        }
+        return null;
+    }
+
+    public static AudioClip GetAudioClip(AudioTypes audioType, SpellTypes spellType, int index = 0, bool randomize = false)
+    {
+        List<AudioClip> clipList = new List<AudioClip>();
+        if (AudioSODict.TryGetValue(audioType, out AudioSO audioSO))
+        {
+            clipList = audioSO.GetSpellAudio(spellType);
+            if (clipList != null)
+            {
+                if (index >= 0 && index < clipList.Count)
+                {
+                    if (randomize)
+                    {
+                        index = UnityEngine.Random.Range(0, clipList.Count - 1);
+                    }
+                    return clipList[index];
+                }
+            }
+        }
+        return null;
+    }
+
+    public static AudioClip GetAudioClip(AudioTypes audioType, EnemyTypes enemyType, int index = 0, bool randomize = false)
+    {
+        List<AudioClip> clipList = new List<AudioClip>();
+        if (AudioSODict.TryGetValue(audioType, out AudioSO audioSO))
+        {
+            clipList = audioSO.GetEnemyAudio(enemyType);
+            if (clipList != null)
+            {
+                if (index >= 0 && index < clipList.Count)
+                {
+                    if (randomize)
+                    {
+                        index = UnityEngine.Random.Range(0, clipList.Count - 1);
+                    }
+                    return clipList[index];
+                }
+            }
+        }
+        return null;
+    }
+
+    public static Material GetMaterail(string name)
+    {
+        if (MaterailDict.TryGetValue(name, out Material material))
+            return material;
+        else return null;
+    }
+
+    public static EnemySO GetEnemySOFromList(EnemyTypes enemyType)
+    {
+        foreach (EnemySO enemySO in EnemySOList)
+        {
+            if (enemySO.EnemyType == enemyType)
+            {
+                return enemySO;
+            }
+        }
+        return null;
+    }
+
+    public static QuestSO GetQeust(string name)
+    {
+        if (QuestDict.TryGetValue(name, out QuestSO quest))
+            return quest;
+
+        return null;
+    }
+
+    public static RecipeSO GetRecipeSOFromList(RecipeTypes recipeType)
+    {
+        foreach (RecipeSO recipe in RecipeSOList)
+        {
+            if (recipe.RecipeType == recipeType)
+            {
+                return recipe;
+            }
+        }
+        return null;
+    }
+
+    public static WeaponSO GetWeaponSOFromList(WeaponTypes weaponType)
+    {
+        foreach (WeaponSO weaponSO in WeaponSOList)
+        {
+            if (weaponSO.WeaponType == weaponType)
+            {
+                return weaponSO;
+            }
+        }
+        return null;
+    }
+
+    public static AmmoSO GetAmmoSOFromList(WeaponTypes weaponType)
+    {
+        foreach (AmmoSO ammoSO in AmmoSOList)
+        {
+            if (ammoSO.WeaponType == weaponType)
+            {
+                return ammoSO;
+            }
+        }
+        return null;
+    }
+
+    public static ArmorSO GetArmorSOFromList(ArmorTypes armorType)
+    {
+        foreach (ArmorSO armorSO in ArmorSOList)
+        {
+            if (armorSO.ArmorType == armorType)
+            {
+                return armorSO;
+            }
+        }
+        return null;
+    }
+
+    public static SpellBaseSO GetSpellSOFromList(SpellTypes spellType)
+    {
+        foreach (SpellBaseSO spellSO in spellSOList)
+        {
+            if (spellSO.SpellType == spellType)
+            {
+                return spellSO;
+            }
+        }
+        return null;
+    }
+
+    public static InventoryItemSO GetInventoryItemSOFromList(ItemTypes itemType)
+    {
+        foreach (var invSO in InventorySOList)
+        {
+            if (invSO.ItemType == itemType)
+            {
+                return invSO;
+            }
+        }
+        return null;
+    }
+
+    public static InventoryItemSO GetInventoryItemSOFromList(ItemTypes itemType, WeaponTypes weaponType)
+    {
+        foreach (var invSO in InventorySOList)
+        {
+            if (invSO.ItemType == itemType && invSO.WeaponType == weaponType)
+            {
+                return invSO;
+            }
+        }
+        return null;
+    }
+
+    public static InventoryItemSO GetWeaponInventorySO(WeaponTypes WT)
+    {
+        foreach (var temp in WeaponInventorySOList)
+        {
+            if (temp.WeaponType == WT)
+            {
+                return temp;
+            }
+        }
+        return null;
+    }
+
+    public static InventoryItemSO GetSpellInventorySO(SpellTypes ST)
+    {
+        foreach (var temp in SpellInventorySOList)
+        {
+            if (temp.SpellType == ST)
+            {
+                return temp;
+            }
+        }
+        return null;
+    }
+
+    public static InventoryItemSO GetArmorInventorySO(ArmorTypes AT)
+    {
+        foreach (var temp in ArmorInventorySOList)
+        {
+            if (temp.ArmorType == AT)
+            {
+                return temp;
+            }
+        }
+        return null;
+    }
+
+    #endregion
+
+    #region Callbacks
+
+    private static void SOLoadCallback(ScriptableObject SO)
+    {
+        if (SO.GetType() == typeof(InventoryItemSO))
+        {
+            InventoryItemSO itemSO = (InventoryItemSO)SO;
+            if (itemSO.ItemType == ItemTypes.Spell)
+            {
+                if (itemSO.SpellType != SpellTypes.None && !SpellInventorySOList.Contains(itemSO))
+                {
+                    SpellInventorySOList.Add(itemSO);
+                }
+            }
+            else if (itemSO.ItemType == ItemTypes.Weapon)
+            {
+                if (itemSO.WeaponType != WeaponTypes.None && !WeaponInventorySOList.Contains(itemSO))
+                {
+                    WeaponInventorySOList.Add(itemSO);
+                }
+            }
+            else if (itemSO.ItemType == ItemTypes.Armor)
+            {
+                if (itemSO.ArmorType != ArmorTypes.None && !ArmorInventorySOList.Contains(itemSO))
+                {
+                    ArmorInventorySOList.Add(itemSO);
+                }
+            }
+            else
+            {
+                if (!InventorySOList.Contains(itemSO))
+                {
+                    InventorySOList.Add(itemSO);
+                }
+            }
+        }
+        else if (SO.GetType() == typeof(WeaponSO))
+        {
+            if (!WeaponSOList.Contains((WeaponSO)SO))
+            {
+                WeaponSOList.Add((WeaponSO)SO);
+            }
+        }
+        else if (SO.GetType() == typeof(AmmoSO))
+        {
+            if (!AmmoSOList.Contains((AmmoSO)SO))
+            {
+                AmmoSOList.Add((AmmoSO)SO);
+            }
+        }
+        else if (SO.GetType() == typeof(ArmorSO))
+        {
+            if (!ArmorSOList.Contains((ArmorSO)SO))
+            {
+                ArmorSOList.Add((ArmorSO)SO);
+            }
+        }
+        else if (SO.GetType() == typeof(EnemySO))
+        {
+            if (!EnemySOList.Contains((EnemySO)SO))
+            {
+                EnemySOList.Add((EnemySO)SO);
+            }
+        }
+        else if (SO.GetType() == typeof(SpellBaseSO))
+        {
+            if (!spellSOList.Contains((SpellBaseSO)SO))
+            {
+                spellSOList.Add((SpellBaseSO)SO);
+            }
+        }
+        else if (SO.GetType() == typeof(QuestSO))
+        {
+            QuestSO quest = (QuestSO)SO;
+            if (!QuestDict.ContainsValue(quest))
+            {
+                QuestDict.Add(quest.QuestID, quest);
+            }
+        }
+        else if (SO.GetType() == typeof(AudioSO))
+        {
+            AudioSO audio = (AudioSO)SO;
+            if (!AudioSODict.ContainsKey(audio.AudioType))
+            {
+                AudioSODict.Add(audio.AudioType, audio);
+            }
+        }
+        else if (SO.GetType() == typeof(RecipeSO))
+        {
+            RecipeSO recipe = (RecipeSO)SO;
+            if (!RecipeSOList.Contains((RecipeSO)SO))
+            {
+                RecipeSOList.Add((RecipeSO)SO);
+            }
+        }
+    }
+
+    private static void MaterialLoadCallback(Material obj)
+    {
+        if (!MaterailDict.ContainsValue(obj))
+        {
+            MaterailDict.Add(obj.name, obj);
+        }
+
     }
 
     #endregion

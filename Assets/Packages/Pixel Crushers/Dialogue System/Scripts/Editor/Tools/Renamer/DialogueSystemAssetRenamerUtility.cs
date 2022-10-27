@@ -1,5 +1,7 @@
 ﻿// Copyright (c) Pixel Crushers. All rights reserved.
 
+#if UNITY_EDITOR
+
 using System;
 using System.IO;
 using System.Linq;
@@ -863,3 +865,5 @@ namespace PixelCrushers.DialogueSystem
 
     }
 }
+
+#endif

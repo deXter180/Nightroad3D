@@ -129,6 +129,10 @@ public class PlayerController : PersistentSingleton<PlayerController>
     protected override void Awake()
     {
         base.Awake();
+        if (GetComponentInChildren<AudioManager>())
+        {
+            Destroy(GetComponentInChildren<AudioManager>().gameObject);
+        }
         RB = GetComponent<Rigidbody>();
         target = GetComponent<Target>();
         animator = GetComponent<Animator>();
@@ -217,7 +221,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
         if (!target.IsDead)
         {
             if (inputs != null)
-            {
+            {                
                 //OnTakingDamage()
                 InteractInWorld();
                 HandleBaseMechanics();
@@ -271,7 +275,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
     {
         while (currentTime < Time.time)
         {
-            if (!gameController.IsInventoryActive && !gameController.IsMainMenuActive && !gameController.IsDialogueActive && !gameController.IsStashActive && !gameController.IsCraftingActive)
+            if (!gameController.IsUIActive)
             {
                 Move();
                 Rotate();
@@ -784,6 +788,10 @@ public class PlayerController : PersistentSingleton<PlayerController>
         transform.position = originalPlayerPos;
         transform.rotation = Quaternion.identity;
         gameObject.SetActive(true);
+        if (audioListener == null)
+        {
+            audioListener = Helpers.MainCam.GetComponent<AudioListener>();
+        }
         audioListener.enabled = true;
         StartCoroutine(InputDone());
         AssignInv();
@@ -798,7 +806,6 @@ public class PlayerController : PersistentSingleton<PlayerController>
         CurrentMana = modifiedMaxMp;
         isDead = target.IsDead = false;
         animator.SetBool("IsDead", false);
-        spellManager.SetupSpellCircle();
         animator.enabled = false;
         isInitiated = true;
     }

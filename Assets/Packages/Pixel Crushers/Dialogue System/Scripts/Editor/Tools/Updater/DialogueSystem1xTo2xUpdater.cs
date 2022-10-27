@@ -1,5 +1,7 @@
 ﻿// Copyright (c) Pixel Crushers. All rights reserved.
 
+#if UNITY_EDITOR
+
 using UnityEngine;
 using UnityEditor;
 using System;
@@ -332,3 +334,5 @@ new Pair("m_Script: {fileID: -1280735392, guid: b5a7519e94754fb4a8ea0c272031db78
 
     }
 }
+
+#endif

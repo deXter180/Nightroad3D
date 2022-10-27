@@ -73,8 +73,16 @@ public abstract class Singleton<T> : StaticInstance<T> where T : MonoBehaviour
 {
     protected override void Awake()
     {
-        if (!Instance) base.Awake();
-        else Destroy(gameObject);
+        if (Instance == null) 
+        {
+            base.Awake();
+        }
+        else if (Instance != this)
+        {
+            Destroy(Instance.gameObject);
+            base.Awake();
+        }
+                  
     }
 }
 
@@ -83,6 +91,6 @@ public abstract class PersistentSingleton<T> : Singleton<T> where T : MonoBehavi
     protected override void Awake()
     {
         base.Awake();
-        DontDestroyOnLoad(gameObject);
+        DontDestroyOnLoad(Instance.gameObject);
     }
 }

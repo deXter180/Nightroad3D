@@ -56,7 +56,7 @@ public class StashHolder : MonoBehaviour
 
     public void Highlight(Vector3 position)
     {
-        SR.material = GameController.GetMaterail(hightlightMaterial);
+        SR.material = AssetLoader.GetMaterail(hightlightMaterial);
         gameController.HighlightStash(position);
     }
 

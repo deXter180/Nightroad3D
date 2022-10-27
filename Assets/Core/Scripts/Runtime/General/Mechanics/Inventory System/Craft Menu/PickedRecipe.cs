@@ -42,7 +42,7 @@ public class PickedRecipe : MonoBehaviour
     {
         if (SR != null)
         {
-            SR.material = GameController.GetMaterail(hightlightMaterial);
+            SR.material = AssetLoader.GetMaterail(hightlightMaterial);
         }
 
     }

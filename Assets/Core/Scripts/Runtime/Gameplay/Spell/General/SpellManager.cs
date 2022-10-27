@@ -10,10 +10,10 @@ public class SpellManager : Singleton<SpellManager>
 
     [SerializeField] private int SpellCount;
     [SerializeField] private float selectionRange;
-    [SerializeField] private Transform SelectionCircle;
+    [SerializeField] private GameObject selectionCircle;
     public Transform FirePoint;
     [SerializeField] private List<STSpells> SpellVFXList;
-    [SerializeField] private List<CastEffect> CastVFXList;
+    [SerializeField] private List<CastEffect> CastVFXList;   
     private VisualEffect CastVfx;   
     private Color castColor;
     private Transform spellCircle;
@@ -54,12 +54,12 @@ public class SpellManager : Singleton<SpellManager>
     }
 
     private void Start()
-    {         
+    {
         player = PlayerController.Instance;
         StartCoroutine(InputDone());
         state = SpellCastState.Default;
         SetupSpellCircle();    
-        isRemoved = false;
+        isRemoved = false;       
         SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
         foreach (var tile in EquipMenuControl.SpellTileList)
         {
@@ -108,11 +108,11 @@ public class SpellManager : Singleton<SpellManager>
         }
     }
 
-    public void SetupSpellCircle()
+    private void SetupSpellCircle()
     {
-        if (spellCircle == null)
+        if (spellCircle == null && selectionCircle != null)
         {
-            spellCircle = Instantiate(SpellManager.Instance.SelectionCircle);
+            spellCircle = Instantiate(selectionCircle).transform;
             spellCircle.gameObject.SetActive(false);
         }        
     }
@@ -376,6 +376,7 @@ public class SpellManager : Singleton<SpellManager>
     private void SceneLoader_OnNewGameStart()
     {
         spellDict.Clear();
+        SetupSpellCircle();
     }
 
     #endregion

@@ -4,18 +4,28 @@ using UnityEngine;
 
 public class RainSystem : PersistentSingleton<RainSystem>
 {
+    #region SerializedVariables
+
     [SerializeField] private ParticleSystem rainPS;
     [SerializeField] private GameObject lightningFlash;
     [SerializeField] private float Xoffset = 0;
     [SerializeField] private float Zoffset = -10;
+
+    #endregion
+
+    #region Variables
+
     private int groundLayer = 1 << 8;
     private int waterLayer = 1 << 4;
     private int bitMask;
     private float rainYOffset = -1903f; //Max accessable height. Change after map designed.
     private bool IsRainActive;
-    private AudioManager audioManager;
     private Transform rainTransform;
     private PlayerController playerController;
+
+    #endregion
+
+    #region General
 
     protected override void Awake()
     {
@@ -27,7 +37,6 @@ public class RainSystem : PersistentSingleton<RainSystem>
 
     private void Start()
     {
-        audioManager = AudioManager.Instance;
         playerController = PlayerController.Instance;
     }
 
@@ -35,13 +44,13 @@ public class RainSystem : PersistentSingleton<RainSystem>
     {
         if (IsRainActive)
         {
-            audioManager.PlayRainAudio();
-            audioManager.PlayWindAudio();
+            AudioManager.PlayRainAudio();
+            AudioManager.PlayWindAudio();
         }
         else
         {
-            audioManager.StopRainAudio();
-            audioManager.StopWindAudio();
+            AudioManager.StopRainAudio();
+            AudioManager.StopWindAudio();
         }       
     }
 
@@ -71,6 +80,10 @@ public class RainSystem : PersistentSingleton<RainSystem>
         //}
     }
 
+    #endregion
+
+    #region Mechanics
+
     public void ControlRain()
     {
         if (!IsRainActive)
@@ -86,6 +99,8 @@ public class RainSystem : PersistentSingleton<RainSystem>
             lightningFlash.SetActive(false);           
             IsRainActive = false;
         }       
-    } 
-   
+    }
+
+    #endregion
+
 }

@@ -57,7 +57,7 @@ public class MeleeAttacker : MonoBehaviour
     {
         if (gameController != null && inputs != null)
         {
-            if (!gameController.IsMainMenuActive && !gameController.IsInventoryActive && !gameController.IsStashActive && !gameController.IsDialogueActive)
+            if (!gameController.IsUIActive && !gameController.IsCastingSpell)
             {
                 StartAttack();
             }
@@ -66,7 +66,7 @@ public class MeleeAttacker : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (!gameController.IsInventoryActive && !gameController.IsMainMenuActive && !gameController.IsStashActive)
+        if (!gameController.IsUIActive)
         {
             if (gameObject.activeInHierarchy && isHitting)
             {
@@ -101,7 +101,7 @@ public class MeleeAttacker : MonoBehaviour
 
     private void OnCollisionStay(Collision collision)
     {
-        if (!gameController.IsInventoryActive && !gameController.IsMainMenuActive && !gameController.IsStashActive)
+        if (!gameController.IsUIActive)
         {
             if (gameObject.activeInHierarchy && isHitting)
             {

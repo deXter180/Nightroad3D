@@ -1,4 +1,7 @@
-﻿using System.Collections;
+﻿
+#if UNITY_EDITOR
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
@@ -26,3 +29,5 @@ public class BasicInkExampleEditor : Editor {
 		InkPlayerWindow.DrawStoryPropertyField(story, new GUIContent("Story"));
 	}
 }
+
+#endif

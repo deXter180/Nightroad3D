@@ -73,11 +73,13 @@ public class EquipMenuControl : Singleton<EquipMenuControl>
         {            
             foreach(var tile in WeaponTileList)
             {
-                tile.ResetTile();
+                if (tile != null)
+                    tile.ResetTile();
             }
             foreach(var tile in SpellTileList)
             {
-                tile.ResetTile();
+                if (tile != null)
+                    tile.ResetTile();
             }
         }
     }
@@ -86,7 +88,7 @@ public class EquipMenuControl : Singleton<EquipMenuControl>
     {
         if (isArmorAdded && equippedArmorType != ArmorTypes.None)
         {
-            return GameController.GetArmorSOFromList(equippedArmorType).BlockPercentage;
+            return AssetLoader.GetArmorSOFromList(equippedArmorType).BlockPercentage;
         }
         else return 0;
     }

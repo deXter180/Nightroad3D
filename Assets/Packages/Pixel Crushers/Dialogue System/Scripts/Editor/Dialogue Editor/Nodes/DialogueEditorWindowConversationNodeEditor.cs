@@ -1,5 +1,7 @@
 // Copyright (c) Pixel Crushers. All rights reserved.
 
+#if UNITY_EDITOR
+
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
@@ -2216,3 +2218,5 @@ namespace PixelCrushers.DialogueSystem.DialogueEditor
     }
 
 }
+
+#endif

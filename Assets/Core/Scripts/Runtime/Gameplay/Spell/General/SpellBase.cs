@@ -27,7 +27,7 @@ public abstract class Spells
     {
         this.spellType = spellType;
         spellCategory = category;
-        spellSO = GameController.GetSpellSOFromList(spellType);
+        spellSO = AssetLoader.GetSpellSOFromList(spellType);
         spellManager = SpellManager.Instance;
         attributeManager = AttributeManager.Instance;
     }

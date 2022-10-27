@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
 
-public class AudioManager : Singleton<AudioManager>
+public class AudioManager : MonoBehaviour
 {
     #region Variables
 
@@ -24,15 +24,16 @@ public class AudioManager : Singleton<AudioManager>
     private static AudioSource MusicAudioSource { get; set; }
     private static AudioSource WeaponAudioSource { get; set; }
     private static AudioSource EnvironmentAudioSource { get; set; }
+    private static AudioSource RainAudioSource { get; set; }
+    private static AudioSource WindAudioSource { get; set; }
 
     #endregion
 
     #region General
 
-    protected override void Awake()
+    private void Awake()
     {
-        base.Awake();
-        isLoaded = false;        
+        isLoaded = false;
     }
 
     private void OnEnable()
@@ -59,49 +60,45 @@ public class AudioManager : Singleton<AudioManager>
         MusicAudioSource = musicAudioSource;
         WeaponAudioSource = weaponAudioSource;
         EnvironmentAudioSource = environmentAudioSource;
-        StartCoroutine(DelayPlayAudio());
-        IEnumerator DelayPlayAudio()
-        {
-            yield return Helpers.GetWait(1f);
-            PlayMusicSound(MusicTypes.Normal, 0, false, true);            
-        }
+        RainAudioSource = rainAudioSource;
+        WindAudioSource = windAudioSource;
     }
 
     #endregion
 
-    #region Controls
+    #region Mechanics
 
-    public void PlayRainAudio()
+    public static void PlayRainAudio()
     {
-        if (!rainAudioSource.isPlaying)
+        if (!RainAudioSource.isPlaying)
         {
-            AudioClip clip = GameController.GetAudioClip(AudioTypes.Environment, EnvironmentTypes.Rain, 0, true);
+            AudioClip clip = AssetLoader.GetAudioClip(AudioTypes.Environment, EnvironmentTypes.Rain, 0, true);
             if (clip != null)
             {
-                rainAudioSource.clip = clip;
-                rainAudioSource.pitch = UnityEngine.Random.Range(0.5f, 2);
-                rainAudioSource.Play();
+                RainAudioSource.clip = clip;
+                RainAudioSource.pitch = UnityEngine.Random.Range(0.5f, 2);
+                RainAudioSource.Play();
             }           
         }
     }
 
-    public void PlayWindAudio()
+    public static void PlayWindAudio()
     {
-        if (!windAudioSource.isPlaying)
+        if (!WindAudioSource.isPlaying)
         {
-            AudioClip clip = GameController.GetAudioClip(AudioTypes.Environment, EnvironmentTypes.Wind, 0, true);
+            AudioClip clip = AssetLoader.GetAudioClip(AudioTypes.Environment, EnvironmentTypes.Wind, 0, true);
             if (clip != null)
             {
-                windAudioSource.clip = clip;
-                windAudioSource.pitch = UnityEngine.Random.Range(0.5f, 2);
-                windAudioSource.Play();
+                WindAudioSource.clip = clip;
+                WindAudioSource.pitch = UnityEngine.Random.Range(0.5f, 2);
+                WindAudioSource.Play();
             }
         }
     }
 
     public static void PlayMusicSoundOnce(MusicTypes musicType, int index = 0, bool randomize = false)
     {
-        AudioClip clip = GameController.GetAudioClip(AudioTypes.Music, musicType, index, randomize);
+        AudioClip clip = AssetLoader.GetAudioClip(AudioTypes.Music, musicType, index, randomize);
         if (clip != null)
         {
             MusicAudioSource.PlayOneShot(clip); 
@@ -112,7 +109,7 @@ public class AudioManager : Singleton<AudioManager>
     {
         if (!MusicAudioSource.isPlaying)
         {
-            AudioClip clip = GameController.GetAudioClip(AudioTypes.Music, musicType, index, randomize);
+            AudioClip clip = AssetLoader.GetAudioClip(AudioTypes.Music, musicType, index, randomize);
             if (clip != null)
             {
                 MusicAudioSource.clip = clip;
@@ -124,7 +121,7 @@ public class AudioManager : Singleton<AudioManager>
 
     public static void PlayWeaponSoundOnce(WeaponTypes weaponType, int index = 0, bool randomize = false)
     {        
-        AudioClip clip = GameController.GetAudioClip(AudioTypes.Weapon, weaponType, index, randomize);
+        AudioClip clip = AssetLoader.GetAudioClip(AudioTypes.Weapon, weaponType, index, randomize);
         if (clip != null)
         {
             WeaponAudioSource.pitch = UnityEngine.Random.Range(0.5f, 2);
@@ -138,7 +135,7 @@ public class AudioManager : Singleton<AudioManager>
         {
             MusicAudioSource.Stop();
         }
-        AudioClip clip = GameController.GetAudioClip(AudioTypes.Weapon, weaponType, index, randomize);
+        AudioClip clip = AssetLoader.GetAudioClip(AudioTypes.Weapon, weaponType, index, randomize);
         if (clip != null)
         {
             WeaponAudioSource.pitch = UnityEngine.Random.Range(0.5f, 2);
@@ -149,7 +146,7 @@ public class AudioManager : Singleton<AudioManager>
 
     public static void PlayEnvironmentSoundOnce(EnvironmentTypes environmentType, int index = 0, bool randomize = false)
     {
-        AudioClip clip = GameController.GetAudioClip(AudioTypes.Environment, environmentType, index, randomize);
+        AudioClip clip = AssetLoader.GetAudioClip(AudioTypes.Environment, environmentType, index, randomize);
         if (clip != null)
         {
             EnvironmentAudioSource.pitch = UnityEngine.Random.Range(0.5f, 2);
@@ -163,7 +160,7 @@ public class AudioManager : Singleton<AudioManager>
         {
             MusicAudioSource.Stop();
         }
-        AudioClip clip = GameController.GetAudioClip(AudioTypes.Environment, environmentType, index, randomize);
+        AudioClip clip = AssetLoader.GetAudioClip(AudioTypes.Environment, environmentType, index, randomize);
         if (clip != null)
         {
             EnvironmentAudioSource.clip = clip;
@@ -173,28 +170,33 @@ public class AudioManager : Singleton<AudioManager>
         }
     }
 
-    public void StopRainAudio()
+    public static void StopRainAudio()
     {
-        rainAudioSource.Stop();
+        if (RainAudioSource != null)
+        RainAudioSource.Stop();
     }
 
-    public void StopWindAudio()
+    public static void StopWindAudio()
     {
-        windAudioSource.Stop();
+        if (WindAudioSource != null)
+        WindAudioSource.Stop();
     }
 
     public static void StopMusicSound()
     {
+        if (MusicAudioSource != null)
         MusicAudioSource.Stop();
     }
 
     public static void StopWeaponSound()
     {
+        if (WeaponAudioSource != null)
         WeaponAudioSource.Stop();
     }
 
     public static void StopEnvironmentSound()
     {
+        if (EnvironmentAudioSource != null)
         EnvironmentAudioSource.Stop();
     }
 

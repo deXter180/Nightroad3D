@@ -1,3 +1,6 @@
+
+#if UNITY_EDITOR
+
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Graphs;
@@ -186,3 +189,5 @@ namespace PixelCrushers.DialogueSystem.DialogueEditor
     }
 
 }
+
+#endif

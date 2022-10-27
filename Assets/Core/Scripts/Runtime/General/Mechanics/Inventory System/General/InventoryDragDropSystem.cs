@@ -411,22 +411,29 @@ public class InventoryDragDropSystem : Singleton<InventoryDragDropSystem>
                 }
                 else
                 {
+                    
                     if (IsOnMenuTile(mousePos, out MenuTile menuTile))
                     {
-                        if (menuTile.GetType() == typeof(EquipMenuWeaponTile) || menuTile.GetType() == typeof(EquipMenuSpellTile))
+                        if (gameController.IsCraftingActive)
                         {
-                            if (CheckStatRequirement(POinventorySO))
+                            if (menuTile.GetType() == typeof(CraftMenuTile))
                             {
-                                tryPlaceItem = menuTile.TryPlaceItem(POinventorySO, Origin, out PlacedObject PO);
+                                if (POinventorySO.Craftable)
+                                {
+                                    tryPlaceItem = menuTile.TryPlaceItem(POinventorySO, Origin, out PlacedObject PO);
+                                }
                             }
                         }
-                        else if (menuTile.GetType() == typeof(CraftMenuTile))
+                        else if (gameController.IsInventoryActive)
                         {
-                            if (POinventorySO.Craftable)
+                            if (menuTile.GetType() == typeof(EquipMenuWeaponTile) || menuTile.GetType() == typeof(EquipMenuSpellTile))
                             {
-                                tryPlaceItem = menuTile.TryPlaceItem(POinventorySO, Origin, out PlacedObject PO);
-                            }                      
-                        }                                                                      
+                                if (CheckStatRequirement(POinventorySO))
+                                {
+                                    tryPlaceItem = menuTile.TryPlaceItem(POinventorySO, Origin, out PlacedObject PO);
+                                }
+                            }
+                        }                                                                                          
                     }     
                 }
                 if (tryPlaceItem)

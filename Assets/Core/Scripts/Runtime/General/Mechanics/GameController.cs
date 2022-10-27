@@ -27,6 +27,7 @@ public class GameController : PersistentSingleton<GameController>
     private bool isMainMenuActive;
     private bool isDialogueActive;
     private bool isCraftingActive;
+    private bool isUIActive;
     private InventoryUIHandler inventoryUI;
     private InGameMainMenuUIHandler mainMenu;
     private HeadUpDisplayHandler HUDHandler;
@@ -42,19 +43,6 @@ public class GameController : PersistentSingleton<GameController>
     private InventorySystem inventorySystem;
     private ItemStash itemStash;
     private CraftMenuControl craftMenu;
-    private static Dictionary<string, QuestSO> QuestDict = new Dictionary<string, QuestSO>();
-    private static Dictionary<string, Material> MaterailDict = new Dictionary<string, Material>();
-    private static Dictionary<AudioTypes, AudioSO> AudioSODict = new Dictionary<AudioTypes, AudioSO>();
-    private static List<InventoryItemSO> InventorySOList = new List<InventoryItemSO>();
-    private static List<InventoryItemSO> WeaponInventorySOList = new List<InventoryItemSO>();
-    private static List<InventoryItemSO> SpellInventorySOList = new List<InventoryItemSO>();
-    private static List<InventoryItemSO> ArmorInventorySOList = new List<InventoryItemSO>();
-    private static List<WeaponSO> WeaponSOList = new List<WeaponSO>();
-    private static List<AmmoSO> AmmoSOList = new List<AmmoSO>();
-    private static List<ArmorSO> ArmorSOList = new List<ArmorSO>();
-    private static List<SpellBaseSO> spellSOList = new List<SpellBaseSO>();
-    private static List<EnemySO> EnemySOList = new List<EnemySO>();
-    private static List<RecipeSO> RecipeSOList = new List<RecipeSO>();
     public static event Action OnStashClose;
     public static event Action OnCraftingClose;
 
@@ -67,6 +55,7 @@ public class GameController : PersistentSingleton<GameController>
     public bool IsMainMenuActive => isMainMenuActive;
     public bool IsDialogueActive => isDialogueActive;
     public bool IsCraftingActive => isCraftingActive;
+    public bool IsUIActive => isUIActive;
     public bool IsCastingSpell => spellManager.IsInSpellCastMode;
 
     #endregion
@@ -76,12 +65,9 @@ public class GameController : PersistentSingleton<GameController>
     protected override void Awake()
     {
         base.Awake();
-        AssetLoader.OnSOsLoaded += AssetLoader_OnSOsLoaded;
         AssetLoader.OnSingleSceneLoad += AssetLoader_OnSingleSceneLoad;
         SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
-        SceneLoader.OnMainMenuSceneLoad += SceneLoader_OnMainMenuSceneLoad;
-        AssetLoader.LoadSOAssets("ScriptableObject", SOLoadCallback);
-        AssetLoader.LoadAnyAssets<Material>("Materials", MaterialLoadCallback);
+        SceneLoader.OnMainMenuSceneLoad += SceneLoader_OnMainMenuSceneLoad;       
         loadUI = GetComponentInChildren<LoadUIHandler>();
         returnButton = GetComponentInChildren<ReturnToMenuButton>();
         npcSpeechText = NPCSpeechBubble.GetComponentInChildren<TextMeshProUGUI>();
@@ -94,6 +80,7 @@ public class GameController : PersistentSingleton<GameController>
     {
         loadUI.Control(false);
         isInventoryActive = false;
+        isUIActive = false;
         isStashActive = false;
         isMainMenuActive = false;
         isDialogueActive = false;
@@ -107,12 +94,11 @@ public class GameController : PersistentSingleton<GameController>
                 inputs = InputManager.InputActions;
                 AssignInstances();
             }
-        }
+        }       
     }
 
     private void OnDisable()
     {
-        AssetLoader.OnSOsLoaded -= AssetLoader_OnSOsLoaded;
         AssetLoader.OnSingleSceneLoad -= AssetLoader_OnSingleSceneLoad;
         SceneLoader.OnNewGameStart -= SceneLoader_OnNewGameStart;
         SceneLoader.OnMainMenuSceneLoad -= SceneLoader_OnMainMenuSceneLoad;
@@ -142,9 +128,24 @@ public class GameController : PersistentSingleton<GameController>
         RenderSettings.fog = false;
     }
 
+    public void ControlCursor(bool isActive)
+    {
+        if (!isActive)
+        {
+            Cursor.lockState = CursorLockMode.Confined;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.Locked;            
+        }
+        Cursor.visible = !isActive;
+    }
+
     public void SetDialogueActive(bool isActive)
     {
         isDialogueActive = isActive;
+        isUIActive = isActive;
+        ControlCursor(isActive);
     }
 
     private void ControlUI()
@@ -203,10 +204,14 @@ public class GameController : PersistentSingleton<GameController>
             if (isMainMenuActive)
             {
                 isMainMenuActive = false;
+                isUIActive = false;
+                ControlCursor(false);
             }
             else
             {
                 isMainMenuActive = true;
+                isUIActive = true;
+                ControlCursor(true);
             }
         }
     }
@@ -221,10 +226,17 @@ public class GameController : PersistentSingleton<GameController>
                 if (isInventoryActive)
                 {
                     isInventoryActive = false;
+                    isUIActive = false;
+                    ControlCursor(false);
                 }
-                else isInventoryActive = true;
+                else
+                {
+                    isInventoryActive = true;
+                    isUIActive = true;
+                    ControlCursor(true);
+                }
             }
-        }      
+        }
     }
 
     public void OpenStash()
@@ -233,6 +245,8 @@ public class GameController : PersistentSingleton<GameController>
         {
             inventoryUI.ControlSth(isStashActive);
             isStashActive = true;
+            isUIActive = true;
+            ControlCursor(true);
         }
     }
 
@@ -242,6 +256,8 @@ public class GameController : PersistentSingleton<GameController>
         {
             inventoryUI.ControlSth(isStashActive);
             isStashActive = false;
+            isUIActive = false;
+            ControlCursor(false);
             OnStashClose?.Invoke();
         }
     }
@@ -252,6 +268,8 @@ public class GameController : PersistentSingleton<GameController>
         {
             inventoryUI.ControlCft(isCraftingActive);
             isCraftingActive = true;
+            isUIActive = true;
+            ControlCursor(true);
         }
     }
 
@@ -261,6 +279,8 @@ public class GameController : PersistentSingleton<GameController>
         {
             inventoryUI.ControlCft(IsCraftingActive);
             isCraftingActive = false;
+            isUIActive = false;
+            ControlCursor(false);
             OnCraftingClose?.Invoke();
         }
     }
@@ -272,6 +292,7 @@ public class GameController : PersistentSingleton<GameController>
             if (isMainMenuActive || isInventoryActive || isStashActive || isCraftingActive)
             {
                 dialogueManager.EndConversation();
+                ControlCursor(false);
             }
         }
         
@@ -282,10 +303,12 @@ public class GameController : PersistentSingleton<GameController>
         if (isMainMenuActive || isInventoryActive || isStashActive || isDialogueActive || isCraftingActive)
         {
             HUDHandler.Control(false);
+            ControlCursor(false);
         }
         else
         {
             HUDHandler.Control(true);
+            ControlCursor(true);
         }
     }
 
@@ -327,382 +350,13 @@ public class GameController : PersistentSingleton<GameController>
 
     #endregion
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~ Utility Methods ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    #region UtilityFunctions
-
-    public static AudioClip GetAudioClip(AudioTypes audioType, MusicTypes musicType, int index = 0, bool randomize = false)
-    {
-        List<AudioClip> clipList = new List<AudioClip>();
-        if (AudioSODict.TryGetValue(audioType, out AudioSO audioSO))
-        {
-            clipList = audioSO.GetMusicAudio(musicType);
-            if (clipList != null)
-            {
-                if (index >= 0 && index < clipList.Count)
-                {
-                    if (randomize)
-                    {
-                        index = UnityEngine.Random.Range(0, clipList.Count - 1);
-                    }
-                    return clipList[index];
-                }
-            }
-        }
-        return null;
-    }
-
-    public static AudioClip GetAudioClip(AudioTypes audioType, EnvironmentTypes environmentType, int index = 0, bool randomize = false)
-    {
-        List<AudioClip> clipList = new List<AudioClip>();
-        if (AudioSODict.TryGetValue(audioType, out AudioSO audioSO))
-        {
-            clipList = audioSO.GetEnvironmentAudio(environmentType);
-            if (clipList != null)
-            {
-                if (index >= 0 && index < clipList.Count)
-                {
-                    if (randomize)
-                    {
-                        index = UnityEngine.Random.Range(0, clipList.Count - 1);
-                    }
-                    return clipList[index];
-                }
-            }
-        }
-        return null;
-    }
-
-    public static AudioClip GetAudioClip(AudioTypes audioType, WeaponTypes weaponType, int index = 0, bool randomize = false)
-    {
-        List<AudioClip> clipList = new List<AudioClip>();
-        if (AudioSODict.TryGetValue(audioType, out AudioSO audioSO))
-        {
-            clipList = audioSO.GetWeaponAudio(weaponType);
-            if (clipList != null)
-            {
-                if (index >= 0 && index < clipList.Count)
-                {
-                    if (randomize)
-                    {
-                        index = UnityEngine.Random.Range(0, clipList.Count - 1);
-                    }
-                    return clipList[index];
-                }
-            }
-        }
-        return null;
-    }
-
-    public static AudioClip GetAudioClip(AudioTypes audioType, SpellTypes spellType, int index = 0, bool randomize = false)
-    {
-        List<AudioClip> clipList = new List<AudioClip>();
-        if (AudioSODict.TryGetValue(audioType, out AudioSO audioSO))
-        {
-            clipList = audioSO.GetSpellAudio(spellType);
-            if (clipList != null)
-            {
-                if (index >= 0 && index < clipList.Count)
-                {
-                    if (randomize)
-                    {
-                        index = UnityEngine.Random.Range(0, clipList.Count - 1);
-                    }
-                    return clipList[index];
-                }
-            }
-        }
-        return null;
-    }
-
-    public static AudioClip GetAudioClip(AudioTypes audioType, EnemyTypes enemyType, int index = 0, bool randomize = false)
-    {
-        List<AudioClip> clipList = new List<AudioClip>();
-        if (AudioSODict.TryGetValue(audioType, out AudioSO audioSO))
-        {
-            clipList = audioSO.GetEnemyAudio(enemyType);
-            if (clipList != null)
-            {
-                if (index >= 0 && index < clipList.Count)
-                {
-                    if (randomize)
-                    {
-                        index = UnityEngine.Random.Range(0, clipList.Count - 1);
-                    }
-                    return clipList[index];
-                }
-            }
-        }
-        return null;
-    }
-
-    public static Material GetMaterail(string name)
-    {
-        if (MaterailDict.TryGetValue(name, out Material material))
-            return material;
-        else return null;
-    }
-
-    public static EnemySO GetEnemySOFromList(EnemyTypes enemyType)
-    {
-        foreach (EnemySO enemySO in EnemySOList)
-        {
-            if (enemySO.EnemyType == enemyType)
-            {
-                return enemySO;
-            }
-        }
-        return null;
-    }
-
-    public static QuestSO GetQeust(string name)
-    {
-        if (QuestDict.TryGetValue(name, out QuestSO quest))
-            return quest;
-
-        return null;
-    }
-
-    public static RecipeSO GetRecipeSOFromList(RecipeTypes recipeType)
-    {
-        foreach (RecipeSO recipe in RecipeSOList)
-        {
-            if (recipe.RecipeType == recipeType)
-            {
-                return recipe;
-            }
-        }
-        return null;
-    }
-
-    public static WeaponSO GetWeaponSOFromList(WeaponTypes weaponType)
-    {
-        foreach (WeaponSO weaponSO in WeaponSOList)
-        {
-            if (weaponSO.WeaponType == weaponType)
-            {
-                return weaponSO;
-            }
-        }
-        return null;
-    }
-
-    public static AmmoSO GetAmmoSOFromList(WeaponTypes weaponType)
-    {
-        foreach (AmmoSO ammoSO in AmmoSOList)
-        {
-            if (ammoSO.WeaponType == weaponType)
-            {
-                return ammoSO;
-            }
-        }
-        return null;
-    }
-
-    public static ArmorSO GetArmorSOFromList(ArmorTypes armorType)
-    {
-        foreach (ArmorSO armorSO in ArmorSOList)
-        {
-            if (armorSO.ArmorType == armorType)
-            {
-                return armorSO;
-            }
-        }
-        return null;
-    }
-
-    public static SpellBaseSO GetSpellSOFromList(SpellTypes spellType)
-    {
-        foreach (SpellBaseSO spellSO in spellSOList)
-        {
-            if (spellSO.SpellType == spellType)
-            {
-                return spellSO;
-            }
-        }
-        return null;
-    }
-
-    public static InventoryItemSO GetInventoryItemSOFromList(ItemTypes itemType)
-    {
-        foreach (var invSO in InventorySOList)
-        {
-            if (invSO.ItemType == itemType)
-            {
-                return invSO;
-            }
-        }
-        return null;
-    }
-
-    public static InventoryItemSO GetInventoryItemSOFromList(ItemTypes itemType, WeaponTypes weaponType)
-    {
-        foreach (var invSO in InventorySOList)
-        {
-            if (invSO.ItemType == itemType && invSO.WeaponType == weaponType)
-            {
-                return invSO;
-            }
-        }
-        return null;
-    }
-
-    public static InventoryItemSO GetWeaponInventorySO(WeaponTypes WT)
-    {
-        foreach (var temp in WeaponInventorySOList)
-        {
-            if (temp.WeaponType == WT)
-            {
-                return temp;
-            }
-        }
-        return null;
-    }
-
-    public static InventoryItemSO GetSpellInventorySO(SpellTypes ST)
-    {
-        foreach (var temp in SpellInventorySOList)
-        {
-            if (temp.SpellType == ST)
-            {
-                return temp;
-            }
-        }
-        return null;
-    }
-
-    public static InventoryItemSO GetArmorInventorySO(ArmorTypes AT)
-    {
-        foreach (var temp in ArmorInventorySOList)
-        {
-            if (temp.ArmorType == AT)
-            {
-                return temp;
-            }
-        }
-        return null;
-    }
-
-    #endregion
-
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Callback ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     #region Callbacks
 
-    private void AssetLoader_OnSOsLoaded(IList<ScriptableObject> obj)
-    {
-        foreach(var SO in obj)
-        {
-            if (SO.GetType() == typeof(InventoryItemSO))
-            {
-                InventoryItemSO itemSO = (InventoryItemSO)SO;
-                if (itemSO.ItemType == ItemTypes.Spell)
-                {
-                    if (itemSO.SpellType != SpellTypes.None && !SpellInventorySOList.Contains(itemSO))
-                    {
-                        SpellInventorySOList.Add(itemSO);
-                    }
-                }
-                else if (itemSO.ItemType == ItemTypes.Weapon)
-                {
-                    if (itemSO.WeaponType != WeaponTypes.None && !WeaponInventorySOList.Contains(itemSO))
-                    {
-                        WeaponInventorySOList.Add(itemSO);
-                    }
-                }
-                else if (itemSO.ItemType == ItemTypes.Armor)
-                {
-                    if (itemSO.ArmorType != ArmorTypes.None && !ArmorInventorySOList.Contains(itemSO))
-                    {
-                        ArmorInventorySOList.Add(itemSO);
-                    }
-                }
-                else
-                {
-                    if (!InventorySOList.Contains(itemSO))
-                    {
-                        InventorySOList.Add(itemSO);
-                    }
-                }
-            }
-            else if (SO.GetType() == typeof(WeaponSO))
-            {
-                if (!WeaponSOList.Contains((WeaponSO)SO))
-                {
-                    WeaponSOList.Add((WeaponSO)SO);
-                }               
-            }
-            else if (SO.GetType() == typeof(AmmoSO))
-            {
-                if (!AmmoSOList.Contains((AmmoSO)SO))
-                {
-                    AmmoSOList.Add((AmmoSO)SO);
-                }
-            }
-            else if (SO.GetType() == typeof(ArmorSO))
-            {
-                if (!ArmorSOList.Contains((ArmorSO)SO))
-                {
-                    ArmorSOList.Add((ArmorSO)SO);
-                }
-            }
-            else if (SO.GetType() == typeof(EnemySO))
-            {
-                if (!EnemySOList.Contains((EnemySO)SO))
-                {
-                    EnemySOList.Add((EnemySO)SO);
-                }                
-            }
-            else if (SO.GetType() == typeof(SpellBaseSO))
-            {
-                if (!spellSOList.Contains((SpellBaseSO)SO))
-                {
-                    spellSOList.Add((SpellBaseSO)SO);
-                }                
-            }
-            else if (SO.GetType() == typeof(QuestSO))
-            {
-                QuestSO quest = (QuestSO)SO;
-                if (!QuestDict.ContainsValue(quest))
-                {
-                    QuestDict.Add(quest.QuestID, quest);
-                }                
-            }
-            else if (SO.GetType() == typeof(AudioSO))
-            {
-                AudioSO audio = (AudioSO)SO;
-                if (!AudioSODict.ContainsKey(audio.AudioType))
-                {
-                    AudioSODict.Add(audio.AudioType, audio);
-                }
-            }
-            else if (SO.GetType() == typeof(RecipeSO))
-            {
-                RecipeSO recipe = (RecipeSO)SO;
-                if (!RecipeSOList.Contains((RecipeSO)SO))
-                {
-                    RecipeSOList.Add((RecipeSO)SO);
-                }
-            }
-        }
-    }
-
-    private void SOLoadCallback(ScriptableObject SO)
-    {
-        
-    }
-
-    private void MaterialLoadCallback(Material obj)
-    {
-        if (!MaterailDict.ContainsValue(obj))
-        {
-            MaterailDict.Add(obj.name, obj);
-        }
-        
-    }
-
     private void SceneLoader_OnMainMenuSceneLoad()
     {
+        ControlCursor(true);
         DisableLightningFog();
         isInventoryActive = true;
         isMainMenuActive = true;
@@ -712,11 +366,18 @@ public class GameController : PersistentSingleton<GameController>
         inventoryUI.ControlSth(isStashActive);
         HUDHandler.Control(false);
         dialogueManager.EndConversation();
+        AudioManager.StopMusicSound();
+        AudioManager.StopWeaponSound();
+        AudioManager.StopEnvironmentSound();
+        AudioManager.StopRainAudio();
+        AudioManager.StopWindAudio();
     }
 
     private void SceneLoader_OnNewGameStart()
     {
+        ControlCursor(false);
         AssignInstances();
+        InputManager.InputActionSetup();
         isInventoryActive = false;
         isMainMenuActive = false;
         isStashActive = false;
@@ -726,6 +387,8 @@ public class GameController : PersistentSingleton<GameController>
         craftMenu.ResetMenu();
         itemStash.ResetStash();
 
+        StartCoroutine(DelayAudio());
+
         if (FPSCam == null)
         {
             FPSCam = FPSCamControl.Instance;
@@ -734,6 +397,16 @@ public class GameController : PersistentSingleton<GameController>
         {
             FPSCam.EnableFPSCamera();
         }
+
+        //Remove this
+        inventorySystem.Test();
+
+        IEnumerator DelayAudio()
+        {
+            yield return Helpers.GetWait(0.5f);
+            AudioManager.PlayMusicSound(MusicTypes.Normal, 0, false, true);
+        }
+
     }
 
     private void AssetLoader_OnSingleSceneLoad(UnityEngine.ResourceManagement.ResourceProviders.SceneInstance obj)

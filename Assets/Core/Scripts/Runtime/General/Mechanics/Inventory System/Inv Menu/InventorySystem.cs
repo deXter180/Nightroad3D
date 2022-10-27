@@ -40,30 +40,31 @@ public class InventorySystem : Singleton<InventorySystem>
 
     //~~~~~~~~~~~~~~~~~~ Utilities ~~~~~~~~~~~~~~~~~~
 
-    private void Test()
+    //Remove this
+    public void Test()
     {
-        TryAddingItem(GameController.GetInventoryItemSOFromList(ItemTypes.HealthPotion));
-        TryAddingItem(GameController.GetArmorInventorySO(ArmorTypes.RoyalPlate));
-        TryAddingItem(GameController.GetInventoryItemSOFromList(ItemTypes.Gloves));
-        TryAddingItem(GameController.GetInventoryItemSOFromList(ItemTypes.Boots));
-        TryAddingItem(GameController.GetInventoryItemSOFromList(ItemTypes.Shield));
-        TryAddingItem(GameController.GetInventoryItemSOFromList(ItemTypes.Helmet));
-        TryAddingItem(GameController.GetInventoryItemSOFromList(ItemTypes.ManaPotion));
-        PickedObject.SpawnWeaponWorld(GameController.GetWeaponInventorySO(WeaponTypes.Axe), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
-        PickedObject.SpawnWeaponWorld(GameController.GetWeaponInventorySO(WeaponTypes.Rifle), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
-        PickedObject.SpawnWeaponWorld(GameController.GetWeaponInventorySO(WeaponTypes.RocketLauncher), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
-        PickedObject.SpawnWeaponWorld(GameController.GetWeaponInventorySO(WeaponTypes.Shotgun), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
-        PickedObject.SpawnSpellWorld(GameController.GetSpellInventorySO(SpellTypes.Dash), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
-        PickedObject.SpawnSpellWorld(GameController.GetSpellInventorySO(SpellTypes.ChainLightening), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
-        PickedObject.SpawnSpellWorld(GameController.GetSpellInventorySO(SpellTypes.FireBall), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
-        PickedObject.SpawnSpellWorld(GameController.GetSpellInventorySO(SpellTypes.FreezeBlast), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
-        PickedObject.SpawnItemsWorld(GameController.GetInventoryItemSOFromList(ItemTypes.Ammo, WeaponTypes.Rifle), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance), WeaponTypes.Rifle);
-        PickedObject.SpawnItemsWorld(GameController.GetInventoryItemSOFromList(ItemTypes.Ammo, WeaponTypes.RocketLauncher), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance), WeaponTypes.RocketLauncher);
-        PickedObject.SpawnItemsWorld(GameController.GetInventoryItemSOFromList(ItemTypes.Ammo, WeaponTypes.Shotgun), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance), WeaponTypes.Shotgun);
-        PickedObject.SpawnWeaponWorld(GameController.GetInventoryItemSOFromList(ItemTypes.Herb), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
-        PickedObject.SpawnWeaponWorld(GameController.GetInventoryItemSOFromList(ItemTypes.Herb), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
-        PickedObject.SpawnWeaponWorld(GameController.GetInventoryItemSOFromList(ItemTypes.Herb), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
-        PickedRecipe.SpawnItemsWorld(GameController.GetRecipeSOFromList(RecipeTypes.P3C1), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
+        TryAddingItem(AssetLoader.GetInventoryItemSOFromList(ItemTypes.HealthPotion));
+        TryAddingItem(AssetLoader.GetArmorInventorySO(ArmorTypes.RoyalPlate));
+        TryAddingItem(AssetLoader.GetInventoryItemSOFromList(ItemTypes.Gloves));
+        TryAddingItem(AssetLoader.GetInventoryItemSOFromList(ItemTypes.Boots));
+        TryAddingItem(AssetLoader.GetInventoryItemSOFromList(ItemTypes.Shield));
+        TryAddingItem(AssetLoader.GetInventoryItemSOFromList(ItemTypes.Helmet));
+        TryAddingItem(AssetLoader.GetInventoryItemSOFromList(ItemTypes.ManaPotion));
+        PickedObject.SpawnWeaponWorld(AssetLoader.GetWeaponInventorySO(WeaponTypes.Axe), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
+        PickedObject.SpawnWeaponWorld(AssetLoader.GetWeaponInventorySO(WeaponTypes.Rifle), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
+        PickedObject.SpawnWeaponWorld(AssetLoader.GetWeaponInventorySO(WeaponTypes.RocketLauncher), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
+        PickedObject.SpawnWeaponWorld(AssetLoader.GetWeaponInventorySO(WeaponTypes.Shotgun), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
+        PickedObject.SpawnSpellWorld(AssetLoader.GetSpellInventorySO(SpellTypes.Dash), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
+        PickedObject.SpawnSpellWorld(AssetLoader.GetSpellInventorySO(SpellTypes.ChainLightening), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
+        PickedObject.SpawnSpellWorld(AssetLoader.GetSpellInventorySO(SpellTypes.FireBall), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
+        PickedObject.SpawnSpellWorld(AssetLoader.GetSpellInventorySO(SpellTypes.FreezeBlast), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
+        PickedObject.SpawnItemsWorld(AssetLoader.GetInventoryItemSOFromList(ItemTypes.Ammo, WeaponTypes.Rifle), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance), WeaponTypes.Rifle);
+        PickedObject.SpawnItemsWorld(AssetLoader.GetInventoryItemSOFromList(ItemTypes.Ammo, WeaponTypes.RocketLauncher), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance), WeaponTypes.RocketLauncher);
+        PickedObject.SpawnItemsWorld(AssetLoader.GetInventoryItemSOFromList(ItemTypes.Ammo, WeaponTypes.Shotgun), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance), WeaponTypes.Shotgun);
+        PickedObject.SpawnWeaponWorld(AssetLoader.GetInventoryItemSOFromList(ItemTypes.Herb), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
+        PickedObject.SpawnWeaponWorld(AssetLoader.GetInventoryItemSOFromList(ItemTypes.Herb), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
+        PickedObject.SpawnWeaponWorld(AssetLoader.GetInventoryItemSOFromList(ItemTypes.Herb), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
+        PickedRecipe.SpawnItemsWorld(AssetLoader.GetRecipeSOFromList(RecipeTypes.P3C1), PlayerController.Instance.transform.position + PlayerController.Instance.GetRandomPosWithoutY(throwDistance, -throwDistance));
     }
 
     #region Utility
@@ -157,7 +158,7 @@ public class InventorySystem : Singleton<InventorySystem>
     public bool TryAddingItem(InventoryItemSO inventoryItemSO, int amount = 1)
     {
         InitializeInventory();
-        if (grid != null)
+        if (grid != null && inventoryItemSO != null)
         {
             for (int x = 0; x < grid.GetWidth(); x++)
             {
@@ -407,7 +408,6 @@ public class InventorySystem : Singleton<InventorySystem>
         itemContainor.ContainorRect.DeleteChildren();
         InventoryList.Clear();
         ItemDict.Clear();
-        Test(); // Remove this
     }
 
     public int GetItemAmount(ItemTypes itemType)
@@ -490,7 +490,7 @@ public class InventorySystem : Singleton<InventorySystem>
 
         foreach(AddedItem addedItem in listAddedItem.addedItemList)
         {
-            TryPlaceItem(GameController.GetInventoryItemSOFromList(addedItem.itemType), addedItem.gridPos, addedItem.dir, out PlacedObject placedObject);
+            TryPlaceItem(AssetLoader.GetInventoryItemSOFromList(addedItem.itemType), addedItem.gridPos, addedItem.dir, out PlacedObject placedObject);
         }
     }
 

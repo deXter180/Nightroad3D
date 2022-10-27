@@ -1,6 +1,8 @@
 #if !USE_AURORA
 // Copyright (c) Pixel Crushers. All rights reserved.
 
+#if UNITY_EDITOR
+
 using UnityEngine;
 using UnityEditor;
 
@@ -20,4 +22,7 @@ namespace PixelCrushers.DialogueSystem.Aurora
         }
     }
 }
+
+#endif
+
 #endif

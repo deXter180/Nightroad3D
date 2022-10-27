@@ -24,7 +24,7 @@ public class Weapons : IModifiedStat
     {
         this.weaponBrain = wb;
         attributeManager = AttributeManager.Instance;
-        weaponSO = GameController.GetWeaponSOFromList(weaponTypes);
+        weaponSO = AssetLoader.GetWeaponSOFromList(weaponTypes);
     }
 
     public void RaiseOnPlayerAttack(Weapons weapon, bool isRanged, WeaponBrain weaponBrain, WeaponCategories weaponCategory, WeaponTypes weaponType)

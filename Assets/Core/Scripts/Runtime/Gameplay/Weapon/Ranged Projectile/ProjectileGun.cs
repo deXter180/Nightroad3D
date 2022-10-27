@@ -85,7 +85,7 @@ public class ProjectileGun : RangedWeapon
         {
             if (gameObject.activeInHierarchy && weaponBrain.IsWeaponReady())
             {
-                if (!gameController.IsInventoryActive && !gameController.IsMainMenuActive && !gameController.IsStashActive && !gameController.IsCastingSpell && !gameController.IsDialogueActive)
+                if (!gameController.IsUIActive && !gameController.IsCastingSpell)
                 {
                     if (!weaponManager.IsAttacking)
                     {

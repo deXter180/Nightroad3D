@@ -144,7 +144,7 @@ public class EnemyBrain : EnemyCore
     {
         EnemyType = enemyType;
         yield return Helpers.GetWait(0.5f);
-        enemySO = GameController.GetEnemySOFromList(enemyType);
+        enemySO = AssetLoader.GetEnemySOFromList(enemyType);
         if (enemySO.IsRanged)
         {
             if (enemySO.IsGroundUnit)

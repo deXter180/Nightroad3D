@@ -272,7 +272,7 @@ public class WeaponManager : Singleton<WeaponManager>
         if (inventorySystem.GetAvailableAmmo(e.weaponType) != null)
         {
             PlacedObject placedObject = inventorySystem.GetAvailableAmmo(e.weaponType);
-            int ammoAmount = GameController.GetAmmoSOFromList(e.weaponType).AmmoAmountInPack;
+            int ammoAmount = AssetLoader.GetAmmoSOFromList(e.weaponType).AmmoAmountInPack;
             if (e.rangedWeapon.AddAmmo(ammoAmount))
             {
                 inventorySystem.RemoveItem(placedObject);

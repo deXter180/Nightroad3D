@@ -36,7 +36,7 @@ public class LighteningBounce : MonoBehaviour
     {
         isTagged = false;
         elapseTime = 0;
-        spell = GameController.GetSpellSOFromList(SpellTypes.ChainLightening);
+        spell = AssetLoader.GetSpellSOFromList(SpellTypes.ChainLightening);
         attributeManager = AttributeManager.Instance;
     }
 

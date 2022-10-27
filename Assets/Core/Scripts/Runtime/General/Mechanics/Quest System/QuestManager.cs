@@ -40,7 +40,7 @@ public class QuestManager : Singleton<QuestManager>
 
     public bool StartNewQuest(string questName, Story story)
     {
-        QuestSO quest = GameController.GetQeust(questName);
+        QuestSO quest = AssetLoader.GetQeust(questName);
         if (quest != null)
         {
             if (AllQuestInStoryDict.ContainsKey(story))

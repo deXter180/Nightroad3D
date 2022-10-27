@@ -13,6 +13,7 @@ public class CraftMenuControl : Singleton<CraftMenuControl>
     [SerializeField] private RectTransform recipeDescPanel;
     [SerializeField] private RectTransform closeButton;
     [SerializeField] private Button recipeButton;
+    private bool isInitialized = false;
     private RecipeManager recipeManager;
     private CraftOutputPanel outputPanel;
     private RecipeCloseButton recipeClose;
@@ -28,8 +29,6 @@ public class CraftMenuControl : Singleton<CraftMenuControl>
     {
         base.Awake();
         Initialize();
-        recipeClose = GetComponentInChildren<RecipeCloseButton>();
-        outputPanel = GetComponentInChildren<CraftOutputPanel>();
     }
 
     private void Start()
@@ -54,7 +53,10 @@ public class CraftMenuControl : Singleton<CraftMenuControl>
     private void OnDisable()
     {
         recipeButton?.onClick.RemoveAllListeners();
-        recipeClose.OnRecipeDecsClosed += RecipeClose_OnRecipeDecsClosed;
+        if (recipeClose != null)
+        {
+            recipeClose.OnRecipeDecsClosed -= RecipeClose_OnRecipeDecsClosed;
+        }        
         foreach (var tile in CraftTileList)
         {
             tile.OnPlacedInCraftMenu -= Tile_OnPlacedInCraftMenu;
@@ -94,11 +96,17 @@ public class CraftMenuControl : Singleton<CraftMenuControl>
 
     private void Initialize()
     {
-        CraftMenuTile[] tileArray = GetComponentsInChildren<CraftMenuTile>();
-        foreach (var tile in tileArray)
+        if (!isInitialized)
         {
-            CraftTileList.Add(tile);
-        }
+            recipeClose = GetComponentInChildren<RecipeCloseButton>();
+            outputPanel = GetComponentInChildren<CraftOutputPanel>();
+            CraftMenuTile[] tileArray = GetComponentsInChildren<CraftMenuTile>();
+            foreach (var tile in tileArray)
+            {
+                CraftTileList.Add(tile);
+            }
+            isInitialized = true;
+        }       
     }
 
     private void ResetRevertMenu()
@@ -116,7 +124,8 @@ public class CraftMenuControl : Singleton<CraftMenuControl>
                         
                     }
                 }
-                tile.ResetTile();
+                if (tile != null)
+                    tile.ResetTile();
             }
         }
 
@@ -128,7 +137,8 @@ public class CraftMenuControl : Singleton<CraftMenuControl>
         {
             foreach (var tile in CraftTileList)
             {
-                tile.ResetTile();
+                if (tile != null)
+                    tile.ResetTile();
             }
         }
     }
@@ -165,7 +175,7 @@ public class CraftMenuControl : Singleton<CraftMenuControl>
                 }
                 if (isTrue && IT != ItemTypes.None)
                 {
-                    var itemSO = GameController.GetInventoryItemSOFromList(IT);
+                    var itemSO = AssetLoader.GetInventoryItemSOFromList(IT);
                     if (inventorySystem.TryAddingItem(itemSO))
                     {
                         outputPanel.SetOutputItemImage(itemSO.AttributeIcon);

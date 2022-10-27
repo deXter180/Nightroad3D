@@ -32,9 +32,8 @@ public class InputManager : MonoBehaviour
         if (InputActions == null)
         {
             InputActions = new PlayerInputAsset();
-            InputActions.Enable();
-        }
-        inputReady = true;
+            InputActionSetup();
+        }        
         InputMenuTab[] tempArray = GetComponentsInChildren<InputMenuTab>();
         foreach (var menuTab in tempArray)
         {
@@ -46,6 +45,12 @@ public class InputManager : MonoBehaviour
     {
         InputActions.Disable();
         InputActions.Dispose();
+    }
+
+    public static void InputActionSetup()
+    {        
+        InputActions.Enable();
+        inputReady = true;
     }
 
     #endregion
@@ -110,8 +115,7 @@ public class InputManager : MonoBehaviour
         if (InputActions == null)
         {
             InputActions = new PlayerInputAsset();
-            InputActions.Enable();
-            inputReady = true;
+            InputActionSetup();
         }       
         InputAction action = InputActions.asset.FindAction(actionName);
         if (action != null)

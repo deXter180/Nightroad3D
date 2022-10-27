@@ -121,7 +121,7 @@ public class RangedWeapon : MonoBehaviour
         if (inventorySystem.GetAvailableAmmo(weaponType) != null)
         {
             PlacedObject placedObject = inventorySystem.GetAvailableAmmo(weaponType);
-            int ammoAmount = GameController.GetAmmoSOFromList(weaponType).AmmoAmountInPack;
+            int ammoAmount = AssetLoader.GetAmmoSOFromList(weaponType).AmmoAmountInPack;
             if (AddAmmo(ammoAmount))
             {
                 inventorySystem.RemoveItem(placedObject);

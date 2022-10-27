@@ -138,7 +138,7 @@ public class PickedObject : MonoBehaviour
             Vector3 randomDir = PlayerController.Instance.GetRandomDirWithoutY(1f, -1f);
             float posX = position.x;
             float posZ = position.z;
-            Transform spawnedTransform = Instantiate(GameController.GetInventoryItemSOFromList(itemType).WorldPrefab, new Vector3(posX, PlayerController.Instance.GroundHeight, posZ), Quaternion.identity);
+            Transform spawnedTransform = Instantiate(AssetLoader.GetInventoryItemSOFromList(itemType).WorldPrefab, new Vector3(posX, PlayerController.Instance.GroundHeight, posZ), Quaternion.identity);
             pickedObjects[i] = spawnedTransform.GetComponent<PickedObject>();
             pickedObjects[i].AddForceToItemSpawn(randomDir);
             pickedObjects[i].SetupInGameWorld(itemType, WeaponTypes.None);
@@ -205,7 +205,7 @@ public class PickedObject : MonoBehaviour
     {
         if (SR != null)
         {
-            SR.material = GameController.GetMaterail(hightlightMaterial);
+            SR.material = AssetLoader.GetMaterail(hightlightMaterial);
         }
         
     }

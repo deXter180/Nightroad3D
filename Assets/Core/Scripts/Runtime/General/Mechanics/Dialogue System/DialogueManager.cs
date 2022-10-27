@@ -199,6 +199,7 @@ public class DialogueManager : Singleton<DialogueManager>
                 q.ResetQuest();
             }
         }
+
         questManager.ResetAllQuests();
         ActiveStoryDict.Clear();
         lastTextFromStoryDict.Clear();
