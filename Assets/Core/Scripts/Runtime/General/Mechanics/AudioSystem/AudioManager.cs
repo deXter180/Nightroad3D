@@ -131,10 +131,6 @@ public class AudioManager : MonoBehaviour
 
     public static void PlayWeaponSound(WeaponTypes weaponType, int index = 0, bool randomize = false)
     {
-        if (MusicAudioSource.isPlaying)
-        {
-            MusicAudioSource.Stop();
-        }
         AudioClip clip = AssetLoader.GetAudioClip(AudioTypes.Weapon, weaponType, index, randomize);
         if (clip != null)
         {
@@ -156,10 +152,6 @@ public class AudioManager : MonoBehaviour
 
     public static void PlayEnvironmentSound(EnvironmentTypes environmentType, int index = 0, bool randomize = false, bool loop = false)
     {
-        if (MusicAudioSource.isPlaying)
-        {
-            MusicAudioSource.Stop();
-        }
         AudioClip clip = AssetLoader.GetAudioClip(AudioTypes.Environment, environmentType, index, randomize);
         if (clip != null)
         {
