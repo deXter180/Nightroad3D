@@ -46,6 +46,7 @@ public class EquipMenuSpellTile : MenuTile
         if (check)
         {
             OnRemovedFromSpellMenu?.Invoke(currentPlacedObject, serialNo);
+            currentPlacedObject = null;
         }
         return check;
     }
@@ -54,6 +55,7 @@ public class EquipMenuSpellTile : MenuTile
     {
         base.ResetTile();
         OnRemovedFromSpellMenu?.Invoke(currentPlacedObject, serialNo);
+        currentPlacedObject = null;
     }
 
     #endregion

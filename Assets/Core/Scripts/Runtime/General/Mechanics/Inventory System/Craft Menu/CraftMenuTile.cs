@@ -50,6 +50,7 @@ public class CraftMenuTile : MenuTile
         {
             itemType = ItemTypes.None;
             OnRemovedInCraftMenu?.Invoke(currentPlacedObject);
+            currentPlacedObject = null;
             return true;
         }
         return false;
@@ -59,6 +60,7 @@ public class CraftMenuTile : MenuTile
     {
         base.ResetTile();
         OnRemovedInCraftMenu?.Invoke(currentPlacedObject);
+        currentPlacedObject = null;
     }
 
     #endregion

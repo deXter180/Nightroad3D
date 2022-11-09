@@ -176,7 +176,7 @@ public class AttributeManager : Singleton<AttributeManager>
     }
 
     private void Start()
-    {
+    {        
         playerController = PlayerController.Instance;
         levelmanager = LevelSystemManager.Instance;
     }

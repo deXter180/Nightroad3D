@@ -66,7 +66,7 @@ public class MeleeAttacker : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (!gameController.IsUIActive)
+        if (!gameController.IsUIActive && !gameController.IsCastingSpell)
         {
             if (gameObject.activeInHierarchy && isHitting)
             {
@@ -101,7 +101,7 @@ public class MeleeAttacker : MonoBehaviour
 
     private void OnCollisionStay(Collision collision)
     {
-        if (!gameController.IsUIActive)
+        if (!gameController.IsUIActive && !gameController.IsCastingSpell)
         {
             if (gameObject.activeInHierarchy && isHitting)
             {

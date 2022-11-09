@@ -20,20 +20,16 @@ AnimationClip:
   m_PPtrCurves:
   - curve:
     - time: 0
-      value: {fileID: -387507817, guid: 1239ef5ace4a10b4b906eb07f82d0f33, type: 3}
-    - time: 0.2
-      value: {fileID: 406212697, guid: 1239ef5ace4a10b4b906eb07f82d0f33, type: 3}
-    - time: 0.4
-      value: {fileID: -802360665, guid: 1239ef5ace4a10b4b906eb07f82d0f33, type: 3}
-    - time: 0.6
-      value: {fileID: -240315136, guid: 1239ef5ace4a10b4b906eb07f82d0f33, type: 3}
-    - time: 0.8
-      value: {fileID: 1322532917, guid: 1239ef5ace4a10b4b906eb07f82d0f33, type: 3}
+      value: {fileID: 21300000, guid: 9b04a2646ac3b3143b2a6346ddd5ea4e, type: 3}
+    - time: 0.25
+      value: {fileID: 21300000, guid: 7eb937ef800880d46b1af04c0d903146, type: 3}
+    - time: 0.5
+      value: {fileID: 21300000, guid: 7841844ab5f59954c8ea4059e0e8293b, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
     script: {fileID: 0}
-  m_SampleRate: 5
+  m_SampleRate: 4
   m_WrapMode: 0
   m_Bounds:
     m_Center: {x: 0, y: 0, z: 0}
@@ -48,17 +44,15 @@ AnimationClip:
       customType: 23
       isPPtrCurve: 1
     pptrCurveMapping:
-    - {fileID: -387507817, guid: 1239ef5ace4a10b4b906eb07f82d0f33, type: 3}
-    - {fileID: 406212697, guid: 1239ef5ace4a10b4b906eb07f82d0f33, type: 3}
-    - {fileID: -802360665, guid: 1239ef5ace4a10b4b906eb07f82d0f33, type: 3}
-    - {fileID: -240315136, guid: 1239ef5ace4a10b4b906eb07f82d0f33, type: 3}
-    - {fileID: 1322532917, guid: 1239ef5ace4a10b4b906eb07f82d0f33, type: 3}
+    - {fileID: 21300000, guid: 9b04a2646ac3b3143b2a6346ddd5ea4e, type: 3}
+    - {fileID: 21300000, guid: 7eb937ef800880d46b1af04c0d903146, type: 3}
+    - {fileID: 21300000, guid: 7841844ab5f59954c8ea4059e0e8293b, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 1
+    m_StopTime: 0.75
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -78,7 +72,7 @@ AnimationClip:
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
   m_Events:
-  - time: 0.4
+  - time: 0.5
     functionName: PerformAttack
     data: 
     objectReferenceParameter: {fileID: 0}

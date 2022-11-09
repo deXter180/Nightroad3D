@@ -13,6 +13,7 @@ public class EnemyBrain : EnemyCore
     private bool isSpellAffected;
     private bool isFrozen;
     private bool isMoving;
+    private bool isDamaged;
     private Vector3 targetDir;
     private float angle;
     private float lighteningRestruckDelay = 5;
@@ -37,6 +38,7 @@ public class EnemyBrain : EnemyCore
     private int moveHash = Animator.StringToHash("IsMoving");
     private int attackHash = Animator.StringToHash("IsAttacking");
     private int deathHash = Animator.StringToHash("IsDead");
+    private int damagedHash = Animator.StringToHash("IsDamaged");
 
     #endregion
 
@@ -49,6 +51,7 @@ public class EnemyBrain : EnemyCore
     public bool IsHitByLightening { get; private set; }
     public bool IsSpellAffected => isSpellAffected;
     public bool IsFrozen => isFrozen;
+    public bool IsDamaged => isDamaged;
 
     #endregion
 
@@ -81,9 +84,17 @@ public class EnemyBrain : EnemyCore
     }
 
     private void Update()
-    {
+    {        
         if (IsSetupDone)
         {
+            if (isDamaged || enemy.IsAttacking)
+            {
+                isMoving = false;
+            }
+            if (isDamaged)
+            {
+                StartCoroutine(ResetDamaged());
+            }
             stateMachine.Tick();
             if (navAgent.destination != nextPos)
             {
@@ -91,7 +102,7 @@ public class EnemyBrain : EnemyCore
             }
             CalculateAngle(new Vector3(nextPos.x, transform.position.y, nextPos.z));
             if (navAgent.isOnNavMesh)
-            {
+            {               
                 if (navAgent.velocity.sqrMagnitude == 0)
                 {
                     isMoving = false;
@@ -111,7 +122,13 @@ public class EnemyBrain : EnemyCore
                     elaplsedTime = 0;
                 }
             }              
-        }         
+        } 
+        
+        IEnumerator ResetDamaged()
+        {
+            yield return Helpers.GetWait(0.4f);
+            isDamaged = false;
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -175,6 +192,7 @@ public class EnemyBrain : EnemyCore
         menuControl = EquipMenuControl.Instance;
         elaplsedTime = 0;
         IsHitByLightening = false;
+        isDamaged = false;
         isDying = false;
         isMoving = false;
         isSpellAffected = false;
@@ -227,7 +245,7 @@ public class EnemyBrain : EnemyCore
             lastIndex = 0;
         }
 
-        //Left
+        //Right
         else if (_angl >= -133 && _angl < -43)
         {
             lastIndex = 3;
@@ -247,7 +265,7 @@ public class EnemyBrain : EnemyCore
             
         }
 
-        //Right
+        //Left
         else if (_angl > 43 && _angl <= 133)
         {
             lastIndex = 1;
@@ -264,6 +282,7 @@ public class EnemyBrain : EnemyCore
             animator.SetBool(moveHash, isMoving);
             animator.SetBool(attackHash, enemy.IsAttacking);
             animator.SetBool(deathHash, isDying);
+            animator.SetBool(damagedHash, isDamaged);
         }       
     }
 
@@ -275,6 +294,7 @@ public class EnemyBrain : EnemyCore
 
     private void EnemyTarget_OnDodge()
     {
+        isDamaged = false;
         StartCoroutine(tempShield.TriggerShield(enemySO.ShieldDuration));
     }
 
@@ -285,6 +305,7 @@ public class EnemyBrain : EnemyCore
 
     private void Resource_OnHealthLoss(object sender, ResourceManagement.DamagedEventArgs e)
     {
+        isDamaged = true;
         bloodOnHit.PlayBloodOnHit();
         bloodVfx.Play();
     }
@@ -299,6 +320,7 @@ public class EnemyBrain : EnemyCore
                 navAgent.isStopped = true;
             }           
             isDying = true;
+            isDamaged = false;
             isMoving = false;
             StartCoroutine(AfterKilled());
             IEnumerator AfterKilled()

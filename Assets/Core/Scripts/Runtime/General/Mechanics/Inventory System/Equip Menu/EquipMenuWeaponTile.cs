@@ -46,6 +46,7 @@ public class EquipMenuWeaponTile : MenuTile
         if (check)
         {
             OnRemovedFromWeaponMenu?.Invoke(currentPlacedObject, serialNo);
+            currentPlacedObject = null;
         }
         return check;
     }
@@ -54,6 +55,7 @@ public class EquipMenuWeaponTile : MenuTile
     {
         base.ResetTile();
         OnRemovedFromWeaponMenu?.Invoke(currentPlacedObject, serialNo);
+        currentPlacedObject = null;
     }
 
     #endregion

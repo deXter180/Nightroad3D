@@ -14,7 +14,6 @@ public class WeaponBrain : MonoBehaviour
     private AnimType animType;
     private int currentAminHash;
     private bool playingAnim;
-    private bool IsAttacking;
     private bool IsReady = false;
     private float animDelay;
     public float AnimDelay { get => animDelay; }
@@ -22,6 +21,7 @@ public class WeaponBrain : MonoBehaviour
     private enum AnimType
     {
         Idle,
+        Equip,
         Walk,
         Attack,
         Reload
@@ -32,6 +32,7 @@ public class WeaponBrain : MonoBehaviour
     private int AttackHash = Animator.StringToHash("Attack");
     private int IdleHash = Animator.StringToHash("Idle");
     private int ReloadHash = Animator.StringToHash("Reload");
+    private int EquipHash = Animator.StringToHash("Equip");
 
     #endregion
 
@@ -48,16 +49,15 @@ public class WeaponBrain : MonoBehaviour
     }
 
     private void OnEnable()
-    {      
+    {   
         Weapons.OnPlayerAttack += Weapons_OnAttack;
-        Weapons.OnPlayerReload += Weapons_OnPlayerReload;
-        IsAttacking = false;       
+        Weapons.OnPlayerReload += Weapons_OnPlayerReload;      
         RayGun.OnStopRayShoot += RayGun_OnStopShoot;
         MeleeAttacker.OnStopMeleeAttack += MeleeAttacker_OnStopMeleeAttack;
         ProjectileGun.OnStopProjectileShoot += ProjectileGun_OnStopProjectileShoot;
         RayShotGun.OnStopSGShoot += RayShotGun_OnStopSGShoot;
-        animType = AnimType.Walk;
-        playingAnim = false;       
+        playingAnim = false;
+        animType = AnimType.Equip;              
     }
 
     private void OnDisable()
@@ -82,6 +82,12 @@ public class WeaponBrain : MonoBehaviour
             weapon = new Weapons(this, weaponTypes);
             IsReady = true;
         }              
+    }
+
+    public void EquipAnim()
+    {
+        playingAnim = false;
+        animType = AnimType.Equip;
     }
 
     public Weapons GetThisWeapon()
@@ -141,12 +147,17 @@ public class WeaponBrain : MonoBehaviour
                 ChangeAnimState(IdleHash);
                 playingAnim = false;
             }
-            else if (animType == AnimType.Attack)
+            if (animType == AnimType.Equip)
+            {
+                ChangeAnimState(EquipHash);
+                StartCoroutine(ApplyDelay());
+            }         
+            if (animType == AnimType.Attack)
             {
                 ChangeAnimState(AttackHash);
                 StartCoroutine(ApplyDelay());
             }
-            else if (animType == AnimType.Reload && weapon.ThisWeaponSO.IsRanged)
+            if (animType == AnimType.Reload && weapon.ThisWeaponSO.IsRanged)
             {
                 ChangeAnimState(ReloadHash);
                 StartCoroutine(ApplyDelay());
@@ -166,13 +177,23 @@ public class WeaponBrain : MonoBehaviour
     {
         yield return null;
         animDelay = animator.GetCurrentAnimatorClipInfo(0)[0].clip.length;
-        if(animType == AnimType.Attack)
+        if (animType == AnimType.Equip)
+        {
+            StartCoroutine(DelayEquipAnim(animDelay));
+        }
+        else if(animType == AnimType.Attack)
         {
             StartCoroutine(DelayAtkAnim(animDelay));
         }
         else if (animType == AnimType.Reload)
         {
             StartCoroutine(DelayReloadAnim(animDelay));
+        }
+        IEnumerator DelayEquipAnim(float animDelay)
+        {
+            yield return Helpers.GetWait(animDelay);
+            playingAnim = false;
+            animType = AnimType.Walk;
         }
         IEnumerator DelayAtkAnim(float animDelay)
         {
@@ -200,7 +221,6 @@ public class WeaponBrain : MonoBehaviour
 
     private void Weapons_OnAttack(object sender, OnPlayerAttackEventArg e)
     {
-        IsAttacking = true;
         if (weaponTypes == WeaponTypes.Rifle)
         {
             AudioManager.PlayWeaponSound(weaponTypes);
@@ -222,8 +242,7 @@ public class WeaponBrain : MonoBehaviour
 
     private void RayGun_OnStopShoot()
     {
-        IsAttacking = false;
-        if (animType != AnimType.Walk)
+        if (animType == AnimType.Attack)
             animType = AnimType.Walk;
     }
 

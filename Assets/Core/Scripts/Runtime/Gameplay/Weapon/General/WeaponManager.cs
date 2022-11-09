@@ -12,6 +12,7 @@ public class WeaponManager : Singleton<WeaponManager>
     [SerializeField] private int WeaponCount = 4;
     private int SelectedWeapon = 0;
     private WeaponBrain[] weaponBrains;
+    private WeaponBrain selectedWeaponBrain;
     private bool isRemoved;
     private bool IsInitialized => weaponInventory != null;
     private PlayerInputAsset inputs;
@@ -25,6 +26,7 @@ public class WeaponManager : Singleton<WeaponManager>
     public static event Action<WeaponTypes, int> OnAddingWeapon;
     public static event Action<WeaponTypes, int> OnRemovingWeapon;
     public static event Action OnEmptyWeapon;
+    public WeaponBrain SelectedWeaponBrain => selectedWeaponBrain;
 
     #endregion
 
@@ -137,6 +139,7 @@ public class WeaponManager : Singleton<WeaponManager>
                     if (weaponInventory.Count == 1)
                     {
                         weaponBrains[i].gameObject.SetActive(true);
+                        selectedWeaponBrain = weaponBrains[i];
                         VerifyIfRanged(weaponBrains[i].GetThisWeapon().ThisWeaponSO, weaponBrains[i]);
                         SelectedWeapon = 0;
                     }
@@ -153,7 +156,8 @@ public class WeaponManager : Singleton<WeaponManager>
             if (weaponInventory.Count > 0 && weaponInventory.ContainsKey(weaponType))
             {
                 weaponInventory.TryGetValue(weaponType, out WeaponBrain weaponBrain);
-                weaponBrain.gameObject.SetActive(false);               
+                weaponBrain.gameObject.SetActive(false);
+                selectedWeaponBrain = null;
                 weaponInventory.Remove(weaponType);
                 OnRemovingWeapon?.Invoke(weaponType, num);
             }
@@ -168,10 +172,14 @@ public class WeaponManager : Singleton<WeaponManager>
             if (i == SelectedWeapon)
             {
                 weapon.gameObject.SetActive(true);
+                weapon.EquipAnim();
+                selectedWeaponBrain = weapon;
                 VerifyIfRanged(weapon.GetThisWeapon().ThisWeaponSO, weapon);
             }
             else
+            {
                 weapon.gameObject.SetActive(false);
+            }               
             i++;
         }
     }
@@ -183,6 +191,25 @@ public class WeaponManager : Singleton<WeaponManager>
             WB.gameObject.SetActive(false);
         }
     }   
+
+    public void DisableSelectedWeapon()
+    {
+        if (selectedWeaponBrain != null)
+        {
+            selectedWeaponBrain.gameObject.SetActive(false);
+        }
+    }
+
+    public IEnumerator EnableSelectedWeapon(Action action)
+    {
+        if (selectedWeaponBrain != null)
+        {
+            yield return Helpers.GetWait(0.5f);
+            selectedWeaponBrain.gameObject.SetActive(true);
+            selectedWeaponBrain.EquipAnim();
+            action.Invoke();
+        }
+    }
 
     private void WeaponSelect()
     {
@@ -298,7 +325,7 @@ public class WeaponManager : Singleton<WeaponManager>
         {
             InventoryItemSO itemSO = e.GetInventoryItemSO();
             if (itemSO.ItemType == ItemTypes.Weapon && itemSO.WeaponType != WeaponTypes.None)
-            {
+            {                
                 RemoveWeapon(itemSO.WeaponType, num);
                 isRemoved = true;
                 if (weaponInventory.Count < 1)

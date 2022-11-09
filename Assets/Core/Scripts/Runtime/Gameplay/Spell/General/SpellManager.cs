@@ -19,8 +19,8 @@ public class SpellManager : Singleton<SpellManager>
     private Transform spellCircle;
     private Vector3 AOEPosition;
     private PlayerController player;
+    private WeaponManager weaponManager;
     private GameController gameController;
-    private bool isRemoved;
     private bool isInSpellCastMode;
     public bool IsInSpellCastMode { get => isInSpellCastMode; }
     private int SelectedSpellIndex = 0;
@@ -56,10 +56,11 @@ public class SpellManager : Singleton<SpellManager>
     private void Start()
     {
         player = PlayerController.Instance;
+        gameController = GameController.Instance;
+        weaponManager = WeaponManager.Instance;
         StartCoroutine(InputDone());
         state = SpellCastState.Default;
-        SetupSpellCircle();    
-        isRemoved = false;       
+        SetupSpellCircle();        
         SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
         foreach (var tile in EquipMenuControl.SpellTileList)
         {
@@ -103,9 +104,8 @@ public class SpellManager : Singleton<SpellManager>
         if (inputs == null)
         {
             yield return new WaitUntil(() => InputManager.InputReady);
-            inputs = InputManager.InputActions;
-            gameController = GameController.Instance;
-        }
+            inputs = InputManager.InputActions;            
+        } 
     }
 
     private void SetupSpellCircle()
@@ -214,6 +214,8 @@ public class SpellManager : Singleton<SpellManager>
                             IsCastingSpell = true;
                             if (spell.SpellCategory != SpellCategories.SelfTargeted)
                             {
+                                weaponManager.DisableSelectedWeapon();
+                                player.PlaySpellCastAnim(true);
                                 GetCastColor(spell.SpellType);
                                 GetCastVfx(spell.ThisSpellSO.CastVfxType);
                                 CastVfx.SetVector4("Color", castColor);
@@ -239,8 +241,19 @@ public class SpellManager : Singleton<SpellManager>
         IEnumerator CastDelay()
         {
             yield return Helpers.GetWait(0.5f);
-            IsCastingSpell = false;
-            isInSpellCastMode = false;
+            player.PlaySpellCastAnim(false);      
+            if (weaponManager.SelectedWeaponBrain != null)
+            {
+                StartCoroutine(weaponManager.EnableSelectedWeapon(() => {
+                    IsCastingSpell = false;
+                    isInSpellCastMode = false;
+                }));
+            }
+            else
+            {
+                IsCastingSpell = false;
+                isInSpellCastMode = false;
+            }            
         }
     }   
 
@@ -368,7 +381,6 @@ public class SpellManager : Singleton<SpellManager>
             if (inventoryItem.ItemType == ItemTypes.Spell && inventoryItem.SpellType != SpellTypes.None && inventoryItem.SpellCategory != SpellCategories.None)
             {
                 RemoveSpell(inventoryItem.SpellType, num);
-                isRemoved = true;
             }
         }       
     }

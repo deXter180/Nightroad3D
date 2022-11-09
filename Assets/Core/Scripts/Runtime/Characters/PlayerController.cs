@@ -49,6 +49,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
     [SerializeField] private float SelectionThreshold;
     [SerializeField] private float SlantingPower;
     [SerializeField] private float SlantingSpeed;
+    [SerializeField] private Animator CamAnimator;
     [SerializeField] private CameraShake.ShakeProperty CamShakeOnDeath;
     [SerializeField] private CameraShake.ShakeProperty CamShakeOnDamage;
     private Transform camTransform;
@@ -117,6 +118,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
     private bool isCursorLocked;
     private string waterLayer = "Water";
     private string fricColName = "NoFriction";
+    private int castHash = Animator.StringToHash("IsCasting");
     public static event Action OnPlayerDeath;
     public event Action onResettingHP;
 
@@ -305,6 +307,11 @@ public class PlayerController : PersistentSingleton<PlayerController>
     {
         if (dialogueManager == null)
             dialogueManager = DialogueManager.Instance;
+    }
+
+    public void PlaySpellCastAnim(bool isTrue)
+    {
+        CamAnimator.SetBool(castHash, isTrue);
     }
 
     #endregion
@@ -570,6 +577,11 @@ public class PlayerController : PersistentSingleton<PlayerController>
             }
         }
         return false;
+    }
+
+    public void ApplyKnockback()
+    {
+        RB.AddForce((transform.up - transform.forward) * 20, ForceMode.Impulse);
     }
 
     public void PostDeathAnim()

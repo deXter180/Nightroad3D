@@ -386,7 +386,6 @@ public class GameController : PersistentSingleton<GameController>
         equipMenu.ResetEquipMenu();
         craftMenu.ResetMenu();
         itemStash.ResetStash();
-
         StartCoroutine(DelayAudio());
 
         if (FPSCam == null)

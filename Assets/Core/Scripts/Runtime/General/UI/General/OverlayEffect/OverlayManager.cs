@@ -53,11 +53,6 @@ public class OverlayManager : Singleton<OverlayManager>
         FPSCamControl.OnFPSCameraDisable -= FPSCamControl_OnFPSCameraDisable;
     }
 
-    private void Start()
-    {
-        AddOverlayEffect(OverlayTypes.Damage);
-    }
-
     public void AddOverlayEffect(OverlayTypes overlayType)
     {
         if (blitRendererFeatures.TryGetValue(overlayType, out Blit blit))
