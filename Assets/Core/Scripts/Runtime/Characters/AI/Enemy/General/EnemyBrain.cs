@@ -31,6 +31,7 @@ public class EnemyBrain : EnemyCore
     private EnemySO enemySO;
     private EquipMenuControl menuControl;
     private AOETargeted spellCasted;
+    //private EnemyLOSManager enemyLOS;
     private SpellTypes spellType;
     private StateMachine stateMachine;    
     [HideInInspector] public bool IsSetupDone = false;
@@ -184,6 +185,7 @@ public class EnemyBrain : EnemyCore
                 enemy = new MeleeFly(this);
             }
         }
+        //enemyLOS = FindObjectOfType<EnemyLOSManager>();
         enemy.OnEnemyAttack += Enemy_OnEnemyAttack;
         Weapons.OnPlayerDamage += Weapons_OnPlayerDamage;
         AOETargeted.OnAOESpellCast += AOETargeted_OnAOESpellCast;
@@ -322,6 +324,10 @@ public class EnemyBrain : EnemyCore
             isDying = true;
             isDamaged = false;
             isMoving = false;
+            //if (enemyLOS != null)
+            //{
+            //    enemyLOS.RemoveEnemy(this);
+            //}
             StartCoroutine(AfterKilled());
             IEnumerator AfterKilled()
             {

@@ -178,12 +178,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 427488571, guid: 128b91d4370fc2c4caf1c87228f5f82d, type: 3}
+  m_Sprite: {fileID: 656428707, guid: d4fe28dc20504f2418483705652f7832, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.26, y: 0.56}
+  m_Size: {x: 0.29, y: 0.15}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -292,6 +292,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 057a8483ac89c9d4f8ac4b42da02e7eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uniqueID: 
   enemyType: 5
   critHitVfx: {fileID: 574308279869732990}
   bloodVfx: {fileID: 43876340005770467}

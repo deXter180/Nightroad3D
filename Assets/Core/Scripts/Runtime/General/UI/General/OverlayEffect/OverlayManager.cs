@@ -1,15 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
 
-[ExecuteAlways]
 public class OverlayManager : Singleton<OverlayManager>
 {
     #region Variables
 
-    private ScriptableRendererFeature PosterizeEffect;
-    [SerializeField] private UniversalRendererData rendererData;
+    private GradientFog gradientFog;
     private Dictionary<OverlayTypes, Blit> blitRendererFeatures = new Dictionary<OverlayTypes, Blit>();
 
     #endregion
@@ -18,27 +15,7 @@ public class OverlayManager : Singleton<OverlayManager>
 
     protected override void Awake()
     {
-        base.Awake();
-        Setup();
-
-        void Setup()
-        {
-            foreach(var feature in rendererData.rendererFeatures)
-            {
-                switch (feature.name)
-                {
-                    case "Health":
-                        blitRendererFeatures.Add(OverlayTypes.Damage, feature as Blit);
-                        break;
-                    case "Shield":
-                        blitRendererFeatures.Add(OverlayTypes.Shield, feature as Blit);
-                        break;
-                    case "Posterize":
-                        PosterizeEffect = feature;
-                        break;
-                }
-            }
-        }
+        base.Awake();        
     }
 
     private void OnEnable()
@@ -53,6 +30,30 @@ public class OverlayManager : Singleton<OverlayManager>
         FPSCamControl.OnFPSCameraDisable -= FPSCamControl_OnFPSCameraDisable;
     }
 
+    private void Start()
+    {
+        Setup();
+        void Setup()
+        {
+            foreach (var feature in AssetLoader.URPRenderData.rendererFeatures)
+            {
+                switch (feature.name)
+                {
+                    case "Health":
+                        blitRendererFeatures.Add(OverlayTypes.Damage, feature as Blit);
+                        break;
+                    case "Shield":
+                        blitRendererFeatures.Add(OverlayTypes.Shield, feature as Blit);
+                        break;
+                    case "GradientFog":
+                        gradientFog = feature as GradientFog;
+                        break;
+                }
+            }
+            ClearAllOverlayEffects();
+        }
+    }
+
     public void AddOverlayEffect(OverlayTypes overlayType)
     {
         if (blitRendererFeatures.TryGetValue(overlayType, out Blit blit))
@@ -65,10 +66,7 @@ public class OverlayManager : Singleton<OverlayManager>
     {
         if (blitRendererFeatures.TryGetValue(overlayType, out Blit blit))
         {
-            if (blit.isActive)
-            {
-                blit.SetActive(false);
-            }
+            blit.SetActive(false);
         }
     }
 
@@ -76,8 +74,9 @@ public class OverlayManager : Singleton<OverlayManager>
     {
         foreach(var blit in blitRendererFeatures.Values)
         {
-            blit.SetActive(false);
+            blit.SetActive(false);            
         }
+        DisableFog();
     }
 
     public Blit GetOverlayFeature(OverlayTypes overlayType)
@@ -89,9 +88,19 @@ public class OverlayManager : Singleton<OverlayManager>
         return null;
     }
 
-    public void MadeChange()
+    public void MadeRenderDataChange()
     {
-        rendererData.SetDirty();
+        AssetLoader.URPRenderData.SetDirty();
+    }
+
+    public void EnableFog()
+    {
+        gradientFog.SetActive(true);
+    }
+
+    public void DisableFog()
+    {
+        gradientFog.SetActive(false);
     }
 
     #endregion
@@ -103,12 +112,11 @@ public class OverlayManager : Singleton<OverlayManager>
     private void FPSCamControl_OnFPSCameraDisable()
     {
         ClearAllOverlayEffects();
-        PosterizeEffect.SetActive(false);
     }
 
     private void FPSCamControl_OnFPSCameraEneable()
     {
-        PosterizeEffect.SetActive(true);
+
     }
 
     #endregion

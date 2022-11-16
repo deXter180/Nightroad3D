@@ -2,8 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Linq;
 using UnityEngine.AddressableAssets;
 using System.Threading.Tasks;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -12,6 +14,8 @@ public static class AssetLoader
 {
     #region Variables
 
+    public static UniversalRendererData URPRenderData;
+    public static UniversalRenderPipelineAsset URPAsset;
     private static Dictionary<string, QuestSO> QuestDict = new Dictionary<string, QuestSO>();
     private static Dictionary<string, Material> MaterailDict = new Dictionary<string, Material>();
     private static Dictionary<AudioTypes, AudioSO> AudioSODict = new Dictionary<AudioTypes, AudioSO>();
@@ -33,6 +37,7 @@ public static class AssetLoader
     public static event Action<GameObject> OnGOCreated;
     public static event Action<GameObject, AssetReference> OnGOCreatedWithAssetRef;
     public static event Action<IList<ScriptableObject>> OnSOsLoaded;
+    public static event Action<IList<ISerializationCallbackReceiver>> OnURPAssetsLoaded;
     public static event Action<ScriptableObject> OnSOLoaded;
     public static event Action<IList<UnityEngine.Object>> OnAnyAssetLoad;
     public static event Action<SceneInstance> OnSingleSceneLoad;
@@ -43,6 +48,14 @@ public static class AssetLoader
     #endregion
 
     #region MechanicsFunctions
+
+    public static void LoadURPAssets(string nameKey, Action<ISerializationCallbackReceiver> callback)
+    {
+        Addressables.LoadAssetsAsync(nameKey, callback).Completed += (handle) =>
+        {
+            OnURPAssetsLoaded?.Invoke(handle.Result);
+        };
+    }
 
     public static void LoadSOAssets(string nameKey, Action<ScriptableObject> callback)
     {
@@ -230,6 +243,7 @@ public static class AssetLoader
     private static void LoadDependencies()
     {
         LoadSOAssets("ScriptableObject", SOLoadCallback);
+        LoadURPAssets("URPAsset", URPLoadCallback);
         LoadAnyAssets<Material>("Materials", MaterialLoadCallback);
     }
 
@@ -488,6 +502,18 @@ public static class AssetLoader
     #endregion
 
     #region Callbacks
+
+    private static void URPLoadCallback(ISerializationCallbackReceiver obj)
+    {
+        if (obj.GetType() == typeof(UniversalRendererData))
+        {           
+            URPRenderData = (UniversalRendererData)obj;
+        }
+        if (obj.GetType() == typeof(UniversalRenderPipelineAsset))
+        {
+            URPAsset = (UniversalRenderPipelineAsset)obj;
+        }        
+    }
 
     private static void SOLoadCallback(ScriptableObject SO)
     {

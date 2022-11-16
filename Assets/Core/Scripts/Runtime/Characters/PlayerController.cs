@@ -630,11 +630,12 @@ public class PlayerController : PersistentSingleton<PlayerController>
                     selectedNPC = null;
                 }
             }
-            if (Physics.Raycast(ray, out hit, Helpers.MainCam.farClipPlane / 15, pickableLayer)) //Interact with Inventory items
+            if (Physics.Raycast(ray, out hit, Helpers.MainCam.farClipPlane / 10, pickableLayer)) //Interact with Inventory items
             {
                 if (hit.transform.TryGetComponent<PickedObject>(out selectedPickedObject))
                 {
-                    selectedPickedObject.HighlightObject();
+                    //selectedPickedObject.HighlightObject();
+                    gameController.HighlightSelection(selectedPickedObject.RendererBound, hit.distance);
                     if (inputs.BasicControls.Interact.triggered)//input.GetPickItems())
                     {
                         if (mainInventory.TryAddingItem(selectedPickedObject.GetItemSO()))
@@ -649,7 +650,8 @@ public class PlayerController : PersistentSingleton<PlayerController>
                 }
                 else if (hit.transform.TryGetComponent<PickedRecipe>(out selectedPickedRecipe))
                 {
-                    selectedPickedRecipe.HighlightObject();
+                    //selectedPickedRecipe.HighlightObject();
+                    gameController.HighlightSelection(selectedPickedRecipe.RendererBound, hit.distance, true);
                     if (inputs.BasicControls.Interact.triggered)
                     {
                         recipeManager.AddRecipe(selectedPickedRecipe.Recipe);
@@ -659,11 +661,14 @@ public class PlayerController : PersistentSingleton<PlayerController>
             }
             else
             {
-                if (selectedPickedObject != null)
-                {
-                    selectedPickedObject.UnhighlightObject();
-                    selectedPickedObject = null;
-                }
+                gameController.UnHighlightSelection();
+                //if (selectedPickedObject != null)
+                //{
+                //    selectedPickedObject.UnhighlightObject();
+                //    selectedPickedObject = null;
+                //}
+
+
             }
             if (Physics.Raycast(ray, out hit, Helpers.MainCam.farClipPlane / 20, stashLayer)) //Interact with Stash
             {

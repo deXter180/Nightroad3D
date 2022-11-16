@@ -70,6 +70,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 057a8483ac89c9d4f8ac4b42da02e7eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uniqueID: 
   enemyType: 3
   critHitVfx: {fileID: 5830484050590610967}
   bloodVfx: {fileID: 8957678949838436258}
@@ -197,7 +198,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -1583462399, guid: f6cfa06770f51dc40b482417f79c91b5, type: 3}
+  m_Sprite: {fileID: -809670734, guid: 4b1ea3ab2d19d904fbe8ad869508a45d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

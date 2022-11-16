@@ -21,6 +21,7 @@ public class PickedObject : MonoBehaviour
 
     #region Properties
 
+    public Bounds RendererBound { get; private set; }
     public WeaponTypes WeaponTypes { get => weapon; }
     public SpellTypes SpellType { get => spell; }
     public ItemTypes ItemType { get => item; }
@@ -33,13 +34,14 @@ public class PickedObject : MonoBehaviour
     {
         col = GetComponent<BoxCollider>();
         RB = GetComponent<Rigidbody>();
-        SR = GetComponentInChildren<SpriteRenderer>();
+        SR = GetComponentInChildren<SpriteRenderer>();        
     }
 
     private void Start()
     {
         if (SR != null)
         {
+            RendererBound = SR.bounds;
             defaultMaterial = SR.material;
         }        
     }

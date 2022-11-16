@@ -89,16 +89,17 @@
     <type fullname="Tooltip" preserve="all" />
     <type fullname="TooltipSystem" preserve="all" />
     <type fullname="TooltipTrigger" preserve="all" />
-    <type fullname="UnityEngine.Rendering.Universal.DrawFullscreenFeature" preserve="all" />
     <type fullname="WeaponBrain" preserve="all" />
     <type fullname="WeaponManager" preserve="all" />
     <type fullname="WeaponSO" preserve="all" />
+    <type fullname="Blit/BlitSettings" preserve="nothing" serialized="true" />
     <type fullname="CameraShake/ShakeProperty" preserve="nothing" serialized="true" />
     <type fullname="ColletionItem" preserve="nothing" serialized="true" />
     <type fullname="Crosshair/CrosshairProperties" preserve="nothing" serialized="true" />
     <type fullname="EnemyInfoItem" preserve="nothing" serialized="true" />
     <type fullname="EnvironmentAudio" preserve="nothing" serialized="true" />
     <type fullname="GoalItem" preserve="nothing" serialized="true" />
+    <type fullname="GradientFog/GradientFogSettings" preserve="nothing" serialized="true" />
     <type fullname="MusicAudio" preserve="nothing" serialized="true" />
     <type fullname="RecipeItems" preserve="nothing" serialized="true" />
     <type fullname="RecoilEffect/RecoilProperty" preserve="nothing" serialized="true" />
@@ -106,12 +107,9 @@
     <type fullname="RewardItems" preserve="nothing" serialized="true" />
     <type fullname="WeaponAudio" preserve="nothing" serialized="true" />
     <type fullname="AssetPackages" preserve="nothing" serialized="true" />
-    <type fullname="Blit/BlitSettings" preserve="nothing" serialized="true" />
     <type fullname="CastEffect" preserve="nothing" serialized="true" />
-    <type fullname="GradientFog/GradientFogSettings" preserve="nothing" serialized="true" />
     <type fullname="STSpells" preserve="nothing" serialized="true" />
     <type fullname="StatInfo" preserve="nothing" serialized="true" />
-    <type fullname="UnityEngine.Rendering.Universal.DrawFullscreenFeature/Settings" preserve="nothing" serialized="true" />
   </assembly>
   <assembly fullname="NavMeshComponents, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
     <type fullname="UnityEngine.AI.NavMeshModifier" preserve="all" />
@@ -148,6 +146,7 @@
     <type fullname="UnityEngine.Rendering.Universal.UniversalAdditionalLightData" preserve="all" />
     <type fullname="UnityEngine.Rendering.Universal.UniversalRendererData" preserve="all" />
     <type fullname="UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset" preserve="all" />
+    <type fullname="UnityEngine.Rendering.Universal.UniversalRenderPipelineGlobalSettings" preserve="all" />
     <type fullname="UnityEngine.Rendering.Universal.Vignette" preserve="all" />
     <type fullname="UnityEngine.Rendering.Universal.XRSystemData" preserve="all" />
     <type fullname="UnityEngine.Rendering.Universal.PostProcessData/ShaderResources" preserve="nothing" serialized="true" />
@@ -249,6 +248,8 @@
     <type fullname="UnityEngine.Font" preserve="all" />
   </assembly>
   <assembly fullname="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <type fullname="UnityEngine.EventSystems.EventSystem" preserve="all" />
+    <type fullname="UnityEngine.EventSystems.StandaloneInputModule" preserve="all" />
     <type fullname="UnityEngine.UI.Button" preserve="all" />
     <type fullname="UnityEngine.UI.CanvasScaler" preserve="all" />
     <type fullname="UnityEngine.UI.ContentSizeFitter" preserve="all" />

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 128b91d4370fc2c4caf1c87228f5f82d
+guid: d4fe28dc20504f2418483705652f7832
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -101,7 +101,31 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
-    buildTarget: WebGL
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: iPhone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Windows Store Apps
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -116,7 +140,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: frntmove1
+      name: bat_WalkF_3
       rect:
         serializedVersion: 2
         x: 10
@@ -130,14 +154,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: acc02f400ec69764db4e1c90060fbec6
-      internalID: 427488571
+      spriteID: e7e0b6ae214f1f946928e3bbe25ad2d8
+      internalID: -725068828
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: frntmove2
+      name: bat_WalkF_1
       rect:
         serializedVersion: 2
         x: 57
@@ -151,14 +175,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f2f4bb8fca3718d4e845b4752a029155
-      internalID: 2091696779
+      spriteID: e246659233f413747b4097c0db8340fc
+      internalID: 656428707
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: frntmove3
+      name: bat_WalkF_2
       rect:
         serializedVersion: 2
         x: 104
@@ -172,14 +196,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b732f583123b5b04a92d7c7f37f83900
-      internalID: -1111404129
+      spriteID: de401cf262f86a141ab3f8737d56734d
+      internalID: 1033484557
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lftmove1
+      name: bat_WalkL_2
       rect:
         serializedVersion: 2
         x: 15
@@ -193,14 +217,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 474cc5e0616a67f4c9508f397b903893
-      internalID: -608644759
+      spriteID: acc608cea816eec4b8c60f55b012f243
+      internalID: 164346828
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lftmove2
+      name: bat_WalkL_1
       rect:
         serializedVersion: 2
         x: 63
@@ -214,14 +238,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 644c6c3c4eb6ff243b749af9fced0887
-      internalID: 453408466
+      spriteID: 1d94ced34fbcbc4428c918188b199716
+      internalID: -2037947949
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lftmove3
+      name: bat_WalkL_3
       rect:
         serializedVersion: 2
         x: 112
@@ -235,14 +259,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cc2ef220fe905ef4690a36cf2293adff
-      internalID: 223932591
+      spriteID: 98823ca318bff8440a979e19778aac58
+      internalID: -1965890685
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: rghtmove1
+      name: bat_WalkR_2
       rect:
         serializedVersion: 2
         x: 15
@@ -256,14 +280,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 590618d7e6adbfe439ea98377ea0e275
-      internalID: -1087176441
+      spriteID: ab247a99fcdc0514baef2a86ef1746ea
+      internalID: 456047604
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: rghtmove2
+      name: bat_WalkR_1
       rect:
         serializedVersion: 2
         x: 63
@@ -277,14 +301,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3c006002a6a121a4ba059ecc60186483
-      internalID: -1928458084
+      spriteID: 7054508ce60992b4492d2d0658142f98
+      internalID: 420633572
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: rghtmove3
+      name: bat_WalkR_3
       rect:
         serializedVersion: 2
         x: 112
@@ -298,14 +322,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8097f1be4b5003a43a66ac7127235cf9
-      internalID: 856801969
+      spriteID: f5c5f4ef2235a0642a9a84703fa27e8a
+      internalID: -1464485280
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: bckmove1
+      name: bat_WalkB_3
       rect:
         serializedVersion: 2
         x: 10
@@ -319,14 +343,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fd012c17efc798b4a9eecbfca0f3812c
-      internalID: 930490301
+      spriteID: 714db617a25c7974aa1dbfb9636c3439
+      internalID: 1897168845
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: bckmove2
+      name: bat_WalkB_1
       rect:
         serializedVersion: 2
         x: 57
@@ -340,14 +364,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6c89e64e937f2664f92d8276a22e9cdc
-      internalID: 2049727982
+      spriteID: aa825563d6e32974fb49b0ad557effcd
+      internalID: -1543822631
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: bckmove3
+      name: bat_WalkB_2
       rect:
         serializedVersion: 2
         x: 104
@@ -361,8 +385,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cad842cb82502ea4b827ff75c6c4fac0
-      internalID: -392955857
+      spriteID: 5b4d3ef637c9b394faf991ed649e9391
+      internalID: 134374711
       vertices: []
       indices: 
       edges: []
@@ -370,7 +394,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: b25ac297b9378574cbb24c0e29b943fa
+    spriteID: 2c291b0233f77664cb7434895cea7f15
     internalID: 0
     vertices: []
     indices: 
@@ -378,18 +402,18 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      frntmove3: -1111404129
-      rghtmove2: -1928458084
-      lftmove2: 453408466
-      bckmove3: -392955857
-      lftmove1: -608644759
-      frntmove1: 427488571
-      bckmove1: 930490301
-      rghtmove1: -1087176441
-      frntmove2: 2091696779
-      bckmove2: 2049727982
-      rghtmove3: 856801969
-      lftmove3: 223932591
+      bat_WalkF_3: -725068828
+      bat_WalkF_2: 1033484557
+      bat_WalkB_3: 1897168845
+      bat_WalkR_3: -1464485280
+      bat_WalkB_1: -1543822631
+      bat_WalkL_3: -1965890685
+      bat_WalkL_2: 164346828
+      bat_WalkL_1: -2037947949
+      bat_WalkR_1: 420633572
+      bat_WalkB_2: 134374711
+      bat_WalkR_2: 456047604
+      bat_WalkF_1: 656428707
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

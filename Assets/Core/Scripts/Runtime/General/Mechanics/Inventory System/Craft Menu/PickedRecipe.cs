@@ -12,6 +12,7 @@ public class PickedRecipe : MonoBehaviour
     private Material defaultMaterial;
     private RecipeSO recipeSO;
     private RecipeTypes recipeType;
+    public Bounds RendererBound { get; private set; }
     public RecipeSO Recipe => recipeSO;
     public RecipeTypes RecipeType => recipeType;
 
@@ -25,6 +26,7 @@ public class PickedRecipe : MonoBehaviour
         SR = GetComponentInChildren<SpriteRenderer>();
         if (SR != null)
         {
+            RendererBound = SR.bounds;
             defaultMaterial = SR.material;
         }
     }

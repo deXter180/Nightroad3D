@@ -13,6 +13,7 @@ public class GameController : PersistentSingleton<GameController>
 
     [SerializeField] private Image TalkUIimage;
     [SerializeField] private Image OpenStashImage;
+    [SerializeField] private Image SelectionImage;
     [SerializeField] private RectTransform NPCSpeechBubble;
     [SerializeField] private Canvas speechBubbleCanvas;
     [SerializeField] private Color FogColor;
@@ -73,6 +74,7 @@ public class GameController : PersistentSingleton<GameController>
         npcSpeechText = NPCSpeechBubble.GetComponentInChildren<TextMeshProUGUI>();
         NPCSpeechBubble.gameObject.SetActive(false);
         OpenStashImage.gameObject.SetActive(false);
+        SelectionImage.gameObject.SetActive(false);
         TalkUIimage.gameObject.SetActive(false);
     }
 
@@ -330,11 +332,43 @@ public class GameController : PersistentSingleton<GameController>
         screenPos = Helpers.MainCam.WorldToScreenPoint(position);
         TalkUIimage.transform.position = screenPos;
     }
-
     public void UnHighlightInteract()
     {
         TalkUIimage.gameObject.SetActive(false);
     }
+
+    public void HighlightSelection(Bounds bound, float distance, bool isRecipe = false)
+    {
+        SelectionImage.gameObject.SetActive(true);
+        SelectionImage.transform.position = Helpers.MainCam.WorldToScreenPoint(new Vector3 (
+            bound.center.x, 
+            bound.center.y, 
+            bound.center.z));
+        Vector3 newScale = new Vector3();
+        if (isRecipe)
+        {
+            newScale = new Vector3(
+            bound.size.z * (1 / (float)Math.Round(distance, 1)) * 300f,
+            bound.size.y * (1 / (float)Math.Round(distance, 1)) * 15f,
+            bound.size.x);
+        }
+        else
+        {
+            newScale = new Vector3(
+            bound.size.x * (1 / (float)Math.Round(distance, 1)) * 15f,
+            bound.size.y * (1 / (float)Math.Round(distance, 1)) * 15f,
+            bound.size.z);
+        }
+        if (float.IsFinite(newScale.x) && float.IsFinite(newScale.y))
+        {
+            SelectionImage.transform.localScale = newScale;
+        }
+    }
+
+    public void UnHighlightSelection()
+    {
+        SelectionImage.gameObject.SetActive(false);
+    }   
 
     public void HighlightStash(Vector3 position)
     {
@@ -387,7 +421,11 @@ public class GameController : PersistentSingleton<GameController>
         craftMenu.ResetMenu();
         itemStash.ResetStash();
         StartCoroutine(DelayAudio());
-
+        //var LOSManager = FindObjectOfType<EnemyLOSManager>();
+        //if (LOSManager != null)
+        //{
+        //    LOSManager.CheckForEnemy();
+        //}
         if (FPSCam == null)
         {
             FPSCam = FPSCamControl.Instance;
@@ -398,7 +436,7 @@ public class GameController : PersistentSingleton<GameController>
         }
 
         //Remove this
-        inventorySystem.Test();
+        StartCoroutine(inventorySystem.Test());
 
         IEnumerator DelayAudio()
         {
@@ -411,7 +449,12 @@ public class GameController : PersistentSingleton<GameController>
     private void AssetLoader_OnSingleSceneLoad(UnityEngine.ResourceManagement.ResourceProviders.SceneInstance obj)
     {
         isInventoryActive = false;
-        isMainMenuActive = false;    
+        isMainMenuActive = false;
+        //var LOSManager = FindObjectOfType<EnemyLOSManager>();
+        //if (LOSManager != null)
+        //{
+        //    LOSManager.CheckForEnemy();
+        //}
     }
 
     #endregion
