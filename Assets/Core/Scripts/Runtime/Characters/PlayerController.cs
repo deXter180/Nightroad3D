@@ -609,6 +609,8 @@ public class PlayerController : PersistentSingleton<PlayerController>
     {
         if (!gameController.IsInventoryActive && !gameController.IsMainMenuActive && !gameController.IsStashActive && !gameController.IsDialogueActive)
         {
+            gameController.UnHighlightSelection();
+            gameController.UnHighlightStash();
             var ray = new Ray(Helpers.MainCam.transform.position, Helpers.MainCam.transform.forward); //Camera.main.ScreenPointToRay(input.GetMousePosition());
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, Helpers.MainCam.farClipPlane / 20, npcLayer)) //Interact with NPC
@@ -674,7 +676,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
             {
                 if (hit.transform.TryGetComponent<StashHolder>(out selectedStashHolder))
                 {
-                    selectedStashHolder.Highlight(selectedStashHolder.transform.position);
+                    selectedStashHolder.Highlight(hit.distance);
                     if (inputs.BasicControls.Interact.triggered)
                     {
                         selectedStashHolder.LoadItemToStash();
@@ -686,8 +688,9 @@ public class PlayerController : PersistentSingleton<PlayerController>
             {
                 if (selectedStashHolder != null)
                 {
-                    selectedStashHolder.Unhighlight();
+                    selectedStashHolder.Unhighlight();                   
                 }
+                selectedStashHolder = null;
             }
             if (Physics.Raycast(ray, out hit, Helpers.MainCam.farClipPlane / 20, craftLayer))
             {
@@ -705,8 +708,8 @@ public class PlayerController : PersistentSingleton<PlayerController>
                 if (selectedCraftStation != null)
                 {
                     gameController.UnHighlightInteract();
-                    selectedCraftStation = null;
                 }
+                selectedCraftStation = null;
             }
         }
         if (gameController.IsDialogueActive || gameController.IsInventoryActive || gameController.IsMainMenuActive || gameController.IsStashActive || gameController.IsCraftingActive)

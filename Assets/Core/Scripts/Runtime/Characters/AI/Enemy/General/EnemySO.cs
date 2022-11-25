@@ -9,6 +9,7 @@ public class EnemySO : ScriptableObject, IAttack
     #region SerializedVariables
 
     [SerializeField] private string enemyName;
+    [SerializeField] private Vector3 gameWorldScale;
     [SerializeField] private int maxHP;
     [SerializeField] private int damageAmount;
     [SerializeField] private int xpRewardOnDeath;
@@ -33,6 +34,7 @@ public class EnemySO : ScriptableObject, IAttack
     #region Properties
 
     public string EnemyName => enemyName;
+    public Vector3 GameWorldScale => gameWorldScale;
     public int MaxHP => maxHP;
     public int DamageAmount => damageAmount;
     public int XPRewardOnDeath => xpRewardOnDeath;
