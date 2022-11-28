@@ -91,6 +91,10 @@ public class SpellManager : Singleton<SpellManager>
         }
     }
 
+    #endregion
+
+    #region Mechanics
+
     private void Initialize()
     {
         if (!IsInitialized)

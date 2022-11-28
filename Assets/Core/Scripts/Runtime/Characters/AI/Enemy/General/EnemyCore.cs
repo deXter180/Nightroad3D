@@ -11,8 +11,6 @@ public class EnemyCore : MonoBehaviour
     protected string enemyName;
     protected EnemyTrigger enemyTrigger;
     protected NavMeshAgent navAgent;
-    protected BloodEffectOnHit bloodOnHit;
-    protected BloodEffectOnDeath bloodOnDeath;
     protected Target enemyTarget;
     protected Animator animator;
     protected Rigidbody RB;
@@ -53,8 +51,6 @@ public class EnemyCore : MonoBehaviour
         EnemyTransform = transform;
         RB = GetComponent<Rigidbody>();
         navAgent = GetComponent<NavMeshAgent>();
-        bloodOnHit = GetComponentInChildren<BloodEffectOnHit>();
-        bloodOnDeath = GetComponentInChildren<BloodEffectOnDeath>();
         animator = GetComponentInChildren<Animator>();
         tempShield = GetComponentInChildren<TempShieldTrigger>();
         enemyTarget = GetComponent<Target>();

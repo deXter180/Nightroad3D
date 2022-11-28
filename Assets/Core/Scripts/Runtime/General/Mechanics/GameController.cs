@@ -206,7 +206,10 @@ public class GameController : PersistentSingleton<GameController>
             if (isMainMenuActive)
             {
                 isMainMenuActive = false;
-                isUIActive = false;
+                if (!isInventoryActive && !isStashActive && !isCraftingActive)
+                {
+                    isUIActive = false;
+                }               
                 ControlCursor(false);
             }
             else

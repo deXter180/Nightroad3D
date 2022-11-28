@@ -23,7 +23,6 @@ public class EnemyBrain : EnemyCore
     [Tooltip("Enter unique ID for each Enemy")] [SerializeField] private string uniqueID;
     [SerializeField] private EnemyTypes enemyType;
     [SerializeField] private VisualEffect critHitVfx;
-    [SerializeField] private VisualEffect bloodVfx;
     [Tooltip("Only for Ranged")] public Transform Firepoint;
     private Vector3 startPos;
     private Vector3 nextPos;
@@ -308,15 +307,12 @@ public class EnemyBrain : EnemyCore
     private void Resource_OnHealthLoss(object sender, ResourceManagement.DamagedEventArgs e)
     {
         isDamaged = true;
-        bloodOnHit.PlayBloodOnHit();
-        bloodVfx.Play();
     }
 
     private void Resource_OnKilled(object sender, EventArgs e)
     {
         if (e != null)
         {
-            bloodOnDeath.PlayBloodOnDeath();
             if (navAgent.isOnNavMesh)
             {
                 navAgent.isStopped = true;
