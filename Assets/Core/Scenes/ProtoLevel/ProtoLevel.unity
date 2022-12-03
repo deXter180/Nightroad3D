@@ -14,20 +14,20 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 9
-  m_Fog: 1
+  m_Fog: 0
   m_FogColor: {r: 0.4245283, g: 0.4245283, b: 0.4245283, a: 1}
   m_FogMode: 1
   m_FogDensity: 0.01
-  m_LinearFogStart: 0
-  m_LinearFogEnd: 555
+  m_LinearFogStart: 500
+  m_LinearFogEnd: 700
   m_AmbientSkyColor: {r: 0.3301887, g: 0.3301887, b: 0.3301887, a: 1}
   m_AmbientEquatorColor: {r: 0, g: 0, b: 0, a: 1}
   m_AmbientGroundColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 1}
   m_AmbientIntensity: 1
   m_AmbientMode: 1
-  m_SubtractiveShadowColor: {r: 1, g: 1, b: 1, a: 1}
+  m_SubtractiveShadowColor: {r: 0, g: 0, b: 0, a: 1}
   m_SkyboxMaterial: {fileID: 2100000, guid: b27ce5eaac6812345be518e28eaaadd7, type: 2}
-  m_HaloStrength: 0.5
+  m_HaloStrength: 1
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
   m_HaloTexture: {fileID: 0}
@@ -71210,7 +71210,6 @@ Transform:
   - {fileID: 1114718361}
   - {fileID: 772958086}
   - {fileID: 1292376971}
-  - {fileID: 128851529}
   - {fileID: 1671216797}
   - {fileID: 1298414963}
   - {fileID: 597167155}
@@ -71234,6 +71233,7 @@ Transform:
   - {fileID: 750411692}
   - {fileID: 372805629}
   - {fileID: 2129581435}
+  - {fileID: 128851529}
   - {fileID: 1593431730}
   - {fileID: 1676360315}
   - {fileID: 1022733912}
