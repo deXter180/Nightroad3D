@@ -22,7 +22,7 @@ public class CraftMenuTile : MenuTile
         gridWidth = 1;
         gridHeight = 1;
         cellSize = 125;
-        grid = new Grid<GridObject>(gridWidth, gridHeight, cellSize, transform.position, (Grid<GridObject> g, int x, int y) => new GridObject(g, x, y), true);
+        grid = new Grid<GridObject>(gridWidth, gridHeight, cellSize, transform.position, (Grid<GridObject> g, int x, int y) => new GridObject(g, x, y));
     }
 
     public override bool TryPlaceItem(InventoryItemSO inventoryItemSO, Vector2Int placedObjectOrigin, out PlacedObject PO)
@@ -50,6 +50,7 @@ public class CraftMenuTile : MenuTile
         {
             itemType = ItemTypes.None;
             OnRemovedInCraftMenu?.Invoke(currentPlacedObject);
+            currentPlacedObject = null;
             return true;
         }
         return false;
@@ -59,6 +60,7 @@ public class CraftMenuTile : MenuTile
     {
         base.ResetTile();
         OnRemovedInCraftMenu?.Invoke(currentPlacedObject);
+        currentPlacedObject = null;
     }
 
     #endregion

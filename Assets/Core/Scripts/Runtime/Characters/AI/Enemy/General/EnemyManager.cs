@@ -181,7 +181,7 @@ public class Enemy
         {
             if (Time.time - attackTimer >= enemySO.AttackDelay)
             {               
-                if (!IsAttacking)
+                if (!enemyBrain.IsDamaged && !IsAttacking)
                 {   
                     if (enemySO.IsRanged)
                     {

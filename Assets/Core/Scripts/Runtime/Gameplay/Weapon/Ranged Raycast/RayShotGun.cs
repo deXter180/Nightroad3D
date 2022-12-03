@@ -25,6 +25,7 @@ public class RayShotGun : RangedWeapon
     private Weapons thisWeapon;
     private int PlayerLayer = 9;
     private int bitmask;
+    private string bloodVfx = "Blood_burst_vfx";
     private string enemyName = "Enemy";
     private string npcName = "NPC";
     private WeaponManager weaponManager;
@@ -33,6 +34,7 @@ public class RayShotGun : RangedWeapon
     private VisualEffect visualEffect;
     private Light lighting;
     public static event Action OnStopSGShoot;
+    private float bloodOffset = 5;
 
     #endregion
 
@@ -162,6 +164,7 @@ public class RayShotGun : RangedWeapon
                                 Target target = hit.collider.GetComponentInParent<Target>();
                                 if (target.enemyCore != null && target.GetEnemy() == true && target.IsDead == false)
                                 {
+                                    AssetLoader.CreateAndReleaseAsset(bloodVfx, hit.point + hit.normal * bloodOffset, 1);
                                     thisWeapon.DoAttack(target, target.enemyCore.EnemyDodgeChance);
                                     if (!target.Dodging)
                                     {

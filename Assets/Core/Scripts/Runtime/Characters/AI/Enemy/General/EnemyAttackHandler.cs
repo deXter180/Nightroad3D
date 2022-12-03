@@ -16,5 +16,9 @@ public class EnemyAttackHandler : MonoBehaviour
     public void PerformAttack()
     {
         enemyBrain.GetThisEnemy().HandleAttack(player.PlayerTarget, player.DodgeChace);
+        if (enemyBrain.GetThisEnemy().GetType() == typeof(MeleeGround))
+        {
+            player.ApplyKnockback();
+        }
     }
 }

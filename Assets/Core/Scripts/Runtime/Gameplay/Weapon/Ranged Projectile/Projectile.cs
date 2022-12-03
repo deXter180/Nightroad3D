@@ -14,7 +14,9 @@ public class Projectile :  MonoBehaviour
 
     #region Variables
 
+    private string bloodVfx = "Blood_burst_vfx";
     private Vector3 firePositionWeapon;
+    private float bloodOffset = 5;
     private float LifeTime;
     private PlayerController player;
     private GameController gameController;
@@ -132,6 +134,7 @@ public class Projectile :  MonoBehaviour
                             {
                                 if (attackingWeapon != null)
                                 {
+                                    AssetLoader.CreateAndReleaseAsset(bloodVfx, contactPoint.point + contactPoint.normal * bloodOffset, 1);
                                     attackingWeapon.DoAttack(target, target.enemyCore.EnemyDodgeChance);
                                     if (!target.Dodging)
                                     {

@@ -104,7 +104,6 @@ public class MenuTile : MonoBehaviour
                 currentPlacedObject.DestroySelf();
                 grid.GetGridObject(0, 0).ClearPlacedObject();
                 isFilled = false;
-                currentPlacedObject = null;
                 transform.DetachChildren();
                 return true;
             }
@@ -115,10 +114,6 @@ public class MenuTile : MonoBehaviour
     public virtual void ResetTile()
     {
         transform.DeleteChildren();
-        if (currentPlacedObject != null)
-        {
-            currentPlacedObject = null;
-        }
         isFilled = false;
     }
 

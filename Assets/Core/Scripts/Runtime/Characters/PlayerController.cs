@@ -49,6 +49,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
     [SerializeField] private float SelectionThreshold;
     [SerializeField] private float SlantingPower;
     [SerializeField] private float SlantingSpeed;
+    [SerializeField] private Animator CamAnimator;
     [SerializeField] private CameraShake.ShakeProperty CamShakeOnDeath;
     [SerializeField] private CameraShake.ShakeProperty CamShakeOnDamage;
     private Transform camTransform;
@@ -117,6 +118,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
     private bool isCursorLocked;
     private string waterLayer = "Water";
     private string fricColName = "NoFriction";
+    private int castHash = Animator.StringToHash("IsCasting");
     public static event Action OnPlayerDeath;
     public event Action onResettingHP;
 
@@ -305,6 +307,11 @@ public class PlayerController : PersistentSingleton<PlayerController>
     {
         if (dialogueManager == null)
             dialogueManager = DialogueManager.Instance;
+    }
+
+    public void PlaySpellCastAnim(bool isTrue)
+    {
+        CamAnimator.SetBool(castHash, isTrue);
     }
 
     #endregion
@@ -572,6 +579,11 @@ public class PlayerController : PersistentSingleton<PlayerController>
         return false;
     }
 
+    public void ApplyKnockback()
+    {
+        RB.AddForce((transform.up - transform.forward) * 20, ForceMode.Impulse);
+    }
+
     public void PostDeathAnim()
     {
         HeadUpDisplayHandler.Instance.ExecuteOnDeath();
@@ -597,6 +609,8 @@ public class PlayerController : PersistentSingleton<PlayerController>
     {
         if (!gameController.IsInventoryActive && !gameController.IsMainMenuActive && !gameController.IsStashActive && !gameController.IsDialogueActive)
         {
+            gameController.UnHighlightSelection();
+            gameController.UnHighlightStash();
             var ray = new Ray(Helpers.MainCam.transform.position, Helpers.MainCam.transform.forward); //Camera.main.ScreenPointToRay(input.GetMousePosition());
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, Helpers.MainCam.farClipPlane / 20, npcLayer)) //Interact with NPC
@@ -618,11 +632,12 @@ public class PlayerController : PersistentSingleton<PlayerController>
                     selectedNPC = null;
                 }
             }
-            if (Physics.Raycast(ray, out hit, Helpers.MainCam.farClipPlane / 15, pickableLayer)) //Interact with Inventory items
+            if (Physics.Raycast(ray, out hit, Helpers.MainCam.farClipPlane / 10, pickableLayer)) //Interact with Inventory items
             {
                 if (hit.transform.TryGetComponent<PickedObject>(out selectedPickedObject))
                 {
-                    selectedPickedObject.HighlightObject();
+                    //selectedPickedObject.HighlightObject();
+                    gameController.HighlightSelection(selectedPickedObject.RendererBound, hit.distance);
                     if (inputs.BasicControls.Interact.triggered)//input.GetPickItems())
                     {
                         if (mainInventory.TryAddingItem(selectedPickedObject.GetItemSO()))
@@ -637,7 +652,8 @@ public class PlayerController : PersistentSingleton<PlayerController>
                 }
                 else if (hit.transform.TryGetComponent<PickedRecipe>(out selectedPickedRecipe))
                 {
-                    selectedPickedRecipe.HighlightObject();
+                    //selectedPickedRecipe.HighlightObject();
+                    gameController.HighlightSelection(selectedPickedRecipe.RendererBound, hit.distance, true);
                     if (inputs.BasicControls.Interact.triggered)
                     {
                         recipeManager.AddRecipe(selectedPickedRecipe.Recipe);
@@ -647,17 +663,20 @@ public class PlayerController : PersistentSingleton<PlayerController>
             }
             else
             {
-                if (selectedPickedObject != null)
-                {
-                    selectedPickedObject.UnhighlightObject();
-                    selectedPickedObject = null;
-                }
+                gameController.UnHighlightSelection();
+                //if (selectedPickedObject != null)
+                //{
+                //    selectedPickedObject.UnhighlightObject();
+                //    selectedPickedObject = null;
+                //}
+
+
             }
             if (Physics.Raycast(ray, out hit, Helpers.MainCam.farClipPlane / 20, stashLayer)) //Interact with Stash
             {
                 if (hit.transform.TryGetComponent<StashHolder>(out selectedStashHolder))
                 {
-                    selectedStashHolder.Highlight(selectedStashHolder.transform.position);
+                    selectedStashHolder.Highlight(hit.distance);
                     if (inputs.BasicControls.Interact.triggered)
                     {
                         selectedStashHolder.LoadItemToStash();
@@ -669,8 +688,9 @@ public class PlayerController : PersistentSingleton<PlayerController>
             {
                 if (selectedStashHolder != null)
                 {
-                    selectedStashHolder.Unhighlight();
+                    selectedStashHolder.Unhighlight();                   
                 }
+                selectedStashHolder = null;
             }
             if (Physics.Raycast(ray, out hit, Helpers.MainCam.farClipPlane / 20, craftLayer))
             {
@@ -688,8 +708,8 @@ public class PlayerController : PersistentSingleton<PlayerController>
                 if (selectedCraftStation != null)
                 {
                     gameController.UnHighlightInteract();
-                    selectedCraftStation = null;
                 }
+                selectedCraftStation = null;
             }
         }
         if (gameController.IsDialogueActive || gameController.IsInventoryActive || gameController.IsMainMenuActive || gameController.IsStashActive || gameController.IsCraftingActive)

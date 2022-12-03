@@ -7,13 +7,13 @@ public class StashHolder : MonoBehaviour
     #region Variables
 
     private ItemStash itemStash;
-    private string hightlightMaterial = "Outline_SpriteLit";
+    //private string hightlightMaterial = "Outline_SpriteLit";
     [SerializeField] private List<StashItems> StashItemList;
     private bool isOpened;
     private List<SavedItems> savedStashItemList;
     private SpriteRenderer SR;
     private GameController gameController;
-    private Material defaultMat;
+    //private Material defaultMat;
 
     #endregion
 
@@ -22,11 +22,15 @@ public class StashHolder : MonoBehaviour
     private void Start()
     {
         SR = GetComponent<SpriteRenderer>();
+        if (SR == null)
+        {
+            SR = GetComponentInChildren<SpriteRenderer>();
+        }
         gameController = GameController.Instance;
         itemStash = ItemStash.Instance;
         savedStashItemList = new List<SavedItems>();        
         isOpened = false;
-        defaultMat = SR.material;
+        //defaultMat = SR.material;
     }
 
     public void LoadItemToStash()
@@ -54,15 +58,17 @@ public class StashHolder : MonoBehaviour
         itemStash.ClearStash(savedStashItemList);
     }
 
-    public void Highlight(Vector3 position)
+    public void Highlight(float distance)
     {
-        SR.material = AssetLoader.GetMaterail(hightlightMaterial);
-        gameController.HighlightStash(position);
+        //SR.material = AssetLoader.GetMaterail(hightlightMaterial);
+        gameController.HighlightSelection(SR.bounds, distance);
+        gameController.HighlightStash(transform.position);
     }
 
     public void Unhighlight()
     {
-        SR.material = defaultMat;
+        //SR.material = defaultMat;
+        gameController.UnHighlightSelection();
         gameController.UnHighlightStash();
     }
 

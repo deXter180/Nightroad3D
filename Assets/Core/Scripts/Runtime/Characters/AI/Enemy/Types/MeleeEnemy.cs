@@ -5,10 +5,8 @@ using UnityEngine.AI;
 
 public class MeleeEnemy : Enemy
 {
- 
     public MeleeEnemy(EnemyBrain EB) : base(EB)
     {
         
     }
-
 }

@@ -41,8 +41,9 @@ public class InventorySystem : Singleton<InventorySystem>
     //~~~~~~~~~~~~~~~~~~ Utilities ~~~~~~~~~~~~~~~~~~
 
     //Remove this
-    public void Test()
+    public IEnumerator Test()
     {
+        yield return null;
         TryAddingItem(AssetLoader.GetInventoryItemSOFromList(ItemTypes.HealthPotion));
         TryAddingItem(AssetLoader.GetArmorInventorySO(ArmorTypes.RoyalPlate));
         TryAddingItem(AssetLoader.GetInventoryItemSOFromList(ItemTypes.Gloves));

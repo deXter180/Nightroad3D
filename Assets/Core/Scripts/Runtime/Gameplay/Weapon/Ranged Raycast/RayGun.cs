@@ -34,12 +34,14 @@ public class RayGun : RangedWeapon
     private float lastFireTime = 0;
     private float defaultOffset = 1.2f;
     private float recoilOffset = 2f;
+    private string bloodVfx = "Blood_burst_vfx";
     private string enemyName = "Enemy";
     private string npcName = "NPC";
     private VisualEffect visualEffect;
     private CameraShake camShake;
     private RecoilEffect recoilEffect;
     private Light lighting;
+    private float bloodOffset = 5;
     public static event Action OnStopRayShoot;
 
     #endregion
@@ -193,6 +195,7 @@ public class RayGun : RangedWeapon
                             
                             if (target.enemyCore != null && target.GetEnemy() == true && target.IsDead == false)
                             {
+                                AssetLoader.CreateAndReleaseAsset(bloodVfx, hit.point + hit.normal * bloodOffset, 1);
                                 thisWeapon.DoAttack(target, target.enemyCore.EnemyDodgeChance);
                                 if (!target.Dodging)
                                 {

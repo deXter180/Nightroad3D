@@ -17,6 +17,10 @@ public class MeleeAttacker : MonoBehaviour
     private string enemyName = "Enemy";
     private string npcName = "NPC";
     public static event Action OnStopMeleeAttack;
+    public bool IsHittingEnemy { get; private set; }
+    public bool IsHittingNPC { get; private set; }
+
+    public Collision MeleeCollision { get; private set; }
 
     #endregion
 
@@ -38,6 +42,8 @@ public class MeleeAttacker : MonoBehaviour
     {
         StartCoroutine(InputDone());
         isHitting = false;
+        IsHittingEnemy = false;
+        IsHittingNPC = false;
         GetRange();
         gameController = GameController.Instance;
         weaponManager = WeaponManager.Instance;
@@ -66,31 +72,25 @@ public class MeleeAttacker : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (!gameController.IsUIActive)
+        if (!gameController.IsUIActive && !gameController.IsCastingSpell)
         {
             if (gameObject.activeInHierarchy && isHitting)
             {
                 if (!weaponManager.IsAttacking && collision != null)
                 {
+                    MeleeCollision = collision;
                     if (collision.gameObject.CompareTag(enemyName))
                     {
                         if (collision.gameObject.GetComponentInParent<Target>() != null)
-                        {
-                            Target target = collision.gameObject.GetComponentInParent<Target>();
-                            if (target.enemyCore != null && target.GetEnemy() == true && target.IsDead == false)
-                            {
-                                weaponManager.IsAttacking = true;
-                                weaponBrain.GetThisWeapon().DoAttack(target, target.enemyCore.EnemyDodgeChance);
-                                StartCoroutine(Attacking(() => { weaponManager.IsAttacking = false; }));
-                            }
+                        {    
+                            IsHittingEnemy = true;                            
                         }
                     }
                     else if (collision.gameObject.CompareTag(npcName))
                     {
                         if (collision.gameObject.GetComponent<NPCBrain>() != null)
                         {
-                            NPCBrain npc = collision.gameObject.GetComponent<NPCBrain>();
-                            StartCoroutine(gameController.HighlightNPCSpeech(npc.SpeechBubblePos, npc.GetDialogueText()));
+                            IsHittingNPC = true;                           
                         }                        
                     }
                     
@@ -101,37 +101,38 @@ public class MeleeAttacker : MonoBehaviour
 
     private void OnCollisionStay(Collision collision)
     {
-        if (!gameController.IsUIActive)
+        if (!gameController.IsUIActive && !gameController.IsCastingSpell)
         {
             if (gameObject.activeInHierarchy && isHitting)
             {
                 if (!weaponManager.IsAttacking && collision != null)
                 {
+                    MeleeCollision = collision;
                     if (collision.gameObject.CompareTag(enemyName))
                     {
                         if (collision.gameObject.GetComponentInParent<Target>() != null)
                         {
-                            Target target = collision.gameObject.GetComponentInParent<Target>();
-                            if (target.enemyCore != null && target.GetEnemy() == true && target.IsDead == false)
-                            {
-                                weaponManager.IsAttacking = true;
-                                weaponBrain.GetThisWeapon().DoAttack(target, target.enemyCore.EnemyDodgeChance);
-                                StartCoroutine(Attacking(() => { weaponManager.IsAttacking = false; }));
-                            }
+                            IsHittingEnemy = true;                            
                         }
                     }
                     else if (collision.gameObject.CompareTag(npcName))
                     {
                         if (collision.gameObject.GetComponent<NPCBrain>() != null)
                         {
-                            NPCBrain npc = collision.gameObject.GetComponent<NPCBrain>();
-                            StartCoroutine(gameController.HighlightNPCSpeech(npc.SpeechBubblePos, npc.GetDialogueText()));
+                            IsHittingNPC = true;                            
                         }
                     }
                 }
             }
         }
        
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        MeleeCollision = null;
+        IsHittingEnemy = false;
+        IsHittingNPC = false;
     }
 
     #endregion
@@ -152,22 +153,17 @@ public class MeleeAttacker : MonoBehaviour
                 else
                 {
                     isHitting = false;
+                    IsHittingEnemy = false;
+                    IsHittingNPC = false;
                 }
             }
             else
             {
                 OnStopMeleeAttack?.Invoke();
                 isHitting = false;
+                IsHittingEnemy = false;
+                IsHittingNPC = false;
             }
-        }
-    }
-
-    private IEnumerator Attacking(Action action)
-    {
-        if (weaponManager.IsAttacking == true)
-        {
-            yield return Helpers.GetWait(weaponBrain.GetThisWeapon().ThisWeaponSO.AttackDelay);
-            action.Invoke();
         }
     }
 

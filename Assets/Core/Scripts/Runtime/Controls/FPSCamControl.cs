@@ -7,6 +7,8 @@ using UnityEngine.Rendering.Universal;
 
 public class FPSCamControl : Singleton<FPSCamControl>
 {
+    #region Variables
+
     [SerializeField] private UniversalRenderPipelineAsset pilelineAsset;
     private Camera mainCam;
     private Camera UICam;    
@@ -14,6 +16,10 @@ public class FPSCamControl : Singleton<FPSCamControl>
     private AudioListener audioListener; 
     public static event Action OnFPSCameraEneable;
     public static event Action OnFPSCameraDisable;
+
+    #endregion
+
+    #region General
 
     protected override void Awake()
     {
@@ -40,6 +46,10 @@ public class FPSCamControl : Singleton<FPSCamControl>
         transform.parent = null;
     }
 
+    #endregion
+
+    #region Mechanics
+
     public void EnableFPSCamera()
     {
         gameObject.SetActive(true);
@@ -60,6 +70,6 @@ public class FPSCamControl : Singleton<FPSCamControl>
         }
     }
 
-    
+    #endregion
 }
 

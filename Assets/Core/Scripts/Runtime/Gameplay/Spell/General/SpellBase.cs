@@ -43,12 +43,14 @@ public abstract class Spells
 public class SingleTargetedProjectile : Spells
 {
     private ObjectPooler objectPooler;
+    private Vector3 fpsCamRotation;
     
     public static event EventHandler<OnSTSpellCastEventArg> OnProjectileSpellCast;
 
     public SingleTargetedProjectile(SpellTypes spellType, SpellCategories category) : base(spellType, category)
     {
-        objectPooler = ObjectPooler.Instance;        
+        objectPooler = ObjectPooler.Instance;
+        fpsCamRotation = FPSCamControl.Instance.transform.rotation.eulerAngles;
     }
 
     public override void CastSpell(Action action)
@@ -56,7 +58,15 @@ public class SingleTargetedProjectile : Spells
         var shot = objectPooler.GetPooledObject(GetProjectile());
         if (shot != null)
         {
-            var rotX = spellManager.FirePoint.rotation.eulerAngles.x + shot.transform.eulerAngles.x - 10f;
+            float rotX = 0;
+            if (fpsCamRotation.x < 0)
+            {
+                rotX = spellManager.FirePoint.rotation.eulerAngles.x + shot.transform.eulerAngles.x - 10f;
+            }
+            else
+            {
+                rotX = spellManager.FirePoint.rotation.eulerAngles.x + shot.transform.eulerAngles.x;
+            }            
             var rotY = spellManager.FirePoint.rotation.eulerAngles.y;
             var rotZ = spellManager.FirePoint.rotation.eulerAngles.z;
             shot.transform.rotation = Quaternion.Euler(rotX, rotY, rotZ);
