@@ -176,7 +176,6 @@ public class PlayerController : PersistentSingleton<PlayerController>
         crouchHeightSec = (normalHeightSec * crouchHeightPrecentage) / 100;
         SceneLoader.OnMainMenuSceneLoad += SceneLoader_OnMainMenuSceneLoad;
         SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
-        AssetLoader.OnSingleSceneLoad += AssetLoader_OnSingleSceneLoad;
         target.Resource.OnHealthGain += Resource_OnHealthGain;
         target.Resource.OnHealthLoss += Resource_OnHealthLoss;
         target.Resource.OnManaGain += Resource_OnManaGain;
@@ -210,7 +209,6 @@ public class PlayerController : PersistentSingleton<PlayerController>
         //AssetLoader.OnGOCreated += AssetLoader_OnGOCreated; //Delete this
         SceneLoader.OnMainMenuSceneLoad -= SceneLoader_OnMainMenuSceneLoad;
         SceneLoader.OnNewGameStart -= SceneLoader_OnNewGameStart;
-        AssetLoader.OnSingleSceneLoad -= AssetLoader_OnSingleSceneLoad;
         target.Resource.OnHealthGain -= Resource_OnHealthGain;
         target.Resource.OnHealthLoss -= Resource_OnHealthLoss;
         target.Resource.OnManaGain -= Resource_OnManaGain;
@@ -261,6 +259,16 @@ public class PlayerController : PersistentSingleton<PlayerController>
                 DOTDuration = 0;
                 DOTAmount = 0;
             }
+        }
+    }
+    public void InitiateOnSceneLoad(string sceneName)
+    {
+        gameObject.SetActive(true);
+        if (gameController != null)
+        {
+            transform.position = gameController.GetSpawnLocation(sceneName);
+            UnParentPlayerCam();
+            camTransform.gameObject.SetActive(true);
         }
     }
 
@@ -787,7 +795,9 @@ public class PlayerController : PersistentSingleton<PlayerController>
     }
 
     public void UnParentPlayerCam()
-    {
+    {   
+        if (camTransform.parent == null)
+            return;
         camTransform.parent = null;
     }
 
@@ -817,6 +827,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
         AssignInv();
         AssignGameControl();
         AssignDialogueManager();
+        gameController = GameController.Instance;
         attributeManager = AttributeManager.Instance;
         recipeManager = RecipeManager.Instance;
         recipeManager.Initialize();
@@ -843,23 +854,6 @@ public class PlayerController : PersistentSingleton<PlayerController>
         {
             selectedStashHolder.UnloadItemFromStash();
             selectedStashHolder = null;
-        }
-    }
-
-    private void AssetLoader_OnSingleSceneLoad(UnityEngine.ResourceManagement.ResourceProviders.SceneInstance obj)
-    {
-        gameObject.SetActive(true);
-        StartCoroutine(Delay());
-
-        IEnumerator Delay()
-        {
-            yield return Helpers.GetWait(0.15f);
-            var portalMarker = FindObjectOfType<TestToMainLevel>();
-            if (portalMarker != null)
-            {
-                transform.position = portalMarker.transform.position + new Vector3(0, 5, 0);
-                UnParentPlayerCam();
-            }
         }
     }
 

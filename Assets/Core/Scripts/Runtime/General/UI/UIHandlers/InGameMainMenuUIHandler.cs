@@ -84,9 +84,8 @@ public class InGameMainMenuUIHandler : Singleton<InGameMainMenuUIHandler>
             if (loaderCanvas != null && menuCanvas != null)
             {
                 loaderCanvas.enabled = false;
-                player.PlayerTransform.position = new Vector3(0, 0.2f, 0);
-                Helpers.MainCam.transform.position = new Vector3(0, 0.2f, 0);
             }
+            player.InitiateOnSceneLoad(obj.Scene.name);
         };
     }
 

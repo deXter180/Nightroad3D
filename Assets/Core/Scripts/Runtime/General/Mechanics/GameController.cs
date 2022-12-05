@@ -17,6 +17,7 @@ public class GameController : PersistentSingleton<GameController>
     [SerializeField] private RectTransform NPCSpeechBubble;
     [SerializeField] private Canvas speechBubbleCanvas;
     [SerializeField] private Color FogColor;
+    [SerializeField] private List<SpawnLocations> spawnLocations;
 
     #endregion
 
@@ -29,6 +30,7 @@ public class GameController : PersistentSingleton<GameController>
     private bool isDialogueActive;
     private bool isCraftingActive;
     private bool isUIActive;
+    private GameObject UICam;
     private InventoryUIHandler inventoryUI;
     private InGameMainMenuUIHandler mainMenu;
     private HeadUpDisplayHandler HUDHandler;
@@ -72,6 +74,7 @@ public class GameController : PersistentSingleton<GameController>
         loadUI = GetComponentInChildren<LoadUIHandler>();
         returnButton = GetComponentInChildren<ReturnToMenuButton>();
         npcSpeechText = NPCSpeechBubble.GetComponentInChildren<TextMeshProUGUI>();
+        UICam = GetComponentInChildren<Camera>().gameObject;
         NPCSpeechBubble.gameObject.SetActive(false);
         OpenStashImage.gameObject.SetActive(false);
         SelectionImage.gameObject.SetActive(false);
@@ -125,9 +128,26 @@ public class GameController : PersistentSingleton<GameController>
 
     #region MechanicsFunctions
 
+    public Vector3 GetSpawnLocation(string levelName)
+    {
+        for (int i = 0; i < spawnLocations.Count; i++)
+        {
+            if (spawnLocations[i].LevelName == levelName)
+            {
+                return spawnLocations[i].SpawnPosition;
+            }
+        }
+        return Vector3.zero;
+    }
+
     public void DisableLightningFog()
     {       
         RenderSettings.fog = false;
+    }
+
+    public void DisableFPSCam()
+    {
+        FPSCam.gameObject.SetActive(false);
     }
 
     public void ControlCursor(bool isActive)
@@ -461,4 +481,11 @@ public class GameController : PersistentSingleton<GameController>
     }
 
     #endregion
+}
+
+[Serializable]
+public struct SpawnLocations
+{
+    public string LevelName;
+    public Vector3 SpawnPosition;
 }

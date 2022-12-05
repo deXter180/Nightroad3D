@@ -2,9 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TestLevelPortal : MonoBehaviour
+public class LevelSwitcher : MonoBehaviour
 {
+    #region Variables
+
+    [SerializeField] private string LevelToSwitch;
     private Collider thisCol;
+
+    #endregion
+
+    #region General
 
     private void Awake()
     {
@@ -12,11 +19,16 @@ public class TestLevelPortal : MonoBehaviour
         thisCol.isTrigger = true;
     }
 
+
+
     private void OnTriggerEnter(Collider col)
     {
         if (col.CompareTag("Player"))
         {
-            SceneLoader.LoadNewSingleScene("ProtoLevel");
+            SceneLoader.LoadNewSingleScene(LevelToSwitch);
+            GameController.Instance.DisableFPSCam();
         }       
     }
+
+    #endregion
 }
