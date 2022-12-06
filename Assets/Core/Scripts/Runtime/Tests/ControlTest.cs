@@ -46,7 +46,6 @@ public class ControlTest : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log(inputs);
         if (inputs != null)
         {
             HandleBaseMechanics();
