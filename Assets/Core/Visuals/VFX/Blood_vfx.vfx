@@ -16,8 +16,8 @@ MonoBehaviour:
   - title: Small Particles
     position:
       serializedVersion: 2
-      x: -3883
-      y: 468
+      x: -336
+      y: 492
       width: 988
       height: 2722
     contents:
@@ -155,10 +155,10 @@ MonoBehaviour:
   categories: []
   uiBounds:
     serializedVersion: 2
-    x: -3883
+    x: -2662
     y: 465
-    width: 3277
-    height: 2725
+    width: 3314
+    height: 2749
 --- !u!114 &114350483966674976
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -413,8 +413,8 @@ MonoBehaviour:
     max: Infinity
     enumValues: []
     descendantCount: 0
-  - name: SmokeText
-    path: SmokeText
+  - name: SmokeTex
+    path: SmokeTex
     tooltip: 
     sheetType: m_NamedObject
     realType: Texture2D
@@ -482,7 +482,7 @@ MonoBehaviour:
   m_Parent: {fileID: 114350483966674976}
   m_Children:
   - {fileID: 8926484042661615102}
-  m_UIPosition: {x: -3347, y: 527}
+  m_UIPosition: {x: 200, y: 551}
   m_UICollapsed: 0
   m_UISuperCollapsed: 0
   m_InputSlots: []
@@ -541,7 +541,7 @@ MonoBehaviour:
   - {fileID: 8926484042661615493}
   - {fileID: 8926484042661615154}
   - {fileID: 8926484042661615126}
-  m_UIPosition: {x: -3347, y: 915}
+  m_UIPosition: {x: 200, y: 939}
   m_UICollapsed: 0
   m_UISuperCollapsed: 0
   m_InputSlots:
@@ -911,7 +911,7 @@ MonoBehaviour:
   - {fileID: 8926484042661615634}
   - {fileID: 8926484042661615222}
   - {fileID: 8926484042661615674}
-  m_UIPosition: {x: -3351, y: 1917}
+  m_UIPosition: {x: 196, y: 1941}
   m_UICollapsed: 0
   m_UISuperCollapsed: 0
   m_InputSlots: []
@@ -949,7 +949,7 @@ MonoBehaviour:
   - {fileID: 8926484042661615188}
   - {fileID: 8926484042661615143}
   - {fileID: 8926484042661615141}
-  m_UIPosition: {x: -3344, y: 2596}
+  m_UIPosition: {x: 203, y: 2620}
   m_UICollapsed: 0
   m_UISuperCollapsed: 0
   m_InputSlots:
@@ -1206,7 +1206,7 @@ MonoBehaviour:
   - {fileID: 8926484042661615136}
   m_ExposedName: SmallParticleColor
   m_Exposed: 1
-  m_Order: 11
+  m_Order: 13
   m_Category: 
   m_Min:
     m_Type:
@@ -1225,7 +1225,7 @@ MonoBehaviour:
     linkedSlots:
     - outputSlot: {fileID: 8926484042661615136}
       inputSlot: {fileID: 8926484042661615144}
-    position: {x: -3572, y: 2955}
+    position: {x: -25, y: 2979}
     expandedSlots: []
     expanded: 0
 --- !u!114 &8926484042661615136
@@ -1859,7 +1859,7 @@ MonoBehaviour:
       inputSlot: {fileID: 8926484042661615156}
     - outputSlot: {fileID: 8926484042661615215}
       inputSlot: {fileID: 8926484042661615157}
-    position: {x: -3591, y: 1735}
+    position: {x: -44, y: 1759}
     expandedSlots:
     - {fileID: 8926484042661615213}
     expanded: 0
@@ -1990,7 +1990,7 @@ MonoBehaviour:
   - {fileID: 8926484042661615217}
   m_ExposedName: SmallParticleLifeTime
   m_Exposed: 1
-  m_Order: 5
+  m_Order: 6
   m_Category: 
   m_Min:
     m_Type:
@@ -2011,7 +2011,7 @@ MonoBehaviour:
       inputSlot: {fileID: 8926484042661615128}
     - outputSlot: {fileID: 8926484042661615219}
       inputSlot: {fileID: 8926484042661615129}
-    position: {x: -3591, y: 1786}
+    position: {x: -44, y: 1810}
     expandedSlots: []
     expanded: 0
 --- !u!114 &8926484042661615217
@@ -2160,7 +2160,7 @@ MonoBehaviour:
     linkedSlots:
     - outputSlot: {fileID: 8926484042661615221}
       inputSlot: {fileID: 8926484042661615103}
-    position: {x: -3572, y: 692}
+    position: {x: -25, y: 716}
     expandedSlots: []
     expanded: 0
 --- !u!114 &8926484042661615221
@@ -2244,7 +2244,7 @@ MonoBehaviour:
   - {fileID: 8926484042661615231}
   m_ExposedName: XForceOnParticle
   m_Exposed: 1
-  m_Order: 8
+  m_Order: 10
   m_Category: 
   m_Min:
     m_Type:
@@ -2265,7 +2265,7 @@ MonoBehaviour:
       inputSlot: {fileID: 8926484042661615621}
     - outputSlot: {fileID: 8926484042661615233}
       inputSlot: {fileID: 8926484042661615622}
-    position: {x: -3851, y: 1920}
+    position: {x: -304, y: 1944}
     expandedSlots:
     - {fileID: 8926484042661615231}
     expanded: 1
@@ -2718,7 +2718,7 @@ MonoBehaviour:
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 114350483966674976}
   m_Children: []
-  m_UIPosition: {x: -3621, y: 1878}
+  m_UIPosition: {x: -74, y: 1902}
   m_UICollapsed: 0
   m_UISuperCollapsed: 0
   m_InputSlots:
@@ -2856,7 +2856,7 @@ MonoBehaviour:
   - {fileID: 8926484042661615626}
   m_ExposedName: YForceOnParticle
   m_Exposed: 1
-  m_Order: 9
+  m_Order: 11
   m_Category: 
   m_Min:
     m_Type:
@@ -2877,7 +2877,7 @@ MonoBehaviour:
       inputSlot: {fileID: 8926484042661615630}
     - outputSlot: {fileID: 8926484042661615628}
       inputSlot: {fileID: 8926484042661615631}
-    position: {x: -3858, y: 2147}
+    position: {x: -311, y: 2171}
     expandedSlots:
     - {fileID: 8926484042661615626}
     expanded: 1
@@ -3000,7 +3000,7 @@ MonoBehaviour:
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 114350483966674976}
   m_Children: []
-  m_UIPosition: {x: -3631, y: 2096}
+  m_UIPosition: {x: -84, y: 2120}
   m_UICollapsed: 0
   m_UISuperCollapsed: 0
   m_InputSlots:
@@ -3135,7 +3135,7 @@ MonoBehaviour:
   m_UISuperCollapsed: 0
   m_InputSlots: []
   m_OutputSlots: []
-  m_Disabled: 1
+  m_Disabled: 0
 --- !u!114 &8926484042661615664
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3151,7 +3151,7 @@ MonoBehaviour:
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 114350483966674976}
   m_Children: []
-  m_UIPosition: {x: -3739, y: 1151}
+  m_UIPosition: {x: -192, y: 1175}
   m_UICollapsed: 0
   m_UISuperCollapsed: 0
   m_InputSlots:
@@ -3279,7 +3279,7 @@ MonoBehaviour:
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 114350483966674976}
   m_Children: []
-  m_UIPosition: {x: -3738, y: 1312}
+  m_UIPosition: {x: -191, y: 1336}
   m_UICollapsed: 0
   m_UISuperCollapsed: 0
   m_InputSlots:
@@ -3610,7 +3610,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: UnityEditor.VFX.Vector, Unity.VisualEffectGraph.Editor,
           Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      m_SerializableObject: '{"vector":{"x":1.0,"y":2.0,"z":0.0}}'
+      m_SerializableObject: '{"vector":{"x":2.0,"y":2.0,"z":-2.0}}'
     m_Space: 0
   m_Property:
     name: A
@@ -3780,7 +3780,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: UnityEditor.VFX.Vector, Unity.VisualEffectGraph.Editor,
           Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      m_SerializableObject: '{"vector":{"x":3.0,"y":5.0,"z":0.0}}'
+      m_SerializableObject: '{"vector":{"x":6.0,"y":5.0,"z":2.0}}'
     m_Space: 0
   m_Property:
     name: B
@@ -4553,7 +4553,7 @@ MonoBehaviour:
   - {fileID: 8926484042661615772}
   m_ExposedName: SmallParticleSpeed
   m_Exposed: 1
-  m_Order: 10
+  m_Order: 12
   m_Category: 
   m_Min:
     m_Type:
@@ -4574,7 +4574,7 @@ MonoBehaviour:
       inputSlot: {fileID: 8926484042661615495}
     - outputSlot: {fileID: 8926484042661615772}
       inputSlot: {fileID: 8926484042661615774}
-    position: {x: -3663, y: 1651}
+    position: {x: -116, y: 1675}
     expandedSlots: []
     expanded: 0
 --- !u!114 &8926484042661615772
@@ -4628,7 +4628,7 @@ MonoBehaviour:
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 114350483966674976}
   m_Children: []
-  m_UIPosition: {x: -3514, y: 1471}
+  m_UIPosition: {x: 33, y: 1495}
   m_UICollapsed: 0
   m_UISuperCollapsed: 1
   m_InputSlots:
@@ -4772,7 +4772,7 @@ MonoBehaviour:
   - {fileID: 8926484042661615778}
   m_ExposedName: SheetColor
   m_Exposed: 1
-  m_Order: 12
+  m_Order: 14
   m_Category: 
   m_Min:
     m_Type:
@@ -6978,7 +6978,7 @@ MonoBehaviour:
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 114350483966674976}
   m_Children: []
-  m_UIPosition: {x: -2271, y: 1333}
+  m_UIPosition: {x: -2271, y: 1335}
   m_UICollapsed: 0
   m_UISuperCollapsed: 0
   m_InputSlots: []
@@ -7017,7 +7017,7 @@ MonoBehaviour:
   - {fileID: 8926484042661615945}
   - {fileID: 8926484042661615925}
   - {fileID: 8926484042661615927}
-  m_UIPosition: {x: -2271, y: 1464}
+  m_UIPosition: {x: -2271, y: 1466}
   m_UICollapsed: 0
   m_UISuperCollapsed: 0
   m_InputSlots:
@@ -8035,14 +8035,14 @@ MonoBehaviour:
   m_Parent: {fileID: 114350483966674976}
   m_Children: []
   m_UIPosition: {x: 0, y: 0}
-  m_UICollapsed: 1
+  m_UICollapsed: 0
   m_UISuperCollapsed: 0
   m_InputSlots: []
   m_OutputSlots:
   - {fileID: 8926484042661615993}
   m_ExposedName: SmokeColor
   m_Exposed: 1
-  m_Order: 13
+  m_Order: 15
   m_Category: 
   m_Min:
     m_Type:
@@ -8475,9 +8475,9 @@ MonoBehaviour:
   m_InputSlots: []
   m_OutputSlots:
   - {fileID: 8926484042661616005}
-  m_ExposedName: SmokeText
+  m_ExposedName: SmokeTex
   m_Exposed: 1
-  m_Order: 14
+  m_Order: 17
   m_Category: 
   m_Min:
     m_Type:
@@ -8557,7 +8557,7 @@ MonoBehaviour:
   - {fileID: 8926484042661616007}
   m_ExposedName: SmokeLifetime
   m_Exposed: 1
-  m_Order: 6
+  m_Order: 7
   m_Category: 
   m_Min:
     m_Type:
@@ -8776,7 +8776,7 @@ MonoBehaviour:
   - {fileID: 8926484042661616013}
   m_ExposedName: BloodSheetTex
   m_Exposed: 1
-  m_Order: 15
+  m_Order: 18
   m_Category: 
   m_Min:
     m_Type:
@@ -9075,7 +9075,7 @@ MonoBehaviour:
   - {fileID: 8926484042661616021}
   m_ExposedName: SheetLifetime
   m_Exposed: 1
-  m_Order: 7
+  m_Order: 8
   m_Category: 
   m_Min:
     m_Type:

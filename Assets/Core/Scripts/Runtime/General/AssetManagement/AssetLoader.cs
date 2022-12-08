@@ -43,11 +43,12 @@ public static class AssetLoader
     public static event Action<SceneInstance> OnSingleSceneLoad;
     public static event Action<SceneInstance> OnLoadingNewGameInstance;
     public static event Action<SceneInstance> OnAdditiveSceneLoad;
+    public static event Action<SceneInstance> OnSceneUnload;
     public static Dictionary<GameObject, AsyncOperationHandle> AsyncHandleDict = new Dictionary<GameObject, AsyncOperationHandle>();
 
     #endregion
 
-    #region MechanicsFunctions
+    #region LoadFunctions
 
     public static void LoadURPAssets(string nameKey, Action<ISerializationCallbackReceiver> callback)
     {
@@ -81,7 +82,11 @@ public static class AssetLoader
         };
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~~ Instantiate Gameobjects Release After Delay ~~~~~~~~~~~~~~~~~
+
+    #region CreateFunctions
 
     public static async void CreateAndReleaseAsset(string nameKey, Vector3 Position, float delayTime)
     {
@@ -134,7 +139,7 @@ public static class AssetLoader
         };
     }
 
-    public static bool CreateGOAsset(string nameKey, Transform parent = null)
+    public static bool CreateGOAsset(string nameKey, Transform parent)
     {
         bool isCompleted = false;
         Addressables.InstantiateAsync(nameKey, parent).Completed += (handle) =>
@@ -170,7 +175,11 @@ public static class AssetLoader
         return isCompleted;
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~ Release Asset ~~~~~~~~~~~~~~
+
+    #region ReleaseFunctions
 
     public static void ReleaseAssetInstance(GameObject gameObject)
     {
@@ -184,38 +193,28 @@ public static class AssetLoader
         }            
     }
 
+    #endregion
+
     //~~~~~~~~~~~~~~~~~~~~~ Load Scene ~~~~~~~~~~~~~~~~~~~~
 
-    public static void LoadAddressableLevelAdditive(string nameKey, SceneInstance previousScene, bool clearPreviousScene)
-    {
-        if (clearPreviousScene)
-        { 
-            Addressables.UnloadSceneAsync(previousScene).Completed += (asyncHandle) =>
-            {
-                clearPreviousScene = false;
-                previousScene = new SceneInstance();
-            };
-        }
-        Addressables.LoadSceneAsync(nameKey, UnityEngine.SceneManagement.LoadSceneMode.Additive).Completed += (asyncHandle) =>
-        {
-            OnAdditiveSceneLoad?.Invoke(asyncHandle.Result);
-        };
-    }
+    #region SceneManageFunctions
 
-    public static void LoadAddressableLevelSingle(string nameKey, SceneInstance previousScene, bool clearPreviousScene)
-    {
+    public static void LoadAddressableLevel(string nameKey, SceneInstance previousScene, bool clearPreviousScene, bool isAdditive)
+    {        
         if (clearPreviousScene)
         {
             Addressables.UnloadSceneAsync(previousScene).Completed += (asyncHandle) =>
             {
                 clearPreviousScene = false;
+                OnSceneUnload?.Invoke(previousScene);
                 previousScene = new SceneInstance();
+                LoadScene(nameKey, isAdditive);
             };
         }
-        Addressables.LoadSceneAsync(nameKey, UnityEngine.SceneManagement.LoadSceneMode.Single, false).Completed += (handle) =>
+        else
         {
-            OnSingleSceneLoad?.Invoke(handle.Result);
-        };
+            LoadScene(nameKey, isAdditive);
+        }    
     }
 
     public static void LoadFreshGameInstance(string nameKey)
@@ -228,11 +227,36 @@ public static class AssetLoader
 
     public static void UnloadAddressableLevel(SceneInstance previousScene, bool clearPreviousScene)
     {
-        Addressables.UnloadSceneAsync(previousScene).Completed += (asyncHandle) => 
+        Addressables.UnloadSceneAsync(previousScene).Completed += (asyncHandle) =>
         {
             clearPreviousScene = false;
+            OnSceneUnload?.Invoke(previousScene);
             previousScene = new SceneInstance();
         };
+    }
+
+    private static void LoadScene(string nameKey, bool isAdditive)
+    {
+        if (isAdditive)
+        {
+            Addressables.LoadSceneAsync(nameKey, UnityEngine.SceneManagement.LoadSceneMode.Additive).Completed += (asyncHandle) =>
+            {
+                asyncHandle.Result.ActivateAsync().completed += (opHandle) =>
+                {
+                    OnAdditiveSceneLoad?.Invoke(asyncHandle.Result);
+                };               
+            };
+        }
+        else
+        {
+            Addressables.LoadSceneAsync(nameKey, UnityEngine.SceneManagement.LoadSceneMode.Single, false).Completed += (handle) =>
+            {
+                handle.Result.ActivateAsync().completed += (opHandle) =>
+                {
+                    OnSingleSceneLoad?.Invoke(handle.Result);
+                };                
+            };
+        }
     }
 
     #endregion

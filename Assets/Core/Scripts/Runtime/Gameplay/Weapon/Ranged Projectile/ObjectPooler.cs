@@ -26,6 +26,27 @@ public class ObjectPooler : Singleton<ObjectPooler>
 
     private void Start()
     {
+        InistializePoolSystem();
+        AssetLoader.OnGOCreatedWithAssetRef += AssetRefLoader_OnGOCreated;
+        SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
+        AssetLoader.OnSceneUnload += AssetLoader_OnSceneUnload;
+        AssetLoader.OnSingleSceneLoad += AssetLoader_OnSingleSceneLoad;
+    }
+
+    private void OnDisable()
+    {
+        AssetLoader.OnGOCreatedWithAssetRef -= AssetRefLoader_OnGOCreated;
+        SceneLoader.OnNewGameStart -= SceneLoader_OnNewGameStart;
+        AssetLoader.OnSceneUnload += AssetLoader_OnSceneUnload;
+        AssetLoader.OnSingleSceneLoad -= AssetLoader_OnSingleSceneLoad;
+    }
+
+    #endregion
+
+    #region Mechanics
+
+    private void InistializePoolSystem()
+    {
         if (!isInitialized)
         {
             projectiles = new List<Projectile>();
@@ -33,20 +54,8 @@ public class ObjectPooler : Singleton<ObjectPooler>
             InitializePool(ProjectileTypes.FireBallSpell);
             InitializePool(ProjectileTypes.EnemyFireBall);
             isInitialized = true;
-        }
-        AssetLoader.OnGOCreatedWithAssetRef += AssetRefLoader_OnGOCreated;
-        SceneLoader.OnNewGameStart += SceneLoader_OnNewGameStart;
+        }        
     }
-
-    private void OnDisable()
-    {
-        AssetLoader.OnGOCreatedWithAssetRef -= AssetRefLoader_OnGOCreated;
-        SceneLoader.OnNewGameStart -= SceneLoader_OnNewGameStart;
-    }
-
-    #endregion
-
-    #region Mechanics
 
     private AssetReference GetProjectileAssetRef(ProjectileTypes projectileType)
     {
@@ -103,9 +112,9 @@ public class ObjectPooler : Singleton<ObjectPooler>
         projectiles.Add(_projectile);
     }
 
-    public void GetObjectCount()
+    public int GetObjectCount()
     {
-        Debug.Log(projectiles.Count);
+        return projectiles.Count;
     }
 
     public Projectile GetPooledObject(ProjectileTypes projectileType)
@@ -118,6 +127,7 @@ public class ObjectPooler : Singleton<ObjectPooler>
         {
             if (!projectiles[i].gameObject.activeInHierarchy && projectiles[i].GetProjectileType() == projectileType)
             {
+                projectiles[i].transform.SetParent(null);
                 return projectiles[i];
             }
         }
@@ -132,14 +142,17 @@ public class ObjectPooler : Singleton<ObjectPooler>
 
     private void SceneLoader_OnNewGameStart()
     {
-        if (!isInitialized)
-        {
-            projectiles = new List<Projectile>();
-            InitializePool(ProjectileTypes.FireBall);
-            InitializePool(ProjectileTypes.FireBallSpell);
-            InitializePool(ProjectileTypes.EnemyFireBall);
-            isInitialized = true;
-        }        
+        InistializePoolSystem();        
+    }
+
+    private void AssetLoader_OnSceneUnload(UnityEngine.ResourceManagement.ResourceProviders.SceneInstance obj)
+    {
+        isInitialized = false;
+    }
+
+    private void AssetLoader_OnSingleSceneLoad(UnityEngine.ResourceManagement.ResourceProviders.SceneInstance obj)
+    {
+        InistializePoolSystem();        
     }
 
     private void AssetRefLoader_OnGOCreated(GameObject GO, AssetReference reference)

@@ -129,13 +129,13 @@ public class ProjectileGun : RangedWeapon
     private IEnumerator Shoot(Action action) //Used in PlayerControl
     {
         StartCoroutine(PlayMuzzleLight());
-        if (objectPooler.GetPooledObject(GetProjectile(weaponType)) != null)
+        if (objectPooler.GetPooledObject(GetProjectileType(weaponType)) != null)
         {
             weaponManager.IsAttacking = true;
             crosshair.SetRisizing(true);
             recoilEffect.ApplyRecoil(recoilProperty);
             camShake.StartShake(shakeProperties);
-            var shot = objectPooler.GetPooledObject(GetProjectile(weaponType));
+            var shot = objectPooler.GetPooledObject(GetProjectileType(weaponType));
             shot.transform.rotation = FiringPoint.rotation;
             shot.transform.position = FiringPoint.position;
             shot.gameObject.SetActive(true);
@@ -143,7 +143,7 @@ public class ProjectileGun : RangedWeapon
             yield return Helpers.GetWait(attackDelay);
             action.Invoke();
         }
-        ProjectileTypes GetProjectile(WeaponTypes weaponType)
+        ProjectileTypes GetProjectileType(WeaponTypes weaponType)
         {
             switch (weaponType)
             {

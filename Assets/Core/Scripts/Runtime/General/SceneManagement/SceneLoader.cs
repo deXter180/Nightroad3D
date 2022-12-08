@@ -68,12 +68,12 @@ public class SceneLoader : PersistentSingleton<SceneLoader>
         {
             PlayerController.Instance.ParentPlayerCam();
         }
-        AssetLoader.LoadAddressableLevelSingle(nameKey, previousLoadedScene, clearPrevious);       
+        AssetLoader.LoadAddressableLevel(nameKey, previousLoadedScene, clearPrevious, false);       
     }
 
     public static void LoadNewAdditiveScene(string nameKey, bool clearPrevious = false)
     {       
-        AssetLoader.LoadAddressableLevelAdditive(nameKey, previousLoadedScene, clearPrevious);
+        AssetLoader.LoadAddressableLevel(nameKey, previousLoadedScene, clearPrevious, true);
     }
 
     #endregion
