@@ -12,7 +12,7 @@ Material:
     type: 3}
   m_ValidKeywords:
   - _ALPHAPREMULTIPLY_ON
-  - _LIGHTSOURCE_POINT
+  - _LIGHTSOURCE_DIRECTIONAL
   - _SURFACE_TYPE_TRANSPARENT
   m_InvalidKeywords: []
   m_LightmapFlags: 4
