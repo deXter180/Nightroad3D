@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -41,6 +42,13 @@ namespace Fluxy
             Iterative
         }
 
+        [Flags]
+        public enum ReadbackMode
+        {
+            None = 0,
+            Density = 1 << 0,
+            Velocity = 1 << 1
+        }
 
         /// <summary>
         /// Storage used to store and manage simulation buffers.
@@ -71,10 +79,10 @@ namespace Fluxy
         public bool disposeWhenCulled = false;
 
         /// <summary>
-        /// Allows this solver's data to be read back from the CPU.
+        /// Allows this solver's data to be read back to the CPU.
         /// </summary>
-        [Tooltip("Allows this solver's data to be read back from the CPU.")]
-        public bool isReadable = false;
+        [Tooltip("Allows this solver's data to be read back to the CPU.")]
+        public ReadbackMode readable = ReadbackMode.None;
 
         /// <summary>
         /// Material used to update fluid simulation.
@@ -119,8 +127,8 @@ namespace Fluxy
         private int framebufferID = -1;
         private bool tilesDirty;
 
-        private Vector4[] rects = new Vector4[MAX_TILES];
         private int[] indices = new int[MAX_TILES];
+        private Vector4[] rects = new Vector4[MAX_TILES];
         private Vector4[] externalForce = new Vector4[MAX_TILES];
         private Vector4[] buoyancy = new Vector4[MAX_TILES];
         private Vector4[] dissipation = new Vector4[MAX_TILES];
@@ -141,7 +149,8 @@ namespace Fluxy
             get { return storage != null ? storage.GetFramebuffer(framebufferID) : null; }
         }
 
-        public Texture2D readbackTexture { get; private set; }
+        public Texture2D velocityReadbackTexture { get; private set; }
+        public Texture2D densityReadbackTexture { get; private set; }
 
         private void OnEnable()
         {
@@ -193,7 +202,7 @@ namespace Fluxy
             return containers.IndexOf(container);
         }
 
-        public Vector4 GetUVRectForContainer(FluxyContainer container)
+        public Vector4 GetContainerUVRect(FluxyContainer container)
         {
             int index = containers.IndexOf(container);
             if (index >= 0)
@@ -232,13 +241,20 @@ namespace Fluxy
             var b = framebuffer;
             if (b != null)
             {
-                readbackTexture = new Texture2D(b.velocityA.width, b.velocityA.height, TextureFormat.RGBAHalf, false);
+                velocityReadbackTexture = new Texture2D(b.velocityA.width, b.velocityA.height, TextureFormat.RGBAHalf, false);
+                densityReadbackTexture = new Texture2D(b.stateA.width, b.stateA.height, TextureFormat.RGBAHalf, false);
 
-                Color[] resetColorArray = readbackTexture.GetPixels();
+                Color[] resetColorArray = velocityReadbackTexture.GetPixels();
                 for (int i = 0; i < resetColorArray.Length; i++)
                     resetColorArray[i] = new Color(0,0,0,0);
-                readbackTexture.SetPixels(resetColorArray);
-                readbackTexture.Apply();
+                velocityReadbackTexture.SetPixels(resetColorArray);
+                velocityReadbackTexture.Apply();
+
+                resetColorArray = densityReadbackTexture.GetPixels();
+                for (int i = 0; i < resetColorArray.Length; i++)
+                    resetColorArray[i] = new Color(0, 0, 0, 0);
+                densityReadbackTexture.SetPixels(resetColorArray);
+                densityReadbackTexture.Apply();
             }
         }
 
@@ -250,7 +266,8 @@ namespace Fluxy
                 framebufferID = -1;
             }
 
-            Destroy(readbackTexture);
+            Destroy(velocityReadbackTexture);
+            Destroy(densityReadbackTexture);
         }
 
         private int GetCurrentLOD(Camera cam = null)
@@ -386,6 +403,23 @@ namespace Fluxy
             RenderTexture.active = old;
         }
 
+        public void ClearContainer(int id)
+        {
+            var fb = framebuffer;
+
+            if (fb != null && simulationMaterial != null && id >= 0 && id < indices.Length)
+            {
+                UpdateTileData();
+
+                int tile = id + 1;
+                int c = indices[tile];
+
+                simulationMaterial.SetInt("_TileIndex", tile);
+                simulationMaterial.SetColor("_ClearColor", containers[c].clearColor);
+                Graphics.Blit(containers[c].clearTexture, fb.stateA, simulationMaterial, 9);
+            }
+        }
+
         public void UpdateTileData()
         {
             if (tilesDirty)
@@ -456,7 +490,7 @@ namespace Fluxy
                 var acceleration = containers[c].UpdateVelocityAndGetAcceleration();
                 externalForce[tile] = containers[c].gravity + containers[c].externalForce - acceleration * containers[c].accelerationScale;
                 buoyancy[tile] = containers[c].TransformWorldVectorToUVSpace(Vector3.up, rects[tile]) * containers[c].buoyancy;
-                offsets[tile] = containers[c].TransformWorldVectorToUVSpace(containers[c].velocity * deltaTime, rects[tile]) * (1 - containers[c].velocityScale);
+                offsets[tile] = containers[c].TransformWorldVectorToUVSpace(containers[c].velocity * deltaTime, rects[tile]) * (1 - containers[c].velocityScale) + (Vector3)containers[c].positionOffset * deltaTime;
             }
 
             simulationMaterial.SetFloatArray("_Pressure", pressure);
@@ -501,17 +535,32 @@ namespace Fluxy
             }
         }
 
-        private void Readback(FluxyStorage.Framebuffer fb)
+        private void VelocityReadback(FluxyStorage.Framebuffer fb)
         {
-            if (readbackTexture != null)
+            if (velocityReadbackTexture != null)
                 AsyncGPUReadback.Request(fb.velocityA, 0, TextureFormat.RGBAHalf, (AsyncGPUReadbackRequest request) =>
                 {
                     if (request.hasError)
                         Debug.LogError("GPU readback error.");
-                    else if (readbackTexture != null)
+                    else if (velocityReadbackTexture != null)
                     {
-                        readbackTexture.LoadRawTextureData(request.GetData<float>());
-                        readbackTexture.Apply();
+                        velocityReadbackTexture.LoadRawTextureData(request.GetData<float>());
+                        velocityReadbackTexture.Apply();
+                    }
+                });
+        }
+
+        private void DensityReadback(FluxyStorage.Framebuffer fb)
+        {
+            if (densityReadbackTexture != null)
+                AsyncGPUReadback.Request(fb.stateA, 0, TextureFormat.RGBAHalf, (AsyncGPUReadbackRequest request) =>
+                {
+                    if (request.hasError)
+                        Debug.LogError("GPU readback error.");
+                    else if (densityReadbackTexture != null)
+                    {
+                        densityReadbackTexture.LoadRawTextureData(request.GetData<float>());
+                        densityReadbackTexture.Apply();
                     }
                 });
         }
@@ -545,8 +594,10 @@ namespace Fluxy
                         SimulationStep(fb, timestep);
                     }
 
-                    if (isReadable)
-                        Readback(fb);
+                    if ((readable & ReadbackMode.Density) != 0)
+                        DensityReadback(fb);
+                    if ((readable & ReadbackMode.Velocity) != 0)
+                        VelocityReadback(fb);
                 }
             }
         }

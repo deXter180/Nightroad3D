@@ -1,6 +1,21 @@
 # Change Log
 All notable changes to “FluXY - 2.5D fluid simulator” will be documented in this file.
 
+
+## [1.4] - 2022-11-28
+
+### Added
+- Flipbook recorder window.
+
+### Fixed
+- Occasional "SendMessage cannot be used in OnValidate" warning when changing the shape of a container. 
+
+## [1.3.1] - 2022-07-20
+
+### Added
+- Density readback
+- Positional offset parameter that allows to manually scroll both the fluid across the container. Expressed in UV units per second.
+
 ## [1.3.0] - 2022-03-01
 
 ### Added

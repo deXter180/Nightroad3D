@@ -24,12 +24,12 @@ namespace Fluxy
             public BoundaryType horizontalBoundary;
             public BoundaryType verticalBoundary;
 
-            public static implicit operator Vector4(BoundaryConditions b) 
+            public static implicit operator Vector4(BoundaryConditions b)
             {
-                return new Vector4(b.horizontalBoundary == BoundaryType.Periodic?1:0,
-                                   b.verticalBoundary == BoundaryType.Periodic?1:0,
-                                   b.horizontalBoundary == BoundaryType.Solid? 1:0,
-                                   b.verticalBoundary == BoundaryType.Solid?1:0);
+                return new Vector4(b.horizontalBoundary == BoundaryType.Periodic ? 1 : 0,
+                                   b.verticalBoundary == BoundaryType.Periodic ? 1 : 0,
+                                   b.horizontalBoundary == BoundaryType.Solid ? 1 : 0,
+                                   b.verticalBoundary == BoundaryType.Solid ? 1 : 0);
             }
         }
 
@@ -133,7 +133,7 @@ namespace Fluxy
         /// <summary>
         /// Intensity of the surface normals.
         /// </summary>
-        [Range(0,1)]
+        [Range(0, 1)]
         [Tooltip("Intensity of the surface normals.")]
         public float normalScale = 1;
 
@@ -162,6 +162,12 @@ namespace Fluxy
         [Range(0, 1)]
         [Tooltip("Scale (0%-100%) of container's acceleration. This controls how much world-space inertia affects the fluid.")]
         public float accelerationScale = 1;
+
+        /// <summary>
+        /// Local-space positional offset applied to the fluid.
+        /// </summary>
+        [Tooltip("Local-space positional offset applied to the fluid.")]
+        public Vector2 positionOffset = Vector2.zero;
 
         /// <summary>
         /// World-space gravity applied to the fluid.
@@ -239,6 +245,7 @@ namespace Fluxy
         [SerializeField] [HideInInspector] private FluxySolver m_Solver;
 
         private Renderer m_Renderer;
+        private MeshFilter m_Filter;
         private MaterialPropertyBlock propertyBlock;
 
         private Vector3 m_Velocity;
@@ -253,6 +260,9 @@ namespace Fluxy
         protected Vector4[] tangents;
         protected Vector2[] uvs;
         protected int[] triangles;
+
+        public delegate void ContainerCallback(FluxyContainer container);
+        public event ContainerCallback OnFrameEnded;
 
         public FluxySolver solver
         {
@@ -292,6 +302,7 @@ namespace Fluxy
         protected virtual void OnEnable()
         {
             m_Renderer = GetComponent<Renderer>();
+            m_Filter = GetComponent<MeshFilter>();
             propertyBlock = new MaterialPropertyBlock();
 
             UpdateContainerShape();
@@ -316,7 +327,6 @@ namespace Fluxy
         {
             subdivisions.x = Mathf.Max(1, subdivisions.x);
             subdivisions.y = Mathf.Max(1, subdivisions.y);
-            UpdateContainerShape();
         }
 
         public virtual void UpdateContainerShape()
@@ -335,7 +345,8 @@ namespace Fluxy
             {
                 proceduralMesh = new Mesh();
                 proceduralMesh.name = "FluidContainer";
-                GetComponent<MeshFilter>().sharedMesh = proceduralMesh;
+                if (m_Filter != null)
+                    m_Filter.sharedMesh = proceduralMesh;
             }
 
             // create a new mesh:
@@ -428,7 +439,7 @@ namespace Fluxy
 
             float length = size.x;
             float width = size.y;
-            float height = size.z; 
+            float height = size.z;
             c[0] = new Vector3(-length * .5f, -width * .5f, height * .5f);
             c[1] = new Vector3(length * .5f, -width * .5f, height * .5f);
             c[2] = new Vector3(length * .5f, -width * .5f, -height * .5f);
@@ -522,18 +533,8 @@ namespace Fluxy
         {
             if (m_Solver != null)
             {
-                var fb = m_Solver.framebuffer;
-                if (fb != null && m_Solver.simulationMaterial != null)
-                {
-                    int id = m_Solver.GetContainerID(this);
-                    if (id >= 0)
-                    {
-                        m_Solver.UpdateTileData();
-                        m_Solver.simulationMaterial.SetInt("_TileIndex", id + 1);
-                        m_Solver.simulationMaterial.SetColor("_ClearColor", clearColor);
-                        Graphics.Blit(clearTexture, fb.stateA, m_Solver.simulationMaterial, 9);
-                    }
-                }
+                int id = m_Solver.GetContainerID(this);
+                m_Solver.ClearContainer(id);
             }
         }
 
@@ -556,7 +557,7 @@ namespace Fluxy
             var v = vector;
             v.x *= size.x / uvRect.z;
             v.y *= size.y / uvRect.w;
-            return transform.TransformVector(v); 
+            return transform.TransformVector(v);
         }
 
         public Vector3 TransformWorldPointToUVSpace(in Vector3 point, in Vector4 uvRect)
@@ -591,7 +592,7 @@ namespace Fluxy
         {
             if (m_Renderer == null || m_Renderer.sharedMaterial == null || fb == null)
                 return;
-            
+
             containerRenderer.GetPropertyBlock(propertyBlock);
 
             propertyBlock.SetInt("_TileIndex", tile);
@@ -694,7 +695,7 @@ namespace Fluxy
 
             Quaternion rotationDelta = transform.rotation * Quaternion.Inverse(oldRotation);
             m_AngularVelocity = new Vector3(rotationDelta.x, rotationDelta.y, rotationDelta.z) * 2.0f / Time.deltaTime;
-             
+
             return (m_Velocity - oldVelocity) / Time.deltaTime;
         }
 
@@ -708,24 +709,44 @@ namespace Fluxy
         protected virtual void LateUpdate()
         {
             ResetVelocityAndAcceleration();
+            OnFrameEnded?.Invoke(this);
         }
 
         public Vector3 GetVelocityAt(Vector3 worldPosition)
         {
-            if (solver != null && solver.isReadable)
+            if (solver != null && (solver.readable & FluxySolver.ReadbackMode.Velocity) != 0)
             {
                 var fb = solver.framebuffer;
                 if (fb != null)
                 {
-                    var rect = solver.GetUVRectForContainer(this);
+                    var rect = solver.GetContainerUVRect(this);
                     var uv = TransformWorldPointToUVSpace(worldPosition, rect);
-                    var color = solver.readbackTexture.GetPixelBilinear(uv.x, uv.y);
+                    var color = solver.velocityReadbackTexture.GetPixelBilinear(uv.x, uv.y);
 
                     return TransformUVVectorToWorldSpace(new Vector3(color.r, color.g, 0), rect);
                 }
             }
 
             return Vector3.zero;
+        }
+
+        public Vector4 GetDensityAt(Vector3 worldPosition)
+        {
+            if (solver != null && (solver.readable & FluxySolver.ReadbackMode.Density) != 0)
+            {
+                var fb = solver.framebuffer;
+                if (fb != null)
+                {
+                    var rect = solver.GetContainerUVRect(this);
+                    var uv = TransformWorldPointToUVSpace(worldPosition, rect);
+                    var color = solver.densityReadbackTexture.GetPixelBilinear(uv.x, uv.y);
+
+                    // no need to transform to world space (unlike velocity vectors) since densities are scalar values.
+                    return color;
+                }
+            }
+
+            return Vector4.zero;
         }
 
         protected virtual void OnDrawGizmosSelected()

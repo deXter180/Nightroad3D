@@ -2,8 +2,6 @@
 using UnityEngine;
 using UnityEditor;
 
-#if UNITY_EDITOR
-
 namespace Fluxy
 {
     public class NoiseGenerator
@@ -124,5 +122,3 @@ namespace Fluxy
     }
 
 }
-
-#endif

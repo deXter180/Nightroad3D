@@ -9,8 +9,7 @@ namespace FluxySamples
 	[RequireComponent(typeof (FluxyCharacter))]
 	public class SampleCharacterController : MonoBehaviour {
 	
-		private FluxyCharacter m_Character;       // A reference to the ThirdPersonCharacter on the object
-        
+		private FluxyCharacter m_Character; 			// A reference to the ThirdPersonCharacter on the object
         private Transform m_Cam;                  // A reference to the main camera in the scenes transform
         private Vector3 m_CamForward;             // The current forward direction of the camera
         private Vector3 m_Move;

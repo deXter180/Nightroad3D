@@ -1,8 +1,6 @@
 ﻿using System;
 using UnityEditor;
 
-#if UNITY_EDITOR
-
 namespace Fluxy
 {
     [InitializeOnLoad]
@@ -26,5 +24,3 @@ namespace Fluxy
         }
     }
 }
-
-#endif

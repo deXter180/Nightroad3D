@@ -38,12 +38,12 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4465934, g: 0.49642956, b: 0.57482487, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028346, g: 0.22571373, b: 0.30692244, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 11
+  serializedVersion: 12
   m_GIWorkflowMode: 1
   m_GISettings:
     serializedVersion: 2
@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_LightingSettings: {fileID: 0}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -118,6 +118,8 @@ NavMeshSettings:
     manualTileSize: 0
     tileSize: 256
     accuratePlacement: 0
+    maxJobWorkers: 0
+    preserveTilesOutsideBounds: 0
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
@@ -148,6 +150,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 462067719}
   - {fileID: 2017078227}
@@ -206,9 +209,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93ab69ab277284ee89a7d5c46029d111, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  customMesh: {fileID: 0}
+  containerShape: 0
   subdivisions: {x: 1, y: 1}
-  size: {x: 3, y: 2}
+  customMesh: {fileID: 0}
+  size: {x: 3, y: 2, z: 1}
   lookAtMode: 0
   lookAt: {fileID: 0}
   projectFrom: {fileID: 0}
@@ -227,8 +231,10 @@ MonoBehaviour:
     verticalBoundary: 1
   velocityScale: 1
   accelerationScale: 1
+  positionOffset: {x: 0, y: 0}
   gravity: {x: 0, y: 0, z: 0}
   externalForce: {x: 0, y: 0, z: 0}
+  lightSource: {fileID: 0}
   targets:
   - {fileID: 462067718}
   - {fileID: 2017078226}
@@ -253,10 +259,12 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -281,6 +289,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &164111526
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -299,6 +308,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
@@ -336,25 +346,37 @@ MonoBehaviour:
   rateOverSteps: 1
   rateOverTime: 0
   rateOverDistance: 0
-  scaleWithDistance: 1
   overridePosition: 0
-  splatPosition: {x: 0, y: 0}
-  scale: {x: 0.15, y: 0.15}
-  rotation: 0
+  position: {x: 0, y: 0}
   positionRandomness: 0
-  sizeRandomness: 0
+  overrideRotation: 1
+  rotation: 0
   rotationRandomness: 0
+  scaleWithDistance: 1
+  scaleWithTransform: 0
+  scale: {x: 0.2, y: 0.2}
+  scaleRandomness: 0
   velocityWeight: 1
   velocityTexture: {fileID: 0}
   maxRelativeVelocity: 2
   velocityScale: {x: 1, y: 1, z: 1}
-  force: {x: 1.5, y: 0, z: 0}
+  maxRelativeAngularVelocity: 12
+  angularVelocityScale: 1
+  force: {x: 0.5, y: 0, z: 0}
+  torque: 0
   densityWeight: 1
   densityTexture: {fileID: 2800000, guid: e110bd67048ea41b9910c3ea068ca09a, type: 3}
   srcBlend: 1
   dstBlend: 10
   blendOp: 0
   color: {r: 0, g: 0.72599363, b: 1, a: 1}
+  noiseTexture: {fileID: 0}
+  densityNoise: 0
+  densityNoiseOffset: 0
+  densityNoiseTiling: 1
+  velocityNoise: 0
+  velocityNoiseOffset: 0
+  velocityNoiseTiling: 1
 --- !u!4 &462067719
 Transform:
   m_ObjectHideFlags: 0
@@ -365,6 +387,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.4, y: 0.13499999, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 84997534}
   m_RootOrder: 0
@@ -445,6 +468,7 @@ Light:
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
+  m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
 --- !u!4 &484018168
@@ -457,6 +481,7 @@ Transform:
   m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
@@ -494,25 +519,37 @@ MonoBehaviour:
   rateOverSteps: 1
   rateOverTime: 0
   rateOverDistance: 0
-  scaleWithDistance: 1
   overridePosition: 0
-  splatPosition: {x: 0, y: 0}
-  scale: {x: 0.15, y: 0.15}
-  rotation: 0
+  position: {x: 0, y: 0}
   positionRandomness: 0
-  sizeRandomness: 0
+  overrideRotation: 1
+  rotation: 0
   rotationRandomness: 0
+  scaleWithDistance: 1
+  scaleWithTransform: 0
+  scale: {x: 0.2, y: 0.2}
+  scaleRandomness: 0
   velocityWeight: 1
   velocityTexture: {fileID: 0}
   maxRelativeVelocity: 2
   velocityScale: {x: 1, y: 1, z: 1}
-  force: {x: 0, y: -1, z: 0}
+  maxRelativeAngularVelocity: 12
+  angularVelocityScale: 1
+  force: {x: 0, y: -0.5, z: 0}
+  torque: 0
   densityWeight: 1
   densityTexture: {fileID: 2800000, guid: e110bd67048ea41b9910c3ea068ca09a, type: 3}
   srcBlend: 1
   dstBlend: 10
   blendOp: 0
   color: {r: 1, g: 0.9454185, b: 0, a: 1}
+  noiseTexture: {fileID: 0}
+  densityNoise: 0
+  densityNoiseOffset: 0
+  densityNoiseTiling: 1
+  velocityNoise: 0
+  velocityNoiseOffset: 0
+  velocityNoiseTiling: 1
 --- !u!4 &768674678
 Transform:
   m_ObjectHideFlags: 0
@@ -523,6 +560,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.1, y: 0.435, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 84997534}
   m_RootOrder: 2
@@ -710,6 +748,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1.5, z: -2.84}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -874,6 +913,7 @@ Mesh:
   m_MeshMetrics[1]: 1
   m_MeshOptimizationFlags: 1
   m_StreamData:
+    serializedVersion: 2
     offset: 0
     size: 0
     path: 
@@ -908,9 +948,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   storage: {fileID: 11400000, guid: 481ef9a7a51bc4492ab6a0128fa4fb28, type: 2}
   desiredResolution: 256
-  densitySupersampling: 8
+  densitySupersampling: 2
   disposeWhenCulled: 0
-  isReadable: 0
+  readable: 0
   simulationMaterial: {fileID: 2100000, guid: 6dfe24573234e413ab0d0b5093141a3c, type: 2}
   maxTimestep: 0.008
   maxSteps: 4
@@ -926,6 +966,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
@@ -963,25 +1004,37 @@ MonoBehaviour:
   rateOverSteps: 1
   rateOverTime: 0
   rateOverDistance: 0
-  scaleWithDistance: 1
   overridePosition: 0
-  splatPosition: {x: 0, y: 0}
-  scale: {x: 0.15, y: 0.15}
-  rotation: 0
+  position: {x: 0, y: 0}
   positionRandomness: 0
-  sizeRandomness: 0
+  overrideRotation: 1
+  rotation: 0
   rotationRandomness: 0
+  scaleWithDistance: 1
+  scaleWithTransform: 0
+  scale: {x: 0.2, y: 0.2}
+  scaleRandomness: 0
   velocityWeight: 1
   velocityTexture: {fileID: 0}
   maxRelativeVelocity: 2
   velocityScale: {x: 1, y: 1, z: 1}
-  force: {x: 0, y: 1, z: 0}
+  maxRelativeAngularVelocity: 12
+  angularVelocityScale: 1
+  force: {x: 0, y: 0.5, z: 0}
+  torque: 0
   densityWeight: 1
   densityTexture: {fileID: 2800000, guid: e110bd67048ea41b9910c3ea068ca09a, type: 3}
   srcBlend: 1
   dstBlend: 10
   blendOp: 0
   color: {r: 0.12906687, g: 0.754717, b: 0, a: 1}
+  noiseTexture: {fileID: 0}
+  densityNoise: 0
+  densityNoiseOffset: 0
+  densityNoiseTiling: 1
+  velocityNoise: 0
+  velocityNoiseOffset: 0
+  velocityNoiseTiling: 1
 --- !u!4 &2017078227
 Transform:
   m_ObjectHideFlags: 0
@@ -992,6 +1045,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.1, y: -0.365, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 84997534}
   m_RootOrder: 1
@@ -1029,25 +1083,37 @@ MonoBehaviour:
   rateOverSteps: 1
   rateOverTime: 0
   rateOverDistance: 0
-  scaleWithDistance: 1
   overridePosition: 0
-  splatPosition: {x: 0, y: 0}
-  scale: {x: 0.15, y: 0.15}
-  rotation: 0
+  position: {x: 0, y: 0}
   positionRandomness: 0
-  sizeRandomness: 0
+  overrideRotation: 1
+  rotation: 0
   rotationRandomness: 0
+  scaleWithDistance: 1
+  scaleWithTransform: 0
+  scale: {x: 0.2, y: 0.2}
+  scaleRandomness: 0
   velocityWeight: 1
   velocityTexture: {fileID: 0}
   maxRelativeVelocity: 2
   velocityScale: {x: 1, y: 1, z: 1}
-  force: {x: -1.5, y: 0, z: 0}
+  maxRelativeAngularVelocity: 12
+  angularVelocityScale: 1
+  force: {x: -0.5, y: 0, z: 0}
+  torque: 0
   densityWeight: 1
   densityTexture: {fileID: 2800000, guid: e110bd67048ea41b9910c3ea068ca09a, type: 3}
   srcBlend: 1
   dstBlend: 10
   blendOp: 0
   color: {r: 0.9622642, g: 0.57891816, b: 0.004538993, a: 1}
+  noiseTexture: {fileID: 0}
+  densityNoise: 0
+  densityNoiseOffset: 0
+  densityNoiseTiling: 1
+  velocityNoise: 0
+  velocityNoiseOffset: 0
+  velocityNoiseTiling: 1
 --- !u!4 &2109955565
 Transform:
   m_ObjectHideFlags: 0
@@ -1058,6 +1124,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.4, y: -0.06500006, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 84997534}
   m_RootOrder: 3

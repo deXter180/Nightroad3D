@@ -181,18 +181,20 @@ namespace Fluxy
                 {
                     if (SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.ARGBFloat))
                         return RenderTextureFormat.ARGBFloat;
-                    return RenderTextureFormat.Default;
+                    if (SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.ARGBHalf))
+                        return RenderTextureFormat.ARGBHalf;
+                    return RenderTextureFormat.ARGB32;
                 }
 
                 case FluidTexturePrecision.Half:
                 {
                     if (SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.ARGBHalf))
                         return RenderTextureFormat.ARGBHalf;
-                    return RenderTextureFormat.Default;
+                    return RenderTextureFormat.ARGB32;
                 }
                 case FluidTexturePrecision.Fixed:
                 default:
-                return RenderTextureFormat.Default;
+                return RenderTextureFormat.ARGB32;
             }
         }
 
@@ -204,6 +206,8 @@ namespace Fluxy
                     {
                         if (SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.ARGBFloat))
                             return 16;
+                        if (SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.ARGBHalf))
+                            return 8;
                         return 4;
                     }
 

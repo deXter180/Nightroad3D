@@ -1,18 +1,3 @@
-fileFormatVersion: 2
-guid: 65958dca12410ff43abc9c427002cf3c
-labels:
-- Conversation
-- Dialog
-- Dialogue
-- Localization
-- Localized
-- Localize
-- Localise
-- Localised
-- Localisation
-timeCreated: 1525486072
-licenseType: Store
-TextScriptImporter:
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 
+version https://git-lfs.github.com/spec/v1
+oid sha256:fbbac78b870e9a8497e2e3727c080719a16baf98a7fd0be8fe81e0a03cb793ea
+size 298

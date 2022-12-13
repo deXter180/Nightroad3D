@@ -147,19 +147,22 @@ float SquareFalloff(in float2 uv, in float falloff)
     return saturate(1 - length(marquee)) ;
 }
 
-float2 VertexToTile(in float2 v, in int index)
+float2 VertexToFrame(in float2 v, in float4 frame)
 {
-    float4 tile = _TileData[index];
-
     // flip y coordinate to match clip and uv space:
     #if UNITY_UV_STARTS_AT_TOP
-    tile.y = 1 - tile.y;
-    tile.w *= -1;
+    frame.y = 1 - frame.y;
+    frame.w *= -1;
     v.y *= -1;
     #endif
 
-    float2 pos = tile.xy + (v + 1) * 0.5 * tile.zw;
+    float2 pos = frame.xy + (v + 1) * 0.5 * frame.zw;
     return pos*2-1;
+}
+
+float2 VertexToTile(in float2 v, in int index)
+{
+    return VertexToFrame(v,_TileData[index]);
 }
 
 float4 AlphaAdditiveBlend(in float4 color, float bias)
@@ -200,6 +203,15 @@ float2 TileToUV(in float2 uv, in int index)
 {
     float4 tile = _TileData[index];
     return tile.xy + uv * tile.zw;
+}
+
+float2 FlipbookUV(in float2 uv, int rows, int columns, int totalFrames, int frame)
+{
+    frame -= totalFrames * floor(frame/(float)totalFrames); //modulo supporting negative numbers
+    float2 frameCount = float2(1.0, 1.0) / float2(columns, rows);
+    float frameY = floor(frame * frameCount.x);
+    float frameX = frame - columns * frameY;
+    return (uv + float2(frameX, frameY)) * frameCount;
 }
 
 #endif

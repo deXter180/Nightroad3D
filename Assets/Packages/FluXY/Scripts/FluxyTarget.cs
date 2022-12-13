@@ -358,6 +358,11 @@ namespace Fluxy
                 // calculate amount of splats:
                 int totalSplats = rateOverSteps + timeSplats + distanceSplats;
 
+                // calculate splat color:
+                var splatColor = new Color(color.r, color.g, color.b, color.a * densityWeight);
+                if (QualitySettings.activeColorSpace == ColorSpace.Linear)
+                    splatColor = splatColor.linear;
+
                 // splat multiple times, interpolating between last position and current position:
                 for (int i = 1; i <= totalSplats; ++i)
                 {
@@ -392,7 +397,7 @@ namespace Fluxy
 
                     // splat state:
                     splatMaterial.SetVector("_DensityNoiseParams", densityNoiseParams);
-                    splatMaterial.SetVector("_SplatWeights", new Color(color.r,color.g,color.b,color.a * densityWeight));
+                    splatMaterial.SetVector("_SplatWeights", splatColor);
                     Graphics.Blit(densityTexture, fb.stateA, splatMaterial, 0);
 
                     // splat velocity

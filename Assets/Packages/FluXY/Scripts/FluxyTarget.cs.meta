@@ -1,15 +1,3 @@
-fileFormatVersion: 2
-guid: b3027f475235a4f7ab39c90b4bbf8567
-MonoImporter:
-  externalObjects: {}
-  serializedVersion: 2
-  defaultReferences:
-  - splatMaterial: {fileID: 2100000, guid: 644c5fbe7e0624b239c5c09b7d1613ae, type: 2}
-  - velocityTexture: {instanceID: 0}
-  - densityTexture: {instanceID: 0}
-  - noiseTexture: {fileID: 2800000, guid: ff70acd9d6132428b8cbea06fbf16801, type: 3}
-  executionOrder: 9999
-  icon: {fileID: 2800000, guid: f7e883088a7104a9db1a741a25b53fb6, type: 3}
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 
+version https://git-lfs.github.com/spec/v1
+oid sha256:82e9b7e2de0c6f24b68777ed5587b3193651c8ed59675e26fba4bc9f538c7995
+size 538

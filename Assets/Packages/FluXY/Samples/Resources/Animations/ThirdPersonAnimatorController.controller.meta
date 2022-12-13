@@ -1,11 +1,3 @@
-fileFormatVersion: 2
-guid: e2cf68ff4b1ffda45a77f7307dd789b9
-labels:
-- ObiCloth
-- ObiSoftbody
-NativeFormatImporter:
-  externalObjects: {}
-  mainObjectFileID: -1
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 
+version https://git-lfs.github.com/spec/v1
+oid sha256:4b230570b3ca1cfb2add3f9311f20a3ca564750843dbe068e6a1f6754c55523d
+size 216

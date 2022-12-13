@@ -1,8 +1,6 @@
 ﻿
 using UnityEditor;
 
-#if UNITY_EDITOR
-
 namespace Fluxy
 {
     public class BooleanPreference
@@ -46,5 +44,3 @@ namespace Fluxy
         }
     }
 }
-
-#endif

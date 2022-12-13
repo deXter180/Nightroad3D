@@ -2,12 +2,24 @@
 using UnityEditor;
 using UnityEditor.SceneManagement;
 
-#if UNITY_EDITOR
-
 namespace Fluxy
 {
     public class FluxyEditorUtils
     {
+        public static void DrawHorizontalGUILine(int height = 1)
+        {
+            EditorGUILayout.Separator();
+
+            Rect rect = GUILayoutUtility.GetRect(10, height, GUILayout.ExpandWidth(true));
+            rect.height = height;
+            rect.xMin = 0;
+            rect.xMax = EditorGUIUtility.currentViewWidth;
+
+            Color lineColor = EditorGUIUtility.isProSkin ? new Color(0.10196f, 0.10196f, 0.10196f, 1) : new Color(0.5f, 0.5f, 0.5f, 1);
+            EditorGUI.DrawRect(rect, lineColor);
+            GUILayout.Space(4);
+        }
+
         public static void CreateObject(GameObject go, GameObject parent)
         {
             Undo.RegisterCreatedObjectUndo(go, "Create " + go.name);
@@ -74,5 +86,3 @@ namespace Fluxy
         }
     }
 }
-
-#endif

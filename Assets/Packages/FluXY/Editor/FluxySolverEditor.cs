@@ -1,8 +1,6 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-#if UNITY_EDITOR
-
 namespace Fluxy
 {
 
@@ -20,7 +18,7 @@ namespace Fluxy
 
         SerializedProperty storage;
         SerializedProperty disposeWhenCulled;
-        SerializedProperty isReadable;
+        SerializedProperty readable;
         SerializedProperty desiredResolution;
         SerializedProperty densitySupersampling;
 
@@ -40,7 +38,7 @@ namespace Fluxy
             desiredResolution = serializedObject.FindProperty("desiredResolution");
             densitySupersampling = serializedObject.FindProperty("densitySupersampling");
             disposeWhenCulled = serializedObject.FindProperty("disposeWhenCulled");
-            isReadable = serializedObject.FindProperty("isReadable");
+            readable = serializedObject.FindProperty("readable");
 
             simulationMaterial = serializedObject.FindProperty("simulationMaterial");
             maxTimestep = serializedObject.FindProperty("maxTimestep");
@@ -60,7 +58,7 @@ namespace Fluxy
             EditorGUILayout.PropertyField(desiredResolution);
             EditorGUILayout.PropertyField(densitySupersampling);
             EditorGUILayout.PropertyField(disposeWhenCulled);
-            EditorGUILayout.PropertyField(isReadable);
+            EditorGUILayout.PropertyField(readable);
 
             EditorGUILayout.PropertyField(simulationMaterial);
             EditorGUILayout.PropertyField(maxTimestep);
@@ -115,4 +113,3 @@ namespace Fluxy
 
 }
 
-#endif
