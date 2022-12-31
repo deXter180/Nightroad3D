@@ -7,11 +7,12 @@ public class StateMachine
 {
     #region Variables
 
-    public State currentState;
+    private State currentState;
+    private State previousState;
     private EnemyBrain enemyBrain;
     private Dictionary<AIStates, State> StateDict;
     private bool IsInitialized => StateDict != null;
-    public event Action<State> OnStateChange;
+    public event Action<State, State> OnStateChange;
 
     #endregion
 
@@ -27,12 +28,13 @@ public class StateMachine
         if (IsInitialized)
             return;
         StateDict = new Dictionary<AIStates, State>();
-        StateDict.Add(AIStates.Roam, new Roam(enemyBrain, this));
-        StateDict.Add(AIStates.Chase, new Chase(enemyBrain, this));
-        StateDict.Add(AIStates.Prepare, new Prepare(enemyBrain, this));
-        StateDict.Add(AIStates.Attack, new Attack(enemyBrain, this));
-        StateDict.Add(AIStates.Stop, new Stop(enemyBrain, this));
+        StateDict.Add(AIStates.Roam, new Roam(enemyBrain, this, AIStates.Roam));
+        StateDict.Add(AIStates.Chase, new Chase(enemyBrain, this, AIStates.Chase));
+        StateDict.Add(AIStates.Prepare, new Prepare(enemyBrain, this, AIStates.Prepare));
+        StateDict.Add(AIStates.Attack, new Attack(enemyBrain, this, AIStates.Attack));
+        StateDict.Add(AIStates.Stop, new Stop(enemyBrain, this, AIStates.Stop));
     }
+
     public void SetState(AIStates states)
     {
         InitializeDict();
@@ -40,13 +42,22 @@ public class StateMachine
         {
             if (state == currentState)
                 return;
-
+            
             currentState?.OnExit();
+            if (currentState != null)
+            {
+                previousState = currentState;
+            }
+            else
+            {
+                previousState = state;
+            }
             currentState = state;
-            OnStateChange?.Invoke(currentState);
+            OnStateChange?.Invoke(currentState, previousState);
             currentState.OnEnter();
         }
     } 
+
     public State GetState(AIStates states)
     {
         InitializeDict();
@@ -57,14 +68,19 @@ public class StateMachine
         else return null;
     }
 
-    public State GetThisState()
+    public State GetCurrentState()
     {
         return currentState;
     }
 
+    public State GetPreviousState()
+    {
+        return previousState;
+    }
+
     public void Tick()
     {
-        InitializeDict();
+        InitializeDict();       
         if (currentState == null)
         {
             SetState(AIStates.Roam);

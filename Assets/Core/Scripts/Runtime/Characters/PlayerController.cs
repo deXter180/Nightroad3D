@@ -11,7 +11,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
 
     #region Properties
 
-    public float GroundHeight;
+    public float GroundHeight;    
     public Transform PlayerTransform { get; private set; }
     public Transform CameraTransform => camTransform;
     public Target PlayerTarget => target;

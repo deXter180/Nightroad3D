@@ -845,4 +845,12 @@ public enum AttributeModType
     PercentMult = 300,
 }
 
+public enum AttackTypes
+{
+    None,
+    Attack1,
+    Attack2,
+    Attack3
+}
+
 #endregion

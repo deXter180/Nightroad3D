@@ -13,7 +13,7 @@ public class EnemySO : ScriptableObject, IAttack
     [SerializeField] private int maxHP;
     [SerializeField] private int damageAmount;
     [SerializeField] private int xpRewardOnDeath;
-    [SerializeField] private float attackSpeed;
+    [SerializeField] private float attackDelay;
     [SerializeField] private float attackRange;
     [SerializeField] private float postAttackMoveRange;
     [SerializeField] private float critChance;
@@ -25,8 +25,6 @@ public class EnemySO : ScriptableObject, IAttack
     [SerializeField] private float avoidanceRadius;
     [SerializeField] private float moveSpeed;
     [SerializeField] private float speedMultiplier;
-    [SerializeField] private float shieldSize;
-    [SerializeField] private float shieldDuration;
     [SerializeField] private Transform worldPrefab;
 
     #endregion
@@ -38,7 +36,7 @@ public class EnemySO : ScriptableObject, IAttack
     public int MaxHP => maxHP;
     public int DamageAmount => damageAmount;
     public int XPRewardOnDeath => xpRewardOnDeath;
-    public float AttackDelay => attackSpeed;
+    public float AttackDelay => attackDelay;
     public float AttackRange => attackRange;
     public float PostAttackMoveRange => postAttackMoveRange;
     public float CritChance => critChance;
@@ -50,8 +48,6 @@ public class EnemySO : ScriptableObject, IAttack
     public float AvoidanceRadius => avoidanceRadius;
     public float MoveSpeed => moveSpeed;
     public float SpeedMultiplier => speedMultiplier;
-    public float ShieldSize => shieldSize;
-    public float ShieldDuration => shieldDuration;
     public Transform WorldPrefab => worldPrefab;
 
     #endregion

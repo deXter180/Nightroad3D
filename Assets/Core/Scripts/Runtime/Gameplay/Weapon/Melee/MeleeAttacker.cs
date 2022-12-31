@@ -15,9 +15,11 @@ public class MeleeAttacker : MonoBehaviour
     private GameController gameController;
     private bool isHitting;
     private string enemyName = "Enemy";
+    private string enemyHeadName = "EnemyHead";
     private string npcName = "NPC";
     public static event Action OnStopMeleeAttack;
     public bool IsHittingEnemy { get; private set; }
+    public bool IsHittingEnemyHead { get; private set; }
     public bool IsHittingNPC { get; private set; }
 
     public Collision MeleeCollision { get; private set; }
@@ -43,6 +45,7 @@ public class MeleeAttacker : MonoBehaviour
         StartCoroutine(InputDone());
         isHitting = false;
         IsHittingEnemy = false;
+        IsHittingEnemyHead = false;
         IsHittingNPC = false;
         GetRange();
         gameController = GameController.Instance;
@@ -86,6 +89,13 @@ public class MeleeAttacker : MonoBehaviour
                             IsHittingEnemy = true;                            
                         }
                     }
+                    else if (collision.gameObject.CompareTag(enemyHeadName))
+                    {
+                        if (collision.gameObject.GetComponentInParent<Target>() != null)
+                        {
+                            IsHittingEnemyHead = true;
+                        }
+                    }
                     else if (collision.gameObject.CompareTag(npcName))
                     {
                         if (collision.gameObject.GetComponent<NPCBrain>() != null)
@@ -115,6 +125,13 @@ public class MeleeAttacker : MonoBehaviour
                             IsHittingEnemy = true;                            
                         }
                     }
+                    else if (collision.gameObject.CompareTag(enemyHeadName))
+                    {
+                        if (collision.gameObject.GetComponentInParent<Target>() != null)
+                        {
+                            IsHittingEnemyHead = true;
+                        }
+                    }
                     else if (collision.gameObject.CompareTag(npcName))
                     {
                         if (collision.gameObject.GetComponent<NPCBrain>() != null)
@@ -132,6 +149,7 @@ public class MeleeAttacker : MonoBehaviour
     {
         MeleeCollision = null;
         IsHittingEnemy = false;
+        IsHittingEnemyHead = false;
         IsHittingNPC = false;
     }
 
@@ -154,6 +172,7 @@ public class MeleeAttacker : MonoBehaviour
                 {
                     isHitting = false;
                     IsHittingEnemy = false;
+                    IsHittingEnemyHead = false;
                     IsHittingNPC = false;
                 }
             }
@@ -162,6 +181,7 @@ public class MeleeAttacker : MonoBehaviour
                 OnStopMeleeAttack?.Invoke();
                 isHitting = false;
                 IsHittingEnemy = false;
+                IsHittingEnemyHead = false;
                 IsHittingNPC = false;
             }
         }

@@ -13,11 +13,11 @@ public class RangedEnemy : Enemy
 
     public override void HandleAttack(Target target, float dodgeChance)
     {
-        if (enemyBrain.Firepoint != null)
+        if (enemyBrain.FirepointTransform != null)
         {
             var shot = objectPooler.GetPooledObject(ProjectileTypes.EnemyFireBall);
             shot.transform.rotation = Quaternion.identity;
-            shot.transform.position = enemyBrain.Firepoint.position;
+            shot.transform.position = enemyBrain.FirepointTransform.position;
             shot.SetEnemy(enemyBrain);
             shot.gameObject.SetActive(true);            
             base.HandleAttack(target, dodgeChance);

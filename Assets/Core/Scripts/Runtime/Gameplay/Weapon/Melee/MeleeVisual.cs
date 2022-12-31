@@ -50,15 +50,11 @@ public class MeleeVisual : MonoBehaviour
         {
             if (meleeAttacker.IsHittingEnemy)
             {
-                Target target = meleeAttacker.MeleeCollision.gameObject.GetComponentInParent<Target>();
-                if (target.enemyCore != null && target.GetEnemy() == true && target.IsDead == false)
-                {
-                    var contactPoint = meleeAttacker.MeleeCollision.GetContact(0);
-                    AssetLoader.CreateAndReleaseAsset(bloodVfx, contactPoint.point + contactPoint.normal * bloodOffset, 1);
-                    weaponManager.IsAttacking = true;
-                    weaponBrain.GetThisWeapon().DoAttack(target, target.enemyCore.EnemyDodgeChance);
-                    StartCoroutine(Attacking(() => { weaponManager.IsAttacking = false; }));
-                }
+                InvokeAttack(false);
+            }
+            if (meleeAttacker.IsHittingEnemyHead)
+            {
+                InvokeAttack(true);
             }
             if (meleeAttacker.IsHittingNPC)
             {
@@ -74,6 +70,19 @@ public class MeleeVisual : MonoBehaviour
         {
             yield return Helpers.GetWait(weaponBrain.GetThisWeapon().ThisWeaponSO.AttackDelay);
             action.Invoke();
+        }
+    }
+
+    private void InvokeAttack(bool isCrit)
+    {
+        Target target = meleeAttacker.MeleeCollision.gameObject.GetComponentInParent<Target>();
+        if (target.enemyCore != null && target.GetEnemy() == true && target.IsDead == false)
+        {
+            var contactPoint = meleeAttacker.MeleeCollision.GetContact(0);
+            AssetLoader.CreateAndReleaseAsset(bloodVfx, contactPoint.point + contactPoint.normal * bloodOffset, 1);
+            weaponManager.IsAttacking = true;
+            weaponBrain.GetThisWeapon().DoAttack(target, target.enemyCore.EnemyDodgeChance, isCrit);
+            StartCoroutine(Attacking(() => { weaponManager.IsAttacking = false; }));
         }
     }
 

@@ -69,25 +69,35 @@ public class Weapons : IModifiedStat
         return Mathf.RoundToInt(modifiedDamageAmount);
     }
 
-    public virtual void DoAttack(Target enemyTarget, float enemyDodgeChance)
+    public virtual void DoAttack(Target enemyTarget, float enemyDodgeChance, bool isCrit = false)
     {
         if (enemyTarget.enemyCore != null)
         {
-            int modifiedDamageAmount = GetModifiedStat();                     
-            if (UnityEngine.Random.value <= weaponSO.CritChance) //&& CurrentEnergy >= EnergyCosts[0])
+            int modifiedDamageAmount = GetModifiedStat();   
+            if (!isCrit)
+            {
+                if (UnityEngine.Random.value <= weaponSO.CritChance) //&& CurrentEnergy >= EnergyCosts[0])
+                {
+                    enemyTarget.DoCritDamage(weaponSO.CritBonus, modifiedDamageAmount, enemyDodgeChance);
+                    if (!enemyTarget.Dodging)
+                        OnPlayerDamage?.Invoke(this, new OnPlayerDamageEventArg(true, enemyTarget.enemyCore));
+                    //target.Resource.EnergyExpense(EnergyCosts[0]);
+                }
+                else
+                {
+                    enemyTarget.DoDamage(modifiedDamageAmount, enemyDodgeChance);
+                    if (!enemyTarget.Dodging)
+                        OnPlayerDamage?.Invoke(this, new OnPlayerDamageEventArg(false, enemyTarget.enemyCore));
+                    //target.Resource.EnergyExpense(EnergyCosts[1]);
+                }
+            }
+            else
             {
                 enemyTarget.DoCritDamage(weaponSO.CritBonus, modifiedDamageAmount, enemyDodgeChance);
                 if (!enemyTarget.Dodging)
                     OnPlayerDamage?.Invoke(this, new OnPlayerDamageEventArg(true, enemyTarget.enemyCore));
-                //target.Resource.EnergyExpense(EnergyCosts[0]);
             }
-            else
-            {
-                enemyTarget.DoDamage(modifiedDamageAmount, enemyDodgeChance);
-                if (!enemyTarget.Dodging)
-                    OnPlayerDamage?.Invoke(this, new OnPlayerDamageEventArg(false, enemyTarget.enemyCore));
-                //target.Resource.EnergyExpense(EnergyCosts[1]);
-            }
+           
         }        
     }
 

@@ -8,7 +8,7 @@ using Unity.Collections;
 public class EnemyLOSManager : MonoBehaviour
 {
     #region Variables
-
+    [SerializeField] private EnemyTypes enemyType;
     [SerializeField][Range(0, 2)] private float playerHeightOffset = 1f;
     [SerializeField][Range(0.001f, 1f)] private float spherecastRadius = 0.15f;
     [SerializeField] private LayerMask LOSLayers;
@@ -38,7 +38,7 @@ public class EnemyLOSManager : MonoBehaviour
     public void CheckForEnemy()
     {
         AliveEnemyList = new List<EnemyBrain>();
-        AliveEnemyList = FindObjectsOfType<EnemyBrain>().ToList();
+        AliveEnemyList = FindObjectsOfType<EnemyBrain>().Where(EB => EB.EnemyType == enemyType).ToList();
     }
 
     public void RemoveEnemy(EnemyBrain enemyBrain)

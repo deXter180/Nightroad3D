@@ -12,8 +12,7 @@ public class EnemyCore : MonoBehaviour
     protected EnemyTrigger enemyTrigger;
     protected NavMeshAgent navAgent;
     protected Target enemyTarget;
-    protected Animator animator;
-    protected Rigidbody RB;
+    protected Animator animator;    
     protected TempShieldTrigger tempShield;
 
     #endregion
@@ -24,7 +23,6 @@ public class EnemyCore : MonoBehaviour
     public string EnemyName => enemyName;
     public Target EnemyTarget => enemyTarget;
     public Animator EnemyAnimator => animator;
-    public Rigidbody EnemyRigidbody => RB;
     public NavMeshAgent navMeshAgent => navAgent;
     public EnemyTrigger Trigger => enemyTrigger;
     public EnemyTypes EnemyType { get; protected set; } //Need to Assign
@@ -49,7 +47,6 @@ public class EnemyCore : MonoBehaviour
     public virtual void CoreSetup()
     {
         EnemyTransform = transform;
-        RB = GetComponent<Rigidbody>();
         navAgent = GetComponent<NavMeshAgent>();
         animator = GetComponentInChildren<Animator>();
         tempShield = GetComponentInChildren<TempShieldTrigger>();

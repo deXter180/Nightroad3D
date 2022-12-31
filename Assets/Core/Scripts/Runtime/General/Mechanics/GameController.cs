@@ -328,6 +328,9 @@ public class GameController : PersistentSingleton<GameController>
         if (isMainMenuActive || isInventoryActive || isStashActive || isDialogueActive || isCraftingActive)
         {
             HUDHandler.Control(false);
+            UnHighlightInteract();
+            UnHighlightSelection();
+            UnHighlightStash();
             ControlCursor(false);
         }
         else

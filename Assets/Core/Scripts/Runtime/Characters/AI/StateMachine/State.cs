@@ -7,6 +7,8 @@ public abstract class State
 {
     #region Variables
 
+    protected float stateSpeed;
+    protected AIStates state;
     protected GameObject gameObject;
     protected Transform enemyTransform;
     protected Animator animator;
@@ -21,9 +23,10 @@ public abstract class State
 
     #region General
 
-    public State(GameObject gameObject, StateMachine SM)
+    public State(GameObject gameObject, StateMachine SM, AIStates aiState)
     {
         this.gameObject = gameObject;
+        this.state = aiState;
         this.enemyTransform = gameObject.transform;
         this.animator = gameObject.GetComponentInChildren<Animator>();
         this.stateMachine = SM;
@@ -32,6 +35,11 @@ public abstract class State
         enemyTrigger = enemyBrain.Trigger;        
         enemy = enemyBrain.GetThisEnemy();
         enemySO = enemyBrain.ThisEnemySO;
+    }
+
+    public AIStates GetAIState()
+    {
+        return state;
     }
 
     public abstract void Tick();

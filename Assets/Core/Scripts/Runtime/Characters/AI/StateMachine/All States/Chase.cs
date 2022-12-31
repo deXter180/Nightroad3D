@@ -6,22 +6,21 @@ using UnityEngine;
 
 public class Chase : State
 {
-    private float speedMult;   
 
-    public Chase(EnemyBrain EB, StateMachine SM) : base(EB.gameObject, SM)
+    public Chase(EnemyBrain EB, StateMachine SM, AIStates state) : base(EB.gameObject, SM, state)
     {
-        
+
     }
 
     public override void Tick()
     {
-        enemy.CheckDistance();
         if (enemyBrain.IsFrozen)
         {
             stateMachine.SetState(AIStates.Stop);
         }
         else
         {
+            enemy.CheckDistance();
             if (enemy.IsTargetInRange)
             {
                 stateMachine.SetState(AIStates.Attack);
@@ -30,7 +29,7 @@ public class Chase : State
             {
                 if (!enemyTrigger.IsTargetFleed)
                 {
-                    enemy.Chase();                   
+                    enemy.Chase();
                 }
                 else
                 {
@@ -42,16 +41,22 @@ public class Chase : State
 
     public override void OnEnter()
     {
-        enemyBrain.navMeshAgent.enabled = true;
+        enemyBrain.navMeshAgent.enabled = true;        
         if (enemyBrain.navMeshAgent.isOnNavMesh)
-            enemyBrain.navMeshAgent.isStopped = false;
+            enemyBrain.navMeshAgent.isStopped = true;
+        stateSpeed = enemyBrain.navMeshAgent.speed;
+        var mult = stateSpeed * enemySO.SpeedMultiplier;
+        stateSpeed += mult;
+        enemyBrain.navMeshAgent.speed = stateSpeed;
+        enemyBrain.navMeshAgent.ResetPath();
     }
 
     public override void OnExit()
-    {
-        enemyBrain.navMeshAgent.speed = enemySO.MoveSpeed;
+    {        
         if (enemyBrain.navMeshAgent.isOnNavMesh)
             enemyBrain.navMeshAgent.isStopped = true;
+        enemyBrain.navMeshAgent.speed = enemySO.MoveSpeed;
+        enemyBrain.navMeshAgent.ResetPath();
     }
 
 }

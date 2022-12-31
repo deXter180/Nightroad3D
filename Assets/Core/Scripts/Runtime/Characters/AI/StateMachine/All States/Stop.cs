@@ -4,32 +4,35 @@ using UnityEngine;
 
 public class Stop : State
 {
-    public Stop(EnemyBrain EB, StateMachine SM) : base(EB.gameObject, SM)
+    public Stop(EnemyBrain EB, StateMachine SM, AIStates state) : base(EB.gameObject, SM, state)
     {
         
     }
 
     public override void Tick()
     {
-        enemy.CheckDistance();
-        if (!enemyBrain.IsFrozen)
+        if (!enemyBrain.IsDead)
         {
-            if (enemy.IsTargetInRange)
+            enemy.CheckDistance();
+            if (!enemyBrain.IsFrozen)
             {
-                stateMachine.SetState(AIStates.Attack);
-            }
-            else
-            {
-                if (enemyTrigger.IsTargetFleed)
+                if (enemy.IsTargetInRange)
                 {
-                    stateMachine.SetState(AIStates.Roam);
+                    stateMachine.SetState(AIStates.Attack);
                 }
                 else
                 {
-                    stateMachine.SetState(AIStates.Chase);
+                    if (enemyTrigger.IsTargetFleed)
+                    {
+                        stateMachine.SetState(AIStates.Roam);
+                    }
+                    else
+                    {
+                        stateMachine.SetState(AIStates.Chase);
+                    }
                 }
-            }            
-        }      
+            }
+        }
     }
 
     public override void OnEnter()

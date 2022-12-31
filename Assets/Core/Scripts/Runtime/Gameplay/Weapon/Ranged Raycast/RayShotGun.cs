@@ -23,18 +23,15 @@ public class RayShotGun : RangedWeapon
     private Crosshair crosshair;
     private bool isRanged;
     private Weapons thisWeapon;
-    private int PlayerLayer = 9;
+    private int playerLayer = 9;
+    private int weaponLayer = 10;
     private int bitmask;
-    private string bloodVfx = "Blood_burst_vfx";
-    private string enemyName = "Enemy";
-    private string npcName = "NPC";
     private WeaponManager weaponManager;
     private CameraShake camShake;
     private RecoilEffect recoilEffect;
     private VisualEffect visualEffect;
     private Light lighting;
     public static event Action OnStopSGShoot;
-    private float bloodOffset = 5;
 
     #endregion
 
@@ -45,7 +42,7 @@ public class RayShotGun : RangedWeapon
         base.Awake();
         weaponBrain = GetComponent<WeaponBrain>();
         visualEffect = GetComponentInChildren<VisualEffect>();
-        bitmask = ~(1 << PlayerLayer);
+        bitmask = ~(1 << playerLayer & 1 << weaponLayer);
         lighting = GetComponentInChildren<Light>();
         if (lighting.gameObject.activeInHierarchy)
             lighting.gameObject.SetActive(false);
@@ -159,20 +156,12 @@ public class RayShotGun : RangedWeapon
                     {
                         if (hit.collider.CompareTag(enemyName))
                         {
-                            if (hit.collider.GetComponentInParent<Target>() != null)
-                            {
-                                Target target = hit.collider.GetComponentInParent<Target>();
-                                if (target.enemyCore != null && target.GetEnemy() == true && target.IsDead == false)
-                                {
-                                    AssetLoader.CreateAndReleaseAsset(bloodVfx, hit.point + hit.normal * bloodOffset, 1);
-                                    thisWeapon.DoAttack(target, target.enemyCore.EnemyDodgeChance);
-                                    if (!target.Dodging)
-                                    {
-
-                                    }
-                                }
-                            }
-                        }                        
+                            InvokeAttack(thisWeapon, hit, false);
+                        }  
+                        else if (hit.collider.CompareTag(enemyHeadName))
+                        {
+                            InvokeAttack(thisWeapon, hit, true);
+                        }
                         else if (hit.collider.CompareTag(npcName))
                         {
                             if (hit.collider.GetComponent<NPCBrain>() != null)

@@ -7,11 +7,10 @@ public class Roam : State
 {
     private List<Vector3> path = new List<Vector3>();
     private bool isLoaded = false;
-    private Rigidbody RB;
 
-    public Roam(EnemyBrain EB, StateMachine SM) : base(EB.gameObject, SM)
+    public Roam(EnemyBrain EB, StateMachine SM, AIStates state) : base(EB.gameObject, SM, state)
     {
-        RB = EB.GetComponent<Rigidbody>();            
+          
     }
 
     public override void Tick()
@@ -34,34 +33,29 @@ public class Roam : State
     }
 
     public override void OnEnter()
-    {
+    {       
         enemyBrain.navMeshAgent.enabled = true;
+        if (enemyBrain.navMeshAgent.isOnNavMesh)
+            enemyBrain.navMeshAgent.isStopped = true;
+        enemyBrain.navMeshAgent.ResetPath();                
         if (!isLoaded)
         {
             enemyBrain.navMeshAgent.speed = enemySO.MoveSpeed;
         }
-        RB.isKinematic = true;
         for (int i = 0; i < 7; i++)
         {
-            path.Add(GetRandomPosition());
+            path.Add(enemy.GetRandomPosition(50f, 80f));
         }
-        enemy.SetupRoam(path);
-        if (enemyBrain.navMeshAgent.isOnNavMesh)
-            enemyBrain.navMeshAgent.isStopped = false;          
+        enemy.SetupRoam(path);             
         isLoaded = true;
     }
 
     public override void OnExit()
     {
-        path.Clear();
         if (enemyBrain.navMeshAgent.isOnNavMesh)
             enemyBrain.navMeshAgent.isStopped = true;
-    }
-
-    private Vector3 GetRandomPosition()
-    {
-        Vector3 randomDir = new Vector3(UnityEngine.Random.Range(-1f, 1f), 0, UnityEngine.Random.Range(-1f, 1f)).normalized;
-        return enemyBrain.EnemyTransform.position + randomDir * UnityEngine.Random.Range(50f, 80f);
+        path.Clear();
+        enemyBrain.navMeshAgent.ResetPath();
     }
 
 }

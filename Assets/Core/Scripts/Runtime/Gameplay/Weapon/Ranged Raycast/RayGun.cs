@@ -28,20 +28,17 @@ public class RayGun : RangedWeapon
     private bool isRanged;
     private bool isStartedRecoil;
     private Weapons thisWeapon;
-    private int PlayerLayer = 9;
+    private int playerLayer = 9;
+    private int weaponLayer = 10;
     private int bitmask;
     private float recoilTime = 0;
     private float lastFireTime = 0;
     private float defaultOffset = 1.2f;
     private float recoilOffset = 2f;
-    private string bloodVfx = "Blood_burst_vfx";
-    private string enemyName = "Enemy";
-    private string npcName = "NPC";
     private VisualEffect visualEffect;
     private CameraShake camShake;
     private RecoilEffect recoilEffect;
     private Light lighting;
-    private float bloodOffset = 5;
     public static event Action OnStopRayShoot;
 
     #endregion
@@ -53,7 +50,7 @@ public class RayGun : RangedWeapon
         base.Awake();
         weaponBrain = GetComponent<WeaponBrain>();
         visualEffect = GetComponentInChildren<VisualEffect>();
-        bitmask = ~(1 << PlayerLayer);
+        bitmask = ~(1 << playerLayer & 1 << weaponLayer);
         lighting = GetComponentInChildren<Light>();
         if (lighting.gameObject.activeInHierarchy)
             lighting.gameObject.SetActive(false);
@@ -189,34 +186,26 @@ public class RayGun : RangedWeapon
                 {
                     if (hit.collider.CompareTag(enemyName))
                     {
-                        if (hit.collider.GetComponentInParent<Target>() != null)
-                        {
-                            Target target = hit.collider.GetComponentInParent<Target>();
-                            
-                            if (target.enemyCore != null && target.GetEnemy() == true && target.IsDead == false)
-                            {
-                                AssetLoader.CreateAndReleaseAsset(bloodVfx, hit.point + hit.normal * bloodOffset, 1);
-                                thisWeapon.DoAttack(target, target.enemyCore.EnemyDodgeChance);
-                                if (!target.Dodging)
-                                {
-
-                                }
-                            }
-                        }
+                        InvokeAttack(thisWeapon, hit, false);
+                        
                     }  
+                    else if (hit.collider.CompareTag(enemyHeadName))
+                    {
+                        InvokeAttack(thisWeapon, hit, true);
+                    }
                     else if (hit.collider.CompareTag(npcName))
                     {
+                        weaponBrain.SpawnHitVfx(hit.point);
                         if (hit.collider.GetComponent<NPCBrain>() != null)
                         {
                             NPCBrain npc = hit.collider.GetComponent<NPCBrain>();
-                            StartCoroutine(gameController.HighlightNPCSpeech(npc.SpeechBubblePos, npc.GetDialogueText()));
+                            StartCoroutine(gameController.HighlightNPCSpeech(npc.SpeechBubblePos, npc.GetDialogueText()));                            
                         }
                     }
                     else
                     {
-
-                    }
-                    weaponBrain.SpawnHitVfx(hit.point);                    
+                        weaponBrain.SpawnHitVfx(hit.point);
+                    }                                        
                 }
                 if (hit.rigidbody != null)
                 {

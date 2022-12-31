@@ -135,7 +135,7 @@ public class AttributeManager : Singleton<AttributeManager>
 
     #endregion
 
-    #region Functions
+    #region General
     protected override void Awake()
     {
         base.Awake();   
@@ -181,6 +181,10 @@ public class AttributeManager : Singleton<AttributeManager>
         levelmanager = LevelSystemManager.Instance;
     }
 
+    #endregion
+
+    #region Mechanics
+
     public void SetupStats()
     {
         if (characterAttributes != null)
@@ -210,7 +214,7 @@ public class AttributeManager : Singleton<AttributeManager>
         availablePoints = 0;
     }
 
-    public void AddAttributePoint(AttributeTypes attributeType)
+    public void AddAttributePoint(AttributeTypes attributeType, int amount = 1)
     {
         if (AvailablePoints > 0)
         {
@@ -219,35 +223,35 @@ public class AttributeManager : Singleton<AttributeManager>
             {
                 case AttributeTypes.Strength:
                     {
-                        modStrengthPoint++;
+                        modStrengthPoint += amount;
                         point = GetSTRPoint();                       
                         strength.IncrementBaseValue(point, STRModType);
                     }
                     break;
                 case AttributeTypes.Dexterity:
                     {
-                        modDexterityPoint++;
+                        modDexterityPoint += amount; 
                         point = GetDEXPoint();                                               
                         dexterity.IncrementBaseValue(point, DEXModType);
                     }
                     break;
                 case AttributeTypes.Vitality:
                     {
-                        modVitalityPoint++;
+                        modVitalityPoint += amount;
                         point = GetVITPoint();                                            
                         vitality.IncrementBaseValue(point, VITModType);
                     }
                     break;
                 case AttributeTypes.Spirit:
                     {
-                        modSpiritPoint++;
+                        modSpiritPoint += amount;
                         point = GetSPRPoint();                                              
                         spirit.IncrementBaseValue(point, SPRModType);
                     }
                     break;
                 case AttributeTypes.Intelligence:
                     {
-                        modIntelligencePoint++;
+                        modIntelligencePoint += amount;
                         point = GetINTPoint();                                              
                         intelligence.IncrementBaseValue(point, INTModType);
                     }
@@ -646,11 +650,18 @@ public class AttributeManager : Singleton<AttributeManager>
         attributeUI.UpdateAllSpellStatText();
         attributeUI.UpdateAllHPStatText();
         attributeUI.UpdateAllMPStatText();
+
+        //###### Remove ######
         StartCoroutine(Delay());
         IEnumerator Delay()
         {
             yield return Helpers.GetWait(1);
             IncreasePoint(80);
+            AddAttributePoint(AttributeTypes.Dexterity, 15);
+            AddAttributePoint(AttributeTypes.Strength, 10);
+            AddAttributePoint(AttributeTypes.Vitality, 10);
+            AddAttributePoint(AttributeTypes.Spirit, 10);
+            AddAttributePoint(AttributeTypes.Intelligence, 10);
             availablePoints = AvailablePoints;
         }
     }

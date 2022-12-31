@@ -21,8 +21,13 @@ public class RangedWeapon : MonoBehaviour
     protected int maxTotalAmmo;
     protected float attackRange;
     protected float attackDelay;
+    private float bloodOffset = 5;
     protected bool isReloading;
     protected bool isReady = false;
+    private string bloodVfx = "Blood_burst_vfx";
+    protected string enemyName = "Enemy";
+    protected string enemyHeadName = "EnemyHead";
+    protected string npcName = "NPC";
     public static event Action<RangedWeapon> OnAmmoAffected;
 
     #endregion
@@ -129,6 +134,31 @@ public class RangedWeapon : MonoBehaviour
             }
         }
         return false;
+    }
+
+    protected void InvokeAttack(Weapons thisWeapon, RaycastHit hit, bool isCrit)
+    {
+        weaponBrain.SpawnHitVfx(hit.point);
+        if (hit.collider.GetComponentInParent<Target>() != null)
+        {
+            Target target = hit.collider.GetComponentInParent<Target>();
+            if (target.enemyCore != null && target.GetEnemy() == true && target.IsDead == false)
+            {
+                AssetLoader.CreateAndReleaseAsset(bloodVfx, hit.point + hit.normal * bloodOffset, 1);
+                if (isCrit)
+                {
+                    thisWeapon.DoAttack(target, target.enemyCore.EnemyDodgeChance, true);
+                }
+                else
+                {
+                    thisWeapon.DoAttack(target, target.enemyCore.EnemyDodgeChance);
+                }
+                if (!target.Dodging)
+                {
+
+                }
+            }
+        }
     }
 
     #endregion
