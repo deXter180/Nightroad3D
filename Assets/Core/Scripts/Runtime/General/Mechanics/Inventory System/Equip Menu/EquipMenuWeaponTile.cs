@@ -22,7 +22,7 @@ public class EquipMenuWeaponTile : MenuTile
         gridWidth = 1;
         gridHeight = 1;
         cellSize = 260;
-        grid = new Grid<GridObject>(gridWidth, gridHeight, cellSize, transform.position, (Grid<GridObject> g, int x, int y) => new GridObject(g, x, y));
+        grid = new Grid<UIGridObject>(gridWidth, gridHeight, cellSize, transform.position, (Grid<UIGridObject> g, int x, int y) => new UIGridObject(g, x, y));
     }
 
     public override bool TryPlaceItem(InventoryItemSO inventoryItemSO, Vector2Int placedObjectOrigin, out PlacedObject PO)

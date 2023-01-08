@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class Chase : State
 {
+    #region General
 
     public Chase(EnemyBrain EB, StateMachine SM, AIStates state) : base(EB.gameObject, SM, state)
     {
@@ -35,28 +36,33 @@ public class Chase : State
                 {
                     stateMachine.SetState(AIStates.Roam);
                 }
-            }                      
-        }        
+            }
+        }
     }
 
     public override void OnEnter()
     {
-        enemyBrain.navMeshAgent.enabled = true;        
+        enemyBrain.navMeshAgent.enabled = true;
         if (enemyBrain.navMeshAgent.isOnNavMesh)
+        {
             enemyBrain.navMeshAgent.isStopped = true;
-        stateSpeed = enemyBrain.navMeshAgent.speed;
-        var mult = stateSpeed * enemySO.SpeedMultiplier;
-        stateSpeed += mult;
-        enemyBrain.navMeshAgent.speed = stateSpeed;
-        enemyBrain.navMeshAgent.ResetPath();
+            enemyBrain.navMeshAgent.ResetPath();
+            stateSpeed = enemyBrain.navMeshAgent.speed;
+            var mult = stateSpeed * enemySO.SpeedMultiplier;
+            stateSpeed += mult;
+            enemyBrain.navMeshAgent.speed = stateSpeed;
+        }
     }
 
     public override void OnExit()
-    {        
+    {
         if (enemyBrain.navMeshAgent.isOnNavMesh)
+        {
             enemyBrain.navMeshAgent.isStopped = true;
-        enemyBrain.navMeshAgent.speed = enemySO.MoveSpeed;
-        enemyBrain.navMeshAgent.ResetPath();
+            enemyBrain.navMeshAgent.ResetPath();
+            enemyBrain.navMeshAgent.speed = enemySO.MoveSpeed;
+        }
     }
 
+    #endregion
 }

@@ -10,7 +10,7 @@ public class ItemStash : Singleton<ItemStash>
     [SerializeField] private int gridWidth;
     [SerializeField] private int gridHeight;
     private float cellSize;
-    private Grid<GridObject> grid;
+    private Grid<UIGridObject> grid;
     private bool isInitialized => StashList != null;
     private List<PlacedObject> StashList;
     private InventoryUIHandler inventoryUI;
@@ -26,7 +26,7 @@ public class ItemStash : Singleton<ItemStash>
         itemContainor = GetComponentInChildren<InventoryContainor>();
         inventoryUI = GetComponentInParent<InventoryUIHandler>();
         cellSize = inventoryUI.GetCellSize();
-        grid = new Grid<GridObject>(gridWidth, gridHeight, cellSize, transform.position, (Grid<GridObject> g, int x, int y) => new GridObject(g, x, y));
+        grid = new Grid<UIGridObject>(gridWidth, gridHeight, cellSize, transform.position, (Grid<UIGridObject> g, int x, int y) => new UIGridObject(g, x, y));
         StashList = new List<PlacedObject>();
     }
 
@@ -34,7 +34,7 @@ public class ItemStash : Singleton<ItemStash>
 
     #region Utilities
 
-    public Grid<GridObject> GetGrid()
+    public Grid<UIGridObject> GetGrid()
     {
         return grid;
     }

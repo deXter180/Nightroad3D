@@ -11,7 +11,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
 
     #region Properties
 
-    public float GroundHeight;    
+    public float GroundHeight = 55f;    
     public Transform PlayerTransform { get; private set; }
     public Transform CameraTransform => camTransform;
     public Target PlayerTarget => target;
@@ -31,27 +31,32 @@ public class PlayerController : PersistentSingleton<PlayerController>
 
     #endregion
 
-    #region Variables
+    #region Serialized Variables
 
-    [SerializeField] private int maxHitPoints;
-    [SerializeField] private int maxMana;
-    [SerializeField] private float statToHPModifier;
-    [SerializeField] private float statToMPModifier;
-    [SerializeField] private float MoveSpeed = 20;
+    [SerializeField] private int maxHitPoints = 5000;
+    [SerializeField] private int maxMana = 200;
+    [SerializeField] private float statToHPModifier = 0.2f;
+    [SerializeField] private float statToMPModifier = 0.1f;
+    [SerializeField] private float moveSpeed = 60f;
     //[SerializeField] private float MoveAcceleration = 14f;
-    [SerializeField] private float MouseSensitivity;
-    [SerializeField] private float JumpForce;
-    [SerializeField] private float GravityScale;
-    [SerializeField] private float AttackSpeed;
-    [SerializeField] private float AttackForce;
+    [SerializeField] private float mouseSensitivity = 20f;
+    [SerializeField] private float jumpForce = 20f;
+    [SerializeField] private float gravityScale = 0.2f;
+    [SerializeField] private float attackSpeed = 100f;
+    [SerializeField] private float attackForce = 80;
     [SerializeField] private float dodgeChance;
-    [SerializeField] private float crouchHeightPrecentage;
-    [SerializeField] private float SelectionThreshold;
-    [SerializeField] private float SlantingPower;
-    [SerializeField] private float SlantingSpeed;
+    [SerializeField] private float crouchHeightPrecentage = 50f;
+    [SerializeField] private float SelectionThreshold = 0.97f;
+    [SerializeField] private float SlantingPower = 4f;
+    [SerializeField] private float SlantingSpeed = 0.15f;
     [SerializeField] private Animator CamAnimator;
     [SerializeField] private CameraShake.ShakeProperty CamShakeOnDeath;
     [SerializeField] private CameraShake.ShakeProperty CamShakeOnDamage;
+
+    #endregion
+
+    #region Variables
+
     private Transform camTransform;
     private InventorySystem mainInventory;
     private AttributeManager attributeManager;
@@ -126,7 +131,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
 
     //~~~~~~~~~~~~~~~~~ Initialization ~~~~~~~~~~~~~~~~~~~
 
-    #region GeneralFunctions
+    #region General
 
     protected override void Awake()
     {
@@ -145,7 +150,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
         primCol = transform.Find("PrimaryCollider").GetComponent<CapsuleCollider>();
         secndCol = transform.Find("SecondCollider").GetComponent<CapsuleCollider>();
         bitmask = ground | water;
-        moveSpeedOnWater = (float)Math.Round(MoveSpeed / 3, 2);
+        moveSpeedOnWater = (float)Math.Round(moveSpeed / 3, 2);
         isOnWater = false;
         isMoving = false;
         isDead = false;
@@ -194,11 +199,11 @@ public class PlayerController : PersistentSingleton<PlayerController>
         {
             if (RB.velocity.y > 30)
             {
-                gravityControl = GravityScale + 1;
+                gravityControl = gravityScale + 1;
             }
             else
             {
-                gravityControl = GravityScale;
+                gravityControl = gravityScale;
             }
             SetGravity();
         }
@@ -326,37 +331,12 @@ public class PlayerController : PersistentSingleton<PlayerController>
 
     //~~~~~~~~~~~~~~~~ Mechanics ~~~~~~~~~~~~~~~~~~~~
 
-    #region MechanicsFunctions
+    #region Setup
 
     private void SetGravity()
     {
         gravity = globalGravity * gravityControl * Vector3.up;
         RB.AddForce(gravity, ForceMode.Impulse);
-    }
-
-    private void UpdateCameraPosition()
-    {
-        if (!isCrouching)
-        {
-            camTransform.position = transform.position + ConstantDistFromPlayer;
-        }
-        else
-        {
-            var pos = transform.position + ConstantDistFromPlayer;
-            camTransform.position = pos + new Vector3 (0, -2f, 0);
-        }
-    }
-
-    public void UpdateResouce(AttributeTypes type)
-    {
-        if (type == AttributeTypes.Vitality)
-        {
-            target.SetupMaxHP(GetModifiedHP());
-        }
-        else if (type == AttributeTypes.Spirit)
-        {
-            target.SetupMaxMana(GetModifiedMP());
-        }
     }
 
     public int GetModifiedHP()
@@ -384,6 +364,10 @@ public class PlayerController : PersistentSingleton<PlayerController>
         target.SetupMaxHP(modifiedMaxMp);
     }
 
+    #endregion
+
+    #region Movement
+
     private void Move()
     {
         Vector3 wishDir;
@@ -397,7 +381,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
             wishDir.Normalize();
             var wishSpeed = wishDir.magnitude;
 
-            wishSpeed *= MoveSpeed;
+            wishSpeed *= moveSpeed;
             //Accelerate(wishDir, wishSpeed, MoveAcceleration);
             //playerVelocity.y = 0;          
             dashPos = transform.right * moveX + transform.forward * moveY;
@@ -409,7 +393,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
             else
             {
                 //movePos = transform.position + (dashPos * Time.fixedDeltaTime) + playerVelocity;
-                movePos = transform.position + dashPos * Time.fixedDeltaTime * MoveSpeed;
+                movePos = transform.position + dashPos * Time.fixedDeltaTime * moveSpeed;
             }
             RB.MovePosition(movePos);
             isMoving = true;
@@ -419,6 +403,10 @@ public class PlayerController : PersistentSingleton<PlayerController>
         //    playerVelocity = Vector3.zero;
         //}
     }
+
+    #endregion
+
+    #region Acceleration
 
     //private void Accelerate(Vector3 wishdir, float wishspeed, float accel)
     //{
@@ -438,11 +426,33 @@ public class PlayerController : PersistentSingleton<PlayerController>
     //    playerVelocity.z += accelspeed * wishdir.z;
     //}
 
+    #endregion
+
+    #region Without Slanting Rotation
+
+    //private void Rotate()
+    //{
+    //    oldRot = camTransform.rotation;
+    //    Vector2 mouseDeltaPos = inputs.BasicControls.MouseDelta.ReadValue<Vector2>();
+    //    float horizontalLook = mouseDeltaPos.x * mouseSensitivity * Time.fixedDeltaTime;
+    //    float verticalLook = mouseDeltaPos.y * mouseSensitivity * Time.fixedDeltaTime;
+    //    camControlX -= verticalLook;
+    //    camControlX = Mathf.Clamp(camControlX, -90f, 90f);
+    //    float rotY = transform.rotation.eulerAngles.y + horizontalLook;
+    //    var newRot = Quaternion.Euler(new Vector3(camControlX, rotY, 0f));
+    //    camTransform.rotation = Quaternion.Slerp(oldRot, newRot, Time.fixedDeltaTime * mouseSensitivity);
+    //    transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y + horizontalLook, 0);
+    //}
+
+    #endregion
+
+    #region With Slanting Rotation
+
     private void Rotate()
     {
         Vector2 mouseDeltaPos = inputs.BasicControls.MouseDelta.ReadValue<Vector2>();
-        float horizontalLook = mouseDeltaPos.x * MouseSensitivity * Time.fixedDeltaTime;
-        float verticalLook = mouseDeltaPos.y * MouseSensitivity * Time.fixedDeltaTime;
+        float horizontalLook = mouseDeltaPos.x * mouseSensitivity * Time.fixedDeltaTime;
+        float verticalLook = mouseDeltaPos.y * mouseSensitivity * Time.fixedDeltaTime;
         camControlX -= verticalLook;
         camControlX = Mathf.Clamp(camControlX, -90f, 90f);
         float rotY = transform.rotation.eulerAngles.y + horizontalLook;
@@ -493,6 +503,10 @@ public class PlayerController : PersistentSingleton<PlayerController>
         transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y + horizontalLook, 0);
     }
 
+    #endregion
+
+    #region Jump
+
     private void Jump()
     {
         if (inputs.BasicControls.Jump.ReadValue<float>() == 1)
@@ -503,17 +517,21 @@ public class PlayerController : PersistentSingleton<PlayerController>
                 {
                     if (RB.velocity.y > 1)
                     {
-                        RB.AddForce(transform.up * (JumpForce / 2), ForceMode.Impulse);
+                        RB.AddForce(transform.up * (jumpForce / 2), ForceMode.Impulse);
                     }
                     else
                     {
-                        RB.AddForce(transform.up * JumpForce, ForceMode.Impulse);
+                        RB.AddForce(transform.up * jumpForce, ForceMode.Impulse);
                     }
                     isJumping = true;
                 }
             }
         }
     }
+
+    #endregion
+
+    #region Crouch
 
     private void HoldCrouch()
     {
@@ -565,6 +583,10 @@ public class PlayerController : PersistentSingleton<PlayerController>
         }
     }
 
+    #endregion
+
+    #region Others
+
     private bool GroundCheck()
     {
         if (primCol != null)
@@ -585,6 +607,31 @@ public class PlayerController : PersistentSingleton<PlayerController>
             }
         }
         return false;
+    }
+
+    private void UpdateCameraPosition()
+    {
+        if (!isCrouching)
+        {
+            camTransform.position = transform.position + ConstantDistFromPlayer;
+        }
+        else
+        {
+            var pos = transform.position + ConstantDistFromPlayer;
+            camTransform.position = pos + new Vector3(0, -2f, 0);
+        }
+    }
+
+    public void UpdateResouce(AttributeTypes type)
+    {
+        if (type == AttributeTypes.Vitality)
+        {
+            target.SetupMaxHP(GetModifiedHP());
+        }
+        else if (type == AttributeTypes.Spirit)
+        {
+            target.SetupMaxMana(GetModifiedMP());
+        }
     }
 
     public void ApplyKnockback()
@@ -612,6 +659,10 @@ public class PlayerController : PersistentSingleton<PlayerController>
         target.DoDamage(DOTAmount, 0);
         isDOTActive = false;
     }
+
+    #endregion
+
+    #region World Interaction
 
     private void InteractInWorld()
     {
@@ -735,7 +786,7 @@ public class PlayerController : PersistentSingleton<PlayerController>
 
     #endregion
 
-    #region UtilityFunctions
+    #region Utility
 
     public Vector3 GetRandomDirWithoutY(float minRange, float maxRange)
     {

@@ -16,6 +16,9 @@ public class EnemySO : ScriptableObject, IAttack
     [SerializeField] private float attackDelay;
     [SerializeField] private float attackRange;
     [SerializeField] private float postAttackMoveRange;
+    [SerializeField] private bool isPrepRequired;
+    [SerializeField] private int maxAttackForPrep;
+    [SerializeField] private int minAttackForPrep;
     [SerializeField] private float critChance;
     [SerializeField] private float critBonus;
     [SerializeField] private EnemyTypes enemyType;
@@ -39,6 +42,9 @@ public class EnemySO : ScriptableObject, IAttack
     public float AttackDelay => attackDelay;
     public float AttackRange => attackRange;
     public float PostAttackMoveRange => postAttackMoveRange;
+    public bool IsPrepRequired => isPrepRequired;
+    public int MaxAttackForPrep => maxAttackForPrep;
+    public int MinAttackForPrep => minAttackForPrep;
     public float CritChance => critChance;
     public float CritBonus => critBonus;
     public EnemyTypes EnemyType => enemyType;

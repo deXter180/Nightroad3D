@@ -9,6 +9,7 @@ public class EnemyCore : MonoBehaviour
 
     protected string enemyID;
     protected string enemyName;
+    protected Rigidbody rb;
     protected EnemyTrigger enemyTrigger;
     protected NavMeshAgent navAgent;
     protected Target enemyTarget;
@@ -48,6 +49,7 @@ public class EnemyCore : MonoBehaviour
     {
         EnemyTransform = transform;
         navAgent = GetComponent<NavMeshAgent>();
+        rb = GetComponent<Rigidbody>();
         animator = GetComponentInChildren<Animator>();
         tempShield = GetComponentInChildren<TempShieldTrigger>();
         enemyTarget = GetComponent<Target>();

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Stop : State
 {
+    #region General
+
     public Stop(EnemyBrain EB, StateMachine SM, AIStates state) : base(EB.gameObject, SM, state)
     {
         
@@ -45,5 +47,7 @@ public class Stop : State
     {
         if (enemyBrain.navMeshAgent.isOnNavMesh)
             enemyBrain.navMeshAgent.isStopped = false;
-    }   
+    }
+
+    #endregion
 }

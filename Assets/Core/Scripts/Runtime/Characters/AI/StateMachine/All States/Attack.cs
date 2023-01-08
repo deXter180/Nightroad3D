@@ -5,11 +5,17 @@ using System;
 
 public class Attack : State
 {
+    #region Variables
+
     private int currentAttackIndex;
     private int attackIndex;
     private float attackResetTime = 0; 
     private float prepTime = 0;
     private float delayTime;
+
+    #endregion
+
+    #region General
 
     public Attack(EnemyBrain EB, StateMachine SM, AIStates state) : base(EB.gameObject, SM, state)
     {
@@ -28,25 +34,26 @@ public class Attack : State
             {
                 if (!enemy.IsAttacking)
                 {
-                    if (attackIndex >= currentAttackIndex)
-                    {                        
-                        enemy.SetAttacking(true);
-                        enemy.InitializeAttack(() =>
+                    if (enemySO.IsPrepRequired)
+                    {
+                        if (attackIndex >= currentAttackIndex)
                         {
-                            currentAttackIndex++;
-                            attackResetTime = Time.time;
-                            enemy.CheckDistance();
-                        });
+                            AttackStart();
+                        }
+                        else
+                        {
+                            //Prepare Transition
+                            prepTime += Time.fixedDeltaTime;
+                            if (prepTime > 3f)
+                            {
+                                enemy.SetAttacking(false);
+                                stateMachine.SetState(AIStates.Prepare);
+                            }
+                        }
                     }
                     else
                     {
-                        //Prepare Transition
-                        prepTime += Time.fixedDeltaTime;
-                        if (prepTime > 3f)
-                        {
-                            enemy.SetAttacking(false);                          
-                            stateMachine.SetState(AIStates.Prepare);
-                        }
+                        AttackStart();
                     }
                 }
                 else
@@ -55,29 +62,32 @@ public class Attack : State
                     if (timeLeft > 0.3f)
                     {
                         enemy.ResetAttackAnim();
+                        enemy.RotateTowardsPlayer(20);
                         if (timeLeft >= delayTime)
                         {
-                            attackResetTime = 0;                            
+                            attackResetTime = 0;
                             enemy.SetAttacking(false);
                             enemy.CheckDistance();
                         }
-                    }                    
+                    }
                 }
             }
             else
             {
-                
-                //Roam & Chase Transition
-                if (enemyTrigger.IsTargetFleed)
+                if (!enemy.IsAttacking)
                 {
-                    stateMachine.SetState(AIStates.Roam);                                      
-                }
-                else
-                {
-                    stateMachine.SetState(AIStates.Chase);
+                    //Roam & Chase Transition
+                    if (enemyTrigger.IsTargetFleed)
+                    {
+                        stateMachine.SetState(AIStates.Roam);
+                    }
+                    else
+                    {
+                        stateMachine.SetState(AIStates.Chase);
+                    }
                 }
             }
-        }       
+        }
     }
 
     public override void OnEnter()
@@ -86,26 +96,43 @@ public class Attack : State
         {
             enemyBrain.navMeshAgent.isStopped = true;
             enemyBrain.navMeshAgent.ResetPath();
-        }          
-        attackIndex = UnityEngine.Random.Range(1, 5);
+        }
+        enemyBrain.navMeshAgent.updatePosition = false;
+        enemyBrain.navMeshAgent.enabled = false;
+        attackIndex = UnityEngine.Random.Range(enemySO.MinAttackForPrep, enemySO.MaxAttackForPrep);
         currentAttackIndex = 0;
         enemy.PreAttack();
         enemy.CheckDistance();
     }
 
     public override void OnExit()
-    {        
-        
-        if (enemyBrain.navMeshAgent.isOnNavMesh)
-        {
-            enemyBrain.navMeshAgent.isStopped = true;
-            enemyBrain.navMeshAgent.ResetPath();
-        }        
+    {
+        enemyBrain.navMeshAgent.enabled = true;
+        enemyBrain.navMeshAgent.updatePosition = true;
         attackIndex = 0;
         currentAttackIndex = 0;
         prepTime = 0;
         enemy.PostAttack();
     }
 
+    #endregion
+
+    #region Mechanics
+
+    private void AttackStart()
+    {
+        enemy.SetAttacking(true);
+        if (currentAttackIndex == 0)
+        {
+            enemy.SetFirstAttackDone(false);
+        }
+        enemy.InitializeAttack(() =>
+        {
+            currentAttackIndex++;
+            attackResetTime = Time.time;
+        });
+    }
+
+    #endregion
 }
 

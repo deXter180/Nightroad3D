@@ -28,6 +28,7 @@ public class StateMachine
         if (IsInitialized)
             return;
         StateDict = new Dictionary<AIStates, State>();
+
         StateDict.Add(AIStates.Roam, new Roam(enemyBrain, this, AIStates.Roam));
         StateDict.Add(AIStates.Chase, new Chase(enemyBrain, this, AIStates.Chase));
         StateDict.Add(AIStates.Prepare, new Prepare(enemyBrain, this, AIStates.Prepare));

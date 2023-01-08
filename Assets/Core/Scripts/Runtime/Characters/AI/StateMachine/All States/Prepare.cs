@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 
 public class Prepare : State
 {
+    #region General
 
     public Prepare(EnemyBrain EB, StateMachine SM, AIStates state) : base(EB.gameObject, SM, state)
     {
@@ -12,7 +12,7 @@ public class Prepare : State
     }
 
     public override void Tick()
-    {       
+    {
         if (enemyBrain.IsFrozen)
         {
             stateMachine.SetState(AIStates.Stop);
@@ -29,7 +29,7 @@ public class Prepare : State
                 {
                     stateMachine.SetState(AIStates.Chase);
                 }
-            }                        
+            }
             else
             {
                 enemy.CheckDistance();
@@ -41,31 +41,32 @@ public class Prepare : State
                 {
                     if (enemyTrigger.IsTargetFleed)
                     {
-                        stateMachine.SetState(AIStates.Roam);                      
+                        stateMachine.SetState(AIStates.Roam);
                     }
                     else
                     {
                         stateMachine.SetState(AIStates.Chase);
                     }
                 }
-            }            
+            }
         }
+
     }
 
     public override void OnEnter()
-    {        
+    {
         enemy.IsPrepDone = false;
+        enemyBrain.navMeshAgent.enabled = true;
         if (enemyBrain.navMeshAgent.isOnNavMesh)
             enemyBrain.navMeshAgent.isStopped = true;
         enemyBrain.navMeshAgent.ResetPath();
         stateSpeed = enemyBrain.navMeshAgent.speed;
-        enemyBrain.navMeshAgent.speed = (float)Math.Round(stateSpeed * 0.7f, 1);
-        enemyBrain.navMeshAgent.enabled = true;
+        enemyBrain.navMeshAgent.speed = enemy.GetPctSpeed(stateSpeed, 0.5f);
     }
 
     public override void OnExit()
     {
-        enemy.IsPrepDone = false;        
+        enemy.IsPrepDone = false;
         if (enemyBrain.navMeshAgent.isOnNavMesh)
             enemyBrain.navMeshAgent.isStopped = true;
         enemyBrain.navMeshAgent.ResetPath();
@@ -73,4 +74,5 @@ public class Prepare : State
         enemyBrain.navMeshAgent.speed = enemySO.MoveSpeed;
     }
 
+    #endregion
 }

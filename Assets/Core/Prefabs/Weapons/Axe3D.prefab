@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1157894877261491628}
   - component: {fileID: 7559012299727031636}
-  - component: {fileID: 6611343188965383654}
+  - component: {fileID: 2251354871609737380}
   - component: {fileID: 12654808865474165}
   m_Layer: 12
   m_Name: Axe3D
@@ -48,7 +48,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 10.000004, y: 5.9195333, z: 33.455593}
   m_Center: {x: 0.0000022735053, y: 0.4107408, z: -3.2278264}
---- !u!54 &6611343188965383654
+--- !u!54 &2251354871609737380
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -63,7 +63,7 @@ Rigidbody:
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 112
-  m_CollisionDetection: 2
+  m_CollisionDetection: 1
 --- !u!114 &12654808865474165
 MonoBehaviour:
   m_ObjectHideFlags: 0

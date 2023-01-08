@@ -31,18 +31,19 @@ public class Grid<GridObject>
     private int width;
     private int height;
     private float cellSize;
+    private bool isVertical;
     private Vector3 originPosition;
     public GridObject[,] gridArray { get; private set; }
-    private int TotalCells;
 
     //~~~~~~~~~~~~~~~~~~~~~~ Constructor ~~~~~~~~~~~~~~~~~~~~~~
 
-    public Grid(int width, int height, float cellSize, Vector3 originPosition, Func<Grid<GridObject>, int, int, GridObject> createGridObject, bool showDebug = false)
+    public Grid(int width, int height, float cellSize, Vector3 originPosition, Func<Grid<GridObject>, int, int, GridObject> createGridObject, bool isVertical = true, bool showDebug = false)
     {
         this.width = width;
         this.height = height;
         this.cellSize = cellSize;
         this.originPosition = originPosition;
+        this.isVertical = isVertical;
         gridArray = new GridObject[width, height];
 
         for (int x = 0; x < gridArray.GetLength(0); x++)
@@ -92,14 +93,22 @@ public class Grid<GridObject>
     }
     public int GetTotalCells()
     {
-        return TotalCells = width * height;
+        return width * height;
     }
     
     public Vector3 GetWorldPosition3D(int x, int y)
     {
         float PosX = x * cellSize;
         float PosY = y * cellSize;
-        Vector3 temp = new Vector3(PosX, PosY, 0) + originPosition;
+        Vector3 temp = Vector3.zero;
+        if (isVertical)
+        {
+            temp = new Vector3(PosX, PosY, 0) + originPosition;
+        }
+        else
+        {
+            temp = new Vector3(PosX, 0, PosY) + originPosition;
+        }
         return temp;
     }
 
@@ -115,7 +124,15 @@ public class Grid<GridObject>
     {
         float PosX = x * cellSize;
         float PosY = y * cellSize;
-        Vector3 temp = new Vector3(PosX, PosY, 0);
+        Vector3 temp = Vector3.zero;
+        if (isVertical)
+        {
+            temp = new Vector3(PosX, PosY, 0);
+        }
+        else
+        {
+            temp = new Vector3(PosX, 0, PosY);
+        }
         return temp;
     }
 
@@ -123,20 +140,42 @@ public class Grid<GridObject>
     {
         float PosX = x * cellSize;
         float PosY = y * cellSize;
-        Vector3 temp = new Vector3(PosX + originPosition.x, PosY + originPosition.y, z);
+        Vector3 temp = Vector3.zero;
+        if (isVertical)
+        {
+            temp = new Vector3(PosX + originPosition.x, PosY + originPosition.y, z);
+        }
+        else
+        {
+            temp = new Vector3(PosX + originPosition.x, y, PosY + originPosition.z);
+        }
         return temp;
     }
 
     public void GetCellXYpos(Vector3 worldPosition, out int x, out int y)
     {
         x = Mathf.FloorToInt((worldPosition - originPosition).x / cellSize);
-        y = Mathf.FloorToInt((worldPosition - originPosition).y / cellSize);
+        if (isVertical)
+        {
+            y = Mathf.FloorToInt((worldPosition - originPosition).y / cellSize);
+        }
+        else
+        {
+            y = Mathf.FloorToInt((worldPosition - originPosition).z / cellSize);
+        }
     }
 
     public void GetCellXYLoaclPos(Vector3 worldPos, out int x, out int y)
     {
         x = Mathf.FloorToInt(worldPos.x / cellSize);
-        y = Mathf.FloorToInt(worldPos.y / cellSize);
+        if (isVertical)
+        {
+            y = Mathf.FloorToInt(worldPos.y / cellSize);
+        }
+        else
+        {
+            y = Mathf.FloorToInt(worldPos.z / cellSize);
+        }
     }
 
     public int GetCellXpos(Vector3 worldPosition)
@@ -147,7 +186,15 @@ public class Grid<GridObject>
 
     public int GetCellYpos(Vector3 worldPosition)
     {
-        int y = Mathf.FloorToInt((worldPosition - originPosition).y / (cellSize));
+        int y = 0;
+        if (isVertical)
+        {
+            y = Mathf.FloorToInt((worldPosition - originPosition).y / (cellSize));
+        }
+        else
+        {
+            y = Mathf.FloorToInt((worldPosition - originPosition).z / (cellSize));
+        }
         return y;
     }
 
@@ -210,16 +257,16 @@ public class Grid<GridObject>
 
 //~~~~~~~~~~~~~~~ Grid Object Class ~~~~~~~~~~~~~~~~
 
-#region GridObject
+#region GridObjects
 
-public class GridObject
+public class UIGridObject
 {
-    private Grid<GridObject> grid;
+    private Grid<UIGridObject> grid;
     private int x;
     private int y;
     public PlacedObject placedObject;
 
-    public GridObject(Grid<GridObject> grid, int x, int y)
+    public UIGridObject(Grid<UIGridObject> grid, int x, int y)
     {
         this.grid = grid;
         this.x = x;
@@ -257,6 +304,25 @@ public class GridObject
     public bool HasPlacedObject()
     {
         return placedObject != null;
+    }
+    public Vector2 GetGridObjectPos()
+    {
+        return new Vector2(x, y);
+    }
+
+}
+
+public class CheckPointGridObject 
+{
+    private Grid<CheckPointGridObject> grid;
+    private int x;
+    private int y;
+
+    public CheckPointGridObject(Grid<CheckPointGridObject> grid, int x, int y)
+    {
+        this.grid = grid;
+        this.x = x;
+        this.y = y;       
     }
 
     public Vector2 GetGridObjectPos()

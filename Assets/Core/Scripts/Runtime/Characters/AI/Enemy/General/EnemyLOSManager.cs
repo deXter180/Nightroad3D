@@ -5,21 +5,33 @@ using System.Linq;
 using Unity.Jobs;
 using Unity.Collections;
 
-public class EnemyLOSManager : MonoBehaviour
+public class EnemyLOSManager : Singleton<EnemyLOSManager>
 {
-    #region Variables
+    #region SerializedVariables
     [SerializeField] private EnemyTypes enemyType;
     [SerializeField][Range(0, 2)] private float playerHeightOffset = 1f;
     [SerializeField][Range(0.001f, 1f)] private float spherecastRadius = 0.15f;
     [SerializeField] private LayerMask LOSLayers;
     [SerializeField] private bool useJob;
     [SerializeField][Range(1, 500)] private int minJobSize = 10;
+
+    #endregion
+
+    #region Variables
+
     private Transform playerTransform;
+    private string playerTag = "Player";
     private List<EnemyBrain> AliveEnemyList;
 
     #endregion
 
     #region General
+
+    protected override void Awake()
+    {
+        base.Awake();
+        CheckForEnemy();
+    }
 
     private void Start()
     {
@@ -95,13 +107,13 @@ public class EnemyLOSManager : MonoBehaviour
             spherecastJob.Complete();
             for (int i = 0; i < AliveEnemyList.Count; i++)
             {
-                if (raycastHitList[i].collider != null && raycastHitList[i].collider.CompareTag("Player"))
+                if (raycastHitList[i].collider != null && raycastHitList[i].collider.CompareTag(playerTag))
                 {
-                    //Enemy sighted
+                    //Player sighted
                 }
                 else
                 {
-                    //Enemy not sighted
+                    //Player not sighted
                 }
             }
 
@@ -123,13 +135,13 @@ public class EnemyLOSManager : MonoBehaviour
                 out RaycastHit hit,
                 float.MaxValue,
                 LOSLayers
-                ) && hit.collider != null && hit.collider.CompareTag("Player"))
+                ) && hit.collider != null && hit.collider.CompareTag(playerTag))
             {
-                //Enemy sighted
+                //Player sighted
             }
             else
             {
-                //Enemy not sighted
+                //Player not sighted
             }
         }
     }

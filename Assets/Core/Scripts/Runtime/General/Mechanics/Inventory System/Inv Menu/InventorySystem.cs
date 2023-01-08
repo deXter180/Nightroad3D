@@ -5,14 +5,13 @@ using System;
 
 public class InventorySystem : Singleton<InventorySystem>
 {
-
     #region Variables
 
     [SerializeField] private int gridWidth;
     [SerializeField] private int gridHeight;
     private float throwDistance = 20f;
     private float cellSize;
-    private Grid<GridObject> grid;
+    private Grid<UIGridObject> grid;
     private bool isInitialized => InventoryList != null;
     private List<PlacedObject> InventoryList;
     public Dictionary<ItemTypes, int> ItemDict;
@@ -32,7 +31,7 @@ public class InventorySystem : Singleton<InventorySystem>
         itemContainor = GetComponentInChildren<InventoryContainor>();
         inventoryUI = GetComponentInParent<InventoryUIHandler>();
         cellSize = inventoryUI.GetCellSize();
-        grid = new Grid<GridObject>(gridWidth, gridHeight, cellSize , transform.position, (Grid<GridObject> g, int x, int y) => new GridObject(g, x, y));
+        grid = new Grid<UIGridObject>(gridWidth, gridHeight, cellSize , transform.position, (Grid<UIGridObject> g, int x, int y) => new UIGridObject(g, x, y));
         InitializeInventory();
     }
 
@@ -70,7 +69,7 @@ public class InventorySystem : Singleton<InventorySystem>
 
     #region Utility
 
-    public Grid<GridObject> GetGrid()
+    public Grid<UIGridObject> GetGrid()
     {
         return grid;
     }

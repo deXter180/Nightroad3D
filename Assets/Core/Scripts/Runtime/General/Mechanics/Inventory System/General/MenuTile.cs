@@ -11,7 +11,7 @@ public class MenuTile : MonoBehaviour
     protected int gridHeight;
     protected float cellSize;
     private bool isFilled;
-    protected Grid<GridObject> grid;
+    protected Grid<UIGridObject> grid;
     protected RectTransform rectTransform;
     protected PlacedObject currentPlacedObject;
     public PlacedObject MenuPlacedObject { get => currentPlacedObject; }
@@ -20,7 +20,7 @@ public class MenuTile : MonoBehaviour
     #endregion
 
     #region Utilities
-    public Grid<GridObject> GetGrid()
+    public Grid<UIGridObject> GetGrid()
     {
         return grid;
     }

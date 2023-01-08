@@ -10,13 +10,10 @@ public class Enemy
     #region Variables
 
     protected Transform transform;
-    private Animator animator;
-    private Target target;
-    private bool IsPreping;
+    protected bool IsPreping;
     protected bool IsResetAfterAttack;
     protected bool IsPlayerApproaching;
-    protected EnemyTypes enemyType;
-    protected AttackTypes attackType;
+    protected bool isFirstAttackDone;   
     protected float defaultSpeed;
     protected int pathIndex = 0;
     protected List<Vector3> path;
@@ -26,11 +23,13 @@ public class Enemy
     protected Rigidbody RBody;
     protected PlayerController player;
     protected EquipMenuControl menuControl;
-    protected float attackTimer;
+    protected float timer;
     protected Vector3 targetPosition;
     public bool IsTargetInRange { get; private set; }
     public bool IsAttacking { get; private set; }
     public bool IsPrepDone { get; set; }
+    public EnemyTypes EnemyType { get; private set; }
+    public AttackTypes AttackType { get; protected set; }
     public event EventHandler<OnEnemyAttackEventArg> OnEnemyAttack;
     public event EventHandler<OnEnemyDamageEventArg> OnEnemyDamage;
 
@@ -44,9 +43,7 @@ public class Enemy
         this.enemyBrain = EB;
         this.navAgent = EB.navMeshAgent;
         this.transform = EB.transform;
-        this.target = EB.EnemyTarget;
-        this.animator = EB.EnemyAnimator;
-        this.enemyType = EB.EnemyType;
+        this.EnemyType = EB.EnemyType;
         player = PlayerController.Instance;
         menuControl = EquipMenuControl.Instance;
         IsPreping = false;
@@ -55,7 +52,8 @@ public class Enemy
         IsPrepDone = false;
         IsResetAfterAttack = false;
         IsPlayerApproaching = false;
-        attackTimer = 0;
+        isFirstAttackDone = false;
+        timer = 0;
         defaultSpeed = navAgent.speed;
     }
 
@@ -65,7 +63,7 @@ public class Enemy
 
     public virtual void Roam()
     {
-        if (navAgent.isActiveAndEnabled && navAgent.isOnNavMesh)
+        if (navAgent.enabled && navAgent.isOnNavMesh)
         {
             if (navAgent.remainingDistance <= 5f)
             {
@@ -91,12 +89,12 @@ public class Enemy
 
     public virtual void Chase()
     {
-        if (navAgent.isActiveAndEnabled && navAgent.isOnNavMesh)
+        RotateTowardsPlayer(20);
+        if (navAgent.enabled && navAgent.isOnNavMesh)
         {
             if (targetPosition != player.PlayerTransform.position)
             {
                 targetPosition = player.PlayerTransform.position;
-                Vector3.Lerp(transform.position, targetPosition, Time.deltaTime);
                 if (navAgent.SetDestination(targetPosition))
                 {
                     navAgent.isStopped = false;
@@ -105,7 +103,7 @@ public class Enemy
                 {
                     navAgent.isStopped = true;
                 }
-            }           
+            }
         }
     }
 
@@ -115,7 +113,7 @@ public class Enemy
 
     public void DoPreparation()
     {
-        transform.LookAt(player.PlayerTransform.position);
+        RotateTowardsPlayer(20);
         if (navAgent.isActiveAndEnabled && navAgent.isOnNavMesh)
         {
             if (!IsPreping)
@@ -130,8 +128,7 @@ public class Enemy
     }
 
     protected virtual void Prepare()
-    {        
-        //transform.LookAt(player.PlayerTransform.position);
+    {
         if (Vector3.Distance(transform.position, targetPosition) > navAgent.stoppingDistance)
         {
             if (navAgent.SetDestination(targetPosition))
@@ -156,9 +153,13 @@ public class Enemy
 
     #region Attack
 
-    public void InitializeAttack(Action action)
+    public void SetFirstAttackDone(bool isTrue)
     {
-        Vector3.Lerp(transform.position, player.PlayerTransform.position, Time.deltaTime);
+        isFirstAttackDone = isTrue;
+    }
+
+    public void InitializeAttack(Action action)
+    {        
         if (player.PlayerTarget != null && !player.PlayerTarget.IsDead && !player.PlayerTarget.GetEnemy())
         {
             SetAttackType();
@@ -173,7 +174,7 @@ public class Enemy
 
     public void ResetAttackAnim()
     {
-        attackType = AttackTypes.None;
+        AttackType = AttackTypes.None;
         enemyBrain.SetAttack1(false);
         enemyBrain.SetAttack2(false);
         enemyBrain.SetAttack3(false);
@@ -199,7 +200,7 @@ public class Enemy
 
     public virtual void HandleAttack(Target target, float dodgeChance)
     {
-        OnEnemyAttack?.Invoke(this, new OnEnemyAttackEventArg(enemyType, attackType));
+        OnEnemyAttack?.Invoke(this, new OnEnemyAttackEventArg(EnemyType, AttackType));
     }
 
     public void DoAttack(Target enemyTarget, float enemyDodgeChance)
@@ -220,6 +221,11 @@ public class Enemy
     #endregion
 
     #region Utilities
+
+    public void ResetTimer()
+    {
+        timer = 0;
+    }
 
     public void CheckDistance()
     {
@@ -251,22 +257,49 @@ public class Enemy
         return Vector3.Distance(transform.position, player.PlayerTransform.position);
     }
 
+    public void RotateTowardsPlayer(float value = 1)
+    {
+        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(-player.PlayerTransform.forward), Time.deltaTime * value);
+    }
+
+    public void LookAtPlayer()
+    {
+        transform.LookAt(player.PlayerTransform);
+    }
+
+    public float GetPctSpeed(float speed, float pct)
+    {
+        return (float)Math.Round(speed * pct, 1);
+    }
+
     public Vector3 GetRandomPosition(float range1, float range2)
     {
         Vector3 randomDir = new Vector3(UnityEngine.Random.Range(-1f, 1f), 0, UnityEngine.Random.Range(-1f, 1f)).normalized;
         return transform.position + randomDir * UnityEngine.Random.Range(range1, range2);
     }
 
-    protected Vector3 GetRandomPosition1(float range)
+    protected Vector3 GetRandomPosition1(float range, float maxRangeMult = 2f)
     {
         Vector3 randomDir = new Vector3(UnityEngine.Random.Range(-1f, 1f), 0, UnityEngine.Random.Range(-1f, 1f)).normalized;
-        return transform.position + randomDir * UnityEngine.Random.Range(range, 2f * range);
+        return transform.position + randomDir * UnityEngine.Random.Range(range, maxRangeMult * range);
     }
 
-    protected Vector3 GetRandomPosition2(float range)
+    protected Vector3 GetRandomPosPrepare(float range, float maxRangeMult = 2f)
     {
         Vector3 randomDir = new Vector3(UnityEngine.Random.Range(-1f, 1f), 0, UnityEngine.Random.Range(-1f, 1f)).normalized;
-        return new Vector3(player.PlayerTransform.position.x, transform.position.y, player.PlayerTransform.position.z) + randomDir * UnityEngine.Random.Range(range, 2f * range);
+        return new Vector3(player.PlayerTransform.position.x, transform.position.y, player.PlayerTransform.position.z) + randomDir * UnityEngine.Random.Range(range, maxRangeMult * range);
+    }
+
+    protected Vector3 GetRandomStraightPosPrepare(float range, float maxRangeMult = 2f)
+    {
+        Vector3 randomDir = new Vector3(UnityEngine.Random.Range(-1, 2), 0, UnityEngine.Random.Range(-1, 2)).normalized;
+        return new Vector3(player.PlayerTransform.position.x, transform.position.y, player.PlayerTransform.position.z) + randomDir * UnityEngine.Random.Range(range, maxRangeMult * range);
+    }
+
+    protected Vector3 GetRandomXAxisPosPrepare(float range, float maxRangeMult = 2f)
+    {
+        var randomDist = transform.right * UnityEngine.Random.Range(-1f, 1f) * UnityEngine.Random.Range(range, maxRangeMult * range);
+        return transform.position + randomDist;        
     }
 
     protected Vector3 GetRandomPosition3(float range)
@@ -277,11 +310,11 @@ public class Enemy
         return transform.position + dir * dis;
     }
 
-    protected Vector3 GetRandomPosition4(float range)
+    protected Vector3 GetRandomPosition4(float range, float maxRangeMult = 2f)
     {
         Vector3 dir = (-Vector3.forward + new Vector3(UnityEngine.Random.Range(-1, 1), 0, 0)).normalized;
         dir.y = 0;
-        return transform.position + dir * UnityEngine.Random.Range(range, 2f * range);
+        return transform.position + dir * UnityEngine.Random.Range(range, maxRangeMult * range);
     }
 
     #endregion 

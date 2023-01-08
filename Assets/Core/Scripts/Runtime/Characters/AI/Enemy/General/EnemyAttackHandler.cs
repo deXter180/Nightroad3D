@@ -4,9 +4,15 @@ using UnityEngine;
 
 public class EnemyAttackHandler : MonoBehaviour
 {
+    #region Variables
+
     private string playerName = "Player";
     private PlayerController player;
     private EnemyBrain enemyBrain;
+
+    #endregion
+
+    #region General
 
     void Start()
     {
@@ -25,6 +31,10 @@ public class EnemyAttackHandler : MonoBehaviour
         }       
     }
 
+    #endregion
+
+    #region Mechanics
+
     private void PerformAttack()
     {
         enemyBrain.GetThisEnemy().HandleAttack(player.PlayerTarget, player.DodgeChace);
@@ -33,4 +43,6 @@ public class EnemyAttackHandler : MonoBehaviour
             player.ApplyKnockback();            
         }
     }
+
+    #endregion
 }

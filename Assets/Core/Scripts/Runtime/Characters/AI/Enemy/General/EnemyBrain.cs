@@ -8,7 +8,6 @@ public class EnemyBrain : EnemyCore
 {
     #region Variables
 
-    private int layer = 1 << 0;
     private bool isInBattle = false;
     private bool isDead = false;
     private bool isCritHit = false;
@@ -20,24 +19,21 @@ public class EnemyBrain : EnemyCore
     private bool isFrozen = false;
     private bool isDamaged = false;
     private Vector3 targetDir;
-    private float angle;
     private float lighteningRestruckDelay = 5;
     private float elaplsedTime;
     private float velocityX;
     private float velocityZ;
     private float attack1Index;
     private bool readyForAnim = false;
-    private Vector3 startPos;
     private Collider bodyCol;
-    private Rigidbody rb;
     private Enemy enemy;
     private EnemySO enemySO;
     private AOETargeted spellCasted;
     //private EnemyLOSManager enemyLOS;
     private SpellTypes spellType;
     private StateMachine stateMachine;
-    private Collider[] ragdollColliders;
-    private Rigidbody[] ragdollRBs;
+    private CapsuleCollider[] ragdollColliders;
+    private List<Rigidbody> ragdollRBs;
     private CharacterJoint[] ragdollJoints;
     [HideInInspector] public bool IsSetupDone = false;
 
@@ -72,9 +68,9 @@ public class EnemyBrain : EnemyCore
 
     #region Properties
 
-    public Vector3 StartPos => startPos;
     public EnemySO ThisEnemySO => enemySO;
     public StateMachine ThisStateMachine => stateMachine;
+    public Rigidbody RB => rb;
     public SpellTypes SpellType => spellType;
     public bool IsHitByLightening { get; private set; }
     public bool IsSpellAffected => isSpellAffected;
@@ -93,17 +89,24 @@ public class EnemyBrain : EnemyCore
     protected override void Awake()
     {
         base.Awake();
+        ragdollRBs = new List<Rigidbody>();
         bodyCol = bodyTransform.GetComponent<Collider>();
-        rb = bodyTransform.GetComponent<Rigidbody>();
-        ragdollColliders = armatureTransform.GetComponentsInChildren<Collider>();
-        ragdollRBs = armatureTransform.GetComponentsInChildren<Rigidbody>();
         ragdollJoints = armatureTransform.GetComponentsInChildren<CharacterJoint>();
+        ragdollColliders = armatureTransform.GetComponentsInChildren<CapsuleCollider>();
+        var rbs = armatureTransform.GetComponentsInChildren<Rigidbody>();
+        foreach (var rbody in rbs)
+        {
+            if (rbody.GetComponent<EnemyAttackHandler>() == null)
+            {
+                ragdollRBs.Add(rbody);
+            }
+        }
     }
 
     private void Start()
     {
         StartCoroutine(SetEnemy());
-        EnableAnimator();
+        EnableAnimator();        
     }
 
     private void OnDisable()
@@ -145,7 +148,7 @@ public class EnemyBrain : EnemyCore
                     IsHitByLightening = false;
                     elaplsedTime = 0;
                 }
-            }              
+            }            
         } 
         
         IEnumerator ResetDamaged()
@@ -202,7 +205,14 @@ public class EnemyBrain : EnemyCore
         {
             if (enemySO.IsGroundUnit)
             {
-                enemy = new MeleeGround(this);
+                if (enemyType == EnemyTypes.Giant)
+                {
+                    enemy = new MeleeGroundTank(this);
+                }
+                else if (enemyType == EnemyTypes.Fighter)
+                {
+                    enemy = new MeleeGroundFighter(this);
+                }
             }
             else
             {
@@ -218,8 +228,7 @@ public class EnemyBrain : EnemyCore
         IsHitByLightening = false;
         stateMachine = new StateMachine(this);
         navAgent.speed = enemySO.MoveSpeed;        
-        stateMachine.OnStateChange += StateMachine_OnStateChange;
-        startPos = transform.position;        
+        stateMachine.OnStateChange += StateMachine_OnStateChange;      
         enemyTarget.SetupMaxHP(enemySO.MaxHP);
         enemyTarget.SetEB(this);        
         enemyTarget.OnDodge += EnemyTarget_OnDodge;
@@ -229,7 +238,7 @@ public class EnemyBrain : EnemyCore
         readyForAnim = true;
         enemyName = enemySO.EnemyName;
         EnemyDodgeChance = enemySO.DodgeChance;
-        SetupEnemyID(uniqueID);     
+        SetupEnemyID(uniqueID);       
         IsSetupDone = true;
     }
 
@@ -295,8 +304,8 @@ public class EnemyBrain : EnemyCore
     private void PlayingAnim()
     {
         if (readyForAnim)
-        {          
-            var speedParameter = (float) Math.Round(navAgent.velocity.sqrMagnitude / navAgent.speed, 1);
+        {
+            var speedParameter = (float)Math.Round(navAgent.velocity.sqrMagnitude / navAgent.speed, 1);
             animator.SetFloat(moveIndexHash, speedParameter);
             animator.SetFloat(velocityXHash, velocityX);
             animator.SetFloat(velocityZHash, velocityZ);
@@ -306,7 +315,7 @@ public class EnemyBrain : EnemyCore
             animator.SetBool(attack2Hash, isAttack2);
             animator.SetBool(attack3Hash, isAttack3);
             animator.SetBool(attack4Hash, isAttack4);
-            animator.SetBool(critHash, isCritHit);
+            animator.SetBool(critHash, isCritHit);            
         }       
     }
 
@@ -411,12 +420,12 @@ public class EnemyBrain : EnemyCore
 
     private void StateMachine_OnStateChange(State currentState, State previousState)
     {
-            
+        enemy.ResetTimer();   
     }
 
     private void Enemy_OnEnemyAttack(object sender, OnEnemyAttackEventArg e)
     {
-
+           
     }
 
     private void AOETargeted_OnAOESpellCast(object sender, OnAOESpellCastEventArg e)

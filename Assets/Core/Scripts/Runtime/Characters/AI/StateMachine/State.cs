@@ -13,7 +13,6 @@ public abstract class State
     protected Transform enemyTransform;
     protected Animator animator;
     protected StateMachine stateMachine;
-    protected Target target;
     protected EnemyBrain enemyBrain;
     protected Enemy enemy;
     protected EnemySO enemySO;
@@ -26,15 +25,14 @@ public abstract class State
     public State(GameObject gameObject, StateMachine SM, AIStates aiState)
     {
         this.gameObject = gameObject;
-        this.state = aiState;
-        this.enemyTransform = gameObject.transform;
+        this.state = aiState;       
         this.animator = gameObject.GetComponentInChildren<Animator>();
         this.stateMachine = SM;
-        this.target = gameObject.GetComponent<Target>();
         this.enemyBrain = gameObject.GetComponent<EnemyBrain>();
-        enemyTrigger = enemyBrain.Trigger;        
+        this.enemyTransform = enemyBrain.EnemyTransform;
+        enemyTrigger = enemyBrain.Trigger;
         enemy = enemyBrain.GetThisEnemy();
-        enemySO = enemyBrain.ThisEnemySO;
+        enemySO = enemyBrain.ThisEnemySO;                            
     }
 
     public AIStates GetAIState()
