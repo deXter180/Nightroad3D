@@ -24,6 +24,9 @@ public class EnemyBrain : EnemyCore
     private float velocityX;
     private float velocityZ;
     private float attack1Index;
+    private float animationMoveValue = 8f;
+    private float currentAnimationLength = 0;
+    private bool startAnimationMovement = false;
     private bool readyForAnim = false;
     private Collider bodyCol;
     private Enemy enemy;
@@ -140,6 +143,7 @@ public class EnemyBrain : EnemyCore
             }
             stateMachine.Tick();
             PlayingAnim();
+            ProcessAnimationMovement();
             if (IsHitByLightening)
             {
                 elaplsedTime += Time.deltaTime;
@@ -247,6 +251,31 @@ public class EnemyBrain : EnemyCore
     //~~~~~~~~~~~~~~~~~~~ Animation ~~~~~~~~~~~~~~~~~~~
 
     #region AnimationControl
+
+    public void MoveOnAnimation(float value)
+    {
+        currentAnimationLength = (float)Math.Round(animator.GetCurrentAnimatorStateInfo(2).length * value , 2);
+        rb.isKinematic = false;
+        startAnimationMovement = true;
+    }
+
+    private void ProcessAnimationMovement()
+    {
+        if (startAnimationMovement)
+        {
+            if (currentAnimationLength > 0)
+            {
+                rb.AddForce(transform.forward * currentAnimationLength * animationMoveValue, ForceMode.Impulse);
+                currentAnimationLength -= Time.deltaTime;
+            }
+            else
+            {
+                currentAnimationLength = 0;
+                rb.isKinematic = true;
+                startAnimationMovement = false;
+            }
+        }       
+    }
 
     public void SetLighteningHit()
     {

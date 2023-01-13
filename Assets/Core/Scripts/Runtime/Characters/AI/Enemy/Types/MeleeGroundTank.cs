@@ -14,15 +14,24 @@ public class MeleeGroundTank : MeleeGround
     protected override void SetAttackType()
     {
         float dist = GetDistanceFromPlayer();
+        var randomIndex = Random.Range(0, 2);
         if (!isFirstAttackDone)
         {
-            AttackType = AttackTypes.Attack3;
-            enemyBrain.SetAttack3(true);
+            if (randomIndex == 0)
+            {
+                AttackType = AttackTypes.Attack3;
+                enemyBrain.SetAttack3(true);
+            }
+            else
+            {
+                AttackType = AttackTypes.Attack2;
+                enemyBrain.SetAttack2(true);
+            }
             isFirstAttackDone = true;
         }
         else
         {
-            var randomIndex = Random.Range(0, 2);
+
             if (GetDistanceFromPlayer() < enemySO.AttackRange * 0.7f)
             {
                 if (GetDistanceFromPlayer() < enemySO.AttackRange * 0.5f)
@@ -33,21 +42,22 @@ public class MeleeGroundTank : MeleeGround
                 }
                 else
                 {
-                    AttackType = AttackTypes.Attack2;
-                    enemyBrain.SetAttack2(true);
+                    AttackType = AttackTypes.Attack4;
+                    enemyBrain.SetAttack4(true);
                 }
+
             }
             else
             {
-                if (randomIndex == 0)
+                if (randomIndex == 1)
                 {
-                    AttackType = AttackTypes.Attack2;
-                    enemyBrain.SetAttack2(true);
+                    AttackType = AttackTypes.Attack3;
+                    enemyBrain.SetAttack3(true);
                 }
                 else
                 {
-                    AttackType = AttackTypes.Attack4;
-                    enemyBrain.SetAttack4(true);
+                    AttackType = AttackTypes.Attack2;
+                    enemyBrain.SetAttack2(true);
                 }
             }
         }
