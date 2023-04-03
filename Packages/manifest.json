@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.prenominal.realtimecsg": "https://github.com/LogicalError/realtime-CSG-for-unity.git",
     "com.unity.2d.spriteshape": "7.0.4",
     "com.unity.addressables": "1.19.19",
     "com.unity.animation.rigging": "1.1.1",
