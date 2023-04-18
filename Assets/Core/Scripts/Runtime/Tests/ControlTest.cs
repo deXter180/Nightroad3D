@@ -13,7 +13,7 @@ public class ControlTest : MonoBehaviour
     private bool isMoving;
     private bool isReset;
     private float MouseSensitivity = 20f;
-    private float MoveSpeed = 19;
+    private float MoveSpeed = 7;
     private float SlantingSpeed = 0.15f;
     private float SlantingPower = 4;
     private float elapseTime = 0;
