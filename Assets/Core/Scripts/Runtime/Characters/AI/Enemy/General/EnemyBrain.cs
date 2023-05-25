@@ -35,7 +35,7 @@ public class EnemyBrain : EnemyCore
     //private EnemyLOSManager enemyLOS;
     private SpellTypes spellType;
     private StateMachine stateMachine;
-    private CapsuleCollider[] ragdollColliders;
+    private List<Collider> ragdollColliders;
     private List<Rigidbody> ragdollRBs;
     private CharacterJoint[] ragdollJoints;
     [HideInInspector] public bool IsSetupDone = false;
@@ -93,23 +93,33 @@ public class EnemyBrain : EnemyCore
     {
         base.Awake();
         ragdollRBs = new List<Rigidbody>();
+        ragdollColliders = new List<Collider>();
         bodyCol = bodyTransform.GetComponent<Collider>();
         ragdollJoints = armatureTransform.GetComponentsInChildren<CharacterJoint>();
-        ragdollColliders = armatureTransform.GetComponentsInChildren<CapsuleCollider>();
+        var cols = armatureTransform.GetComponentsInChildren<Collider>();
         var rbs = armatureTransform.GetComponentsInChildren<Rigidbody>();
         foreach (var rbody in rbs)
         {
-            if (rbody.GetComponent<EnemyAttackHandler>() == null)
+            if (rbody.GetComponent<EnemyAttackHandler>() != null)
             {
-                ragdollRBs.Add(rbody);
+                continue;                          
             }
+            ragdollRBs.Add(rbody);
+        }
+        foreach (var col in cols)
+        {
+            if (col.GetComponent<EnemyAttackHandler>() != null)
+            {
+                continue;
+            }
+            ragdollColliders.Add(col);  
         }
     }
 
     private void Start()
     {
         StartCoroutine(SetEnemy());
-        EnableAnimator();        
+        EnableAnimator();
     }
 
     private void OnDisable()
@@ -374,7 +384,7 @@ public class EnemyBrain : EnemyCore
     private void EnableAnimator()
     {
         animator.enabled = true;
-        rb.isKinematic = true;
+        rb.isKinematic = false;
         rb.detectCollisions = true;
         bodyCol.enabled = true;
         headCol.enabled = true;

@@ -110,9 +110,18 @@ public partial class @PlayerInputAsset : IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""Shoot"",
-                    ""type"": ""Value"",
+                    ""type"": ""Button"",
                     ""id"": ""7f31db35-8706-4ab5-af7d-6ac0f988c190"",
-                    ""expectedControlType"": """",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Alt Attack"",
+                    ""type"": ""Value"",
+                    ""id"": ""27b56c25-19ae-4018-9e1a-cc54181907af"",
+                    ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
@@ -312,6 +321,17 @@ public partial class @PlayerInputAsset : IInputActionCollection2, IDisposable
                     ""action"": ""Cast Spell 2"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""98590931-526e-4d9a-adb7-a438af085770"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Alt Attack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -506,6 +526,7 @@ public partial class @PlayerInputAsset : IInputActionCollection2, IDisposable
         m_BasicControls_Reload = m_BasicControls.FindAction("Reload", throwIfNotFound: true);
         m_BasicControls_Interact = m_BasicControls.FindAction("Interact", throwIfNotFound: true);
         m_BasicControls_Shoot = m_BasicControls.FindAction("Shoot", throwIfNotFound: true);
+        m_BasicControls_AltAttack = m_BasicControls.FindAction("Alt Attack", throwIfNotFound: true);
         m_BasicControls_CastSpell1 = m_BasicControls.FindAction("Cast Spell 1", throwIfNotFound: true);
         m_BasicControls_CastSpell2 = m_BasicControls.FindAction("Cast Spell 2", throwIfNotFound: true);
         // WeaponSelection
@@ -589,6 +610,7 @@ public partial class @PlayerInputAsset : IInputActionCollection2, IDisposable
     private readonly InputAction m_BasicControls_Reload;
     private readonly InputAction m_BasicControls_Interact;
     private readonly InputAction m_BasicControls_Shoot;
+    private readonly InputAction m_BasicControls_AltAttack;
     private readonly InputAction m_BasicControls_CastSpell1;
     private readonly InputAction m_BasicControls_CastSpell2;
     public struct BasicControlsActions
@@ -605,6 +627,7 @@ public partial class @PlayerInputAsset : IInputActionCollection2, IDisposable
         public InputAction @Reload => m_Wrapper.m_BasicControls_Reload;
         public InputAction @Interact => m_Wrapper.m_BasicControls_Interact;
         public InputAction @Shoot => m_Wrapper.m_BasicControls_Shoot;
+        public InputAction @AltAttack => m_Wrapper.m_BasicControls_AltAttack;
         public InputAction @CastSpell1 => m_Wrapper.m_BasicControls_CastSpell1;
         public InputAction @CastSpell2 => m_Wrapper.m_BasicControls_CastSpell2;
         public InputActionMap Get() { return m_Wrapper.m_BasicControls; }
@@ -646,6 +669,9 @@ public partial class @PlayerInputAsset : IInputActionCollection2, IDisposable
                 @Shoot.started -= m_Wrapper.m_BasicControlsActionsCallbackInterface.OnShoot;
                 @Shoot.performed -= m_Wrapper.m_BasicControlsActionsCallbackInterface.OnShoot;
                 @Shoot.canceled -= m_Wrapper.m_BasicControlsActionsCallbackInterface.OnShoot;
+                @AltAttack.started -= m_Wrapper.m_BasicControlsActionsCallbackInterface.OnAltAttack;
+                @AltAttack.performed -= m_Wrapper.m_BasicControlsActionsCallbackInterface.OnAltAttack;
+                @AltAttack.canceled -= m_Wrapper.m_BasicControlsActionsCallbackInterface.OnAltAttack;
                 @CastSpell1.started -= m_Wrapper.m_BasicControlsActionsCallbackInterface.OnCastSpell1;
                 @CastSpell1.performed -= m_Wrapper.m_BasicControlsActionsCallbackInterface.OnCastSpell1;
                 @CastSpell1.canceled -= m_Wrapper.m_BasicControlsActionsCallbackInterface.OnCastSpell1;
@@ -686,6 +712,9 @@ public partial class @PlayerInputAsset : IInputActionCollection2, IDisposable
                 @Shoot.started += instance.OnShoot;
                 @Shoot.performed += instance.OnShoot;
                 @Shoot.canceled += instance.OnShoot;
+                @AltAttack.started += instance.OnAltAttack;
+                @AltAttack.performed += instance.OnAltAttack;
+                @AltAttack.canceled += instance.OnAltAttack;
                 @CastSpell1.started += instance.OnCastSpell1;
                 @CastSpell1.performed += instance.OnCastSpell1;
                 @CastSpell1.canceled += instance.OnCastSpell1;
@@ -822,6 +851,7 @@ public partial class @PlayerInputAsset : IInputActionCollection2, IDisposable
         void OnReload(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
         void OnShoot(InputAction.CallbackContext context);
+        void OnAltAttack(InputAction.CallbackContext context);
         void OnCastSpell1(InputAction.CallbackContext context);
         void OnCastSpell2(InputAction.CallbackContext context);
     }

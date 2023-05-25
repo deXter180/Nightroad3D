@@ -106,7 +106,7 @@ public class RangedWeapon : MonoBehaviour
                 isReloading = true;
                 CallEvent(this);
                 weapon.RaiseOnPlayerReload(weapon, this, weaponType);
-                yield return Helpers.GetWait(weaponBrain.AnimDelay);
+                yield return Helpers.GetWait(1);
             }
         }
     }

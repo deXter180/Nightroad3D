@@ -7,8 +7,7 @@ using System.Linq;
 public class WeaponManager : Singleton<WeaponManager>
 {
     #region Variables
-
-    [HideInInspector] public bool IsAttacking = false;
+   
     [SerializeField] private int WeaponCount = 4;
     private int SelectedWeapon = 0;
     private WeaponBrain[] weaponBrains;
@@ -28,6 +27,8 @@ public class WeaponManager : Singleton<WeaponManager>
     public static event Action OnEmptyWeapon;
     public WeaponBrain SelectedWeaponBrain => selectedWeaponBrain;
 
+    public bool IsAttacking { get; private set; }
+
     #endregion
 
     #region General
@@ -40,6 +41,7 @@ public class WeaponManager : Singleton<WeaponManager>
 
     private void Start()
     {
+        IsAttacking = false;
         player = PlayerController.Instance;
         gameController = GameController.Instance;
         inventorySystem = InventorySystem.Instance;
@@ -182,6 +184,11 @@ public class WeaponManager : Singleton<WeaponManager>
             }               
             i++;
         }
+    }
+
+    public void SetIsAttacking(bool isTrue)
+    {
+        IsAttacking = isTrue;
     }
 
     public void DisableAllWeapons()

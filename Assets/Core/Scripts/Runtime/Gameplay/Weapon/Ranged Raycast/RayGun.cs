@@ -121,7 +121,7 @@ public class RayGun : RangedWeapon
                                         currentTotalAmmo -= 1;
                                         currentMagazineAmmo = currentTotalAmmo == 1 ? 1 : currentMagazineAmmo;
                                         CallEvent(this);
-                                        weaponManager.IsAttacking = false;                                       
+                                        weaponManager.SetIsAttacking(false);                                       
                                     });
                                     lastFireTime = Time.time;
                                     recoilTime++;
@@ -174,7 +174,7 @@ public class RayGun : RangedWeapon
         StartCoroutine(PlayMuzzleLight());
         if (isRanged)
         {
-            weaponManager.IsAttacking = true;
+            weaponManager.SetIsAttacking(true);
             thisWeapon.RaiseOnPlayerAttack(thisWeapon, true, weaponBrain, weaponCategory, weaponType);
             crosshair.SetRisizing(true);
             visualEffect.Play();

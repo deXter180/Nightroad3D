@@ -702,7 +702,6 @@ public enum SpellTypes
     FireBlast,
     FreezeBlast,
     ChainLightening,
-    Dash,
     FireBall,
     IceSpike,
     ElectricStorm

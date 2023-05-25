@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading.Tasks;
 using UnityEngine.Audio;
 using UnityEngine.UI;
 
@@ -119,24 +120,42 @@ public class AudioManager : MonoBehaviour
         }       
     }
 
-    public static void PlayWeaponSoundOnce(WeaponTypes weaponType, int index = 0, bool randomize = false)
+    public async static void PlayWeaponSoundOnce(WeaponTypes weaponType, int index = 0, float delay = 0, bool randomize = false)
     {        
         AudioClip clip = AssetLoader.GetAudioClip(AudioTypes.Weapon, weaponType, index, randomize);
         if (clip != null)
         {
             WeaponAudioSource.pitch = UnityEngine.Random.Range(0.5f, 2);
-            WeaponAudioSource.PlayOneShot(clip);            
+            if (delay > 0)
+            {
+                int delayInMilli = Mathf.FloorToInt(delay * 1000);
+                await Task.Delay(delayInMilli);
+                WeaponAudioSource.PlayOneShot(clip);
+            }
+            else
+            {
+                WeaponAudioSource.PlayOneShot(clip);
+            }          
         }
     }
 
-    public static void PlayWeaponSound(WeaponTypes weaponType, int index = 0, bool randomize = false)
+    public async static void PlayWeaponSound(WeaponTypes weaponType, int index = 0, float delay = 0, bool randomize = false)
     {
         AudioClip clip = AssetLoader.GetAudioClip(AudioTypes.Weapon, weaponType, index, randomize);
         if (clip != null)
         {
             WeaponAudioSource.pitch = UnityEngine.Random.Range(0.5f, 2);
             WeaponAudioSource.clip = clip;
-            WeaponAudioSource.Play();
+            if (delay > 0)
+            {
+                int delayInMilli = Mathf.FloorToInt(delay * 1000);
+                await Task.Delay(delayInMilli);
+                WeaponAudioSource.Play();
+            }
+            else
+            {
+                WeaponAudioSource.Play();
+            }            
         }
     }
 

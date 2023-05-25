@@ -22,11 +22,11 @@ public class PlayerController : PersistentSingleton<PlayerController>
     public int MaxMana => modifiedMaxMp;
     public int CurrentHP { get; private set; }
     public int CurrentMana { get; private set; }
+    public float PlayerVelocity { get; private set; }
     public float DodgeChace => dodgeChance;
     public bool IsCrouching => isCrouching;
     public bool IsJumping => isJumping;
     public bool IsPlayerDead => isDead;
-    public Vector3 DashPos => dashPos;
     public Rigidbody PlayerRB => RB;
 
     #endregion
@@ -47,8 +47,8 @@ public class PlayerController : PersistentSingleton<PlayerController>
     [SerializeField] private float dodgeChance;
     [SerializeField] private float crouchHeightPrecentage = 50f;
     [SerializeField] private float SelectionThreshold = 0.97f;
-    [SerializeField] private float SlantingPower = 4f;
-    [SerializeField] private float SlantingSpeed = 0.15f;
+    [SerializeField] private float tiltingPower = 10f;
+    [SerializeField] private float tiltingSpeed = 0.15f;
     [SerializeField] private Animator CamAnimator;
     [SerializeField] private CameraShake.ShakeProperty CamShakeOnDeath;
     [SerializeField] private CameraShake.ShakeProperty CamShakeOnDamage;
@@ -83,7 +83,6 @@ public class PlayerController : PersistentSingleton<PlayerController>
     private CharacterAttribute SpiritAttribute;
     private Vector2 movePosition = Vector2.zero;
     private Vector3 gravity;
-    private Vector3 dashPos;
     private Vector3 originalPlayerPos;
     private Vector3 ConstantDistFromPlayer;
     //private Vector3 playerVelocity = Vector3.zero;
@@ -154,6 +153,8 @@ public class PlayerController : PersistentSingleton<PlayerController>
         isOnWater = false;
         isMoving = false;
         isDead = false;
+        isJumping = false;
+        isCrouching = false;
         isDeathAnimFinish = false;
         isHitByDOT = false;
         isDOTActive = false;
@@ -384,20 +385,21 @@ public class PlayerController : PersistentSingleton<PlayerController>
             wishSpeed *= moveSpeed;
             //Accelerate(wishDir, wishSpeed, MoveAcceleration);
             //playerVelocity.y = 0;          
-            dashPos = transform.right * moveX + transform.forward * moveY;
+            Vector3 nextPos = transform.right * moveX + transform.forward * moveY;
             Vector3 movePos = Vector3.zero;
             if (isOnWater)
             {
-                movePos = transform.position + dashPos * Time.fixedDeltaTime * moveSpeedOnWater;
+                movePos = transform.position + nextPos * Time.fixedDeltaTime * moveSpeedOnWater;
             }
             else
             {
                 //movePos = transform.position + (dashPos * Time.fixedDeltaTime) + playerVelocity;
-                movePos = transform.position + dashPos * Time.fixedDeltaTime * moveSpeed;
+                movePos = transform.position + nextPos * Time.fixedDeltaTime * moveSpeed;
             }
             RB.MovePosition(movePos);
-            isMoving = true;
+            isMoving = true;            
         }
+        PlayerVelocity = movePosition.sqrMagnitude;
         //else
         //{
         //    playerVelocity = Vector3.zero;
@@ -461,12 +463,12 @@ public class PlayerController : PersistentSingleton<PlayerController>
             if (oldRot != Quaternion.identity)
             {
                 elapseTime += Time.fixedDeltaTime;
-                if (elapseTime > SlantingSpeed)
+                if (elapseTime > tiltingSpeed)
                 {
-                    elapseTime = SlantingSpeed;
+                    elapseTime = tiltingSpeed;
                     isMoving = false;
                 }
-                float perc = elapseTime / SlantingSpeed;
+                float perc = elapseTime / tiltingSpeed;
                 oldRot.eulerAngles = new Vector3(camControlX, camTransform.rotation.eulerAngles.y, oldRot.eulerAngles.z);
                 camTransform.rotation = Quaternion.Slerp(camTransform.rotation, oldRot, perc);
                 if (perc == 1)
@@ -494,9 +496,9 @@ public class PlayerController : PersistentSingleton<PlayerController>
             }
             else
             {
-                rotX = Mathf.LerpAngle(camTransform.eulerAngles.x, camControlX + (movePosition.y * SlantingPower / 2), Time.fixedDeltaTime / SlantingSpeed);
+                rotX = Mathf.LerpAngle(camTransform.eulerAngles.x, camControlX + (movePosition.y * tiltingPower / 2), Time.fixedDeltaTime / tiltingSpeed);
             }
-            float rotZ = Mathf.LerpAngle(camTransform.eulerAngles.z, -movePosition.x * SlantingPower, Time.fixedDeltaTime / SlantingSpeed);
+            float rotZ = Mathf.LerpAngle(camTransform.eulerAngles.z, -movePosition.x * tiltingPower, Time.fixedDeltaTime / tiltingSpeed);
             camTransform.eulerAngles = new Vector3(rotX, rotY, rotZ);
             isReset = true;
         }

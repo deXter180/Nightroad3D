@@ -219,59 +219,10 @@ public class SelfTargeted : Spells
 
     private void AddSpellEffect()
     {
-        switch (spellType)
-        {
-            case SpellTypes.Dash:
-                {                    
-                    Vector3 direction;
-                    if (player.DashPos.Equals(Vector3.zero))
-                    {
-                        direction = player.transform.forward;
-                    }else
-                    {
-                        direction = player.DashPos;
-                    }
-                    Vector3 dir = player.transform.position + direction * GetModifiedStats();
-                    player.PlayerRB.MovePosition(dir);
-                    PlayDashVFX(spellType, direction);
-                }
-                break;
-        }
-    }
-
-    private void PlayDashVFX(SpellTypes spellType, Vector3 direction)
-    {
-        if (spellManager.GetSTSpellVfx(spellType) != null)
-        {
-            VisualEffect vfx = spellManager.GetSTSpellVfx(spellType);
-            vfx.transform.localRotation = Quaternion.Euler(0, 0, 0);
-            vfx.SetFloat(spellSizeText, 0.04f);
-            vfx.transform.localPosition = new Vector3(0, vfx.transform.localPosition.y, vfx.transform.localPosition.z);
-            float temp1 = Vector3.Dot(direction, player.transform.forward);
-            if (temp1 <= -0.5f || temp1 >= 0.5f)
-            {
-                vfx.Play();
-            }
-            else
-            {
-                float temp2 = Vector3.Dot(direction, player.transform.right);
-                vfx.transform.localRotation = Quaternion.Euler(0, 90, 0);
-                vfx.SetFloat(spellSizeText, 0.1f);
-                if (temp2 >= 0.5f)
-                {
-                    vfx.transform.localPosition = new Vector3(0.4f, vfx.transform.localPosition.y, vfx.transform.localPosition.z);
-                }
-                else if (temp2 <= -0.5f)
-                {
-                    vfx.transform.localPosition = new Vector3(-0.4f, vfx.transform.localPosition.y, vfx.transform.localPosition.z);
-                }
-                vfx.Play();               
-            }
-        }
+       
     }
 
    
-
 }
 
 #endregion

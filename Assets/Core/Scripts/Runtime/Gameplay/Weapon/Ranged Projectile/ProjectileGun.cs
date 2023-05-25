@@ -100,7 +100,7 @@ public class ProjectileGun : RangedWeapon
                                     camShake.StopShake();
                                     crosshair.SetRisizing(false);
                                     CallEvent(this);                                   
-                                    weaponManager.IsAttacking = false;
+                                    weaponManager.SetIsAttacking(false);
                                 }));
                             }
                             else
@@ -131,7 +131,7 @@ public class ProjectileGun : RangedWeapon
         StartCoroutine(PlayMuzzleLight());
         if (objectPooler.GetPooledObject(GetProjectileType(weaponType)) != null)
         {
-            weaponManager.IsAttacking = true;
+            weaponManager.SetIsAttacking(true);
             crosshair.SetRisizing(true);
             recoilEffect.ApplyRecoil(recoilProperty);
             camShake.StartShake(shakeProperties);

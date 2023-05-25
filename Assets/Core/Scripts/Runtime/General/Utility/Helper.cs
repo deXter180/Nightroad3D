@@ -17,12 +17,20 @@ public static class Helpers
     }
 
     private static Dictionary<float, WaitForSeconds> WaitDict = new Dictionary<float, WaitForSeconds>();
+    private static Dictionary<float, WaitForSecondsRealtime> WaitIRTDict = new Dictionary<float, WaitForSecondsRealtime>();
 
     public static WaitForSeconds GetWait(float time)
     {
         if (WaitDict.TryGetValue(time, out var wait)) return wait;
         WaitDict[time] = new WaitForSeconds(time);
         return WaitDict[time];
+    }
+
+    public static WaitForSecondsRealtime GetRealtimeWait(float time)
+    {
+        if (WaitIRTDict.TryGetValue(time, out var waitIRT)) return waitIRT;
+        WaitIRTDict[time] = new WaitForSecondsRealtime(time);
+        return WaitIRTDict[time];
     }
 
     private static PointerEventData eventDataCurrentPos;

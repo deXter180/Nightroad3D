@@ -110,7 +110,7 @@ public class RayShotGun : RangedWeapon
                                     camShake.StopShake();
                                     crosshair.SetRisizing(false);
                                     CallEvent(this);                                    
-                                    weaponManager.IsAttacking = false;
+                                    weaponManager.SetIsAttacking(false);
                                 }));
                             }
                             else
@@ -142,7 +142,7 @@ public class RayShotGun : RangedWeapon
         StartCoroutine(PlayMuzzleLight());
         if (isRanged)
         {
-            weaponManager.IsAttacking = true;
+            weaponManager.SetIsAttacking(true);
             thisWeapon.RaiseOnPlayerAttack(thisWeapon, true, weaponBrain, weaponCategory, weaponType);
             crosshair.SetRisizing(true);
             visualEffect.Play();
